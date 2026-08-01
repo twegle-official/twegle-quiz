@@ -1,0 +1,99 @@
+import 'dotenv/config'
+import express from 'express'
+import cors from 'cors'
+import helmet from 'helmet'
+import { connectDB } from './config/db.js'
+import { ensureFirstAdmin } from './scripts/ensureFirstAdmin.js'
+import { sanitizeBody } from './middleware/sanitize.js'
+import {
+  loginLimiter,
+  playsLimiter,
+  postEngagementLimiter,
+  friendshipLimiter,
+  quizCompareLimiter,
+  gamePlaysLimiter,
+  feedbackLimiter,
+  engagementLimiter,
+} from './middleware/rateLimiters.js'
+import authRoutes from './routes/authRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
+import quizRoutes from './routes/quizRoutes.js'
+import adminQuizRoutes from './routes/adminQuizRoutes.js'
+import postRoutes from './routes/postRoutes.js'
+import adminPostRoutes from './routes/adminPostRoutes.js'
+import storyRoutes from './routes/storyRoutes.js'
+import adminStoryRoutes from './routes/adminStoryRoutes.js'
+import shareRoutes from './routes/shareRoutes.js'
+import friendshipRoutes from './routes/friendshipRoutes.js'
+import adminFriendshipRoutes from './routes/adminFriendshipRoutes.js'
+import { getSitemap } from './controllers/sitemapController.js'
+import activityRoutes from './routes/activityRoutes.js'
+import searchRoutes from './routes/searchRoutes.js'
+import gameRoutes from './routes/gameRoutes.js'
+import feedbackRoutes from './routes/feedbackRoutes.js'
+import adminFeedbackRoutes from './routes/adminFeedbackRoutes.js'
+import ticTacToeRoutes from './routes/ticTacToeRoutes.js'
+import engagementRoutes from './routes/engagementRoutes.js'
+import adminEngagementRoutes from './routes/adminEngagementRoutes.js'
+import horoscopeRoutes from './routes/horoscopeRoutes.js'
+
+const app = express()
+
+// In production, set CORS_ORIGIN to your real frontend domain (e.g.
+// https://yourdomain.com). Left open ("*") by default for local development.
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }))
+app.use(helmet())
+app.use(express.json({ limit: '100kb' }))
+app.use(sanitizeBody)
+
+app.get('/api/health', (req, res) => res.json({ ok: true }))
+app.get('/sitemap.xml', getSitemap)
+
+app.use('/api/auth/login', loginLimiter)
+app.use('/api/quizzes/:slug/plays', playsLimiter)
+app.use('/api/posts/:id/engagement', postEngagementLimiter)
+app.use('/api/friendship/quizzes/:slug/instances', friendshipLimiter)
+app.use('/api/friendship/instances/:code/attempts', friendshipLimiter)
+app.use('/api/quizzes/:slug/compare', quizCompareLimiter)
+app.use('/api/games/:slug/plays', gamePlaysLimiter)
+app.use('/api/feedback', feedbackLimiter)
+app.use('/api/engagement', engagementLimiter)
+
+app.use('/api/auth', authRoutes)
+app.use('/api/admins', adminRoutes)
+app.use('/api/quizzes', quizRoutes)
+app.use('/api/admin/quizzes', adminQuizRoutes)
+app.use('/api/posts', postRoutes)
+app.use('/api/admin/posts', adminPostRoutes)
+app.use('/api/stories', storyRoutes)
+app.use('/api/admin/stories', adminStoryRoutes)
+app.use('/api/share', shareRoutes)
+app.use('/api/friendship', friendshipRoutes)
+app.use('/api/admin/friendship-quizzes', adminFriendshipRoutes)
+app.use('/api/admin/activity', activityRoutes)
+app.use('/api/search', searchRoutes)
+app.use('/api/games', gameRoutes)
+app.use('/api/feedback', feedbackRoutes)
+app.use('/api/admin/feedback', adminFeedbackRoutes)
+app.use('/api/tictactoe', ticTacToeRoutes)
+app.use('/api/engagement', engagementRoutes)
+app.use('/api/admin/engagement', adminEngagementRoutes)
+app.use('/api/horoscope', horoscopeRoutes)
+
+// Keep error handler last — catches anything thrown/rejected in the routes above.
+app.use((err, req, res, next) => {
+  console.error(err)
+  res.status(500).json({ error: 'Something went wrong' })
+})
+
+const port = process.env.PORT || 4000
+
+connectDB()
+  .then(() => ensureFirstAdmin())
+  .then(() => {
+    app.listen(port, () => console.log(`API running on http://localhost:${port}`))
+  })
+  .catch((err) => {
+    console.error('Failed to connect to database', err)
+    process.exit(1)
+  })

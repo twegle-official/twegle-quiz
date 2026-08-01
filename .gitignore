@@ -1,0 +1,13 @@
+# Sensitive/local-only files — never commit these.
+/credentials.txt
+/query.txt
+
+# Editor/tooling artifacts not part of the app.
+/.playwright-mcp/
+*.log
+
+# Loose generated assets from this session (marketing images, working copies) —
+# not part of the deployable app; recreate from frontend/public if ever needed.
+/logo.png
+/twegle-fb-cover.png
+/twegle-yt-banner.png

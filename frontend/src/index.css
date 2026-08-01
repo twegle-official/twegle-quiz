@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+/* Tailwind v4 has no JS config file — class-based dark mode (rather than
+   only following the OS preference) needs this custom variant so `dark:`
+   utilities respond to a `.dark` class on `<html>` instead. See
+   ThemeToggle.jsx for how that class gets toggled/persisted. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: 'Baloo 2', 'Nunito', system-ui, sans-serif;
+}
+
+@keyframes fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-fade-slide-in {
+  animation: fade-slide-in 0.35s ease-out;
+}
+
+.animate-pop-in {
+  animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Subtle dot texture for the public site background — replaces flat gray
+   with a bit of depth without hurting readability. */
+.bg-dot-pattern {
+  background-color: #fafafa;
+  background-image: radial-gradient(rgba(139, 92, 246, 0.12) 1.5px, transparent 1.5px);
+  background-size: 24px 24px;
+}
+
+.dark .bg-dot-pattern {
+  background-color: #0f1115;
+  background-image: radial-gradient(rgba(139, 92, 246, 0.18) 1.5px, transparent 1.5px);
+}
+
+/* Real phones already auto-hide the scrollbar on a touch-scrolled strip
+   (the homepage's mobile tab/category rows), but a mouse-driven browser
+   (desktop Chrome resized narrow, a laptop trackpad, etc.) shows a visible
+   scrollbar by default — this hides it everywhere so the row always reads
+   as a plain swipeable strip, never a scrollbar-decorated box. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
