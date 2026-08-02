@@ -194,18 +194,22 @@ Whatever impossible thing stands in front of you today, it was never asking you 
   },
 ]
 
-async function main() {
-  await connectDB()
-
+export async function seedStories() {
   for (const s of stories) {
     await Story.findOneAndUpdate({ slug: s.slug }, s, { upsert: true, returnDocument: 'after' })
   }
   console.log(`Seeded ${stories.length} stories.`)
+}
 
+async function main() {
+  await connectDB()
+  await seedStories()
   await disconnectDB()
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}

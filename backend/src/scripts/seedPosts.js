@@ -133,9 +133,7 @@ const posts = [
   { category: 'meme', language: 'hi', status: 'published', imageUrl: 'https://picsum.photos/seed/twegle-meme-6/600/600', text: 'सैलरी आने के अगले दिन बैंक बैलेंस।' },
 ]
 
-async function main() {
-  await connectDB()
-
+export async function seedPosts() {
   for (const p of posts) {
     await Post.findOneAndUpdate(
       { text: p.text, language: p.language },
@@ -144,11 +142,17 @@ async function main() {
     )
   }
   console.log(`Seeded ${posts.length} posts.`)
+}
 
+async function main() {
+  await connectDB()
+  await seedPosts()
   await disconnectDB()
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}

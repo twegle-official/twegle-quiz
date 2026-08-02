@@ -1599,18 +1599,22 @@ quizzes.push({
   ],
 })
 
-async function main() {
-  await connectDB()
-
+export async function seedQuizzes() {
   for (const q of quizzes) {
     await Quiz.findOneAndUpdate({ slug: q.slug }, q, { upsert: true, returnDocument: 'after' })
     console.log(`Seeded: ${q.title}`)
   }
+}
 
+async function main() {
+  await connectDB()
+  await seedQuizzes()
   await disconnectDB()
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}

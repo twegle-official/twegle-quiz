@@ -179,18 +179,22 @@ const quizzes = [
   },
 ]
 
-async function main() {
-  await connectDB()
-
+export async function seedFriendshipQuizzes() {
   for (const q of quizzes) {
     await FriendshipQuiz.findOneAndUpdate({ slug: q.slug }, q, { upsert: true, returnDocument: 'after' })
     console.log(`Seeded: ${q.title}`)
   }
+}
 
+async function main() {
+  await connectDB()
+  await seedFriendshipQuizzes()
   await disconnectDB()
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}
