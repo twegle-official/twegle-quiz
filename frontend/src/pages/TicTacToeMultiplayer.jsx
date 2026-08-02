@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { fetchTicTacToeGame, joinTicTacToeGame, makeTicTacToeMove, getTicTacToeShareUrl } from '../api'
 import ShareButtons from '../components/ShareButtons'
+import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 const POLL_INTERVAL_MS = 4000
@@ -172,6 +173,7 @@ export default function TicTacToeMultiplayer() {
 
   return (
     <div className="max-w-md mx-auto px-4 py-10 text-center">
+      <div className="text-left mb-4"><BackButton /></div>
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">
         You are {role} · {myName} vs {opponentName || '...'}
       </p>

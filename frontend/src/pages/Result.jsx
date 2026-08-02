@@ -5,6 +5,7 @@ import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import QuizCard from '../components/QuizCard'
 import ReportButton from '../components/ReportButton'
+import BackButton from '../components/BackButton'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -124,6 +125,7 @@ export default function Result() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      <div className="text-left mb-4"><BackButton /></div>
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">{quiz.title}</p>
       <div className="animate-pop-in">
         <div className="text-6xl mb-3">{result.emoji}</div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { fetchFriendshipInstance, submitFriendshipAttempt } from '../api'
+import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 export default function FriendshipPlay() {
@@ -66,6 +67,7 @@ export default function FriendshipPlay() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
+      <BackButton className="mb-4" />
       <div className="text-center mb-8">
         <div className="text-5xl mb-3">{instance.quizEmoji}</div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">

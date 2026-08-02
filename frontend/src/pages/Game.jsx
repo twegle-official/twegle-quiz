@@ -11,6 +11,7 @@ import Sudoku from '../games/Sudoku'
 import { recordGamePlay, createTicTacToeGame, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
+import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 // Tic-Tac-Toe/Rock Paper Scissors are explicitly framed as "vs the house," so
@@ -100,6 +101,7 @@ export default function Game() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      <div className="text-left mb-4"><BackButton /></div>
       <div className="text-5xl mb-3">{game.emoji}</div>
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{game.title}</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">{game.description}</p>

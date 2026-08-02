@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useLocation, Link } from 'react-router-dom'
 import { fetchQuizBySlug, joinQuizCompare, recordEngagement } from '../api'
 import ProgressBar from '../components/ProgressBar'
+import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 function pickWinningResult(scores) {
@@ -111,6 +112,7 @@ export default function Quiz() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
+      <BackButton className="mb-4" />
       <ProgressBar current={questionIndex} total={quiz.questions.length} />
 
       <div key={questionIndex} className="animate-fade-slide-in">

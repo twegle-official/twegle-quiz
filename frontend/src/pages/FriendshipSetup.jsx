@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { fetchFriendshipQuizBySlug, createFriendshipInstance, getFriendshipShareUrl, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
+import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 export default function FriendshipSetup() {
@@ -95,6 +96,7 @@ export default function FriendshipSetup() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
+      <BackButton className="mb-4" />
       <div className="text-center mb-8">
         <div className="text-5xl mb-3">{quiz.emoji}</div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{quiz.title}</h1>

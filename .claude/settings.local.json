@@ -121,7 +121,11 @@
       "mcp__playwright__browser_evaluate",
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(grep -E \"\\\\.env$|credentials\\\\.txt|dev-data|query\\\\.txt|twegle-fb-cover|twegle-yt-banner|logo\\\\.png|playwright-mcp\")"
+      "Bash(grep -E \"\\\\.env$|credentials\\\\.txt|dev-data|query\\\\.txt|twegle-fb-cover|twegle-yt-banner|logo\\\\.png|playwright-mcp\")",
+      "Bash(grep -E \"\\\\.env$|credentials\\\\.txt|dev-data|query\\\\.txt|twegle-fb-cover|twegle-yt-banner|logo\\\\.png|playwright-mcp|dev-dist\")",
+      "Bash(git config *)",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git rm *)"
     ]
   }
 }

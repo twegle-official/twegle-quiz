@@ -5,6 +5,7 @@ import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import StoryCard from '../components/StoryCard'
 import ReportButton from '../components/ReportButton'
+import BackButton from '../components/BackButton'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -122,6 +123,7 @@ export default function StoryView() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      <div className="text-left mb-4"><BackButton /></div>
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}
       >

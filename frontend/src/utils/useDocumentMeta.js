@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 // non-JS social-share crawlers — see shareController.js.
 const DEFAULT_TITLE = 'Twegle — Quizzes, Quotes & Chaos for Everyone'
 const DEFAULT_DESCRIPTION =
-  'Twegle — fun quizzes, jokes, quotes, and more. No sign up, just share-worthy content for everyone.'
+  'Twegle — quizzes, jokes, quotes, games, stories, horoscope & chaos. No sign up, just share-worthy content for everyone.'
 
 export function useDocumentMeta(title, description) {
   useEffect(() => {

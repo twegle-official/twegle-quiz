@@ -5,6 +5,7 @@ import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import PostCard from '../components/PostCard'
 import ReportButton from '../components/ReportButton'
+import BackButton from '../components/BackButton'
 import { POST_CATEGORY_STYLE } from '../postStyles'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
@@ -100,6 +101,7 @@ export default function PostView() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      <div className="text-left mb-4"><BackButton /></div>
       {isMeme ? (
         <div className="animate-pop-in">
           <img

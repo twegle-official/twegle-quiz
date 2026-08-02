@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { fetchQuizCompare } from '../api'
+import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 export default function CompareInvite() {
@@ -53,6 +54,7 @@ export default function CompareInvite() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-14 text-center">
+      <div className="text-left mb-4"><BackButton /></div>
       <div className="text-5xl mb-4">{compare.quizEmoji || '🆚'}</div>
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
         {compare.personAName} wants to compare results with you on {compare.quizTitle}!

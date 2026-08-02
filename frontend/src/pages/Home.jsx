@@ -96,7 +96,7 @@ export default function Home() {
   const [language, setLanguage] = useState('en')
   const [quizCategory, setQuizCategory] = useState('all')
   const [storyCategory, setStoryCategory] = useState('all')
-  const [sortMode, setSortMode] = useState('trending')
+  const [sortMode, setSortMode] = useState('newest')
   // Tagged with the tab/language/category that produced it, so a render can
   // never show content fetched for a different filter while the real fetch
   // is in flight — this is what previously caused a crash and a "duplicate
@@ -182,7 +182,7 @@ export default function Home() {
     '@type': 'WebSite',
     name: 'Twegle',
     url: import.meta.env.VITE_SITE_URL || 'http://localhost:5173',
-    description: 'Quizzes, jokes, quotes, and friendship quizzes — no sign up, just pick something and go.',
+    description: 'Quizzes, jokes, quotes, games, stories, horoscope & chaos — no sign up, just pick something and go. New stuff added regularly.',
   }
 
   return (
@@ -195,7 +195,7 @@ export default function Home() {
               Where Fun Goes Viral
             </p>
             <h1 className="text-lg sm:text-xl font-extrabold text-white">
-              Quizzes, quotes &amp; chaos for everyone
+              Quizzes, Jokes, Quotes, Games, Stories &amp; Horoscope
             </h1>
             <p className="text-white/90 text-xs sm:text-sm">
               No sign up, no waiting — just pick something and go.
@@ -210,12 +210,18 @@ export default function Home() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
-      <aside className="flex flex-col gap-3 mb-4 lg:mb-0 lg:gap-4 lg:sticky lg:top-6">
-        <div className="flex items-center justify-center lg:justify-start">
-          <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-1 lg:w-full">
+      <aside className="flex flex-col gap-1.5 mb-4 lg:mb-0 lg:gap-2 lg:sticky lg:top-6">
+        {/* Language and Trending/Newest share one row below `lg` — both are
+            "global" filters (apply the same way regardless of active tab),
+            and putting them side by side on mobile (instead of two separate
+            stacked rows) frees up a full row of vertical space for the
+            actual content below. On the `lg` sidebar they go back to being
+            separate full-width stacked rows, where there's no width pressure. */}
+        <div className="flex items-center justify-center gap-2 lg:flex-col lg:items-stretch lg:gap-2">
+          <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5 lg:w-full">
             <button
               onClick={() => setLanguage('en')}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors lg:flex-1 ${
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
                 language === 'en' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
@@ -223,36 +229,33 @@ export default function Home() {
             </button>
             <button
               onClick={() => setLanguage('hi')}
-              className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-colors lg:flex-1 ${
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
                 language === 'hi' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
               हिंदी
             </button>
           </div>
-        </div>
 
-        {/* Trending/Newest lives right next to the language switcher, not
-            down with the tabs/category chips — like language, it's a global
-            filter that applies across every content type, not something
-            specific to one tab. */}
-        <div className="flex justify-center lg:justify-start">
-          <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-1 lg:w-full">
-            <button
-              onClick={() => setSortMode('trending')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
-                sortMode === 'trending' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
-              }`}
-            >
-              🔥 Trending
-            </button>
+          {/* Newest listed first and selected by default — it's the more
+              broadly useful default (freshest content) and reads naturally
+              as the first choice next to the language toggle. */}
+          <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5 lg:w-full">
             <button
               onClick={() => setSortMode('newest')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
+              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
                 sortMode === 'newest' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
               🆕 Newest
+            </button>
+            <button
+              onClick={() => setSortMode('trending')}
+              className={`px-2.5 py-0.5 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
+                sortMode === 'trending' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
+              }`}
+            >
+              🔥 Trending
             </button>
           </div>
         </div>
@@ -264,12 +267,12 @@ export default function Home() {
             phone. `-mx-4 px-4` lets the row's touch-scroll area bleed to the
             true screen edge (matching the page's own px-4 gutter) without
             affecting where the pills themselves start. */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+        <div className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-1 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-2">
           {TABS.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`shrink-0 whitespace-nowrap px-4 py-2 rounded-full lg:rounded-lg text-sm font-semibold transition-colors lg:text-left ${
+              className={`shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full lg:rounded-lg text-sm font-semibold transition-colors lg:text-left ${
                 activeTab === tab.key
                   ? 'bg-violet-600 text-white'
                   : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-300 dark:hover:border-violet-500'

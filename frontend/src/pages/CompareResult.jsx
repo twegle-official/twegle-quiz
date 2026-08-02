@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom'
 import { fetchQuizCompare, getQuizCompareShareUrl } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
+import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 function PersonCard({ person }) {
@@ -73,6 +74,7 @@ export default function CompareResult() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      <div className="text-left mb-4"><BackButton /></div>
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">{compare.quizTitle}</p>
 
       <div className={`animate-pop-in rounded-3xl p-8 text-white shadow-lg bg-gradient-to-br ${compare.gradient} mb-6`}>
