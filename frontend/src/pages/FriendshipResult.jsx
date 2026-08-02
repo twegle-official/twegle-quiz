@@ -65,11 +65,13 @@ export default function FriendshipResult() {
         <p className="text-white/90">{scoreMessage(result.score, result.total)}</p>
       </div>
 
-      <ShareButtons
-        title={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz!`}
-        url={shareUrl}
-        shareText={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz! Think you know them better?`}
-      />
+      <div className="mt-6">
+        <ShareButtons
+          title={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz!`}
+          url={shareUrl}
+          shareText={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz! Think you know them better?`}
+        />
+      </div>
 
       <div className="mt-10 text-left">
         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">Answer by answer</h2>
