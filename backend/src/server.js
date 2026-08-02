@@ -36,7 +36,6 @@ import ticTacToeRoutes from './routes/ticTacToeRoutes.js'
 import engagementRoutes from './routes/engagementRoutes.js'
 import adminEngagementRoutes from './routes/adminEngagementRoutes.js'
 import horoscopeRoutes from './routes/horoscopeRoutes.js'
-import adminRunSeedRoutes from './routes/adminRunSeedRoutes.js'
 
 const app = express()
 
@@ -80,7 +79,6 @@ app.use('/api/tictactoe', ticTacToeRoutes)
 app.use('/api/engagement', engagementRoutes)
 app.use('/api/admin/engagement', adminEngagementRoutes)
 app.use('/api/horoscope', horoscopeRoutes)
-app.use('/api/admin/run-seed', adminRunSeedRoutes)
 
 // Keep error handler last — catches anything thrown/rejected in the routes above.
 app.use((err, req, res, next) => {
