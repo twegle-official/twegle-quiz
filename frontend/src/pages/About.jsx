@@ -1,10 +1,12 @@
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import BackButton from '../components/BackButton'
 
 export default function About() {
   useDocumentMeta('About', 'Who\'s behind Twegle, and how to get in touch.')
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 text-gray-700 dark:text-gray-300">
+      <BackButton className="mb-4" />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">About Twegle</h1>
 
       <p className="mb-4">

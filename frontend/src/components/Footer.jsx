@@ -84,7 +84,7 @@ export default function Footer() {
               <YoutubeIcon className="w-5 h-5" />
             </a>
             <a
-              href="https://linkedin.com/company/twegle"
+              href="https://www.linkedin.com/in/ritika-saxena-3110a0427/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Twegle on LinkedIn"

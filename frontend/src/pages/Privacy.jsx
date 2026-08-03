@@ -1,10 +1,12 @@
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import BackButton from '../components/BackButton'
 
 export default function Privacy() {
   useDocumentMeta('Privacy Policy', 'What Twegle does and doesn\'t collect, and how it\'s used.')
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 text-gray-700 dark:text-gray-300">
+      <BackButton className="mb-4" />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Privacy Policy</h1>
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-8">Last updated: 27 July 2026</p>
 

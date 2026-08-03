@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { submitFeedback } from '../api'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import BackButton from '../components/BackButton'
 
 export default function Feedback() {
   const [message, setMessage] = useState('')
@@ -45,6 +46,7 @@ export default function Feedback() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
+      <BackButton className="mb-4" />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Feedback</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">
         Found a bug, have an idea, or just want to tell us what you think? This goes straight to

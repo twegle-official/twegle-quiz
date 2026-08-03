@@ -177,13 +177,6 @@ export default function Game() {
       <div className="mt-8">
         <AdSlot />
       </div>
-
-      <Link
-        to="/"
-        className="inline-block mt-8 px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
-      >
-        Back to Twegle
-      </Link>
     </div>
   )
 }
