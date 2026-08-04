@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns } from '../api'
+import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPostReactionsBatch, setPostReaction } from '../api'
 import { GAMES } from '../games/registry'
 import QuizCard from '../components/QuizCard'
 import FriendshipQuizCard from '../components/FriendshipQuizCard'
@@ -109,6 +109,8 @@ export default function Home() {
   // hardcoded number that had to be manually edited every time content was
   // added and quietly went stale.
   const [stats, setStats] = useState({ quizzes: null, posts: null })
+  // Reaction counts for the currently displayed post tiles, keyed by post id.
+  const [reactionCounts, setReactionCounts] = useState({})
   // Full, unfiltered quiz list — reused for the Quiz of the Day banner below
   // rather than a separate fetch, since this effect already loads it all.
   const [allQuizzes, setAllQuizzes] = useState([])
@@ -190,6 +192,32 @@ export default function Home() {
       : null
 
   const displayedItems = sortItems(items, activeTab, sortMode)
+
+  const isPostTab = !['quizzes', 'friendship', 'games', 'stories', 'horoscope'].includes(activeTab)
+
+  // One batch request for whatever page of post tiles is currently shown,
+  // instead of each tile fetching its own reaction counts — see
+  // TileReactions.jsx / reactionController.js's getReactionsBatch.
+  useEffect(() => {
+    if (!isPostTab || !items || items.length === 0) return
+    let cancelled = false
+    fetchPostReactionsBatch(items.map((p) => p._id)).then((counts) => {
+      if (!cancelled) setReactionCounts(counts)
+    })
+    return () => {
+      cancelled = true
+    }
+    // items is a plain array from state (only reassigned on an actual
+    // fetch), unlike displayedItems which sortItems() recomputes fresh on
+    // every render — depending on that would refetch on every sort toggle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPostTab, items])
+
+  function handleReact(postId, emoji) {
+    setPostReaction(postId, emoji).then((counts) => {
+      setReactionCounts((prev) => ({ ...prev, [postId]: counts }))
+    })
+  }
 
   const websiteSchema = {
     '@context': 'https://schema.org',
@@ -425,7 +453,13 @@ export default function Home() {
         activeTab !== 'horoscope' && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {displayedItems.map((post, i) => (
-            <PostCard key={post._id} post={post} index={i} />
+            <PostCard
+              key={post._id}
+              post={post}
+              index={i}
+              reactionCounts={reactionCounts[post._id]}
+              onReact={handleReact}
+            />
           ))}
         </div>
       )}

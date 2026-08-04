@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { POST_CATEGORY_STYLE } from '../postStyles'
 import { getPostShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import TileReactions from './TileReactions'
 
 function shareTextFor(post) {
   if (post.category === 'meme') {
@@ -12,7 +13,7 @@ function shareTextFor(post) {
 
 // Memes render as an actual image (the whole point of a meme), everything
 // else (jokes/quotes/etc.) renders as the existing colored text card.
-export default function PostCard({ post, index = 0 }) {
+export default function PostCard({ post, index = 0, reactionCounts, onReact }) {
   const style = POST_CATEGORY_STYLE[post.category]
   if (!style) return null
 
@@ -39,9 +40,12 @@ export default function PostCard({ post, index = 0 }) {
           loading="lazy"
           className="w-full aspect-square object-cover bg-gray-100 dark:bg-gray-700"
         />
-        {post.text && (
-          <p className="p-3 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{post.text}</p>
-        )}
+        <div className="p-3">
+          {post.text && (
+            <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{post.text}</p>
+          )}
+          {onReact && <TileReactions postId={post._id} counts={reactionCounts} onReact={onReact} />}
+        </div>
       </Link>
     )
   }
@@ -56,6 +60,7 @@ export default function PostCard({ post, index = 0 }) {
       <div className="text-3xl mb-3">{style.emoji}</div>
       <p className="text-lg font-medium pr-8">{post.text}</p>
       {post.author && <p className="text-sm text-white/80 mt-2">— {post.author}</p>}
+      {onReact && <TileReactions postId={post._id} counts={reactionCounts} onReact={onReact} dark />}
     </Link>
   )
 }

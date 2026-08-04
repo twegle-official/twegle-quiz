@@ -16,6 +16,31 @@ export async function getReactions(req, res) {
   res.json({ counts })
 }
 
+// One request for a whole grid of tiles instead of one per tile — see
+// PostCard.jsx / Home.jsx, which fetch this once for whatever page of posts
+// is currently displayed.
+export async function getReactionsBatch(req, res) {
+  const ids = String(req.query.ids || '')
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean)
+    .slice(0, 100)
+
+  const counts = {}
+  for (const id of ids) counts[id] = Object.fromEntries(REACTION_EMOJIS.map((e) => [e, 0]))
+  if (ids.length === 0) return res.json({ counts })
+
+  const rows = await Reaction.aggregate([
+    { $match: { postId: { $in: ids } } },
+    { $group: { _id: { postId: '$postId', emoji: '$emoji' }, count: { $sum: 1 } } },
+  ])
+  for (const row of rows) {
+    counts[row._id.postId][row._id.emoji] = row.count
+  }
+
+  res.json({ counts })
+}
+
 export async function setReaction(req, res) {
   const { id } = req.params
   const { emoji, anonymousId } = req.body

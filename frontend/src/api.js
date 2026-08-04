@@ -97,6 +97,14 @@ export async function fetchPostById(id) {
   return data.post
 }
 
+export async function fetchPostReactionsBatch(ids) {
+  if (!ids || ids.length === 0) return {}
+  const res = await fetch(`${API_URL}/posts/reactions?ids=${ids.join(',')}`)
+  if (!res.ok) return {}
+  const data = await res.json()
+  return data.counts
+}
+
 export async function fetchPostReactions(id) {
   const res = await fetch(`${API_URL}/posts/${id}/reactions`)
   if (!res.ok) return null
