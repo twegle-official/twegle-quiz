@@ -14,6 +14,8 @@ import {
   gamePlaysLimiter,
   feedbackLimiter,
   engagementLimiter,
+  reactionLimiter,
+  gameScoreLimiter,
 } from './middleware/rateLimiters.js'
 import authRoutes from './routes/authRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
@@ -56,6 +58,8 @@ app.use('/api/friendship/quizzes/:slug/instances', friendshipLimiter)
 app.use('/api/friendship/instances/:code/attempts', friendshipLimiter)
 app.use('/api/quizzes/:slug/compare', quizCompareLimiter)
 app.use('/api/games/:slug/plays', gamePlaysLimiter)
+app.use('/api/games/:slug/leaderboard', gameScoreLimiter)
+app.use('/api/posts/:id/reactions', reactionLimiter)
 app.use('/api/feedback', feedbackLimiter)
 app.use('/api/engagement', engagementLimiter)
 

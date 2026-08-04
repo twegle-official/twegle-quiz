@@ -86,3 +86,21 @@ export const feedbackLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Too many requests. Please try again later.' },
 })
+
+// Applied to reacting to a post and submitting a game leaderboard score —
+// same reasoning as gamePlaysLimiter, just scoped to these two new writes.
+export const reactionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})
+
+export const gameScoreLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})

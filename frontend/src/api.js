@@ -26,6 +26,17 @@ export async function recordGamePlay(slug, outcome) {
   })
 }
 
+export async function fetchGameLeaderboard(slug) {
+  const res = await fetch(`${API_URL}/games/${slug}/leaderboard`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.entries
+}
+
+export async function submitGameScore(slug, nickname, value) {
+  return postJson(`/games/${slug}/leaderboard`, { nickname, value })
+}
+
 export async function searchContent(q, language) {
   const params = new URLSearchParams({ q })
   if (language) params.set('language', language)
@@ -84,6 +95,18 @@ export async function fetchPostById(id) {
   if (!res.ok) return null
   const data = await res.json()
   return data.post
+}
+
+export async function fetchPostReactions(id) {
+  const res = await fetch(`${API_URL}/posts/${id}/reactions`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.counts
+}
+
+export async function setPostReaction(id, emoji) {
+  const data = await postJson(`/posts/${id}/reactions`, { emoji, anonymousId: getAnonymousId() })
+  return data.counts
 }
 
 export async function recordPostEngagement(id, action) {

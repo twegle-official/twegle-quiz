@@ -136,8 +136,8 @@ export default function Game2048({ onGameEnd, onReset }) {
   useEffect(() => {
     if (status === 'playing' || notified) return
     setNotified(true)
-    onGameEnd?.(status === 'won' ? 'win' : 'loss')
-  }, [status, notified, onGameEnd])
+    onGameEnd?.(status === 'won' ? 'win' : 'loss', score)
+  }, [status, notified, onGameEnd, score])
 
   function handleReset() {
     setBoard(initialBoard())

@@ -24,8 +24,8 @@ export default function WordGuess({ onGameEnd, onReset }) {
   useEffect(() => {
     if (!isOver || notified) return
     setNotified(true)
-    onGameEnd?.(isWon ? 'win' : 'loss')
-  }, [isOver, isWon, notified, onGameEnd])
+    onGameEnd?.(isWon ? 'win' : 'loss', isWon ? livesLeft : undefined)
+  }, [isOver, isWon, notified, onGameEnd, livesLeft])
 
   function handleGuess(letter) {
     if (isOver || guessed.includes(letter)) return

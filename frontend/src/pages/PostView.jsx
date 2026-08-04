@@ -4,6 +4,7 @@ import { fetchPostById, fetchPosts, getPostShareUrl, recordPostEngagement } from
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import PostCard from '../components/PostCard'
+import PostReactions from '../components/PostReactions'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
 import { POST_CATEGORY_STYLE } from '../postStyles'
@@ -120,6 +121,10 @@ export default function PostView() {
           {post.author && <p className="text-white/80 mt-2">— {post.author}</p>}
         </div>
       )}
+
+      <div className="mt-5">
+        <PostReactions postId={post._id} />
+      </div>
 
       {isMeme ? (
         <a

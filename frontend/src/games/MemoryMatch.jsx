@@ -38,8 +38,8 @@ export default function MemoryMatch({ onGameEnd, onReset }) {
   useEffect(() => {
     if (!isWon || notified) return
     setNotified(true)
-    onGameEnd?.('win')
-  }, [isWon, notified, onGameEnd])
+    onGameEnd?.('win', moves)
+  }, [isWon, notified, onGameEnd, moves])
 
   function handleCardClick(i) {
     if (flipped.length === 2 || flipped.includes(i) || matched.includes(i)) return

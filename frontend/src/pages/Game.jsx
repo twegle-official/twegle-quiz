@@ -12,7 +12,19 @@ import { recordGamePlay, createTicTacToeGame, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
+import GameLeaderboard from '../components/GameLeaderboard'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+
+// Only games with a natural numeric result get a leaderboard — Tic-Tac-Toe
+// (vs. an unbeatable minimax AI) and Rock Paper Scissors (pure luck) don't
+// produce a meaningful score to compete on. Must match GAME_LEADERBOARDS on
+// the backend (gameScoreController.js).
+const LEADERBOARD_LABEL = {
+  '2048': 'Score',
+  'memory-match': 'Moves',
+  'word-guess': 'Lives left',
+  'guess-the-number': 'Tries',
+}
 
 // Tic-Tac-Toe/Rock Paper Scissors are explicitly framed as "vs the house," so
 // the default wording fits both. The other games aren't an opponent-beating
@@ -55,6 +67,7 @@ export default function Game() {
   const navigate = useNavigate()
   const game = GAMES.find((g) => g.slug === slug)
   const [outcome, setOutcome] = useState(null)
+  const [score, setScore] = useState(null)
   const [showChallengeForm, setShowChallengeForm] = useState(false)
   const [challengeName, setChallengeName] = useState('')
   const [challengeSubmitting, setChallengeSubmitting] = useState(false)
@@ -78,9 +91,15 @@ export default function Game() {
     )
   }
 
-  function handleGameEnd(result) {
+  function handleGameEnd(result, gameScore) {
     setOutcome(result)
+    setScore(gameScore ?? null)
     recordGamePlay(slug, result)
+  }
+
+  function handleGameReset() {
+    setOutcome(null)
+    setScore(null)
   }
 
   async function handleChallengeSubmit(e) {
@@ -142,25 +161,25 @@ export default function Game() {
       )}
 
       {game.slug === 'tic-tac-toe' && (
-        <TicTacToe onGameEnd={handleGameEnd} onReset={() => setOutcome(null)} />
+        <TicTacToe onGameEnd={handleGameEnd} onReset={handleGameReset} />
       )}
       {game.slug === 'rock-paper-scissors' && (
-        <RockPaperScissors onGameEnd={handleGameEnd} onReset={() => setOutcome(null)} />
+        <RockPaperScissors onGameEnd={handleGameEnd} onReset={handleGameReset} />
       )}
       {game.slug === 'memory-match' && (
-        <MemoryMatch onGameEnd={handleGameEnd} onReset={() => setOutcome(null)} />
+        <MemoryMatch onGameEnd={handleGameEnd} onReset={handleGameReset} />
       )}
       {game.slug === '2048' && (
-        <Game2048 onGameEnd={handleGameEnd} onReset={() => setOutcome(null)} />
+        <Game2048 onGameEnd={handleGameEnd} onReset={handleGameReset} />
       )}
       {game.slug === 'word-guess' && (
-        <WordGuess onGameEnd={handleGameEnd} onReset={() => setOutcome(null)} />
+        <WordGuess onGameEnd={handleGameEnd} onReset={handleGameReset} />
       )}
       {game.slug === 'guess-the-number' && (
-        <GuessTheNumber onGameEnd={handleGameEnd} onReset={() => setOutcome(null)} />
+        <GuessTheNumber onGameEnd={handleGameEnd} onReset={handleGameReset} />
       )}
       {game.slug === 'sudoku' && (
-        <Sudoku onGameEnd={handleGameEnd} onReset={() => setOutcome(null)} />
+        <Sudoku onGameEnd={handleGameEnd} onReset={handleGameReset} />
       )}
 
       {outcome && (
@@ -172,6 +191,10 @@ export default function Game() {
             onShare={() => recordEngagement('game', game.slug, 'share')}
           />
         </div>
+      )}
+
+      {outcome && LEADERBOARD_LABEL[game.slug] && (
+        <GameLeaderboard slug={game.slug} label={LEADERBOARD_LABEL[game.slug]} score={score} />
       )}
 
       <div className="mt-8">

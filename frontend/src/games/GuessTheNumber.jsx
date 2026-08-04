@@ -22,8 +22,8 @@ export default function GuessTheNumber({ onGameEnd, onReset }) {
   useEffect(() => {
     if (!isOver || notified) return
     setNotified(true)
-    onGameEnd?.(isWon ? 'win' : 'loss')
-  }, [isOver, isWon, notified, onGameEnd])
+    onGameEnd?.(isWon ? 'win' : 'loss', isWon ? attemptsUsed : undefined)
+  }, [isOver, isWon, notified, onGameEnd, attemptsUsed])
 
   function handleSubmit(e) {
     e.preventDefault()
