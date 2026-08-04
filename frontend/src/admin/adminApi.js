@@ -42,6 +42,8 @@ export const updateQuiz = (token, id, payload) =>
 export const deleteQuiz = (token, id) =>
   request(`/admin/quizzes/${id}`, { token, method: 'DELETE' })
 
+export const fetchWeeklyDigest = (token) => request('/admin/digest', { token })
+
 export const fetchAnalytics = (token) => request('/admin/quizzes/analytics', { token })
 export const fetchPostAnalytics = (token) => request('/admin/posts/analytics', { token })
 

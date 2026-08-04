@@ -14,9 +14,10 @@ const NAV_ITEMS = [
   { to: '/admin/activity', label: 'Activity', emoji: '📋' },
   { to: '/admin/feedback', label: 'Feedback', emoji: '📨' },
 ]
-// Write-only, like posts/new — analyst is read-only, so this wouldn't work
+// Write-only, like posts/new — analyst is read-only, so these wouldn't work
 // for them even if shown.
 const QUICK_ADD_ITEM = { to: '/admin/quick-add', label: 'Quick Add', emoji: '⚡' }
+const BULK_IMPORT_ITEM = { to: '/admin/bulk-import', label: 'Bulk Import', emoji: '📥' }
 const ADMINS_ITEM = { to: '/admin/admins', label: 'Admins', emoji: '👤' }
 
 // The label hides only at the lg breakpoint when collapsed — mobile always
@@ -54,7 +55,7 @@ export default function AdminLayout() {
 
   const items = [
     ...NAV_ITEMS.slice(0, 2),
-    ...(hasRole('superadmin', 'editor') ? [QUICK_ADD_ITEM] : []),
+    ...(hasRole('superadmin', 'editor') ? [QUICK_ADD_ITEM, BULK_IMPORT_ITEM] : []),
     ...NAV_ITEMS.slice(2),
     ...(hasRole('superadmin') ? [ADMINS_ITEM] : []),
   ]

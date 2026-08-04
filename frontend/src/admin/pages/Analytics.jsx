@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../AuthContext'
-import { fetchAnalytics, fetchPostAnalytics, fetchEngagementSummary } from '../adminApi'
+import { fetchAnalytics, fetchPostAnalytics, fetchEngagementSummary, fetchWeeklyDigest } from '../adminApi'
 
 const ENGAGEMENT_SECTIONS = [
   { contentType: 'quiz', title: 'Quiz Engagement', columnLabel: 'Quiz' },
@@ -57,9 +57,13 @@ export default function Analytics() {
   const [summary, setSummary] = useState(null)
   const [postSummary, setPostSummary] = useState(null)
   const [engagementSummaries, setEngagementSummaries] = useState({})
+  const [digest, setDigest] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
+    fetchWeeklyDigest(session.token)
+      .then((data) => setDigest(data.digest))
+      .catch((err) => setError(err.message))
     fetchAnalytics(session.token)
       .then((data) => setSummary(data.summary))
       .catch((err) => setError(err.message))
@@ -80,6 +84,19 @@ export default function Analytics() {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Analytics</h1>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
+
+      {digest && (
+        <div className="bg-gradient-to-br from-violet-500 to-pink-500 rounded-xl shadow-sm p-5 mb-8 text-white">
+          <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">This week</p>
+          <p className="text-sm leading-relaxed">
+            🎮 <strong>{digest.totalPlays}</strong> plays/attempts across quizzes, friendship quizzes &amp; games
+            <br />
+            👀 <strong>{digest.totalViewsAndShares}</strong> views/shares across posts, stories &amp; other content
+            <br />
+            ✨ <strong>{digest.newContentCount}</strong> new pieces of content published
+          </p>
+        </div>
+      )}
 
       <h2 className="text-lg font-semibold text-gray-900 mb-3">Quiz Plays</h2>
       {!summary && !error && <p className="text-gray-400 mb-8">Loading...</p>}
