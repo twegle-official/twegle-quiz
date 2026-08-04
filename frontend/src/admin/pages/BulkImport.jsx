@@ -138,7 +138,7 @@ function BulkPosts() {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={'Why did the chicken cross the road?\nAnother joke here\nOne more...'}
-        className="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm font-mono mb-4"
+        className="bg-white text-gray-900 w-full px-4 py-3 border border-gray-300 rounded-xl text-sm font-mono mb-4"
       />
 
       <button
@@ -198,7 +198,7 @@ function BulkQuizzes() {
         value={json}
         onChange={(e) => setJson(e.target.value)}
         placeholder={QUIZ_EXAMPLE}
-        className="w-full px-4 py-3 border border-gray-300 rounded-xl text-xs font-mono mb-2"
+        className="bg-white text-gray-900 w-full px-4 py-3 border border-gray-300 rounded-xl text-xs font-mono mb-2"
       />
       <details className="mb-4">
         <summary className="text-sm text-violet-600 cursor-pointer">Show example format</summary>

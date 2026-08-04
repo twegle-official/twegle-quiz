@@ -87,7 +87,7 @@ export default function StoryForm() {
             value={story.title}
             onChange={(e) => setStory({ ...story, title: e.target.value })}
             maxLength={200}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
           {isEdit && (
             <p className="text-xs text-gray-400 mt-1">
@@ -102,7 +102,7 @@ export default function StoryForm() {
             <select
               value={story.category}
               onChange={(e) => setStory({ ...story, category: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               {STORY_CATEGORIES.map((c) => (
                 <option key={c.value} value={c.value}>{c.label}</option>
@@ -115,7 +115,7 @@ export default function StoryForm() {
               value={story.emoji}
               onChange={(e) => setStory({ ...story, emoji: e.target.value })}
               maxLength={4}
-              className="w-16 px-3 py-2 border border-gray-300 rounded-lg text-center"
+              className="bg-white text-gray-900 w-16 px-3 py-2 border border-gray-300 rounded-lg text-center"
             />
           </div>
           <div>
@@ -123,7 +123,7 @@ export default function StoryForm() {
             <select
               value={story.gradient}
               onChange={(e) => setStory({ ...story, gradient: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               {GRADIENT_OPTIONS.map((g) => (
                 <option key={g.value} value={g.value}>{g.label}</option>
@@ -138,7 +138,7 @@ export default function StoryForm() {
             <select
               value={story.language}
               onChange={(e) => setStory({ ...story, language: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="en">English</option>
               <option value="hi">Hindi</option>
@@ -149,7 +149,7 @@ export default function StoryForm() {
             <select
               value={story.status}
               onChange={(e) => setStory({ ...story, status: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -163,7 +163,7 @@ export default function StoryForm() {
               type="datetime-local"
               value={publishAtLocal}
               onChange={(e) => setPublishAtLocal(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             />
           </div>
         </div>
@@ -178,7 +178,7 @@ export default function StoryForm() {
             onChange={(e) => setStory({ ...story, body: e.target.value })}
             rows={14}
             maxLength={6000}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
           <p className="text-xs text-gray-400 mt-1">{story.body.length}/6000 characters</p>
         </div>

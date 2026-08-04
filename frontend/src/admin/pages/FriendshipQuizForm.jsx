@@ -127,7 +127,7 @@ export default function FriendshipQuizForm() {
             required
             value={quiz.title}
             onChange={(e) => updateField('title', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
         </div>
         <div>
@@ -135,7 +135,7 @@ export default function FriendshipQuizForm() {
           <input
             value={quiz.description}
             onChange={(e) => updateField('description', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
         </div>
         <div className="flex flex-wrap gap-4">
@@ -144,7 +144,7 @@ export default function FriendshipQuizForm() {
             <input
               value={quiz.emoji}
               onChange={(e) => updateField('emoji', e.target.value)}
-              className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center"
+              className="bg-white text-gray-900 w-20 px-3 py-2 border border-gray-300 rounded-lg text-center"
             />
           </div>
           <div>
@@ -152,7 +152,7 @@ export default function FriendshipQuizForm() {
             <select
               value={quiz.status}
               onChange={(e) => updateField('status', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -163,7 +163,7 @@ export default function FriendshipQuizForm() {
             <select
               value={quiz.gradient}
               onChange={(e) => updateField('gradient', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               {GRADIENT_OPTIONS.map((g) => (
                 <option key={g.value} value={g.value}>{g.label}</option>
@@ -175,7 +175,7 @@ export default function FriendshipQuizForm() {
             <select
               value={quiz.language}
               onChange={(e) => updateField('language', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="en">English</option>
               <option value="hi">Hindi</option>
@@ -189,7 +189,7 @@ export default function FriendshipQuizForm() {
               type="datetime-local"
               value={publishAtLocal}
               onChange={(e) => setPublishAtLocal(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             />
           </div>
         </div>
@@ -204,13 +204,13 @@ export default function FriendshipQuizForm() {
         </p>
         <div className="space-y-5">
           {quiz.questions.map((question, qIndex) => (
-            <div key={qIndex} className="border border-gray-200 rounded-lg p-3 space-y-2">
+            <div key={qIndex} className="bg-white text-gray-900 border border-gray-200 rounded-lg p-3 space-y-2">
               <div className="flex flex-wrap gap-2">
                 <input
                   placeholder={`Question ${qIndex + 1}`}
                   value={question.text}
                   onChange={(e) => updateQuestionText(qIndex, e.target.value)}
-                  className="flex-1 min-w-[10rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  className="bg-white text-gray-900 flex-1 min-w-[10rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                 />
                 <button
                   type="button"
@@ -228,7 +228,7 @@ export default function FriendshipQuizForm() {
                       placeholder={`Option ${oIndex + 1} (e.g. 🍕 Pizza)`}
                       value={option}
                       onChange={(e) => updateOption(qIndex, oIndex, e.target.value)}
-                      className="flex-1 min-w-[8rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                      className="bg-white text-gray-900 flex-1 min-w-[8rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                     />
                     <button
                       type="button"

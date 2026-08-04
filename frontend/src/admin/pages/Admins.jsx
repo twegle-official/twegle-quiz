@@ -59,7 +59,7 @@ export default function Admins() {
             placeholder="Name"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
           />
           <input
             required
@@ -67,7 +67,7 @@ export default function Admins() {
             placeholder="Email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
           />
           <input
             required
@@ -75,12 +75,12 @@ export default function Admins() {
             placeholder="Password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
           />
           <select
             value={form.role}
             onChange={(e) => setForm({ ...form, role: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
           >
             <option value="editor">Editor</option>
             <option value="analyst">Analyst</option>

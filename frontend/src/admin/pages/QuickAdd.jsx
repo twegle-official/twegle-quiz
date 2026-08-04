@@ -105,7 +105,7 @@ export default function QuickAdd() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type the joke, quote, or line..."
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl text-base mb-3"
+          className="bg-white text-gray-900 w-full px-4 py-3 border border-gray-300 rounded-xl text-base mb-3"
         />
 
         {category === 'quote' && (
@@ -113,7 +113,7 @@ export default function QuickAdd() {
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
             placeholder="Author (optional)"
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm mb-3"
+            className="bg-white text-gray-900 w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm mb-3"
           />
         )}
 

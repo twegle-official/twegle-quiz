@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import LogoMark, { LogoWithWordmark } from '../components/Logo'
 
@@ -38,6 +38,7 @@ function makeNavClass(collapsed) {
 export default function AdminLayout() {
   const { session, logout, hasRole } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
 
   // Same reasoning as Login.jsx: guards against the `dark` class surviving a
   // client-side navigation into admin from a dark-mode public page.
@@ -45,6 +46,14 @@ export default function AdminLayout() {
     document.documentElement.classList.remove('dark')
   }, [])
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1')
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Closes the mobile menu after following a nav link — without this it
+  // stayed open over the newly-loaded page since it's not conditioned on
+  // route at all, just a plain toggle.
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [location.pathname])
 
   function toggleCollapsed() {
     setCollapsed((prev) => {
@@ -88,11 +97,26 @@ export default function AdminLayout() {
           {collapsed ? '›' : '‹'}
         </button>
 
-        <div className="px-4 py-4 flex justify-center lg:justify-start">
+        <div className="px-4 py-4 flex items-center justify-between lg:justify-start">
           {collapsed ? <LogoMark size={28} /> : <LogoWithWordmark size={28} />}
+          {/* Hamburger toggle — mobile/tablet only. Below lg there's no
+              permanent sidebar, so nav items used to always render inline
+              above the page content, pushing it down. Now they're hidden
+              behind this toggle instead, same as the public site's mobile
+              nav pattern. */}
+          <button
+            onClick={() => setMobileMenuOpen((v) => !v)}
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-xl"
+          >
+            {mobileMenuOpen ? '✕' : '☰'}
+          </button>
         </div>
 
-        <nav className="flex flex-wrap gap-1 px-4 pb-4 lg:flex-1 lg:flex-col lg:flex-nowrap lg:px-3 lg:pb-0">
+        <nav
+          className={`${mobileMenuOpen ? 'flex' : 'hidden'} flex-col gap-1 px-4 pb-4 lg:flex lg:flex-1 lg:flex-col lg:flex-nowrap lg:px-3 lg:pb-0`}
+        >
           {items.map((item) => (
             <NavLink key={item.to} to={item.to} className={makeNavClass(collapsed)} title={item.label}>
               <span>{item.emoji}</span>
@@ -101,7 +125,9 @@ export default function AdminLayout() {
           ))}
         </nav>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-gray-200 text-sm text-gray-500 lg:flex-col lg:items-stretch">
+        <div
+          className={`${mobileMenuOpen ? 'flex' : 'hidden'} flex-col items-stretch gap-3 px-4 py-3 border-t border-gray-200 text-sm text-gray-500 lg:flex lg:items-stretch`}
+        >
           <span className={`truncate ${labelClass(collapsed)}`}>
             {session?.admin?.name} ({session?.admin?.role})
           </span>

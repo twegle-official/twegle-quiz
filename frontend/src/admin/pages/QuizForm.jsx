@@ -161,7 +161,7 @@ export default function QuizForm() {
             required
             value={quiz.title}
             onChange={(e) => updateField('title', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
         </div>
         <div>
@@ -169,7 +169,7 @@ export default function QuizForm() {
           <input
             value={quiz.description}
             onChange={(e) => updateField('description', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
         </div>
         <div className="flex flex-wrap gap-4">
@@ -178,7 +178,7 @@ export default function QuizForm() {
             <input
               value={quiz.emoji}
               onChange={(e) => updateField('emoji', e.target.value)}
-              className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center"
+              className="bg-white text-gray-900 w-20 px-3 py-2 border border-gray-300 rounded-lg text-center"
             />
           </div>
           <div>
@@ -186,7 +186,7 @@ export default function QuizForm() {
             <select
               value={quiz.status}
               onChange={(e) => updateField('status', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -197,7 +197,7 @@ export default function QuizForm() {
             <select
               value={quiz.gradient}
               onChange={(e) => updateField('gradient', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               {GRADIENT_OPTIONS.map((g) => (
                 <option key={g.value} value={g.value}>{g.label}</option>
@@ -209,7 +209,7 @@ export default function QuizForm() {
             <select
               value={quiz.type}
               onChange={(e) => updateField('type', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="personality">Personality (answers → a result)</option>
               <option value="trivia">Trivia (right/wrong → a score)</option>
@@ -220,7 +220,7 @@ export default function QuizForm() {
             <select
               value={quiz.category}
               onChange={(e) => updateField('category', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               {QUIZ_CATEGORIES.map((c) => (
                 <option key={c.value} value={c.value}>{c.label}</option>
@@ -232,7 +232,7 @@ export default function QuizForm() {
             <select
               value={quiz.language}
               onChange={(e) => updateField('language', e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="en">English</option>
               <option value="hi">Hindi</option>
@@ -246,7 +246,7 @@ export default function QuizForm() {
               type="datetime-local"
               value={publishAtLocal}
               onChange={(e) => setPublishAtLocal(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             />
             <p className="text-xs text-gray-400 mt-1">
               Leave blank to go live immediately once Published. Set a future date/time to keep it
@@ -266,25 +266,25 @@ export default function QuizForm() {
         </p>
         <div className="space-y-4">
           {quiz.results.map((result, i) => (
-            <div key={i} className="border border-gray-200 rounded-lg p-3 space-y-2">
+            <div key={i} className="bg-white text-gray-900 border border-gray-200 rounded-lg p-3 space-y-2">
               <div className="flex flex-wrap gap-2">
                 <input
                   placeholder="key (e.g. oily)"
                   value={result.key}
                   onChange={(e) => updateResult(i, 'key', e.target.value)}
-                  className="w-28 px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  className="bg-white text-gray-900 w-28 px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                 />
                 <input
                   placeholder="emoji"
                   value={result.emoji}
                   onChange={(e) => updateResult(i, 'emoji', e.target.value)}
-                  className="w-14 px-2 py-1.5 border border-gray-300 rounded-lg text-sm text-center"
+                  className="bg-white text-gray-900 w-14 px-2 py-1.5 border border-gray-300 rounded-lg text-sm text-center"
                 />
                 <input
                   placeholder="Title"
                   value={result.title}
                   onChange={(e) => updateResult(i, 'title', e.target.value)}
-                  className="flex-1 min-w-[8rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  className="bg-white text-gray-900 flex-1 min-w-[8rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                 />
                 {quiz.type === 'trivia' && (
                   <>
@@ -294,7 +294,7 @@ export default function QuizForm() {
                       placeholder="Min score"
                       value={result.minScore ?? ''}
                       onChange={(e) => updateResult(i, 'minScore', e.target.value === '' ? null : Number(e.target.value))}
-                      className="w-24 px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                      className="bg-white text-gray-900 w-24 px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                     />
                     <input
                       type="number"
@@ -302,7 +302,7 @@ export default function QuizForm() {
                       placeholder="Max score"
                       value={result.maxScore ?? ''}
                       onChange={(e) => updateResult(i, 'maxScore', e.target.value === '' ? null : Number(e.target.value))}
-                      className="w-24 px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                      className="bg-white text-gray-900 w-24 px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                     />
                   </>
                 )}
@@ -318,7 +318,7 @@ export default function QuizForm() {
                 placeholder="Description shown on the result page"
                 value={result.description}
                 onChange={(e) => updateResult(i, 'description', e.target.value)}
-                className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                className="bg-white text-gray-900 w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                 rows={2}
               />
             </div>
@@ -338,13 +338,13 @@ export default function QuizForm() {
         <h2 className="font-bold text-gray-900 mb-3">Questions</h2>
         <div className="space-y-5">
           {quiz.questions.map((question, qIndex) => (
-            <div key={qIndex} className="border border-gray-200 rounded-lg p-3 space-y-2">
+            <div key={qIndex} className="bg-white text-gray-900 border border-gray-200 rounded-lg p-3 space-y-2">
               <div className="flex flex-wrap gap-2">
                 <input
                   placeholder={`Question ${qIndex + 1}`}
                   value={question.text}
                   onChange={(e) => updateQuestionText(qIndex, e.target.value)}
-                  className="flex-1 min-w-[10rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  className="bg-white text-gray-900 flex-1 min-w-[10rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                 />
                 <button
                   type="button"
@@ -362,7 +362,7 @@ export default function QuizForm() {
                       placeholder="Answer text"
                       value={option.text}
                       onChange={(e) => updateOption(qIndex, oIndex, 'text', e.target.value)}
-                      className="flex-1 min-w-[8rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
+                      className="bg-white text-gray-900 flex-1 min-w-[8rem] px-2 py-1.5 border border-gray-300 rounded-lg text-sm"
                     />
                     {quiz.type === 'trivia' ? (
                       <label className="flex items-center gap-1.5 px-2 py-1.5 text-sm shrink-0 text-gray-600">
@@ -377,7 +377,7 @@ export default function QuizForm() {
                       <select
                         value={option.result}
                         onChange={(e) => updateOption(qIndex, oIndex, 'result', e.target.value)}
-                        className="px-2 py-1.5 border border-gray-300 rounded-lg text-sm shrink-0"
+                        className="bg-white text-gray-900 px-2 py-1.5 border border-gray-300 rounded-lg text-sm shrink-0"
                       >
                         <option value="">Pick result...</option>
                         {resultKeys.map((key) => (

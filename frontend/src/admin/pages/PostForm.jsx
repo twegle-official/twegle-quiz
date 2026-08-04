@@ -75,7 +75,7 @@ export default function PostForm() {
             <select
               value={post.category}
               onChange={(e) => setPost({ ...post, category: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="joke">Joke</option>
               <option value="funny-line">Funny Line</option>
@@ -89,7 +89,7 @@ export default function PostForm() {
             <select
               value={post.language}
               onChange={(e) => setPost({ ...post, language: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="en">English</option>
               <option value="hi">Hindi</option>
@@ -100,7 +100,7 @@ export default function PostForm() {
             <select
               value={post.status}
               onChange={(e) => setPost({ ...post, status: e.target.value })}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
@@ -114,7 +114,7 @@ export default function PostForm() {
               type="datetime-local"
               value={publishAtLocal}
               onChange={(e) => setPublishAtLocal(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
             />
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function PostForm() {
               placeholder="https://..."
               value={post.imageUrl}
               onChange={(e) => setPost({ ...post, imageUrl: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
             />
             <p className="text-xs text-gray-400 mt-1">
               A link to an image already hosted somewhere (no file upload yet — paste a direct
@@ -151,7 +151,7 @@ export default function PostForm() {
             onChange={(e) => setPost({ ...post, text: e.target.value })}
             rows={post.category === 'meme' ? 2 : 4}
             maxLength={500}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
         </div>
 
@@ -162,7 +162,7 @@ export default function PostForm() {
           <input
             value={post.author}
             onChange={(e) => setPost({ ...post, author: e.target.value })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
         </div>
       </div>

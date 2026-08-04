@@ -124,12 +124,12 @@ export default function QuizList() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by title..."
-          className="flex-1 min-w-[200px] px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white text-gray-900 flex-1 min-w-[200px] px-3 py-2 rounded-lg border border-gray-200 text-sm"
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
         >
           <option value="">All categories</option>
           {QUIZ_CATEGORIES.map((c) => (
@@ -139,7 +139,7 @@ export default function QuizList() {
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
         >
           <option value="">All languages</option>
           <option value="en">English</option>
@@ -148,7 +148,7 @@ export default function QuizList() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
         >
           <option value="">All statuses</option>
           <option value="published">Published</option>

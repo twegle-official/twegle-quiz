@@ -105,12 +105,12 @@ export default function StoryList() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by title..."
-          className="flex-1 min-w-[200px] px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white text-gray-900 flex-1 min-w-[200px] px-3 py-2 rounded-lg border border-gray-200 text-sm"
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
         >
           <option value="">All categories</option>
           {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
@@ -120,7 +120,7 @@ export default function StoryList() {
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
         >
           <option value="">All languages</option>
           <option value="en">English</option>
@@ -129,7 +129,7 @@ export default function StoryList() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
         >
           <option value="">All statuses</option>
           <option value="published">Published</option>
