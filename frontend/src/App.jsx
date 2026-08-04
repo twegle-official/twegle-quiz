@@ -30,6 +30,7 @@ import { AuthProvider } from './admin/AuthContext'
 import ProtectedRoute from './admin/ProtectedRoute'
 import AdminLayout from './admin/AdminLayout'
 import Login from './admin/pages/Login'
+import Dashboard from './admin/pages/Dashboard'
 import QuizList from './admin/pages/QuizList'
 import QuizForm from './admin/pages/QuizForm'
 import PostList from './admin/pages/PostList'
@@ -121,7 +122,8 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Navigate to="quizzes" replace />} />
+          <Route index element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="quizzes" element={<QuizList />} />
           <Route
             path="quizzes/new"

@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, removed, or changed on the site (for visitors or for admins), this file gets updated in the same session, so it always describes what the app actually does today — not a history of how it got there (see `APPLICATION_FLOW.md` for that kind of changelog). No code, no technical jargon — if someone with zero coding background reads this, they should understand what Twegle does and how it works.
 
-**Last updated:** 2026-08-04 (added: Friendship Quiz results now have a "🏆 Challenge Your Friend" button that re-shares the original invite link, not just the score; every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing; fixed the Back button not scrolling to top after following one of those links)
+**Last updated:** 2026-08-04 (added: a new admin Dashboard landing page with this-week stats, content counts, top quizzes, and recent activity; fixed Analytics/Activity tables cropping instead of scrolling on mobile; fixed blank search/filter fields and an always-expanded mobile nav in the admin panel; Friendship Quiz results now have a "🏆 Challenge Your Friend" button that re-shares the original invite link, not just the score; every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing; fixed the Back button not scrolling to top after following one of those links)
 
 ---
 
@@ -75,6 +75,10 @@ None of this requires creating an account. The site quietly remembers an anonymo
 ## Part 2: The Admin Panel (`twegle.in/admin`)
 
 This is where content is created, edited, and monitored. Login required.
+
+### Dashboard
+
+The first thing an admin sees after logging in. A quick "how's the site doing" overview: this week's plays/views/new-content numbers, how many quizzes/posts/stories/friendship quizzes are currently published (tap any to jump to that list), an unread feedback/report count when there is one, the 5 best-performing quizzes of all time, and the 5 most recent admin actions — with a link through to the full Activity log.
 
 ### Who can do what
 

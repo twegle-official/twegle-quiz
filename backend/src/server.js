@@ -39,6 +39,7 @@ import engagementRoutes from './routes/engagementRoutes.js'
 import adminEngagementRoutes from './routes/adminEngagementRoutes.js'
 import horoscopeRoutes from './routes/horoscopeRoutes.js'
 import adminDigestRoutes from './routes/adminDigestRoutes.js'
+import adminDashboardRoutes from './routes/adminDashboardRoutes.js'
 
 const app = express()
 
@@ -85,6 +86,7 @@ app.use('/api/engagement', engagementRoutes)
 app.use('/api/admin/engagement', adminEngagementRoutes)
 app.use('/api/horoscope', horoscopeRoutes)
 app.use('/api/admin/digest', adminDigestRoutes)
+app.use('/api/admin/dashboard', adminDashboardRoutes)
 
 // Keep error handler last — catches anything thrown/rejected in the routes above.
 app.use((err, req, res, next) => {

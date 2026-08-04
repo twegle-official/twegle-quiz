@@ -15,7 +15,9 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 // counts (plays, views+shares, new content), each a straight count across
 // every model that tracks that kind of activity — no per-item detail here,
 // that's what the tables below it are for.
-export async function getWeeklyDigest(req, res) {
+// Extracted so the dashboard endpoint can reuse the exact same numbers
+// instead of re-deriving them or making the frontend call two endpoints.
+export async function computeWeeklyDigest() {
   const since = new Date(Date.now() - WEEK_MS)
   const filter = { createdAt: { $gte: since } }
 
@@ -32,11 +34,14 @@ export async function getWeeklyDigest(req, res) {
       FriendshipQuiz.countDocuments(filter),
     ])
 
-  res.json({
-    digest: {
-      totalPlays: quizPlays + gamePlays + friendshipAttempts,
-      totalViewsAndShares: postViews + otherViews,
-      newContentCount: newQuizzes + newPosts + newStories + newFriendshipQuizzes,
-    },
-  })
+  return {
+    totalPlays: quizPlays + gamePlays + friendshipAttempts,
+    totalViewsAndShares: postViews + otherViews,
+    newContentCount: newQuizzes + newPosts + newStories + newFriendshipQuizzes,
+  }
+}
+
+export async function getWeeklyDigest(req, res) {
+  const digest = await computeWeeklyDigest()
+  res.json({ digest })
 }

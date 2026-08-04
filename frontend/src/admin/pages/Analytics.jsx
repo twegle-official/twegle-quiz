@@ -20,8 +20,8 @@ function EngagementTable({ title, columnLabel, summary, error }) {
       <h2 className="text-lg font-semibold text-gray-900 mb-3">{title}</h2>
       {!summary && !error && <p className="text-gray-400 mb-8">Loading...</p>}
       {summary && (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-10">
-          <table className="w-full text-sm">
+        <div className="bg-white rounded-xl shadow-sm mb-10 overflow-x-auto">
+          <table className="w-full min-w-[420px] text-sm">
             <thead className="bg-gray-50 text-gray-500 text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">{columnLabel}</th>
@@ -101,8 +101,8 @@ export default function Analytics() {
       <h2 className="text-lg font-semibold text-gray-900 mb-3">Quiz Plays</h2>
       {!summary && !error && <p className="text-gray-400 mb-8">Loading...</p>}
       {summary && (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-10">
-          <table className="w-full text-sm">
+        <div className="bg-white rounded-xl shadow-sm mb-10 overflow-x-auto">
+          <table className="w-full min-w-[420px] text-sm">
             <thead className="bg-gray-50 text-gray-500 text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">Quiz</th>
@@ -133,8 +133,8 @@ export default function Analytics() {
       <h2 className="text-lg font-semibold text-gray-900 mb-3">Post Engagement</h2>
       {!postSummary && !error && <p className="text-gray-400 mb-8">Loading...</p>}
       {postSummary && (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden mb-10">
-          <table className="w-full text-sm">
+        <div className="bg-white rounded-xl shadow-sm mb-10 overflow-x-auto">
+          <table className="w-full min-w-[420px] text-sm">
             <thead className="bg-gray-50 text-gray-500 text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">Post</th>

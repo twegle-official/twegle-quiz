@@ -6,6 +6,7 @@ import LogoMark, { LogoWithWordmark } from '../components/Logo'
 const COLLAPSE_KEY = 'twegle-admin-sidebar-collapsed'
 
 const NAV_ITEMS = [
+  { to: '/admin/dashboard', label: 'Dashboard', emoji: '🏠' },
   { to: '/admin/quizzes', label: 'Quizzes', emoji: '🎯' },
   { to: '/admin/posts', label: 'Posts', emoji: '📝' },
   { to: '/admin/stories', label: 'Stories', emoji: '📖' },
@@ -69,9 +70,9 @@ export default function AdminLayout() {
   }
 
   const items = [
-    ...NAV_ITEMS.slice(0, 2),
+    ...NAV_ITEMS.slice(0, 3),
     ...(hasRole('superadmin', 'editor') ? [QUICK_ADD_ITEM, BULK_IMPORT_ITEM] : []),
-    ...NAV_ITEMS.slice(2),
+    ...NAV_ITEMS.slice(3),
     ...(hasRole('superadmin') ? [ADMINS_ITEM] : []),
   ]
 
