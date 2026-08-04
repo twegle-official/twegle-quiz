@@ -47,17 +47,22 @@ const GAME_BY_SLUG = Object.fromEntries(GAMES.map((g) => [g.slug, g]))
 // each content type tracks a different action.
 function TopList({ title, emoji, items, unit, getHref, getLabel }) {
   return (
-    <div>
+    <div className="min-w-0">
       <h3 className="font-semibold text-gray-900 mb-2 text-sm">
         {emoji} {title}
       </h3>
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      {/* overflow-x-auto (not overflow-hidden) — if a row's content genuinely
+          can't fit (e.g. a very long unbroken title), this individual box
+          scrolls on its own rather than clipping it or, worse, forcing the
+          whole page to scroll horizontally. min-w-0 lets this widget shrink
+          to its grid column instead of pushing the column wider. */}
+      <div className="bg-white rounded-xl shadow-sm overflow-x-auto">
         {!items || items.length === 0 ? (
           <p className="px-4 py-5 text-center text-gray-400 text-sm">Nothing recorded yet.</p>
         ) : (
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-gray-100 min-w-0">
             {items.map((item, i) => (
-              <li key={item.id || item.slug} className="px-4 py-2.5 flex items-center gap-3 text-sm">
+              <li key={item.id || item.slug} className="px-4 py-2.5 flex items-center gap-3 text-sm min-w-0">
                 <span className="text-gray-400 font-medium w-4 shrink-0">{i + 1}</span>
                 {getHref(item) ? (
                   <Link to={getHref(item)} className="flex-1 min-w-0 text-gray-900 font-medium truncate hover:text-violet-600">
@@ -66,7 +71,7 @@ function TopList({ title, emoji, items, unit, getHref, getLabel }) {
                 ) : (
                   <span className="flex-1 min-w-0 text-gray-900 font-medium truncate">{getLabel(item)}</span>
                 )}
-                <span className="text-gray-500 shrink-0">
+                <span className="text-gray-500 shrink-0 whitespace-nowrap">
                   {item.total} {unit}
                 </span>
               </li>
@@ -93,7 +98,7 @@ export default function Dashboard() {
   const firstName = session?.admin?.name?.split(' ')[0]
 
   return (
-    <div>
+    <div className="min-w-0 overflow-x-hidden">
       <h1 className="text-2xl font-bold text-gray-900 mb-1">
         Welcome back{firstName ? `, ${firstName}` : ''} 👋
       </h1>
@@ -108,7 +113,10 @@ export default function Dashboard() {
               content counts as "top" (published-content tile counts and the
               unread-feedback count are always current-state, not time
               windowed, so they don't move when this changes). */}
-          <div className="flex gap-2 mb-4">
+          {/* flex-wrap so the 5 pills drop to a second line on narrow
+              phones instead of forcing the row (and the whole page) wider
+              than the viewport. */}
+          <div className="flex flex-wrap gap-2 mb-4">
             {RANGES.map((r) => (
               <button
                 key={r.key}
@@ -168,7 +176,7 @@ export default function Dashboard() {
           )}
 
           <h2 className="text-lg font-semibold text-gray-900 mb-3">🏆 Top Content — {RANGE_HEADING[data.range]}</h2>
-          <div className="grid sm:grid-cols-2 gap-4 mb-6">
+          <div className="grid sm:grid-cols-2 gap-4 mb-6 min-w-0">
             <TopList
               title="Quizzes"
               emoji="🎯"
