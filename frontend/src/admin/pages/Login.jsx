@@ -36,7 +36,13 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    // min-h-dvh (not min-h-screen/100vh) — mobile browsers size 100vh against
+    // the largest possible viewport (address bar hidden), so on first load
+    // with the address bar visible the box was taller than what's actually
+    // on screen: an unnecessary scrollbar, and the flex-centered card
+    // landing visibly off-center relative to what's visible. 100dvh tracks
+    // the real visible viewport instead.
+    <div className="min-h-dvh flex items-center justify-center bg-gray-50 px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-white rounded-2xl shadow-md p-8"
