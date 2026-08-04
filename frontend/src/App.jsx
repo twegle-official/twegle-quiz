@@ -53,6 +53,18 @@ import FeedbackList from './admin/pages/FeedbackList'
 // footer's "Friendship Quiz" link (`/?tab=friendship`).
 function ScrollToTop() {
   const { pathname, search } = useLocation()
+
+  // Without this, the browser's own "auto" scroll restoration on Back/Forward
+  // races the effect below and wins — it restores the old scroll position
+  // asynchronously, after our scrollTo(0, 0) already ran, so Back silently
+  // lands you scrolled down again. Opting into manual restoration once here
+  // makes every navigation (including Back/Forward) behave the same way.
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+  }, [])
+
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [pathname, search])
