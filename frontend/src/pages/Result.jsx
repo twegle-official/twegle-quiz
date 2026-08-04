@@ -4,6 +4,7 @@ import { fetchQuizBySlug, fetchQuizzes, recordPlay, getQuizShareUrl, createQuizC
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import QuizCard from '../components/QuizCard'
+import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
 import { shareOrDownloadImage } from '../utils/shareImage'
@@ -242,6 +243,8 @@ export default function Result() {
           </div>
         </div>
       )}
+
+      <CrossPromo language={quiz.language} secondary="post" />
 
       <Link
         to="/"

@@ -4,6 +4,7 @@ import { fetchPostById, fetchPosts, getPostShareUrl, recordPostEngagement } from
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import PostCard from '../components/PostCard'
+import CrossPromo from '../components/CrossPromo'
 import PostReactions from '../components/PostReactions'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
@@ -167,6 +168,8 @@ export default function PostView() {
           </div>
         </div>
       )}
+
+      <CrossPromo language={post.language} secondary="quiz" />
 
       <Link
         to="/"

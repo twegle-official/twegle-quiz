@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, removed, or changed on the site (for visitors or for admins), this file gets updated in the same session, so it always describes what the app actually does today — not a history of how it got there (see `APPLICATION_FLOW.md` for that kind of changelog). No code, no technical jargon — if someone with zero coding background reads this, they should understand what Twegle does and how it works.
 
-**Last updated:** 2026-08-04
+**Last updated:** 2026-08-04 (added: every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing)
 
 ---
 
@@ -32,7 +32,7 @@ The homepage has tabs across the side (or top, on mobile) for each type of conte
 Personality-style quizzes ("What's Your Skincare Personality?", "Which K-pop Idol Position Are You?", etc.) and a few trivia-style quizzes ("How Well Do You Know Bollywood?"). You answer 5 questions one at a time, then land on a result page showing your personality type (or score, for trivia quizzes) with a fun description. From there you can:
 - Share the result as a **branded image** (auto-generated, looks good on Instagram/WhatsApp Stories) or as a plain link.
 - **Compare with a friend** — send them a link to take the same quiz; when they finish, you both see a side-by-side "did you match?" reveal, which can also be shared as its own branded side-by-side image (not just a plain link).
-- See a few **"You might also like"** suggestions for other quizzes.
+- See a few **"You might also like"** suggestions for other quizzes, plus a small "play a game" / "quick fun" prompt pointing at something completely different, so there's always a next thing to do.
 - **Report** the quiz if something's wrong or offensive.
 
 ### Friendship Quiz ("How well do you know me?")

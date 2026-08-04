@@ -4,6 +4,7 @@ import { fetchStoryBySlug, fetchStories, getStoryShareUrl, recordEngagement } fr
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import StoryCard from '../components/StoryCard'
+import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
@@ -196,6 +197,8 @@ export default function StoryView() {
           </div>
         </div>
       )}
+
+      <CrossPromo language={story.language} secondary="post" />
 
       <Link
         to="/"
