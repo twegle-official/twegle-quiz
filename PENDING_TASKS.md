@@ -2,7 +2,7 @@
 
 **This is a living checklist** — both your business/account tasks and the development backlog, in one place. Updated every time something completes, and every time something new comes up in conversation. Check here first for "what's left."
 
-For deeper detail on any development item, see `DEVELOPMENT_PLAN.md` / `APPLICATION_FLOW.md` — `APPLICATION_FLOW.md`'s change log has the full narrative for each entry below (what was tried, what broke, how it was verified); this file keeps the condensed checklist version.
+For deeper detail on any development item, see `DEVELOPMENT_PLAN.md` / `APPLICATION_FLOW.md` — `APPLICATION_FLOW.md`'s change log has the full narrative for each entry below (what was tried, what broke, how it was verified); this file keeps the condensed checklist version. For a plain-language description of what the app actually does today (no code, no jargon), see `HOW_TWEGLE_WORKS.md`.
 
 ---
 
