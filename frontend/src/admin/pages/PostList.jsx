@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
-import { listPostsAdmin, deletePost, createPost } from '../adminApi'
+import { listPostsAdmin, deletePost, createPost, fetchPostAnalytics } from '../adminApi'
 import StatusLabel from '../components/StatusLabel'
 import Pager from '../components/Pager'
+import { isStale } from '../freshness'
 
 const PAGE_SIZE = 20
 
@@ -25,6 +26,9 @@ export default function PostList() {
   const [language, setLanguage] = useState('')
   const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
+  // views+shares, keyed by post id — see QuizList.jsx's playCounts for the
+  // same pattern applied to quizzes.
+  const [engagementCounts, setEngagementCounts] = useState({})
   const canWrite = hasRole('superadmin', 'editor')
 
   const isFirstRender = useRef(true)
@@ -49,6 +53,15 @@ export default function PostList() {
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.token, search, category, language, status, page])
+
+  useEffect(() => {
+    fetchPostAnalytics(session.token)
+      .then((data) => {
+        setEngagementCounts(Object.fromEntries(data.summary.map((s) => [s.postId, s.views + s.shares])))
+      })
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.token])
 
   // See QuizList.jsx — resets to page 1 whenever a filter changes.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,15 +177,23 @@ export default function PostList() {
                   />
                 )}
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-violet-600 uppercase tracking-wide">
+                  <p className="text-xs font-semibold text-violet-600 uppercase tracking-wide flex items-center gap-2">
                     {CATEGORY_LABELS[post.category]} · {post.language.toUpperCase()}
+                    {post.status === 'published' && isStale(post.createdAt, engagementCounts[post._id] || 0) && (
+                      <span
+                        title="Live a while with very little engagement — might be worth a refresh"
+                        className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[11px] font-semibold normal-case tracking-normal"
+                      >
+                        ⚠️ Needs a refresh
+                      </span>
+                    )}
                   </p>
                   <p className="text-gray-900 truncate">
                     {post.text || (post.category === 'meme' ? <span className="text-gray-400 italic">(no caption)</span> : '')}
                   </p>
                   <p className="text-sm text-gray-400">
                     {post.author && <>— {post.author} · </>}
-                    <StatusLabel item={post} />
+                    <StatusLabel item={post} /> · {engagementCounts[post._id] || 0} views/shares
                   </p>
                 </div>
               </div>

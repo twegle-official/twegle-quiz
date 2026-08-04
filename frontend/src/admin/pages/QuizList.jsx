@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
-import { listQuizzesAdmin, deleteQuiz, createQuiz } from '../adminApi'
+import { listQuizzesAdmin, deleteQuiz, createQuiz, fetchAnalytics } from '../adminApi'
 import StatusLabel from '../components/StatusLabel'
 import Pager from '../components/Pager'
+import { isStale } from '../freshness'
 
 const PAGE_SIZE = 20
 
@@ -25,6 +26,10 @@ export default function QuizList() {
   const [language, setLanguage] = useState('')
   const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
+  // Play counts, keyed by quiz id — for the "needs a refresh" badge below.
+  // Fetched once (not tied to the filtered/paginated list) since the
+  // analytics endpoint returns totals for every quiz that has any plays.
+  const [playCounts, setPlayCounts] = useState({})
   const canWrite = hasRole('superadmin', 'editor')
 
   const isFirstRender = useRef(true)
@@ -52,6 +57,15 @@ export default function QuizList() {
     return () => clearTimeout(timeout)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session.token, search, category, language, status, page])
+
+  useEffect(() => {
+    fetchAnalytics(session.token)
+      .then((data) => {
+        setPlayCounts(Object.fromEntries(data.summary.map((s) => [s.quizId, s.totalPlays])))
+      })
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.token])
 
   // A filter change can easily leave `page` pointing past the new, smaller
   // result set — reset to page 1 whenever a filter changes (not when page
@@ -168,11 +182,19 @@ export default function QuizList() {
           {quizzes.map((quiz) => (
             <div key={quiz._id} className="flex items-center justify-between p-4">
               <div>
-                <p className="font-semibold text-gray-900">
+                <p className="font-semibold text-gray-900 flex items-center gap-2">
                   {quiz.emoji} {quiz.title}
+                  {quiz.status === 'published' && isStale(quiz.createdAt, playCounts[quiz._id] || 0) && (
+                    <span
+                      title="Live a while with very few plays — might be worth a refresh"
+                      className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[11px] font-semibold"
+                    >
+                      ⚠️ Needs a refresh
+                    </span>
+                  )}
                 </p>
                 <p className="text-sm text-gray-500">
-                  /{quiz.slug} · <StatusLabel item={quiz} />
+                  /{quiz.slug} · <StatusLabel item={quiz} /> · {playCounts[quiz._id] || 0} plays
                 </p>
               </div>
               {canWrite && (

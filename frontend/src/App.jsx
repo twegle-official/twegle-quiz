@@ -32,6 +32,7 @@ import QuizList from './admin/pages/QuizList'
 import QuizForm from './admin/pages/QuizForm'
 import PostList from './admin/pages/PostList'
 import PostForm from './admin/pages/PostForm'
+import QuickAdd from './admin/pages/QuickAdd'
 import StoryList from './admin/pages/StoryList'
 import StoryForm from './admin/pages/StoryForm'
 import FriendshipQuizList from './admin/pages/FriendshipQuizList'
@@ -122,6 +123,14 @@ export default function App() {
             }
           />
           <Route path="posts" element={<PostList />} />
+          <Route
+            path="quick-add"
+            element={
+              <ProtectedRoute roles={['superadmin', 'editor']}>
+                <QuickAdd />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="posts/new"
             element={
