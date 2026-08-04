@@ -9,6 +9,7 @@ import BackButton from '../components/BackButton'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { pickQuizOfTheDay, recordDailyQuizCompletion } from '../utils/dailyQuiz'
 
 const SUGGESTION_COUNT = 4
 
@@ -24,6 +25,8 @@ export default function Result() {
   const [notFound, setNotFound] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [suggestions, setSuggestions] = useState([])
+  const [dailyStreak, setDailyStreak] = useState(null)
+  const [isDailyQuiz, setIsDailyQuiz] = useState(false)
   const recordedRef = useRef(false)
 
   const [showCompareForm, setShowCompareForm] = useState(false)
@@ -52,6 +55,15 @@ export default function Result() {
         const sameCategory = shuffleArray(others.filter((q) => q.category === quiz.category))
         const rest = shuffleArray(others.filter((q) => q.category !== quiz.category))
         setSuggestions([...sameCategory, ...rest].slice(0, SUGGESTION_COUNT))
+
+        // Same-language list, same date-derived pick Home.jsx's banner uses
+        // — see dailyQuiz.js. Only actually updates the stored streak if
+        // this quiz is today's pick.
+        const todaysQuiz = pickQuizOfTheDay(all)
+        if (todaysQuiz?.slug === slug) {
+          setIsDailyQuiz(true)
+          setDailyStreak(recordDailyQuizCompletion(slug, todaysQuiz.slug))
+        }
       })
       .catch(() => {})
   }, [quiz, slug])
@@ -135,6 +147,12 @@ export default function Result() {
         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-3">{result.title}</h1>
       </div>
       <p className="text-gray-600 dark:text-gray-400 mb-8">{result.description}</p>
+
+      {isDailyQuiz && dailyStreak?.count > 0 && (
+        <p className="inline-block mb-6 px-4 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-sm font-bold">
+          🔥 {dailyStreak.count}-day streak — that was today's Quiz of the Day!
+        </p>
+      )}
 
       <button
         onClick={handleShareImage}

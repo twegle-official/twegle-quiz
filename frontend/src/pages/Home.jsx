@@ -8,6 +8,7 @@ import PostCard from '../components/PostCard'
 import GameCard from '../components/GameCard'
 import StoryCard from '../components/StoryCard'
 import ZodiacCard from '../components/ZodiacCard'
+import DailyQuizBanner from '../components/DailyQuizBanner'
 
 // Ordered by expected usage, most to least: Quizzes and Friendship Quiz are
 // the two biggest growth-loop/engagement formats, Memes are next since
@@ -108,6 +109,9 @@ export default function Home() {
   // hardcoded number that had to be manually edited every time content was
   // added and quietly went stale.
   const [stats, setStats] = useState({ quizzes: null, posts: null })
+  // Full, unfiltered quiz list — reused for the Quiz of the Day banner below
+  // rather than a separate fetch, since this effect already loads it all.
+  const [allQuizzes, setAllQuizzes] = useState([])
 
   // Resets scroll to the true top on every filter change (tab, language,
   // quiz/story category, sort mode) so the newly-filtered content is fully
@@ -134,6 +138,16 @@ export default function Home() {
       })
       .catch(() => {})
   }, [])
+
+  // Kept separate from the stats fetch above and filtered by the current
+  // language — Result.jsx picks today's quiz from a same-language list too
+  // (via quiz.language), and the two picks must agree for the streak to
+  // ever actually increment.
+  useEffect(() => {
+    fetchQuizzes(language)
+      .then(setAllQuizzes)
+      .catch(() => {})
+  }, [language])
 
   useEffect(() => {
     let cancelled = false
@@ -207,6 +221,10 @@ export default function Home() {
             <span>🌐 English &amp; हिंदी</span>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 pt-4">
+        <DailyQuizBanner quizzes={allQuizzes} />
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
