@@ -10,16 +10,13 @@ import FriendshipQuiz from '../models/FriendshipQuiz.js'
 
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
-// A 3-number summary for the top of admin Analytics — "how's the last week
-// looked" without scanning six separate tables. Deliberately just three
-// counts (plays, views+shares, new content), each a straight count across
-// every model that tracks that kind of activity — no per-item detail here,
-// that's what the tables below it are for.
-// Extracted so the dashboard endpoint can reuse the exact same numbers
-// instead of re-deriving them or making the frontend call two endpoints.
-export async function computeWeeklyDigest() {
-  const since = new Date(Date.now() - WEEK_MS)
-  const filter = { createdAt: { $gte: since } }
+// A 3-number summary — "how's activity looked" without scanning six separate
+// tables. Deliberately just three counts (plays, views+shares, new content),
+// each a straight count across every model that tracks that kind of
+// activity, over whatever window the caller asks for. `since: null` means
+// all-time (no date filter) — used by the dashboard's "All" range.
+export async function computeDigestForRange(since) {
+  const filter = since ? { createdAt: { $gte: since } } : {}
 
   const [quizPlays, gamePlays, friendshipAttempts, postViews, otherViews, newQuizzes, newPosts, newStories, newFriendshipQuizzes] =
     await Promise.all([
@@ -41,7 +38,10 @@ export async function computeWeeklyDigest() {
   }
 }
 
+// Analytics' fixed "this week" summary card — kept as its own endpoint/shape
+// since Analytics doesn't have a range selector (the Dashboard does; see
+// dashboardController.js, which calls computeDigestForRange directly).
 export async function getWeeklyDigest(req, res) {
-  const digest = await computeWeeklyDigest()
+  const digest = await computeDigestForRange(new Date(Date.now() - WEEK_MS))
   res.json({ digest })
 }

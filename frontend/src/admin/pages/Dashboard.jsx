@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
 import { fetchDashboard } from '../adminApi'
+import { GAMES } from '../../games/registry'
 
 const CONTENT_TILES = [
   { key: 'quizzes', label: 'Quizzes', emoji: '🎯', to: '/admin/quizzes' },
@@ -9,6 +10,22 @@ const CONTENT_TILES = [
   { key: 'stories', label: 'Stories', emoji: '📖', to: '/admin/stories' },
   { key: 'friendshipQuizzes', label: 'Friendship Quizzes', emoji: '🤝', to: '/admin/friendship-quizzes' },
 ]
+
+const RANGES = [
+  { key: 'day', label: 'Day' },
+  { key: 'week', label: 'Week' },
+  { key: 'month', label: 'Month' },
+  { key: 'year', label: 'Year' },
+  { key: 'all', label: 'All' },
+]
+
+const RANGE_HEADING = {
+  day: 'Today',
+  week: 'This week',
+  month: 'This month',
+  year: 'This year',
+  all: 'All time',
+}
 
 const RESOURCE_LABELS = {
   quiz: 'Quiz',
@@ -23,16 +40,55 @@ const ACTION_STYLE = {
   delete: 'text-red-600',
 }
 
+const GAME_BY_SLUG = Object.fromEntries(GAMES.map((g) => [g.slug, g]))
+
+// Top-N list widget reused for quizzes/friendship quizzes/games/posts —
+// `unit` is just the label after the number ("plays", "attempts") since
+// each content type tracks a different action.
+function TopList({ title, emoji, items, unit, getHref, getLabel }) {
+  return (
+    <div>
+      <h3 className="font-semibold text-gray-900 mb-2 text-sm">
+        {emoji} {title}
+      </h3>
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        {!items || items.length === 0 ? (
+          <p className="px-4 py-5 text-center text-gray-400 text-sm">Nothing recorded yet.</p>
+        ) : (
+          <ul className="divide-y divide-gray-100">
+            {items.map((item, i) => (
+              <li key={item.id || item.slug} className="px-4 py-2.5 flex items-center gap-3 text-sm">
+                <span className="text-gray-400 font-medium w-4 shrink-0">{i + 1}</span>
+                {getHref(item) ? (
+                  <Link to={getHref(item)} className="flex-1 min-w-0 text-gray-900 font-medium truncate hover:text-violet-600">
+                    {getLabel(item)}
+                  </Link>
+                ) : (
+                  <span className="flex-1 min-w-0 text-gray-900 font-medium truncate">{getLabel(item)}</span>
+                )}
+                <span className="text-gray-500 shrink-0">
+                  {item.total} {unit}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const { session } = useAuth()
+  const [range, setRange] = useState('week')
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    fetchDashboard(session.token)
+    fetchDashboard(session.token, range)
       .then(setData)
       .catch((err) => setError(err.message))
-  }, [session.token])
+  }, [session.token, range])
 
   const firstName = session?.admin?.name?.split(' ')[0]
 
@@ -48,10 +104,30 @@ export default function Dashboard() {
 
       {data && (
         <>
-          {/* This week — same 3 numbers Analytics leads with, so admins never
-              have to visit two pages to get the same headline stats. */}
+          {/* Range selector — controls the digest numbers below and which
+              content counts as "top" (published-content tile counts and the
+              unread-feedback count are always current-state, not time
+              windowed, so they don't move when this changes). */}
+          <div className="flex gap-2 mb-4">
+            {RANGES.map((r) => (
+              <button
+                key={r.key}
+                onClick={() => setRange(r.key)}
+                className={`px-3 py-1.5 rounded-full text-sm font-semibold ${
+                  range === r.key
+                    ? 'bg-violet-600 text-white'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-violet-300'
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
+
           <div className="bg-gradient-to-br from-violet-500 to-pink-500 rounded-xl shadow-sm p-5 mb-6 text-white">
-            <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">This week</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">
+              {RANGE_HEADING[data.range]}
+            </p>
             <p className="text-sm leading-relaxed">
               🎮 <strong>{data.digest.totalPlays}</strong> plays/attempts across quizzes, friendship quizzes &amp; games
               <br />
@@ -78,7 +154,7 @@ export default function Dashboard() {
           </div>
 
           {/* Needs attention — currently just unread feedback/reports, the
-              one thing on this data that's actionable rather than informational. */}
+              one thing on this page that's actionable rather than informational. */}
           {data.unreadFeedbackCount > 0 && (
             <Link
               to="/admin/feedback"
@@ -91,60 +167,67 @@ export default function Dashboard() {
             </Link>
           )}
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Top performing quizzes (all-time, by plays) */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">🏆 Top Quizzes</h2>
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                {data.topQuizzes.length === 0 ? (
-                  <p className="px-4 py-6 text-center text-gray-400 text-sm">No plays recorded yet.</p>
-                ) : (
-                  <ul className="divide-y divide-gray-100">
-                    {data.topQuizzes.map((q, i) => (
-                      <li key={q.quizId} className="px-4 py-3 flex items-center gap-3">
-                        <span className="text-gray-400 font-medium w-5 shrink-0">{i + 1}</span>
-                        <Link
-                          to={`/admin/quizzes/${q.quizId}/edit`}
-                          className="flex-1 min-w-0 text-gray-900 font-medium truncate hover:text-violet-600"
-                        >
-                          {q.title}
-                        </Link>
-                        <span className="text-gray-500 text-sm shrink-0">{q.totalPlays} plays</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-
-            {/* Recent activity — last 5, full history lives on the Activity page */}
-            <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">📋 Recent Activity</h2>
-              <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-                {data.recentActivity.length === 0 ? (
-                  <p className="px-4 py-6 text-center text-gray-400 text-sm">No activity recorded yet.</p>
-                ) : (
-                  <ul className="divide-y divide-gray-100">
-                    {data.recentActivity.map((entry) => (
-                      <li key={entry._id} className="px-4 py-3 text-sm">
-                        <span className={`font-semibold capitalize ${ACTION_STYLE[entry.action]}`}>
-                          {entry.action}
-                        </span>{' '}
-                        <span className="text-gray-600">{RESOURCE_LABELS[entry.resourceType] || entry.resourceType}</span>
-                        <div className="text-gray-900 font-medium truncate">{entry.resourceLabel}</div>
-                        <div className="text-gray-400 text-xs">
-                          {entry.adminName} · {new Date(entry.createdAt).toLocaleString()}
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <Link to="/admin/activity" className="inline-block mt-2 text-sm text-violet-600 font-semibold">
-                View full activity log →
-              </Link>
-            </div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">🏆 Top Content — {RANGE_HEADING[data.range]}</h2>
+          <div className="grid sm:grid-cols-2 gap-4 mb-6">
+            <TopList
+              title="Quizzes"
+              emoji="🎯"
+              items={data.topContent.quizzes}
+              unit="plays"
+              getHref={(item) => `/admin/quizzes/${item.id}/edit`}
+              getLabel={(item) => item.label}
+            />
+            <TopList
+              title="Friendship Quizzes"
+              emoji="🤝"
+              items={data.topContent.friendshipQuizzes}
+              unit="attempts"
+              getHref={(item) => `/admin/friendship-quizzes/${item.id}/edit`}
+              getLabel={(item) => item.label}
+            />
+            <TopList
+              title="Games"
+              emoji="🎮"
+              items={data.topContent.games}
+              unit="plays"
+              getHref={() => null}
+              getLabel={(item) => GAME_BY_SLUG[item.slug]?.title || item.slug}
+            />
+            <TopList
+              title="Posts"
+              emoji="📝"
+              items={data.topContent.posts}
+              unit="views/shares"
+              getHref={(item) => `/admin/posts/${item.id}/edit`}
+              getLabel={(item) => item.label}
+            />
           </div>
+
+          {/* Recent activity — last 5, full history lives on the Activity page */}
+          <h2 className="text-lg font-semibold text-gray-900 mb-3">📋 Recent Activity</h2>
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            {data.recentActivity.length === 0 ? (
+              <p className="px-4 py-6 text-center text-gray-400 text-sm">No activity recorded yet.</p>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {data.recentActivity.map((entry) => (
+                  <li key={entry._id} className="px-4 py-3 text-sm">
+                    <span className={`font-semibold capitalize ${ACTION_STYLE[entry.action]}`}>
+                      {entry.action}
+                    </span>{' '}
+                    <span className="text-gray-600">{RESOURCE_LABELS[entry.resourceType] || entry.resourceType}</span>
+                    <div className="text-gray-900 font-medium truncate">{entry.resourceLabel}</div>
+                    <div className="text-gray-400 text-xs">
+                      {entry.adminName} · {new Date(entry.createdAt).toLocaleString()}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <Link to="/admin/activity" className="inline-block mt-2 text-sm text-violet-600 font-semibold">
+            View full activity log →
+          </Link>
         </>
       )}
     </div>

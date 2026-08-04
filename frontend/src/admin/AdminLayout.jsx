@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import LogoMark, { LogoWithWordmark } from '../components/Logo'
 
@@ -99,7 +99,9 @@ export default function AdminLayout() {
         </button>
 
         <div className="px-4 py-4 flex items-center justify-between lg:justify-start">
-          {collapsed ? <LogoMark size={28} /> : <LogoWithWordmark size={28} />}
+          <Link to="/admin/dashboard" title="Dashboard">
+            {collapsed ? <LogoMark size={28} /> : <LogoWithWordmark size={28} />}
+          </Link>
           {/* Hamburger toggle — mobile/tablet only. Below lg there's no
               permanent sidebar, so nav items used to always render inline
               above the page content, pushing it down. Now they're hidden
