@@ -31,7 +31,7 @@ The homepage has tabs across the side (or top, on mobile) for each type of conte
 
 Personality-style quizzes ("What's Your Skincare Personality?", "Which K-pop Idol Position Are You?", etc.) and a few trivia-style quizzes ("How Well Do You Know Bollywood?"). You answer 5 questions one at a time, then land on a result page showing your personality type (or score, for trivia quizzes) with a fun description. From there you can:
 - Share the result as a **branded image** (auto-generated, looks good on Instagram/WhatsApp Stories) or as a plain link.
-- **Compare with a friend** — send them a link to take the same quiz; when they finish, you both see a side-by-side "did you match?" reveal.
+- **Compare with a friend** — send them a link to take the same quiz; when they finish, you both see a side-by-side "did you match?" reveal, which can also be shared as its own branded side-by-side image (not just a plain link).
 - See a few **"You might also like"** suggestions for other quizzes.
 - **Report** the quiz if something's wrong or offensive.
 

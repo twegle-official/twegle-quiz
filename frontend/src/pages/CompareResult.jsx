@@ -5,6 +5,8 @@ import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { shareOrDownloadCompareImage } from '../utils/shareImage'
+import { recordShare } from '../utils/badges'
 
 function PersonCard({ person }) {
   return (
@@ -20,6 +22,7 @@ export default function CompareResult() {
   const { quizId: slug, code } = useParams()
   const [compare, setCompare] = useState(null)
   const [notFound, setNotFound] = useState(false)
+  const [generating, setGenerating] = useState(false)
 
   useEffect(() => {
     fetchQuizCompare(slug, code)
@@ -72,6 +75,29 @@ export default function CompareResult() {
 
   const shareUrl = getQuizCompareShareUrl(code)
 
+  async function handleShareImage() {
+    setGenerating(true)
+    try {
+      await shareOrDownloadCompareImage(
+        {
+          gradient: compare.gradient,
+          quizTitle: compare.quizTitle,
+          match: compare.match,
+          personA: { name: compare.personA.name, emoji: compare.personA.resultEmoji, resultTitle: compare.personA.resultTitle },
+          personB: { name: compare.personB.name, emoji: compare.personB.resultEmoji, resultTitle: compare.personB.resultTitle },
+        },
+        {
+          filename: `twegle-compare-${code}.png`,
+          title: compare.quizTitle,
+          text: compare.match ? 'We matched!' : 'We got different results!',
+        }
+      )
+      recordShare()
+    } finally {
+      setGenerating(false)
+    }
+  }
+
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       <div className="text-left mb-4"><BackButton /></div>
@@ -88,6 +114,14 @@ export default function CompareResult() {
         <PersonCard person={compare.personA} />
         <PersonCard person={compare.personB} />
       </div>
+
+      <button
+        onClick={handleShareImage}
+        disabled={generating}
+        className="mb-4 px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+      >
+        {generating ? 'Preparing image...' : '📸 Share as Image'}
+      </button>
 
       <ShareButtons
         title={`${compare.personA.name} & ${compare.personB.name} ${compare.match ? 'matched' : 'got different results'} on ${compare.quizTitle}!`}

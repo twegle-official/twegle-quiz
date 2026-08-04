@@ -120,6 +120,90 @@ function drawShareCard(canvas, { gradient, emoji, title, text, author, tag }) {
   drawLogo(ctx, centerX, height - 130)
 }
 
+// Side-by-side "did we match?" card for the Compare-with-a-friend feature —
+// same 1080x1920 story format as drawShareCard, split into two vertical
+// halves (one per person) rather than one centered block of text, since
+// the whole point here is showing two results at once, not one.
+function drawPersonHalf(ctx, { name, emoji, resultTitle }, centerX, halfWidth, startY) {
+  const maxTextWidth = halfWidth - 60
+  ctx.textAlign = 'center'
+
+  ctx.font = '600 34px Nunito, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'
+  const nameLines = wrapLines(ctx, name, maxTextWidth)
+  let y = startY
+  for (const line of nameLines) {
+    ctx.fillText(line, centerX, y)
+    y += 42
+  }
+
+  ctx.font = '150px sans-serif'
+  ctx.fillStyle = '#ffffff'
+  ctx.fillText(emoji, centerX, y + 130)
+  y += 190
+
+  ctx.font = '800 52px "Baloo 2", sans-serif'
+  ctx.fillStyle = '#ffffff'
+  drawWrappedParagraphs(ctx, resultTitle, centerX, y, maxTextWidth, 60)
+}
+
+function drawCompareCard(canvas, { gradient, quizTitle, match, personA, personB }) {
+  const { width, height } = canvas
+  const ctx = canvas.getContext('2d')
+  const [from, to] = GRADIENT_COLORS[gradient] || GRADIENT_COLORS['from-violet-400 to-indigo-500']
+
+  const bg = ctx.createLinearGradient(0, 0, width, height)
+  bg.addColorStop(0, from)
+  bg.addColorStop(1, to)
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, width, height)
+
+  const centerX = width / 2
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'alphabetic'
+
+  ctx.fillStyle = 'rgba(255,255,255,0.9)'
+  ctx.font = '600 34px Nunito, sans-serif'
+  ctx.fillText('TWEGLE COMPARE', centerX, 150)
+
+  ctx.font = '800 64px "Baloo 2", sans-serif'
+  ctx.fillStyle = '#ffffff'
+  const headline = match ? '🎉 THEY MATCHED!' : '🔀 DIFFERENT RESULTS!'
+  ctx.fillText(headline, centerX, 250)
+
+  ctx.font = '40px Nunito, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.9)'
+  drawWrappedParagraphs(ctx, quizTitle, centerX, 320, width - 200, 50)
+
+  // Vertical divider between the two halves, with a small "VS" badge
+  // centered on it — a plain line looked too clinical on its own.
+  const dividerY1 = 460
+  const dividerY2 = height - 260
+  ctx.strokeStyle = 'rgba(255,255,255,0.35)'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(centerX, dividerY1)
+  ctx.lineTo(centerX, dividerY2)
+  ctx.stroke()
+
+  const halfWidth = width / 2
+  drawPersonHalf(ctx, personA, centerX / 2, halfWidth, 540)
+  drawPersonHalf(ctx, personB, centerX + centerX / 2, halfWidth, 540)
+
+  const vsY = (dividerY1 + dividerY2) / 2
+  ctx.beginPath()
+  ctx.fillStyle = '#ffffff'
+  ctx.arc(centerX, vsY, 44, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.font = '800 32px "Baloo 2", sans-serif'
+  ctx.fillStyle = GRADIENT_COLORS[gradient]?.[1] || '#6366f1'
+  ctx.textBaseline = 'middle'
+  ctx.fillText('VS', centerX, vsY + 2)
+  ctx.textBaseline = 'alphabetic'
+
+  drawLogo(ctx, centerX, height - 130)
+}
+
 async function generateShareCardBlob(cardOptions) {
   if (document.fonts?.ready) {
     await document.fonts.ready
@@ -131,11 +215,18 @@ async function generateShareCardBlob(cardOptions) {
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
 }
 
-// cardOptions: { gradient, emoji, title, text, author, tag }
-// shareMeta: { filename, title, text } — used for the native share sheet
-export async function shareOrDownloadImage(cardOptions, shareMeta) {
-  const blob = await generateShareCardBlob(cardOptions)
+async function generateCompareCardBlob(cardOptions) {
+  if (document.fonts?.ready) {
+    await document.fonts.ready
+  }
+  const canvas = document.createElement('canvas')
+  canvas.width = 1080
+  canvas.height = 1920
+  drawCompareCard(canvas, cardOptions)
+  return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
+}
 
+async function shareOrDownloadBlob(blob, shareMeta) {
   if (navigator.share && navigator.canShare) {
     const file = new File([blob], shareMeta.filename, { type: 'image/png' })
     if (navigator.canShare({ files: [file] })) {
@@ -156,4 +247,18 @@ export async function shareOrDownloadImage(cardOptions, shareMeta) {
   link.click()
   URL.revokeObjectURL(url)
   return 'downloaded'
+}
+
+// cardOptions: { gradient, quizTitle, match, personA: {name, emoji, resultTitle}, personB: {...} }
+// shareMeta: { filename, title, text } — used for the native share sheet
+export async function shareOrDownloadCompareImage(cardOptions, shareMeta) {
+  const blob = await generateCompareCardBlob(cardOptions)
+  return shareOrDownloadBlob(blob, shareMeta)
+}
+
+// cardOptions: { gradient, emoji, title, text, author, tag }
+// shareMeta: { filename, title, text } — used for the native share sheet
+export async function shareOrDownloadImage(cardOptions, shareMeta) {
+  const blob = await generateShareCardBlob(cardOptions)
+  return shareOrDownloadBlob(blob, shareMeta)
 }

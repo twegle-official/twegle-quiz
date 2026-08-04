@@ -38,7 +38,17 @@ export default function Header() {
             className="w-full max-w-xs px-4 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-violet-400 focus:bg-white dark:focus:bg-gray-800"
           />
         </form>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <Link
+            to="/badges"
+            title="My Badges"
+            aria-label="My Badges"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            🏆
+          </Link>
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   )
