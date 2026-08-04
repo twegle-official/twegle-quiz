@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import LogoMark, { LogoWithWordmark } from '../components/Logo'
@@ -38,6 +38,12 @@ function makeNavClass(collapsed) {
 export default function AdminLayout() {
   const { session, logout, hasRole } = useAuth()
   const navigate = useNavigate()
+
+  // Same reasoning as Login.jsx: guards against the `dark` class surviving a
+  // client-side navigation into admin from a dark-mode public page.
+  useEffect(() => {
+    document.documentElement.classList.remove('dark')
+  }, [])
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1')
 
   function toggleCollapsed() {

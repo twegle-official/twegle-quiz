@@ -1,9 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
 
 export default function Login() {
   const { login } = useAuth()
+
+  // index.html's inline script already keeps admin routes out of dark mode
+  // on a fresh page load, but this route can also be reached via client-side
+  // navigation (no reload) from a dark-mode public page, which that script
+  // never re-runs for. Admin has no dark: styling at all, so the `dark`
+  // class must never be present here — see index.html for the fuller
+  // explanation of the invisible-input-text bug this prevents.
+  useEffect(() => {
+    document.documentElement.classList.remove('dark')
+  }, [])
+
   const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -42,7 +53,7 @@ export default function Login() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-4 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-400"
+          className="w-full mb-4 px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-400"
         />
 
         <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
@@ -51,7 +62,7 @@ export default function Login() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-6 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-400"
+          className="w-full mb-6 px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-400"
         />
 
         <button

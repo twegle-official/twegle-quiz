@@ -19,8 +19,17 @@
          preference for a first-time visitor who's never toggled it. -->
     <script>
       (function () {
+        // Admin panel has no dark: styling anywhere (deliberately out of
+        // scope — see PENDING_TASKS.md), so it must always render in light
+        // mode regardless of the visitor's system theme or a dark choice
+        // saved from browsing the public site. Without this check, a phone
+        // in system dark mode gets `color-scheme: dark` here (index.css),
+        // and un-styled native <input> text renders in the browser's dark
+        // form-control color on the input's actual white background —
+        // invisible while typing, even though the value is captured fine.
+        var isAdmin = location.pathname.startsWith('/admin')
         var saved = localStorage.getItem('twegle-theme')
-        var isDark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches
+        var isDark = !isAdmin && (saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches)
         document.documentElement.classList.toggle('dark', isDark)
       })()
     </script>
