@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { recordShare } from '../utils/badges'
 
 // Shared "share before you even open it" control used on every content tile
 // (QuizCard, GameCard, PostCard, FriendshipQuizCard) — a small icon in the
@@ -45,6 +46,7 @@ export default function TileShareButton({ title, shareUrl, shareText }) {
     stop(e)
     try {
       await navigator.share({ title, text: shareText, url: shareUrl })
+      recordShare()
     } catch {
       // user cancelled share sheet, nothing to do
     }
@@ -55,6 +57,7 @@ export default function TileShareButton({ title, shareUrl, shareText }) {
     stop(e)
     const text = `${shareText} ${shareUrl}`
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer')
+    recordShare()
     setShowShare(false)
   }
 
@@ -63,6 +66,7 @@ export default function TileShareButton({ title, shareUrl, shareText }) {
     try {
       await navigator.clipboard.writeText(shareUrl)
       setCopied(true)
+      recordShare()
       setTimeout(() => setCopied(false), 2000)
     } catch {
       // Clipboard permission denied/unsupported — nothing else to do here.

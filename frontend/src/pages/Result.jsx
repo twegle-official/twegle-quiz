@@ -10,6 +10,7 @@ import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { pickQuizOfTheDay, recordDailyQuizCompletion } from '../utils/dailyQuiz'
+import { recordQuizCompleted, recordPerfectTrivia, checkStreakBadges } from '../utils/badges'
 
 const SUGGESTION_COUNT = 4
 
@@ -47,6 +48,15 @@ export default function Result() {
     recordPlay(slug, resultKey)
   }, [slug, resultKey])
 
+  // Only counts as "completed" for badge purposes when this browser is the
+  // one that actually just finished (score/total present via router state)
+  // — a cold visit to a shared result link shouldn't count as having played it.
+  useEffect(() => {
+    if (score == null || total == null || !quiz) return
+    recordQuizCompleted(slug)
+    if (quiz.type === 'trivia' && score === total) recordPerfectTrivia()
+  }, [slug, score, total, quiz])
+
   useEffect(() => {
     if (!quiz) return
     fetchQuizzes(quiz.language)
@@ -63,6 +73,7 @@ export default function Result() {
         if (todaysQuiz?.slug === slug) {
           setIsDailyQuiz(true)
           setDailyStreak(recordDailyQuizCompletion(slug, todaysQuiz.slug))
+          checkStreakBadges()
         }
       })
       .catch(() => {})

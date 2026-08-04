@@ -58,6 +58,10 @@ Original short stories across 6 categories (Horror, Comedy, Romance, Mystery, Mo
 
 All 12 zodiac signs, each with a Day/Week/Month/Year horoscope, written to be funny and India-specific (family WhatsApp groups, "shaadi kab karoge," chai stalls, EMI reminders, etc.) rather than generic astrology. Purely for entertainment — a small disclaimer makes that clear. The horoscope text for any given sign/period/day is always the same for everyone (not personalized), but changes automatically as the date changes.
 
+### Achievement badges
+
+A "🏆 My Badges" page (linked from the footer) tracks 7 lightweight achievements — things like beating the house 3 times, trying every game, completing 5 quizzes, or getting a perfect score on a trivia quiz. Earning one shows a brief popup in the corner of the screen. Like the daily streak, this is tracked only in your browser, no account needed.
+
 ### Other things anyone can do
 
 - **Give feedback** or **report a problem** with any piece of content, via a Feedback page — no account needed, goes straight to the admin team.

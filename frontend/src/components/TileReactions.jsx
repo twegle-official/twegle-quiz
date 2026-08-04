@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { recordReaction } from '../utils/badges'
 
 const EMOJIS = ['😂', '🔥', '😭', '👍']
 
@@ -15,6 +16,7 @@ export default function TileReactions({ postId, counts, onReact, dark = false })
   function handleClick(e, emoji) {
     e.preventDefault()
     e.stopPropagation()
+    if (!myReaction) recordReaction()
     setMyReaction(emoji)
     localStorage.setItem(`reaction-${postId}`, emoji)
     onReact(postId, emoji)

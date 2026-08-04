@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { recordShare } from '../utils/badges'
 
 export default function ShareButtons({ title, url, onShare, shareText: shareTextProp }) {
   const [copied, setCopied] = useState(false)
@@ -10,6 +11,7 @@ export default function ShareButtons({ title, url, onShare, shareText: shareText
       try {
         await navigator.share({ title, text: shareText, url })
         onShare?.()
+        recordShare()
       } catch {
         // user cancelled share sheet, nothing to do
       }
@@ -26,6 +28,7 @@ export default function ShareButtons({ title, url, onShare, shareText: shareText
       // in-app browser) — still counts as a share attempt below.
     }
     onShare?.()
+    recordShare()
   }
 
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${url}`)}`
@@ -44,7 +47,7 @@ export default function ShareButtons({ title, url, onShare, shareText: shareText
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => onShare?.()}
+        onClick={() => { onShare?.(); recordShare() }}
         className="px-4 py-2 rounded-full bg-green-500 text-white text-sm font-semibold hover:bg-green-600"
       >
         WhatsApp

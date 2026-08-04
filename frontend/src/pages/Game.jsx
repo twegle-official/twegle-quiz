@@ -14,6 +14,7 @@ import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
 import GameLeaderboard from '../components/GameLeaderboard'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { recordGamePlayed } from '../utils/badges'
 
 // Only games with a natural numeric result get a leaderboard — Tic-Tac-Toe
 // (vs. an unbeatable minimax AI) and Rock Paper Scissors (pure luck) don't
@@ -95,6 +96,7 @@ export default function Game() {
     setOutcome(result)
     setScore(gameScore ?? null)
     recordGamePlay(slug, result)
+    recordGamePlayed(slug, result)
   }
 
   function handleGameReset() {

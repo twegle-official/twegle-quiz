@@ -22,6 +22,8 @@ import SearchResults from './pages/SearchResults'
 import Game from './pages/Game'
 import TicTacToeMultiplayer from './pages/TicTacToeMultiplayer'
 import Feedback from './pages/Feedback'
+import Badges from './pages/Badges'
+import BadgeToast from './components/BadgeToast'
 import NotFound from './pages/NotFound'
 
 import { AuthProvider } from './admin/AuthContext'
@@ -80,6 +82,7 @@ function PublicSite() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/about" element={<About />} />
           <Route path="/feedback" element={<Feedback />} />
+          <Route path="/badges" element={<Badges />} />
           <Route path="/friendship/:slug" element={<FriendshipSetup />} />
           <Route path="/friendship/play/:code" element={<FriendshipPlay />} />
           <Route path="/friendship/result/:attemptId" element={<FriendshipResult />} />
@@ -87,6 +90,7 @@ function PublicSite() {
         </Routes>
       </main>
       <Footer />
+      <BadgeToast />
     </div>
   )
 }

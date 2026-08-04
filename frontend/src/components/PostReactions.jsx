@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchPostReactions, setPostReaction } from '../api'
+import { recordReaction } from '../utils/badges'
 
 const EMOJIS = ['😂', '🔥', '😭', '👍']
 
@@ -13,6 +14,7 @@ export default function PostReactions({ postId }) {
 
   async function handleClick(emoji) {
     const previous = myReaction
+    if (!previous) recordReaction()
     setMyReaction(emoji)
     localStorage.setItem(`reaction-${postId}`, emoji)
     try {
