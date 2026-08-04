@@ -31,6 +31,7 @@ function validateAnswerIndices(answers, questions) {
 function buildAttemptResult({ attempt, instance, quiz }) {
   return {
     attemptId: attempt._id,
+    instanceCode: instance.code,
     subjectName: instance.subjectName,
     quizTitle: quiz.title,
     quizEmoji: quiz.emoji,

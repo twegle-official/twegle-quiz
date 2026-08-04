@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, removed, or changed on the site (for visitors or for admins), this file gets updated in the same session, so it always describes what the app actually does today — not a history of how it got there (see `APPLICATION_FLOW.md` for that kind of changelog). No code, no technical jargon — if someone with zero coding background reads this, they should understand what Twegle does and how it works.
 
-**Last updated:** 2026-08-04 (added: every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing)
+**Last updated:** 2026-08-04 (added: Friendship Quiz results now have a "🏆 Challenge Your Friend" button that re-shares the original invite link, not just the score; every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing; fixed the Back button not scrolling to top after following one of those links)
 
 ---
 
@@ -37,7 +37,7 @@ Personality-style quizzes ("What's Your Skincare Personality?", "Which K-pop Ido
 
 ### Friendship Quiz ("How well do you know me?")
 
-A two-person format. One person answers 8 questions about themselves, gets a shareable link, and sends it to friends. Each friend who opens the link guesses what the first person would have said — no peeking at the real answers first — then sees their own score (e.g. "6/8 correct") plus a right/wrong breakdown, and can share their own score to pull in more friends. The same original link can be reused by many different people, so one setup can generate many rounds of sharing.
+A two-person format. One person answers 8 questions about themselves, gets a shareable link, and sends it to friends. Each friend who opens the link guesses what the first person would have said — no peeking at the real answers first — then sees their own score (e.g. "6/8 correct") plus a right/wrong breakdown, a "🏆 Challenge Your Friend" button that re-shares the *original* link (so a new friend can also take a guess), and can share their own score to pull in more friends. The same original link can be reused by many different people, so one setup can generate many rounds of sharing.
 
 ### Memes, Jokes, Funny Lines, Quotes, Motivational Quotes
 

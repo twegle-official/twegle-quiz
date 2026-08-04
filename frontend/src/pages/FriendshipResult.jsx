@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { fetchFriendshipAttempt, getFriendshipResultShareUrl } from '../api'
+import { fetchFriendshipAttempt, getFriendshipResultShareUrl, getFriendshipShareUrl } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { recordShare } from '../utils/badges'
 
 function scoreMessage(score, total) {
   const pct = score / total
@@ -48,6 +49,22 @@ export default function FriendshipResult() {
   }
 
   const shareUrl = getFriendshipResultShareUrl(attemptId)
+  const challengeUrl = getFriendshipShareUrl(result.instanceCode)
+  const challengeText = `I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz — think you know them better?`
+
+  async function handleChallenge() {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Challenge Your Friend', text: challengeText, url: challengeUrl })
+        recordShare()
+        return
+      } catch {
+        return
+      }
+    }
+    window.open(`https://wa.me/?text=${encodeURIComponent(`${challengeText} ${challengeUrl}`)}`, '_blank', 'noopener')
+    recordShare()
+  }
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
@@ -65,11 +82,21 @@ export default function FriendshipResult() {
         <p className="text-white/90">{scoreMessage(result.score, result.total)}</p>
       </div>
 
-      <div className="mt-6">
+      <p className="mt-6 text-sm font-semibold text-gray-600 dark:text-gray-400">
+        Think your friend can do better?
+      </p>
+      <button
+        onClick={handleChallenge}
+        className="mt-2 px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
+      >
+        🏆 Challenge Your Friend
+      </button>
+
+      <div className="mt-4">
         <ShareButtons
           title={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz!`}
           url={shareUrl}
-          shareText={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz! Think you know them better?`}
+          shareText={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz!`}
         />
       </div>
 
