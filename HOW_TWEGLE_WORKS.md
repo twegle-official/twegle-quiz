@@ -99,9 +99,13 @@ A fast shortcut for jokes, funny lines, quotes, and motivational quotes (not mem
 
 The Quizzes and Posts lists show a small **"⚠️ Needs a refresh"** badge next to anything that's been live a while (2+ weeks) but has barely been played or viewed — a nudge to reword it, reshare it, or leave it as-is. Every item also now shows its actual play/view count right in the list.
 
+### Bulk Import
+
+A way to add many pieces of content at once instead of one form at a time. Two modes: **Posts** — paste a list of jokes/quotes/etc. (one per line), pick a category and language, and every line becomes its own published post. **Quizzes** — paste a block of quiz data (in the same format the regular quiz form saves) to create several quizzes in one go — useful if quizzes were drafted somewhere else first (a spreadsheet, ChatGPT, etc.). Either way, each item is checked the same way the normal forms check it, and anything that fails is reported individually rather than blocking the whole batch.
+
 ### Analytics
 
-A dashboard showing which quizzes, posts, friendship quizzes, games, and stories are actually getting played/viewed/shared the most — so it's obvious what's working and what isn't, without guessing.
+A dashboard showing which quizzes, posts, friendship quizzes, games, and stories are actually getting played/viewed/shared the most — so it's obvious what's working and what isn't, without guessing. At the top, a **"This week" summary** gives three quick numbers (plays this week, views/shares this week, new content published this week) without needing to scroll through every table.
 
 ### Activity log
 
