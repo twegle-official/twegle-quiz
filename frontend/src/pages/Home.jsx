@@ -11,24 +11,33 @@ import ZodiacCard from '../components/ZodiacCard'
 import DailyQuizBanner from '../components/DailyQuizBanner'
 import AdSlot from '../components/AdSlot'
 
-// Ordered by expected usage, most to least: Quizzes and Friendship Quiz are
-// the two biggest growth-loop/engagement formats, Memes are next since
-// images reshare better than plain text on WhatsApp/Instagram, then Games
-// (replayable but not primarily share-driven), then Stories (a settle-in,
-// longer-dwell format — read or listen, less share-driven than the above),
-// then the four text-based post categories, Jokes and Funny Lines grouped
-// together (both quick one-liner formats) ahead of Quotes/Motivational.
+// Ordered by expected usage/revenue impact, most to least: Quizzes stays
+// first — biggest content library and the strongest share loop (a solo
+// quiz result is the easiest thing to reshare, no second person needed),
+// so it drives the most pageviews/ad impressions. Friendship Quiz second
+// (same growth-loop idea, but needs a friend to join, so more friction on
+// a first click). Games next — replayable, has its own "beat me" share
+// hook. Posts (merged from the previous 5 separate Jokes/Funny
+// Lines/Quotes/Motivational/Memes tabs — same underlying Post model with a
+// category filter, just one continuous scroll-through feed instead of 5
+// homepage tabs) after Games. Stories and Horoscope last — longer-dwell,
+// less share-driven formats.
 const TABS = [
   { key: 'quizzes', label: 'Quizzes', emoji: '🎯' },
   { key: 'friendship', label: 'Friendship Quiz', emoji: '🤝' },
-  { key: 'meme', label: 'Memes', emoji: '😹' },
   { key: 'games', label: 'Games', emoji: '🎮' },
+  { key: 'posts', label: 'Posts', emoji: '💬' },
   { key: 'stories', label: 'Stories', emoji: '📖' },
   { key: 'horoscope', label: 'Horoscope', emoji: '🔮' },
+]
+
+const POST_CATEGORIES = [
+  { key: 'all', label: 'All' },
   { key: 'joke', label: 'Jokes', emoji: '😂' },
   { key: 'funny-line', label: 'Funny Lines', emoji: '😜' },
   { key: 'quote', label: 'Quotes', emoji: '💬' },
   { key: 'motivational-quote', label: 'Motivational', emoji: '💪' },
+  { key: 'meme', label: 'Memes', emoji: '😹' },
 ]
 
 const QUIZ_CATEGORIES = [
@@ -98,6 +107,7 @@ export default function Home() {
   const [language, setLanguage] = useState('en')
   const [quizCategory, setQuizCategory] = useState('all')
   const [storyCategory, setStoryCategory] = useState('all')
+  const [postCategory, setPostCategory] = useState('all')
   const [sortMode, setSortMode] = useState('newest')
   // Tagged with the tab/language/category that produced it, so a render can
   // never show content fetched for a different filter while the real fetch
@@ -129,7 +139,7 @@ export default function Home() {
   // together from the top — rather than a different spot each time.
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [activeTab, language, quizCategory, storyCategory, sortMode])
+  }, [activeTab, language, quizCategory, storyCategory, postCategory, sortMode])
 
   useEffect(() => {
     Promise.all([fetchQuizzes(), fetchPosts()])
@@ -157,7 +167,13 @@ export default function Home() {
     setError(false)
 
     const activeCategory =
-      activeTab === 'quizzes' ? quizCategory : activeTab === 'stories' ? storyCategory : 'all'
+      activeTab === 'quizzes'
+        ? quizCategory
+        : activeTab === 'stories'
+        ? storyCategory
+        : activeTab === 'posts'
+        ? postCategory
+        : 'all'
 
     const fetcher =
       activeTab === 'quizzes'
@@ -170,7 +186,7 @@ export default function Home() {
         ? fetchStories(language, storyCategory === 'all' ? undefined : storyCategory)
         : activeTab === 'horoscope'
         ? fetchZodiacSigns(language)
-        : fetchPosts(activeTab, language)
+        : fetchPosts(postCategory === 'all' ? undefined : postCategory, language)
     fetcher
       .then((data) => {
         if (!cancelled) setContent({ tab: activeTab, language, category: activeCategory, items: data })
@@ -182,10 +198,16 @@ export default function Home() {
     return () => {
       cancelled = true
     }
-  }, [activeTab, language, quizCategory, storyCategory])
+  }, [activeTab, language, quizCategory, storyCategory, postCategory])
 
   const activeCategory =
-    activeTab === 'quizzes' ? quizCategory : activeTab === 'stories' ? storyCategory : 'all'
+    activeTab === 'quizzes'
+      ? quizCategory
+      : activeTab === 'stories'
+      ? storyCategory
+      : activeTab === 'posts'
+      ? postCategory
+      : 'all'
 
   const items =
     content.tab === activeTab && content.language === language && content.category === activeCategory
@@ -194,7 +216,7 @@ export default function Home() {
 
   const displayedItems = sortItems(items, activeTab, sortMode)
 
-  const isPostTab = !['quizzes', 'friendship', 'games', 'stories', 'horoscope'].includes(activeTab)
+  const isPostTab = activeTab === 'posts'
 
   // One batch request for whatever page of post tiles is currently shown,
   // instead of each tile fetching its own reaction counts — see
@@ -365,6 +387,24 @@ export default function Home() {
             ))}
           </div>
         )}
+
+        {activeTab === 'posts' && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+            {POST_CATEGORIES.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setPostCategory(cat.key)}
+                className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full lg:rounded-lg text-xs font-semibold transition-colors lg:text-left ${
+                  postCategory === cat.key
+                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {cat.emoji} {cat.label}
+              </button>
+            ))}
+          </div>
+        )}
       </aside>
 
       <div>
@@ -446,12 +486,7 @@ export default function Home() {
         </div>
       )}
 
-      {displayedItems && displayedItems.length > 0 &&
-        activeTab !== 'quizzes' &&
-        activeTab !== 'friendship' &&
-        activeTab !== 'games' &&
-        activeTab !== 'stories' &&
-        activeTab !== 'horoscope' && (
+      {displayedItems && displayedItems.length > 0 && activeTab === 'posts' && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {displayedItems.map((post, i) => (
             <PostCard
