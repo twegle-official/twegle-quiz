@@ -33,6 +33,21 @@
         document.documentElement.classList.toggle('dark', isDark)
       })()
     </script>
+    <!-- Google Analytics (GA4) — public site only. Skipped on /admin routes
+         so admin/editor usage of the CMS itself doesn't pollute visitor
+         analytics with non-visitor traffic. -->
+    <script>
+      if (!location.pathname.startsWith('/admin')) {
+        var gaScript = document.createElement('script')
+        gaScript.async = true
+        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-KYTM35VQCT'
+        document.head.appendChild(gaScript)
+        window.dataLayer = window.dataLayer || []
+        function gtag() { dataLayer.push(arguments) }
+        gtag('js', new Date())
+        gtag('config', 'G-KYTM35VQCT')
+      }
+    </script>
     <meta name="description" content="Twegle — quizzes, jokes, quotes, games, stories, horoscope & chaos. No sign up, just share-worthy content for everyone." />
     <!-- Generic fallback preview for the homepage/general links. Individual
          quiz results and posts get their own accurate preview via the
