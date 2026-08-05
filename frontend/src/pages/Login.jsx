@@ -35,7 +35,7 @@ export default function Login() {
       <BackButton className="mb-4" />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Log In</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">
-        Don't have an account? Twegle works fine without one — <Link to="/signup" className="text-violet-600 font-semibold">create one</Link> only if you want to keep your streak/badges across devices.
+        Don't have an account? Twegle works fine without one — <Link to="/signup" replace className="text-violet-600 font-semibold">create one</Link> only if you want to keep your streak/badges across devices.
       </p>
 
       {error && (
@@ -70,7 +70,7 @@ export default function Login() {
       </form>
 
       <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-        Forgot your password? <Link to="/forgot-password" className="text-violet-600 font-semibold">Reset it</Link>
+        Forgot your password? <Link to="/forgot-password" replace className="text-violet-600 font-semibold">Reset it</Link>
       </p>
     </div>
   )

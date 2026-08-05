@@ -115,7 +115,7 @@ export default function ForgotPassword() {
       </form>
 
       <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-        Remembered it after all? <Link to="/login" className="text-violet-600 font-semibold">Log in</Link>
+        Remembered it after all? <Link to="/login" replace className="text-violet-600 font-semibold">Log in</Link>
       </p>
     </div>
   )
