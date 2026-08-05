@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, removed, or changed on the site (for visitors or for admins), this file gets updated in the same session, so it always describes what the app actually does today — not a history of how it got there (see `APPLICATION_FLOW.md` for that kind of changelog). No code, no technical jargon — if someone with zero coding background reads this, they should understand what Twegle does and how it works.
 
-**Last updated:** 2026-08-04 (upgraded the admin Dashboard: a Day/Week/Month/Year/All range picker, Top Content sections for Friendship Quizzes/Games/Posts alongside Quizzes, and the sidebar logo now links back to Dashboard; earlier the same day added the Dashboard itself with this-week stats, content counts, top quizzes, and recent activity; fixed Analytics/Activity tables cropping instead of scrolling on mobile; fixed blank search/filter fields and an always-expanded mobile nav in the admin panel; Friendship Quiz results now have a "🏆 Challenge Your Friend" button that re-shares the original invite link, not just the score; every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing; fixed the Back button not scrolling to top after following one of those links)
+**Last updated:** 2026-08-05 (applied for Google AdSense and added an "Advertisement" placeholder box to the homepage and search results, matching the ones already on result/detail pages — real ads will appear here automatically once AdSense approves the site; Google Analytics + Search Console also set up, both invisible to visitors) — earlier, 2026-08-04 (upgraded the admin Dashboard: a Day/Week/Month/Year/All range picker, Top Content sections for Friendship Quizzes/Games/Posts alongside Quizzes, and the sidebar logo now links back to Dashboard; earlier the same day added the Dashboard itself with this-week stats, content counts, top quizzes, and recent activity; fixed Analytics/Activity tables cropping instead of scrolling on mobile; fixed blank search/filter fields and an always-expanded mobile nav in the admin panel; Friendship Quiz results now have a "🏆 Challenge Your Friend" button that re-shares the original invite link, not just the score; every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing; fixed the Back button not scrolling to top after following one of those links)
 
 ---
 
@@ -13,6 +13,8 @@ Twegle (`twegle.in`) is a free entertainment website — quizzes, jokes, quotes,
 There are two completely separate sides to the app:
 - **The public website** — what any visitor sees at `twegle.in`. No login.
 - **The admin panel** — where content is added/edited/removed, at `twegle.in/admin`. Login required.
+
+Twegle stays free by showing ads (currently placeholder boxes reserved for real ads, pending Google AdSense approval) — a small labeled space appears on the homepage, search results, and after finishing a quiz/post/story/game, never blocking or interrupting anything you're doing. Behind the scenes, Google Analytics and Search Console quietly track visits and search performance (anonymous, same spirit as the rest of the site) — invisible to visitors, useful only to the admin team.
 
 ---
 
