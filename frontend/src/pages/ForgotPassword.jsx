@@ -53,7 +53,7 @@ export default function ForgotPassword() {
           I've saved this code somewhere safe
         </label>
         <button
-          onClick={() => navigate('/account')}
+          onClick={() => navigate('/account', { replace: true })}
           disabled={!confirmed}
           className="w-full px-5 py-3 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white font-semibold hover:opacity-90 disabled:opacity-40"
         >

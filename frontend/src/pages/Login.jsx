@@ -22,7 +22,7 @@ export default function Login() {
     setSubmitting(true)
     try {
       await login(username.trim(), password)
-      navigate('/account')
+      navigate('/account', { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
