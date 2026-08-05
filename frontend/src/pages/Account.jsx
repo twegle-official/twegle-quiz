@@ -1,9 +1,8 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
 import { updateDisplayName, regenerateRecoveryCode } from '../userApi'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
-import BackButton from '../components/BackButton'
 
 export default function Account() {
   const { session, logout, updateSession } = useUserAuth()
@@ -58,7 +57,18 @@ export default function Account() {
 
   return (
     <div className="max-w-md mx-auto px-4 py-10">
-      <BackButton className="mb-4" />
+      {/* Deliberately a plain link to "/" rather than the shared BackButton's
+          navigate(-1) — this page is only ever reached right after a
+          login/signup/reset action, whose browser-history shape varies (a
+          refresh, a second tab, or navigating here directly all reset or
+          reorder that history unpredictably), so a fixed destination is the
+          only way to guarantee "Back" always leaves to the homepage. */}
+      <Link
+        to="/"
+        className="inline-flex items-center gap-1 text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 mb-4"
+      >
+        ← Back
+      </Link>
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">My Account</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">
         Logged in as <span className="font-semibold text-gray-700 dark:text-gray-300">{session.user.username}</span>
