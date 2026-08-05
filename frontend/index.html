@@ -48,6 +48,13 @@
         gtag('config', 'G-KYTM35VQCT')
       }
     </script>
+    <!-- Google AdSense — site-verification/ad-serving script. Google's own
+         instructions require this literally present in every page's <head>
+         (not conditionally injected via JS), which is also why it's not
+         gated to public-only like the GA4 script above — Googlebot only
+         ever crawls public URLs anyway (/admin is disallowed in robots.txt). -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2005648459702569"
+     crossorigin="anonymous"></script>
     <meta name="description" content="Twegle — quizzes, jokes, quotes, games, stories, horoscope & chaos. No sign up, just share-worthy content for everyone." />
     <!-- Generic fallback preview for the homepage/general links. Individual
          quiz results and posts get their own accurate preview via the
