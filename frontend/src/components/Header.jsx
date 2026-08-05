@@ -41,6 +41,7 @@ export default function Header() {
           />
         </form>
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Link
             to="/badges"
             title="My Badges"
@@ -61,7 +62,6 @@ export default function Header() {
           >
             {session ? session.user.displayName.trim().charAt(0).toUpperCase() : '👤'}
           </Link>
-          <ThemeToggle />
         </div>
       </div>
     </header>
