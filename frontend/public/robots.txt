@@ -2,6 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-# Replace with your real domain once one is registered (the sitemap directive
-# must be a full absolute URL, not a relative path) - see DEVELOPMENT_PLAN.md.
-Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://www.twegle.in/sitemap.xml

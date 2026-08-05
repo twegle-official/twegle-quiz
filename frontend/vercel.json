@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/sitemap.xml", "destination": "https://twegle-quiz.onrender.com/sitemap.xml" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
