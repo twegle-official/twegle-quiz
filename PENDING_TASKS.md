@@ -25,7 +25,7 @@ For deeper detail on any development item, see `DEVELOPMENT_PLAN.md` / `APPLICAT
 ## Development Tasks
 
 ### Up next
-- [ ] Nothing queued — see "Suggested, not started" below for options, or say what you'd like next.
+- [ ] **Add Puzzles as a new content type** — requested 2026-08-05. Should reuse/extend the existing "daily streak" mechanism (currently anonymous/localStorage-based, tracked in `dailyQuiz.js`) so daily puzzle-solving also counts toward the streak, not a separate parallel streak.
 
 ### Suggested (Phase 1), not started
 *Phase 1 (MVP) is functionally complete per `DEVELOPMENT_PLAN.md` §4 — public guest quiz flow, shareable OG-tagged result pages, role-based admin with a full quiz builder, ad slots, affiliate placement, and basic analytics are all live. Everything below is polish/growth work on top of a finished MVP, not a gap in it.*
