@@ -9,6 +9,7 @@ import GameCard from '../components/GameCard'
 import StoryCard from '../components/StoryCard'
 import ZodiacCard from '../components/ZodiacCard'
 import DailyQuizBanner from '../components/DailyQuizBanner'
+import AdSlot from '../components/AdSlot'
 
 // Ordered by expected usage, most to least: Quizzes and Friendship Quiz are
 // the two biggest growth-loop/engagement formats, Memes are next since
@@ -461,6 +462,17 @@ export default function Home() {
               onReact={handleReact}
             />
           ))}
+        </div>
+      )}
+
+      {/* Homepage previously had zero ad placement at all — AdSlot only
+          existed on result/detail pages (after finishing a quiz, reading a
+          post, etc.), so a visitor who only ever browses tabs never saw one.
+          Placed after the content grid (not above it) so it doesn't push
+          real content below the fold on first load. */}
+      {displayedItems && displayedItems.length > 0 && (
+        <div className="mt-8">
+          <AdSlot />
         </div>
       )}
       </div>

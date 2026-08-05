@@ -5,6 +5,7 @@ import QuizCard from '../components/QuizCard'
 import FriendshipQuizCard from '../components/FriendshipQuizCard'
 import PostCard from '../components/PostCard'
 import StoryCard from '../components/StoryCard'
+import AdSlot from '../components/AdSlot'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 export default function SearchResults() {
@@ -103,6 +104,12 @@ export default function SearchResults() {
               <PostCard key={post._id} post={post} index={i} />
             ))}
           </div>
+        </div>
+      )}
+
+      {results && results.length > 0 && (
+        <div className="mt-4">
+          <AdSlot />
         </div>
       )}
     </div>
