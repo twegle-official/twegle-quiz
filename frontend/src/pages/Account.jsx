@@ -1,8 +1,12 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
-import { updateDisplayName, regenerateRecoveryCode } from '../userApi'
+import { updateDisplayName, updateAvatar, regenerateRecoveryCode } from '../userApi'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+
+// Must match backend/src/utils/validators.js's AVATAR_OPTIONS exactly — a
+// fixed emoji preset, not an upload, so no file storage is ever needed.
+const AVATAR_OPTIONS = ['🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎']
 
 export default function Account() {
   const { session, logout, updateSession } = useUserAuth()
@@ -13,12 +17,27 @@ export default function Account() {
   const [error, setError] = useState('')
   const [newRecoveryCode, setNewRecoveryCode] = useState(null)
   const [regenerating, setRegenerating] = useState(false)
+  const [savingAvatar, setSavingAvatar] = useState(null)
 
   useDocumentMeta('My Account', 'Manage your Twegle account.')
 
   if (!session) {
     navigate('/login')
     return null
+  }
+
+  async function handleSelectAvatar(avatar) {
+    if (avatar === session.user.avatar || savingAvatar) return
+    setError('')
+    setSavingAvatar(avatar)
+    try {
+      const data = await updateAvatar(session.token, avatar)
+      updateSession({ ...session, user: data.user })
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setSavingAvatar(null)
+    }
   }
 
   async function handleSaveDisplayName(e) {
@@ -77,6 +96,31 @@ export default function Account() {
       {error && (
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
+
+      <div className="mb-8">
+        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Avatar</label>
+        <div className="flex flex-wrap gap-2">
+          {AVATAR_OPTIONS.map((avatar) => {
+            const selected = session.user.avatar === avatar
+            return (
+              <button
+                key={avatar}
+                type="button"
+                onClick={() => handleSelectAvatar(avatar)}
+                disabled={savingAvatar !== null}
+                title={avatar}
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl border-2 transition disabled:opacity-40 ${
+                  selected
+                    ? 'border-violet-500 bg-violet-50 dark:bg-violet-950/40'
+                    : 'border-transparent bg-gray-100 dark:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600'
+                }`}
+              >
+                {savingAvatar === avatar ? '…' : avatar}
+              </button>
+            )
+          })}
+        </div>
+      </div>
 
       <form onSubmit={handleSaveDisplayName} className="mb-8">
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">

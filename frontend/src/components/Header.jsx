@@ -56,11 +56,15 @@ export default function Header() {
             aria-label={session ? 'My Account' : 'Log in'}
             className={
               session
-                ? 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-violet-500 to-pink-500'
+                ? session.user.avatar
+                  ? 'w-8 h-8 rounded-full flex items-center justify-center text-lg bg-gray-100 dark:bg-gray-800'
+                  : 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-violet-500 to-pink-500'
                 : 'w-8 h-8 rounded-full flex items-center justify-center text-lg hover:bg-gray-100 dark:hover:bg-gray-800'
             }
           >
-            {session ? session.user.displayName.trim().charAt(0).toUpperCase() : '👤'}
+            {session
+              ? session.user.avatar || session.user.displayName.trim().charAt(0).toUpperCase()
+              : '👤'}
           </Link>
         </div>
       </div>

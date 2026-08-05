@@ -2,7 +2,7 @@ import crypto from 'node:crypto'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import EndUser from '../models/EndUser.js'
-import { isValidUsername, isValidPassword, isValidDisplayName } from '../utils/validators.js'
+import { isValidUsername, isValidPassword, isValidDisplayName, isValidAvatar } from '../utils/validators.js'
 
 // No ambiguous characters (0/O, 1/I/L) — this gets hand-copied/written down,
 // so every character needs to be unambiguous when read back.
@@ -35,7 +35,7 @@ function signUserToken(user) {
 }
 
 function publicUser(user) {
-  return { id: user._id, username: user.username, displayName: user.displayName }
+  return { id: user._id, username: user.username, displayName: user.displayName, avatar: user.avatar || null }
 }
 
 export async function signup(req, res) {
@@ -152,9 +152,16 @@ export async function me(req, res) {
 }
 
 export async function updateProfile(req, res) {
-  const { displayName } = req.body
-  if (!isValidDisplayName(displayName)) {
+  const { displayName, avatar } = req.body
+
+  if (displayName === undefined && avatar === undefined) {
+    return res.status(400).json({ error: 'Nothing to update' })
+  }
+  if (displayName !== undefined && !isValidDisplayName(displayName)) {
     return res.status(400).json({ error: 'Gamer Tag must be 1-30 characters' })
+  }
+  if (avatar !== undefined && !isValidAvatar(avatar)) {
+    return res.status(400).json({ error: 'Invalid avatar selection' })
   }
 
   const user = await EndUser.findById(req.user.id)
@@ -162,7 +169,8 @@ export async function updateProfile(req, res) {
     return res.status(404).json({ error: 'Account not found' })
   }
 
-  user.displayName = displayName.trim()
+  if (displayName !== undefined) user.displayName = displayName.trim()
+  if (avatar !== undefined) user.avatar = avatar
   await user.save()
   res.json({ user: publicUser(user) })
 }

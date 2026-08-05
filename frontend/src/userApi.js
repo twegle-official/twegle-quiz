@@ -35,5 +35,8 @@ export const fetchCurrentUser = (token) => request('/users/me', { token })
 export const updateDisplayName = (token, displayName) =>
   request('/users/me', { token, method: 'PATCH', body: { displayName } })
 
+export const updateAvatar = (token, avatar) =>
+  request('/users/me', { token, method: 'PATCH', body: { avatar } })
+
 export const regenerateRecoveryCode = (token) =>
   request('/users/me/regenerate-recovery-code', { token, method: 'POST' })

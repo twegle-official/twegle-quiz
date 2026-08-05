@@ -15,6 +15,11 @@ const endUserSchema = new mongoose.Schema(
     passwordHash: { type: String, required: true },
     recoveryCodeHash: { type: String, required: true },
     displayName: { type: String, required: true },
+    // One of validators.js's AVATAR_OPTIONS (a fixed emoji preset, not an
+    // upload — no file storage needed). Unset until the user picks one, in
+    // which case the header/leaderboard fall back to the Gamer Tag's first
+    // initial instead.
+    avatar: { type: String, default: null },
   },
   { timestamps: true }
 )

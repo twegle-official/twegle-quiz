@@ -5,6 +5,10 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 // email/phone at all — see EndUser.js).
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/
 
+// Fixed preset avatars for end-user accounts — deliberately emoji, not
+// image uploads, so no file storage is ever needed for this.
+export const AVATAR_OPTIONS = ['🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎']
+
 export const LIMITS = {
   MIN_PASSWORD_LENGTH: 8,
   MAX_NAME_LENGTH: 100,
@@ -37,6 +41,10 @@ export function isValidDisplayName(displayName) {
     displayName.trim().length > 0 &&
     displayName.length <= LIMITS.MAX_DISPLAY_NAME_LENGTH
   )
+}
+
+export function isValidAvatar(avatar) {
+  return AVATAR_OPTIONS.includes(avatar)
 }
 
 // Used for the optional scheduled-publishing field. Returns:
