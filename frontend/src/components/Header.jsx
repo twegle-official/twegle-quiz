@@ -53,9 +53,13 @@ export default function Header() {
             to={session ? '/account' : '/login'}
             title={session ? session.user.displayName : 'Log in'}
             aria-label={session ? 'My Account' : 'Log in'}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            className={
+              session
+                ? 'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white bg-gradient-to-br from-violet-500 to-pink-500'
+                : 'w-8 h-8 rounded-full flex items-center justify-center text-lg hover:bg-gray-100 dark:hover:bg-gray-800'
+            }
           >
-            👤
+            {session ? session.user.displayName.trim().charAt(0).toUpperCase() : '👤'}
           </Link>
           <ThemeToggle />
         </div>

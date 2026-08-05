@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { fetchGameLeaderboard, submitGameScore } from '../api'
+import { useUserAuth } from '../UserAuthContext'
 
 export default function GameLeaderboard({ slug, label, score }) {
+  const { session } = useUserAuth()
   const [entries, setEntries] = useState(null)
   const [nickname, setNickname] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -13,13 +15,19 @@ export default function GameLeaderboard({ slug, label, score }) {
     fetchGameLeaderboard(slug).then(setEntries)
   }, [slug])
 
+  // Logged-in visitors submit under their Gamer Tag automatically — no
+  // reason to make them retype a name every game when the account already
+  // has one. Guests keep the manual nickname field, same as before accounts
+  // existed.
+  const submitName = session ? session.user.displayName : nickname.trim()
+
   async function handleSubmit(e) {
     e.preventDefault()
-    if (!nickname.trim()) return
+    if (!submitName) return
     setSubmitting(true)
     setError('')
     try {
-      await submitGameScore(slug, nickname.trim(), score)
+      await submitGameScore(slug, submitName, score)
       setSubmitted(true)
       const fresh = await fetchGameLeaderboard(slug)
       setEntries(fresh)
@@ -45,17 +53,23 @@ export default function GameLeaderboard({ slug, label, score }) {
             <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-3">{error}</p>
           )}
           <div className="flex gap-2">
-            <input
-              required
-              maxLength={20}
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder="Your nickname"
-              className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm"
-            />
+            {session ? (
+              <p className="flex-1 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 flex items-center">
+                Saving as <span className="font-semibold text-gray-900 dark:text-gray-100 ml-1">{session.user.displayName}</span>
+              </p>
+            ) : (
+              <input
+                required
+                maxLength={20}
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="Your nickname"
+                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-sm"
+              />
+            )}
             <button
               type="submit"
-              disabled={!nickname.trim() || submitting}
+              disabled={!submitName || submitting}
               className="px-4 py-2 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40"
             >
               {submitting ? 'Saving...' : 'Save'}
