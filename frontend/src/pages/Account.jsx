@@ -6,7 +6,7 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 // Must match backend/src/utils/validators.js's AVATAR_OPTIONS exactly — a
 // fixed emoji preset, not an upload, so no file storage is ever needed.
-const AVATAR_OPTIONS = ['🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎']
+const AVATAR_OPTIONS = ['🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎', '🐶', '🐰', '🦁', '🐨', '🎉', '🌈']
 
 export default function Account() {
   const { session, logout, updateSession } = useUserAuth()

@@ -7,7 +7,7 @@ const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/
 
 // Fixed preset avatars for end-user accounts — deliberately emoji, not
 // image uploads, so no file storage is ever needed for this.
-export const AVATAR_OPTIONS = ['🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎']
+export const AVATAR_OPTIONS = ['🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎', '🐶', '🐰', '🦁', '🐨', '🎉', '🌈']
 
 export const LIMITS = {
   MIN_PASSWORD_LENGTH: 8,
