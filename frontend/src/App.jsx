@@ -25,6 +25,11 @@ import Feedback from './pages/Feedback'
 import Badges from './pages/Badges'
 import BadgeToast from './components/BadgeToast'
 import NotFound from './pages/NotFound'
+import Signup from './pages/Signup'
+import UserLogin from './pages/Login'
+import ForgotPassword from './pages/ForgotPassword'
+import Account from './pages/Account'
+import { UserAuthProvider } from './UserAuthContext'
 
 import { AuthProvider } from './admin/AuthContext'
 import ProtectedRoute from './admin/ProtectedRoute'
@@ -74,12 +79,17 @@ function ScrollToTop() {
 
 function PublicSite() {
   return (
+    <UserAuthProvider>
     <div className="min-h-screen flex flex-col bg-dot-pattern">
       <Header />
       <ShareSidebar />
       <main className="flex-1">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<UserLogin />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/account" element={<Account />} />
           <Route path="/quiz/:quizId" element={<Quiz />} />
           <Route path="/quiz/:quizId/vs/:code" element={<CompareInvite />} />
           <Route path="/quiz/:quizId/vs/:code/result" element={<CompareResult />} />
@@ -105,6 +115,7 @@ function PublicSite() {
       <Footer />
       <BadgeToast />
     </div>
+    </UserAuthProvider>
   )
 }
 

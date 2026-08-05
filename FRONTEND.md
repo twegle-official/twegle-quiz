@@ -37,6 +37,7 @@ Renamed from "Twegle Quiz" to **Twegle** to reflect that it's now more than quiz
 - **Stories** — a new "📖 Stories" homepage tab and `/story/:slug` pages: original short stories across 6 categories (Horror, Comedy, Romance, Mystery, Moral Tales, Motivational), each with a "🔊 Listen to this story" button that reads the full text aloud using the browser's built-in Web Speech API — no recorded voice, no paid TTS service, nothing server-side. See "Stories" below.
 - **Horoscope** — a new "🔮 Horoscope" homepage tab (placed right after Stories) and `/horoscope/:sign` pages: light, funny, entertainment-only horoscopes for all 12 zodiac signs, in English and Hindi, with a Day/Week/Month/Year period switcher. Every horoscope is computed on the fly from a deterministic date-based formula — no database content, no cron job. See "Horoscope" below.
 - **Feedback page** (`/feedback`, linked from the footer's "Company" column) — a simple textarea + optional email form for visitors to send feedback about the site itself, no account needed. See "Feedback" below.
+- **End-user accounts** (`/signup`, `/login`, `/forgot-password`, `/account`) — fully optional, no feature is gated behind them. A 👤 icon in the header (next to 🏆 My Badges) links to `/account` if logged in, `/login` otherwise. See "End-user accounts" below.
 
 **25 quizzes** are live — 12 personality-quiz topics (skincare personality, Bollywood era, aesthetic, procrastination style, chai/coffee order, Korean beauty standard, squishy, blind bag, K-pop idol position, K-pop comeback era, texting personality, monsoon mood), each in both English and Hindi (the Hindi versions have their own slugs, e.g. `skincare-type-hi`), plus 1 English-only trivia quiz ("How Well Do You Know Bollywood?") — plus **91 posts** (59 English + 32 Hindi) across Jokes/Funny Lines/Quotes/Motivational Quotes/Memes, plus **8 stories** (6 English across all 6 categories, 2 Hindi). All managed through the admin panel, not by editing code.
 
@@ -154,6 +155,20 @@ Post was the only content type with real view/share analytics (`recordPostEngage
 ## Feedback
 
 A public `/feedback` page (`Feedback.jsx`) — a textarea plus an optional email field, submitting to `POST /api/feedback` via `submitFeedback` in `api.js`. Deliberately minimal: no categories, no login, just "what's on your mind" and a thank-you screen on success. Linked from the footer's "Company" column, next to About/Privacy/Terms. On the admin side, `FeedbackList.jsx` (`/admin/feedback`) follows the exact same list pattern as `Activity.jsx`: paginated (`Pager.jsx`), newest first, unread entries visually highlighted with a "New" badge, and Mark read/unread + Delete actions gated to superadmin/editor (analyst sees the list read-only, same split as every other admin list).
+
+## End-user accounts
+
+Fully optional accounts — no email or phone number collected, and nothing on the site is gated behind login. `UserAuthContext.jsx` (separate from the admin panel's `AuthContext.jsx`, its own `userSession` localStorage key) provides `session`/`signup`/`login`/`logout`/`updateSession` and wraps the whole public site in `App.jsx`.
+
+- **Signup** (`Signup.jsx`) — username, password, and a Gamer Tag (the public display name, separate from the private username). On success, shows the one-time **Recovery Code** full-screen with a "save this now, it's the only way back in" warning and a required "I've saved this code" checkbox before continuing to `/account` — the code is never shown again after this screen.
+- **Login** (`Login.jsx`) — username + password; wrong credentials show one generic error, never revealing which field was wrong. A "Twegle works fine without one" note is shown for anyone who lands here without meaning to sign up.
+- **Forgot Password** (`ForgotPassword.jsx`) — username + Recovery Code + new password. On success, a brand-new Recovery Code is issued (the old one is immediately invalidated) and shown the same way as at signup.
+- **Account page** (`/account`, `Account.jsx`) — shows the (read-only) username, an editable Gamer Tag field, a "Generate a new Recovery Code" action (confirmed via `window.confirm` since it invalidates the current one), and Log Out. Redirects to `/login` if there's no session.
+- **Header** (`Header.jsx`) — a 👤 icon, reusing the exact styling of the existing 🏆 My Badges link, pointing at `/account` if `session` exists or `/login` otherwise; updates reactively the instant signup/login/logout happens, no reload needed.
+
+`userApi.js` mirrors the admin panel's `adminApi.js` request-helper pattern (Bearer-token support, thrown `Error` on failure) rather than `api.js`'s ad hoc fetch style, since auth calls specifically benefit from consistent error handling.
+
+This build deliberately does not touch the existing anonymous localStorage mechanisms (daily streak in `dailyQuiz.js`, achievement badges in `badges.js`, game leaderboard nicknames in `GameLeaderboard.jsx`, or the anonymous play-tracking ID in `api.js`) — those keep working exactly as before for every visitor, logged in or not. Migrating that history onto an account is a separate, deliberately deferred follow-up.
 
 ## Report a quiz/post
 

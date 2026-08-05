@@ -16,8 +16,11 @@ import {
   engagementLimiter,
   reactionLimiter,
   gameScoreLimiter,
+  userLoginLimiter,
+  userSignupLimiter,
 } from './middleware/rateLimiters.js'
 import authRoutes from './routes/authRoutes.js'
+import endUserAuthRoutes from './routes/endUserAuthRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import quizRoutes from './routes/quizRoutes.js'
 import adminQuizRoutes from './routes/adminQuizRoutes.js'
@@ -54,6 +57,8 @@ app.get('/api/health', (req, res) => res.json({ ok: true }))
 app.get('/sitemap.xml', getSitemap)
 
 app.use('/api/auth/login', loginLimiter)
+app.use('/api/users/login', userLoginLimiter)
+app.use('/api/users/signup', userSignupLimiter)
 app.use('/api/quizzes/:slug/plays', playsLimiter)
 app.use('/api/posts/:id/engagement', postEngagementLimiter)
 app.use('/api/friendship/quizzes/:slug/instances', friendshipLimiter)
@@ -66,6 +71,7 @@ app.use('/api/feedback', feedbackLimiter)
 app.use('/api/engagement', engagementLimiter)
 
 app.use('/api/auth', authRoutes)
+app.use('/api/users', endUserAuthRoutes)
 app.use('/api/admins', adminRoutes)
 app.use('/api/quizzes', quizRoutes)
 app.use('/api/admin/quizzes', adminQuizRoutes)

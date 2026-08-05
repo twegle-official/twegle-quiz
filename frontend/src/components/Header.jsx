@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { LogoWithWordmark } from './Logo'
 import ThemeToggle from './ThemeToggle'
+import { useUserAuth } from '../UserAuthContext'
 
 export default function Header() {
+  const { session } = useUserAuth()
   const [searchParams] = useSearchParams()
   const [query, setQuery] = useState(searchParams.get('q') || '')
   const navigate = useNavigate()
@@ -46,6 +48,14 @@ export default function Header() {
             className="w-8 h-8 rounded-full flex items-center justify-center text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             🏆
+          </Link>
+          <Link
+            to={session ? '/account' : '/login'}
+            title={session ? session.user.displayName : 'Log in'}
+            aria-label={session ? 'My Account' : 'Log in'}
+            className="w-8 h-8 rounded-full flex items-center justify-center text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+          >
+            👤
           </Link>
           <ThemeToggle />
         </div>

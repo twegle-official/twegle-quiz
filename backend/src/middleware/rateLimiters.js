@@ -104,3 +104,23 @@ export const gameScoreLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Too many requests. Please slow down.' },
 })
+
+// Same reasoning as loginLimiter, scoped separately so end-user login
+// attempts never share a bucket with admin login attempts.
+export const userLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts. Please try again in a few minutes.' },
+})
+
+// Prevents scripted mass account creation — looser than login since a
+// genuine new visitor only ever needs to hit this once.
+export const userSignupLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many signup attempts. Please try again in a few minutes.' },
+})

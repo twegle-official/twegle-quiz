@@ -1,4 +1,9 @@
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// Letters/numbers/underscore only, 3-20 chars — deliberately excludes `@`,
+// `+`, spaces, and dashes, so it naturally rejects someone pasting an email
+// or a formatted phone number in out of habit (end-user accounts collect no
+// email/phone at all — see EndUser.js).
+const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/
 
 export const LIMITS = {
   MIN_PASSWORD_LENGTH: 8,
@@ -11,6 +16,7 @@ export const LIMITS = {
   MAX_FRIENDSHIP_QUESTIONS: 20,
   MAX_FRIENDSHIP_OPTIONS: 6,
   MAX_FEEDBACK_MESSAGE_LENGTH: 2000,
+  MAX_DISPLAY_NAME_LENGTH: 30,
 }
 
 export function isValidEmail(email) {
@@ -19,6 +25,18 @@ export function isValidEmail(email) {
 
 export function isValidPassword(password) {
   return typeof password === 'string' && password.length >= LIMITS.MIN_PASSWORD_LENGTH
+}
+
+export function isValidUsername(username) {
+  return typeof username === 'string' && USERNAME_RE.test(username)
+}
+
+export function isValidDisplayName(displayName) {
+  return (
+    typeof displayName === 'string' &&
+    displayName.trim().length > 0 &&
+    displayName.length <= LIMITS.MAX_DISPLAY_NAME_LENGTH
+  )
 }
 
 // Used for the optional scheduled-publishing field. Returns:

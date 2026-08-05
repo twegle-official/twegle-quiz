@@ -8,7 +8,7 @@
 
 ## What Twegle is, in one paragraph
 
-Twegle (`twegle.in`) is a free entertainment website — quizzes, jokes, quotes, games, short stories, and daily horoscopes, in English and Hindi. Nobody needs to sign up or log in to use it; you just open the site and start playing, reading, or laughing. It's designed to be shared — every quiz result, joke, or game outcome has a "share" button, so the site grows mainly through people sending things to friends on WhatsApp, Instagram, etc.
+Twegle (`twegle.in`) is a free entertainment website — quizzes, jokes, quotes, games, short stories, and daily horoscopes, in English and Hindi. Nobody needs to sign up or log in to use it; you just open the site and start playing, reading, or laughing — there's an optional account you can create if you want to keep your streak/badges/name across devices, but it's never required. It's designed to be shared — every quiz result, joke, or game outcome has a "share" button, so the site grows mainly through people sending things to friends on WhatsApp, Instagram, etc.
 
 There are two completely separate sides to the app:
 - **The public website** — what any visitor sees at `twegle.in`. No login.
@@ -71,6 +71,10 @@ A "🏆 My Badges" page (linked from the footer) tracks 7 lightweight achievemen
 - Follow Twegle's social media accounts (Instagram, Facebook, YouTube, LinkedIn) via icons in the footer.
 
 None of this requires creating an account. The site quietly remembers an anonymous ID in your browser (not tied to your name/email/anything personal) purely so it can count "how many people played this" and remember things like your reaction picks and daily streak.
+
+### Optional accounts (no email or phone number, ever)
+
+Anyone can create an account (a 👤 icon in the header) if they want a name that follows them across devices, but it's entirely optional — every feature above works exactly the same whether you're logged in or not. Signing up only asks for a username, a password, and a "Gamer Tag" (a public nickname, separate from your private username) — deliberately **no email address or phone number is ever collected**, so there's nothing personally identifying to leak or misuse. Since there's no email to send a "reset your password" link to, forgetting a password is handled differently: at signup (and again any time it's used or regenerated), you're shown a one-time **Recovery Code** to save somewhere safe — it's the only way back into the account if the password is forgotten. If both the password and the code are lost, the account can't be recovered — this is explained plainly on the reset page so it's never a surprise.
 
 ---
 
