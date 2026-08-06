@@ -325,17 +325,27 @@ export default function Home() {
   return (
     <div>
       <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
+      {/* Banner shrunk further 2026-08-06 (py-4→py-3, h1 text-xl→text-lg on
+          desktop — roughly a 20-25% height cut) per direct feedback that
+          people come to browse quickly, and one extra row of real content
+          visible without scrolling matters more than a taller hero. */}
       <div className="bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500">
-        <div className="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-center sm:text-left">
+        <div className="max-w-6xl mx-auto px-4 py-2.5 sm:py-3 flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-center sm:text-left">
           <div>
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/80">
               Where Fun Goes Viral
             </p>
-            <h1 className="text-base sm:text-xl font-extrabold text-white">
-              Quizzes, Puzzles, Jokes, Quotes, Games, Stories &amp; Horoscope
+            {/* Leads with the benefit ("why stay"), not an inventory of
+                content types — the previous heading just listed what Twegle
+                has. Content types still get their own mention in the
+                subtext and in every meta description (index.html,
+                useDocumentMeta.js) for SEO/link-preview purposes, so this
+                change doesn't cost anything there. */}
+            <h1 className="text-base sm:text-lg font-extrabold text-white">
+              Your Daily Dose of Fun — Play, Laugh &amp; Discover Something New
             </h1>
             <p className="text-white/90 text-[11px] sm:text-sm">
-              No sign up, no waiting — just pick something and go.
+              Quizzes, puzzles, games, jokes &amp; more — no sign up, just pick something and go.
             </p>
           </div>
           {/* Hidden below `sm` — on a phone this row was two extra stacked

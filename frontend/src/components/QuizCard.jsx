@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { getQuizIntroShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import { engagementLabel } from '../utils/engagementLabel'
 
 function formatPlays(n) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
@@ -8,7 +9,17 @@ function formatPlays(n) {
   return `${n}`
 }
 
+// ~20 seconds/question, rounded to whole minutes (min 1) — a rough estimate,
+// not a timer; helps someone decide whether to start right now.
+function estimateMinutes(questionCount) {
+  if (!questionCount) return null
+  return Math.max(1, Math.round((questionCount * 20) / 60))
+}
+
 export default function QuizCard({ quiz }) {
+  const timeLabel = estimateMinutes(quiz.questionCount)
+  const engagementText = quiz.totalPlays > 0 ? engagementLabel(quiz.totalPlays) || `${formatPlays(quiz.totalPlays)} took this` : null
+
   return (
     <Link
       to={`/quiz/${quiz.slug}`}
@@ -28,9 +39,11 @@ export default function QuizCard({ quiz }) {
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           Take the quiz →
         </span>
-        {quiz.totalPlays > 0 && (
+        {(timeLabel || engagementText) && (
           <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-            {formatPlays(quiz.totalPlays)} took this
+            {timeLabel && `⏱ ~${timeLabel} min`}
+            {timeLabel && engagementText && ' · '}
+            {engagementText}
           </span>
         )}
       </div>

@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom'
 import { getFriendshipQuizIntroShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import { engagementLabel } from '../utils/engagementLabel'
 
 export default function FriendshipQuizCard({ quiz }) {
+  const badge = quiz.totalAttempts > 0 ? engagementLabel(quiz.totalAttempts) : null
+  const engagementText = quiz.totalAttempts > 0
+    ? badge || `${quiz.totalAttempts} ${quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed`
+    : null
+
   return (
     <Link
       to={`/friendship/${quiz.slug}`}
@@ -21,9 +27,9 @@ export default function FriendshipQuizCard({ quiz }) {
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           Fill it in →
         </span>
-        {quiz.totalAttempts > 0 && (
+        {engagementText && (
           <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-            {quiz.totalAttempts} {quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed
+            {engagementText}
           </span>
         )}
       </div>

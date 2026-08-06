@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { getGameShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import { engagementLabel } from '../utils/engagementLabel'
 
 function formatPlays(n) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
@@ -9,6 +10,8 @@ function formatPlays(n) {
 }
 
 export default function GameCard({ game }) {
+  const engagementText = game.totalPlays > 0 ? engagementLabel(game.totalPlays) || `${formatPlays(game.totalPlays)} played` : null
+
   return (
     <Link
       to={`/games/${game.slug}`}
@@ -27,11 +30,9 @@ export default function GameCard({ game }) {
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           Play now →
         </span>
-        {game.totalPlays > 0 && (
-          <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-            {formatPlays(game.totalPlays)} played
-          </span>
-        )}
+        <span className="whitespace-nowrap text-xs text-white/80 font-medium">
+          🎮 Instant{engagementText && ` · ${engagementText}`}
+        </span>
       </div>
     </Link>
   )

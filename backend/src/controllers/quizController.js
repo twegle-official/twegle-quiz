@@ -170,7 +170,7 @@ export async function listPublishedQuizzes(req, res) {
   }
 
   const quizzes = await Quiz.find(filter).select(
-    'title slug description emoji gradient category language createdAt'
+    'title slug description emoji gradient category language createdAt questions'
   )
 
   // Play counts are social proof on the cards ("12.4k took this") — cheap to
@@ -182,7 +182,15 @@ export async function listPublishedQuizzes(req, res) {
   const countsByQuizId = Object.fromEntries(counts.map((c) => [c._id.toString(), c.totalPlays]))
 
   res.json({
-    quizzes: quizzes.map((q) => ({ ...q.toObject(), totalPlays: countsByQuizId[q._id.toString()] || 0 })),
+    // `questions` was only selected to compute a count for the card's
+    // "~2 min" estimate (QuizCard.jsx) — stripped back out so the list
+    // payload doesn't balloon with every question/option for every quiz.
+    quizzes: quizzes.map((q) => {
+      const obj = q.toObject()
+      const questionCount = obj.questions?.length || 0
+      delete obj.questions
+      return { ...obj, totalPlays: countsByQuizId[q._id.toString()] || 0, questionCount }
+    }),
   })
 }
 

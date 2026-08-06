@@ -28,17 +28,25 @@ export default function Header() {
       <div className="max-w-6xl mx-auto px-4 py-3 grid grid-cols-[auto_1fr_auto] items-center gap-4">
         <Link to="/" className="shrink-0 flex items-baseline gap-2">
           <LogoWithWordmark size={34} />
-          <span className="hidden sm:inline text-xs text-gray-400 dark:text-gray-500 italic">Where Fun Goes Viral</span>
+          {/* Slightly brighter/heavier than before (was text-gray-400 italic,
+              easy to miss entirely) — still small and secondary to the logo,
+              just legible enough to register as a real tagline. */}
+          <span className="hidden sm:inline text-[13px] font-medium text-gray-500 dark:text-gray-400 not-italic">Where Fun Goes Viral</span>
         </Link>
         <form onSubmit={handleSubmit} className="flex justify-center">
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search quizzes, jokes, quotes..."
-            aria-label="Search"
-            className="w-full max-w-xs px-4 py-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-violet-400 focus:bg-white dark:focus:bg-gray-800"
-          />
+          <div className="relative w-full max-w-xs">
+            <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-sm">
+              🔍
+            </span>
+            <input
+              type="search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search quizzes, jokes, quotes..."
+              aria-label="Search"
+              className="w-full pl-9 pr-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-100 dark:focus:ring-violet-900/40 focus:bg-white dark:focus:bg-gray-800 transition-shadow"
+            />
+          </div>
         </form>
         <div className="flex items-center gap-2">
           <ThemeToggle />

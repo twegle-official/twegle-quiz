@@ -64,7 +64,7 @@ Admins previously had zero visibility into `EndUser` accounts — no list, no wa
 ## API summary
 
 **Public (no auth) — used by the end-user-facing site:**
-- `GET /api/quizzes?language=en|hi&category=beauty|entertainment|kpop|lifestyle|fun` — list published quizzes, both filters optional; each result includes `totalPlays` (aggregated from `PlaySession`, used for the "X took this" social-proof badge) and `createdAt` (used for the homepage's "Newest" sort)
+- `GET /api/quizzes?language=en|hi&category=beauty|entertainment|kpop|lifestyle|fun` — list published quizzes, both filters optional; each result includes `totalPlays` (aggregated from `PlaySession`, used for the engagement badge — see `FRONTEND.md`'s "Visual polish"), `createdAt` (used for the homepage's "Newest" sort), and `questionCount` (an integer, added 2026-08-06 for the card's "⏱ ~N min" estimate — the full `questions` array is selected server-side to compute this count, then stripped from the response before sending so the payload doesn't balloon with every question/option for every quiz)
 - `GET /api/quizzes/:slug` — get one published quiz (questions, options, results)
 - `POST /api/quizzes/:slug/plays` — record an anonymous completion (`resultKey`, `anonymousId` — no personal data)
 - `GET /api/posts?category=joke|funny-line|quote|motivational-quote&language=en|hi` — list published posts, both filters optional; each result includes `totalEngagement` (aggregated view+share count from `PostEngagement`, used for the homepage's "Trending" sort — see "Trending/Newest sort" below)
