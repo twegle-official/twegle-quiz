@@ -9,7 +9,10 @@ export default function ForgotPassword() {
   const { updateSession } = useUserAuth()
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
-  const [recoveryCode, setRecoveryCode] = useState('')
+  // Only the part after "TWEGLE-" is collected — every code shares that
+  // prefix (see generateRecoveryCode in endUserAuthController.js), so typing
+  // it out each time is pure friction; the full code is composed on submit.
+  const [codeSuffix, setCodeSuffix] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -23,7 +26,7 @@ export default function ForgotPassword() {
     setError('')
     setSubmitting(true)
     try {
-      const data = await resetUserPassword(username.trim(), recoveryCode.trim(), newPassword)
+      const data = await resetUserPassword(username.trim(), `TWEGLE-${codeSuffix.trim()}`, newPassword)
       updateSession({ token: data.token, user: data.user })
       setNewRecoveryCode(data.recoveryCode)
     } catch (err) {
@@ -87,13 +90,18 @@ export default function ForgotPassword() {
         />
 
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Recovery Code</label>
-        <input
-          required
-          value={recoveryCode}
-          onChange={(e) => setRecoveryCode(e.target.value)}
-          placeholder="TWEGLE-XXXX-XXXX"
-          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl mb-4 font-mono"
-        />
+        <div className="flex items-stretch border border-gray-300 dark:border-gray-600 rounded-xl overflow-hidden mb-4 focus-within:ring-2 focus-within:ring-violet-400">
+          <span className="flex items-center px-4 bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 font-mono font-semibold select-none">
+            TWEGLE-
+          </span>
+          <input
+            required
+            value={codeSuffix}
+            onChange={(e) => setCodeSuffix(e.target.value.toUpperCase())}
+            placeholder="XXXX-XXXX"
+            className="flex-1 min-w-0 px-4 py-3 dark:bg-gray-800 dark:text-gray-100 font-mono outline-none"
+          />
+        </div>
 
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">New Password</label>
         <input
