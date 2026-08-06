@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
+import { LogoWithWordmark } from '../../components/Logo'
 
 export default function Login() {
   const { login } = useAuth()
@@ -47,6 +48,9 @@ export default function Login() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-white rounded-2xl shadow-md p-8"
       >
+        <div className="flex justify-center mb-6">
+          <LogoWithWordmark size={32} />
+        </div>
         <h1 className="text-xl font-bold text-gray-900 mb-6 text-center">Admin Login</h1>
 
         {error && (

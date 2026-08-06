@@ -184,7 +184,13 @@ export default function AdminLayout() {
           </Link>
         </div>
 
-        <nav className="flex flex-1 flex-col flex-nowrap gap-1 px-3">
+        {/* overflow-y-auto — with 10+ nav items plus the write-only Quick
+            Add/Bulk Import/Admins entries, total sidebar content can exceed
+            a shorter laptop's viewport height; without its own scroll area
+            here, the Log out button below gets pushed off-screen with no
+            way to reach it (the aside itself is a fixed lg:h-screen box,
+            so the page's own scrollbar doesn't help). */}
+        <nav className="flex flex-1 flex-col flex-nowrap gap-1 px-3 overflow-y-auto">
           {items.map((item) => (
             <NavLink key={item.to} to={item.to} className={makeNavClass(collapsed)} title={item.label}>
               <span>{item.emoji}</span>
