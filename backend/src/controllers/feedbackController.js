@@ -25,8 +25,8 @@ export async function submitFeedback(req, res) {
   // Report-specific fields — only present when this submission came from the
   // "🚩 Report" button on a quiz/post rather than the general Feedback page.
   if (contentType !== undefined) {
-    if (!['quiz', 'post', 'story'].includes(contentType)) {
-      return res.status(400).json({ error: 'contentType must be quiz, post, or story' })
+    if (!['quiz', 'post', 'story', 'puzzle'].includes(contentType)) {
+      return res.status(400).json({ error: 'contentType must be quiz, post, story, or puzzle' })
     }
     if (typeof contentId !== 'string' || !mongoose.Types.ObjectId.isValid(contentId)) {
       return res.status(400).json({ error: 'contentId must be a valid id' })
