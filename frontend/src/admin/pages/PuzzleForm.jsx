@@ -6,9 +6,9 @@ import { GRADIENT_OPTIONS } from '../../gradients'
 import { toDatetimeLocalValue, fromDatetimeLocalValue } from '../utils/datetimeLocal'
 
 const DIFFICULTIES = [
-  { value: 'easy', label: 'Easy' },
-  { value: 'medium', label: 'Medium' },
-  { value: 'hard', label: 'Hard' },
+  { value: 'easy', label: 'Warm-Up' },
+  { value: 'medium', label: 'Challenge' },
+  { value: 'hard', label: 'Brain Buster' },
 ]
 
 const emptyPuzzle = {

@@ -8,9 +8,9 @@ import Pager from '../components/Pager'
 const PAGE_SIZE = 20
 
 const DIFFICULTY_LABELS = {
-  easy: 'Easy',
-  medium: 'Medium',
-  hard: 'Hard',
+  easy: 'Warm-Up',
+  medium: 'Challenge',
+  hard: 'Brain Buster',
 }
 
 export default function PuzzleList() {

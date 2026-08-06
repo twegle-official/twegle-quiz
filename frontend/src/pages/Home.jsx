@@ -40,9 +40,9 @@ const TABS = [
 
 const PUZZLE_DIFFICULTIES = [
   { key: 'all', label: 'All' },
-  { key: 'easy', label: 'Easy', emoji: '🟢' },
-  { key: 'medium', label: 'Medium', emoji: '🟡' },
-  { key: 'hard', label: 'Hard', emoji: '🔴' },
+  { key: 'easy', label: 'Warm-Up', emoji: '🟢' },
+  { key: 'medium', label: 'Challenge', emoji: '🟡' },
+  { key: 'hard', label: 'Brain Buster', emoji: '🔴' },
 ]
 
 const POST_CATEGORIES = [

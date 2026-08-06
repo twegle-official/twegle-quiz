@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { getPuzzleShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 
-const DIFFICULTY_LABEL = { easy: 'Easy', medium: 'Medium', hard: 'Hard' }
+const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
 
 export default function PuzzleCard({ puzzle, index = 0 }) {
   const animationStyle = { animationDelay: `${index * 60}ms`, animationFillMode: 'backwards' }
@@ -35,7 +35,7 @@ export default function PuzzleCard({ puzzle, index = 0 }) {
           Solve it →
         </span>
         <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-          {DIFFICULTY_LABEL[puzzle.difficulty] || 'Easy'}
+          {DIFFICULTY_LABEL[puzzle.difficulty] || 'Warm-Up'}
         </span>
       </div>
     </Link>

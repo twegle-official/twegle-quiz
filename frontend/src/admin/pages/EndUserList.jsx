@@ -67,7 +67,7 @@ export default function EndUserList() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">End-User Accounts</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">Members</h1>
       <p className="text-sm text-gray-500 mb-6">
         Visitors who created an optional account (no email/phone collected — see FRONTEND.md). Read-only fields
         only; passwords and recovery codes are never visible here.

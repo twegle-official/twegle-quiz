@@ -12,7 +12,7 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { pickPuzzleOfTheDay, recordDailyActivityCompletion } from '../utils/dailyQuiz'
 
 const SUGGESTION_COUNT = 4
-const DIFFICULTY_LABEL = { easy: 'Easy', medium: 'Medium', hard: 'Hard' }
+const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
 
 export default function PuzzleView() {
   const { id } = useParams()
@@ -95,7 +95,7 @@ export default function PuzzleView() {
       >
         <div className="text-6xl mb-4">{puzzle.emoji || '🧩'}</div>
         <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">
-          {DIFFICULTY_LABEL[puzzle.difficulty] || 'Easy'} Puzzle
+          {DIFFICULTY_LABEL[puzzle.difficulty] || 'Warm-Up'} Puzzle
         </p>
         <h1 className="text-2xl font-bold leading-snug">{puzzle.question}</h1>
       </div>
