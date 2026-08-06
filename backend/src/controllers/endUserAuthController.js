@@ -95,6 +95,9 @@ export async function login(req, res) {
     if (!valid) {
       return res.status(401).json({ error: 'Invalid username or password' })
     }
+    if (user.status === 'disabled') {
+      return res.status(403).json({ error: 'This account has been disabled. Contact support if you think this is a mistake.' })
+    }
 
     res.json({ token: signUserToken(user), user: publicUser(user) })
   } catch (err) {

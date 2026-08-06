@@ -133,6 +133,10 @@ A running record of who (which admin) created, edited, or deleted what, and when
 
 Every message submitted through the public Feedback page (plus every "Report" flagged on a piece of content) lands here, newest first, with a way to mark things as read/handled.
 
+### End-user accounts
+
+A list of everyone who's created an optional visitor account (username + Gamer Tag, no password or recovery code ever shown to admins) — searchable, with a **Disable** button for a problem account (reversible — it can be re-enabled any time) and a **Delete** button for permanent removal. A disabled account is logged out immediately and can't sign back in until re-enabled.
+
 ---
 
 ## The short version

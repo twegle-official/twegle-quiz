@@ -7,6 +7,8 @@ const RESOURCE_LABELS = {
   post: 'Post',
   friendshipQuiz: 'Friendship Quiz',
   story: 'Story',
+  puzzle: 'Puzzle',
+  endUser: 'End User',
 }
 
 const ACTION_STYLE = {

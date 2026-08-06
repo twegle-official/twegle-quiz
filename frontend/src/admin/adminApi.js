@@ -103,3 +103,10 @@ export const updateFeedback = (token, id, payload) =>
   request(`/admin/feedback/${id}`, { token, method: 'PUT', body: payload })
 export const deleteFeedback = (token, id) =>
   request(`/admin/feedback/${id}`, { token, method: 'DELETE' })
+
+export const listEndUsersAdmin = (token, params) =>
+  request(`/admin/end-users${toQueryString(params)}`, { token })
+export const updateEndUserStatus = (token, id, status) =>
+  request(`/admin/end-users/${id}/status`, { token, method: 'PATCH', body: { status } })
+export const deleteEndUser = (token, id) =>
+  request(`/admin/end-users/${id}`, { token, method: 'DELETE' })

@@ -53,6 +53,7 @@ import Analytics from './admin/pages/Analytics'
 import Activity from './admin/pages/Activity'
 import Admins from './admin/pages/Admins'
 import FeedbackList from './admin/pages/FeedbackList'
+import EndUserList from './admin/pages/EndUserList'
 
 // React Router does client-side navigation, which (unlike a normal full page
 // load) never resets scroll position on its own — without this, opening a
@@ -243,6 +244,7 @@ export default function App() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="activity" element={<Activity />} />
           <Route path="feedback" element={<FeedbackList />} />
+          <Route path="end-users" element={<EndUserList />} />
           <Route
             path="admins"
             element={

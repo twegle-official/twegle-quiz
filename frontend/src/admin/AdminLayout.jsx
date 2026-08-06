@@ -15,6 +15,7 @@ const NAV_ITEMS = [
   { to: '/admin/analytics', label: 'Analytics', emoji: '📊' },
   { to: '/admin/activity', label: 'Activity', emoji: '📋' },
   { to: '/admin/feedback', label: 'Feedback', emoji: '📨' },
+  { to: '/admin/end-users', label: 'End Users', emoji: '👥' },
 ]
 // Write-only, like posts/new — analyst is read-only, so these wouldn't work
 // for them even if shown.

@@ -20,6 +20,11 @@ const endUserSchema = new mongoose.Schema(
     // which case the header/leaderboard fall back to the Gamer Tag's first
     // initial instead.
     avatar: { type: String, default: null },
+    // Moderation flag for admins (see adminEndUserController.js) — a
+    // 'disabled' account can no longer log in, but the account/data is kept
+    // (not deleted), so this is reversible. Default 'active' so nothing
+    // changes for the accounts that already exist.
+    status: { type: String, enum: ['active', 'disabled'], default: 'active' },
   },
   { timestamps: true }
 )
