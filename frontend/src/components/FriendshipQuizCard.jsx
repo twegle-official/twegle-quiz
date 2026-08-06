@@ -4,10 +4,8 @@ import TileShareButton from './TileShareButton'
 import { engagementLabel } from '../utils/engagementLabel'
 
 export default function FriendshipQuizCard({ quiz }) {
-  const badge = quiz.totalAttempts > 0 ? engagementLabel(quiz.totalAttempts) : null
-  const engagementText = quiz.totalAttempts > 0
-    ? badge || `${quiz.totalAttempts} ${quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed`
-    : null
+  const badge = engagementLabel(quiz.totalAttempts)
+  const engagementText = badge || `${quiz.totalAttempts} ${quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed`
 
   return (
     <Link
@@ -23,15 +21,13 @@ export default function FriendshipQuizCard({ quiz }) {
       <div className="text-4xl mb-3">{quiz.emoji}</div>
       <h2 className="text-xl font-bold mb-1 pr-8">{quiz.title}</h2>
       <p className="text-white/90 text-sm mb-4">{quiz.description}</p>
-      <div className="mt-auto flex items-center justify-between">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           Fill it in →
         </span>
-        {engagementText && (
-          <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-            {engagementText}
-          </span>
-        )}
+        <span className="whitespace-nowrap text-xs text-white/80 font-medium">
+          {engagementText}
+        </span>
       </div>
     </Link>
   )

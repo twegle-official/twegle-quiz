@@ -10,7 +10,7 @@ function formatPlays(n) {
 }
 
 export default function GameCard({ game }) {
-  const engagementText = game.totalPlays > 0 ? engagementLabel(game.totalPlays) || `${formatPlays(game.totalPlays)} played` : null
+  const engagementText = engagementLabel(game.totalPlays) || `${formatPlays(game.totalPlays)} played`
 
   return (
     <Link
@@ -26,7 +26,7 @@ export default function GameCard({ game }) {
       <div className="text-4xl mb-3">{game.emoji}</div>
       <h2 className="text-xl font-bold mb-1 pr-8">{game.title}</h2>
       <p className="text-white/90 text-sm mb-4">{game.description}</p>
-      <div className="mt-auto flex items-center justify-between">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           Play now →
         </span>

@@ -18,7 +18,7 @@ function estimateMinutes(questionCount) {
 
 export default function QuizCard({ quiz }) {
   const timeLabel = estimateMinutes(quiz.questionCount)
-  const engagementText = quiz.totalPlays > 0 ? engagementLabel(quiz.totalPlays) || `${formatPlays(quiz.totalPlays)} took this` : null
+  const engagementText = engagementLabel(quiz.totalPlays) || `${formatPlays(quiz.totalPlays)} took this`
 
   return (
     <Link
@@ -35,7 +35,7 @@ export default function QuizCard({ quiz }) {
       <h2 className="text-xl font-bold mb-1 pr-8">{quiz.title}</h2>
       <p className="text-white/90 text-sm mb-4">{quiz.description}</p>
 
-      <div className="mt-auto flex items-center justify-between">
+      <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           Take the quiz →
         </span>
