@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../AuthContext'
 import { fetchActivityLog } from '../adminApi'
+import Pager from '../components/Pager'
+
+const PAGE_SIZE = 50
 
 const RESOURCE_LABELS = {
   quiz: 'Quiz',
@@ -20,20 +23,24 @@ const ACTION_STYLE = {
 export default function Activity() {
   const { session } = useAuth()
   const [entries, setEntries] = useState(null)
+  const [pagination, setPagination] = useState(null)
   const [error, setError] = useState('')
+  const [page, setPage] = useState(1)
 
   useEffect(() => {
-    fetchActivityLog(session.token)
-      .then((data) => setEntries(data.entries))
+    fetchActivityLog(session.token, { page, limit: PAGE_SIZE })
+      .then((data) => {
+        setEntries(data.entries)
+        setPagination(data.pagination)
+      })
       .catch((err) => setError(err.message))
-  }, [session.token])
+  }, [session.token, page])
 
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Activity</h1>
       <p className="text-sm text-gray-500 mb-6">
-        Who created, edited, or deleted each quiz, post, or friendship quiz, and when. Shows the
-        most recent 200 actions.
+        Who created, edited, or deleted each quiz, post, or friendship quiz, and when.
       </p>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
@@ -96,6 +103,10 @@ export default function Activity() {
             </table>
           </div>
         </>
+      )}
+
+      {pagination && (
+        <Pager page={pagination.page} totalPages={pagination.totalPages} total={pagination.total} onPageChange={setPage} />
       )}
     </div>
   )

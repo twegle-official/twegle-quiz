@@ -92,7 +92,8 @@ export const updateFriendshipQuiz = (token, id, payload) =>
 export const deleteFriendshipQuiz = (token, id) =>
   request(`/admin/friendship-quizzes/${id}`, { token, method: 'DELETE' })
 
-export const fetchActivityLog = (token) => request('/admin/activity', { token })
+export const fetchActivityLog = (token, params) =>
+  request(`/admin/activity${toQueryString(params)}`, { token })
 
 export const fetchEngagementSummary = (token, contentType) =>
   request(`/admin/engagement/${contentType}`, { token })

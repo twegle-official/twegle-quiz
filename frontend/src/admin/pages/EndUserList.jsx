@@ -187,11 +187,15 @@ export default function EndUserList() {
                   {new Date(selectedUser.createdAt).toLocaleString()}
                 </dd>
               </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-gray-500">Password / Recovery Code</dt>
-                <dd className="text-gray-400 italic">Never visible — hashed only</dd>
-              </div>
             </dl>
+
+            {/* Not a field with a value — there's nothing to show — so it's
+                a plain note rather than a fake label/value row. Answers the
+                "can an admin see the password or recovery code" question
+                directly, since it's a reasonable thing to wonder. */}
+            <p className="text-xs text-gray-400 -mt-3 mb-6">
+              🔒 Password and Recovery Code are never visible to admins — only their hashes are stored.
+            </p>
 
             {canModerate && (
               <div className="flex gap-2">
