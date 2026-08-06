@@ -28,6 +28,8 @@ import postRoutes from './routes/postRoutes.js'
 import adminPostRoutes from './routes/adminPostRoutes.js'
 import storyRoutes from './routes/storyRoutes.js'
 import adminStoryRoutes from './routes/adminStoryRoutes.js'
+import puzzleRoutes from './routes/puzzleRoutes.js'
+import adminPuzzleRoutes from './routes/adminPuzzleRoutes.js'
 import shareRoutes from './routes/shareRoutes.js'
 import friendshipRoutes from './routes/friendshipRoutes.js'
 import adminFriendshipRoutes from './routes/adminFriendshipRoutes.js'
@@ -79,6 +81,8 @@ app.use('/api/posts', postRoutes)
 app.use('/api/admin/posts', adminPostRoutes)
 app.use('/api/stories', storyRoutes)
 app.use('/api/admin/stories', adminStoryRoutes)
+app.use('/api/puzzles', puzzleRoutes)
+app.use('/api/admin/puzzles', adminPuzzleRoutes)
 app.use('/api/share', shareRoutes)
 app.use('/api/friendship', friendshipRoutes)
 app.use('/api/admin/friendship-quizzes', adminFriendshipRoutes)

@@ -9,6 +9,7 @@ import Result from './pages/Result'
 import Browse from './pages/Browse'
 import PostView from './pages/PostView'
 import StoryView from './pages/StoryView'
+import PuzzleView from './pages/PuzzleView'
 import HoroscopeView from './pages/HoroscopeView'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
@@ -44,6 +45,8 @@ import QuickAdd from './admin/pages/QuickAdd'
 import BulkImport from './admin/pages/BulkImport'
 import StoryList from './admin/pages/StoryList'
 import StoryForm from './admin/pages/StoryForm'
+import PuzzleList from './admin/pages/PuzzleList'
+import PuzzleForm from './admin/pages/PuzzleForm'
 import FriendshipQuizList from './admin/pages/FriendshipQuizList'
 import FriendshipQuizForm from './admin/pages/FriendshipQuizForm'
 import Analytics from './admin/pages/Analytics'
@@ -100,6 +103,7 @@ function PublicSite() {
           <Route path="/games/tic-tac-toe/:code" element={<TicTacToeMultiplayer />} />
           <Route path="/post/:id" element={<PostView />} />
           <Route path="/story/:slug" element={<StoryView />} />
+          <Route path="/puzzle/:id" element={<PuzzleView />} />
           <Route path="/horoscope/:sign" element={<HoroscopeView />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
@@ -199,6 +203,23 @@ export default function App() {
             element={
               <ProtectedRoute roles={['superadmin', 'editor']}>
                 <StoryForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="puzzles" element={<PuzzleList />} />
+          <Route
+            path="puzzles/new"
+            element={
+              <ProtectedRoute roles={['superadmin', 'editor']}>
+                <PuzzleForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="puzzles/:id/edit"
+            element={
+              <ProtectedRoute roles={['superadmin', 'editor']}>
+                <PuzzleForm />
               </ProtectedRoute>
             }
           />

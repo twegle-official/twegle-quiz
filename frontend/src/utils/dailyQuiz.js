@@ -25,6 +25,15 @@ export function pickQuizOfTheDay(quizzes) {
   return sorted[index]
 }
 
+// Same deterministic pattern as pickQuizOfTheDay, sorted by _id instead of
+// slug since puzzles are addressed by id, not slug.
+export function pickPuzzleOfTheDay(puzzles) {
+  if (!puzzles || puzzles.length === 0) return null
+  const sorted = [...puzzles].sort((a, b) => a._id.localeCompare(b._id))
+  const index = dayOfYear(new Date()) % sorted.length
+  return sorted[index]
+}
+
 const STREAK_KEY = 'dailyQuizStreak'
 
 export function getStreak() {
@@ -40,12 +49,17 @@ function previousDateKey(todayKey) {
   return dateKey(new Date(y, m - 1, d - 1))
 }
 
-// Called from Result.jsx after any quiz completes — a no-op unless the quiz
-// that was just finished is today's pick. Safe to call multiple times per
-// day (already-recorded-today is a no-op, not a double increment).
-export function recordDailyQuizCompletion(finishedSlug, todaysSlug) {
+// Called from Result.jsx after any quiz completes, and from PuzzleView.jsx
+// after revealing today's puzzle's answer — a no-op unless the thing that
+// was just finished is today's pick for its own type. One shared streak
+// (same STREAK_KEY/localStorage entry as before this was generalized, so no
+// existing streak resets) — completing *either* the daily quiz or the daily
+// puzzle keeps it alive; there's no requirement to do both. Safe to call
+// multiple times per day (already-recorded-today is a no-op, not a double
+// increment).
+export function recordDailyActivityCompletion(finishedId, todaysId) {
   const current = getStreak()
-  if (finishedSlug !== todaysSlug) return current
+  if (finishedId !== todaysId) return current
 
   const today = getTodayKey()
   if (current.lastDate === today) return current

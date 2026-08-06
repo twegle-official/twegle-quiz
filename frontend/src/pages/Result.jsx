@@ -10,7 +10,7 @@ import BackButton from '../components/BackButton'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
-import { pickQuizOfTheDay, recordDailyQuizCompletion } from '../utils/dailyQuiz'
+import { pickQuizOfTheDay, recordDailyActivityCompletion } from '../utils/dailyQuiz'
 import { recordQuizCompleted, recordPerfectTrivia, checkStreakBadges } from '../utils/badges'
 
 const SUGGESTION_COUNT = 4
@@ -73,7 +73,7 @@ export default function Result() {
         const todaysQuiz = pickQuizOfTheDay(all)
         if (todaysQuiz?.slug === slug) {
           setIsDailyQuiz(true)
-          setDailyStreak(recordDailyQuizCompletion(slug, todaysQuiz.slug))
+          setDailyStreak(recordDailyActivityCompletion(slug, todaysQuiz.slug))
           checkStreakBadges()
         }
       })

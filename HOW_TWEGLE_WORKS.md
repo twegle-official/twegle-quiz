@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, removed, or changed on the site (for visitors or for admins), this file gets updated in the same session, so it always describes what the app actually does today — not a history of how it got there (see `APPLICATION_FLOW.md` for that kind of changelog). No code, no technical jargon — if someone with zero coding background reads this, they should understand what Twegle does and how it works.
 
-**Last updated:** 2026-08-05 (applied for Google AdSense and added an "Advertisement" placeholder box to the homepage and search results, matching the ones already on result/detail pages — real ads will appear here automatically once AdSense approves the site; Google Analytics + Search Console also set up, both invisible to visitors) — earlier, 2026-08-04 (upgraded the admin Dashboard: a Day/Week/Month/Year/All range picker, Top Content sections for Friendship Quizzes/Games/Posts alongside Quizzes, and the sidebar logo now links back to Dashboard; earlier the same day added the Dashboard itself with this-week stats, content counts, top quizzes, and recent activity; fixed Analytics/Activity tables cropping instead of scrolling on mobile; fixed blank search/filter fields and an always-expanded mobile nav in the admin panel; Friendship Quiz results now have a "🏆 Challenge Your Friend" button that re-shares the original invite link, not just the score; every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing; fixed the Back button not scrolling to top after following one of those links)
+**Last updated:** 2026-08-06 (added **Puzzles** — a new "🧩 Puzzles" homepage tab of short riddles/brain-teasers, sitting right after Quizzes since it shares the same daily streak; a "Puzzle of the Day" banner joins the existing "Quiz of the Day" one) — earlier, 2026-08-05 (applied for Google AdSense and added an "Advertisement" placeholder box to the homepage and search results, matching the ones already on result/detail pages — real ads will appear here automatically once AdSense approves the site; Google Analytics + Search Console also set up, both invisible to visitors) — earlier, 2026-08-04 (upgraded the admin Dashboard: a Day/Week/Month/Year/All range picker, Top Content sections for Friendship Quizzes/Games/Posts alongside Quizzes, and the sidebar logo now links back to Dashboard; earlier the same day added the Dashboard itself with this-week stats, content counts, top quizzes, and recent activity; fixed Analytics/Activity tables cropping instead of scrolling on mobile; fixed blank search/filter fields and an always-expanded mobile nav in the admin panel; Friendship Quiz results now have a "🏆 Challenge Your Friend" button that re-shares the original invite link, not just the score; every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing; fixed the Back button not scrolling to top after following one of those links)
 
 ---
 
@@ -22,11 +22,11 @@ Twegle stays free by showing ads (currently placeholder boxes reserved for real 
 
 ### The homepage
 
-The homepage has tabs across the side (or top, on mobile) for each type of content: Quizzes, Friendship Quiz, Memes, Games, Stories, Horoscope, Jokes, Funny Lines, Quotes, Motivational Quotes. Clicking a tab shows a grid of that content type. There's also:
+The homepage has tabs across the side (or top, on mobile) for each type of content: Quizzes, Puzzles, Friendship Quiz, Memes, Games, Stories, Horoscope, Jokes, Funny Lines, Quotes, Motivational Quotes. Clicking a tab shows a grid of that content type. There's also:
 - An **EN / हिंदी** toggle to switch every piece of content between English and Hindi.
 - A **Newest / Trending** toggle to sort content either by "just added" or "most played/viewed."
-- A **search bar** in the header that searches across quizzes, posts, and friendship quizzes at once.
-- A **"Quiz of the Day"** banner at the top — one quiz is automatically featured each day (the same one for everyone, changes daily); if you complete that specific quiz, a "streak" counter goes up, encouraging people to come back daily (like Wordle).
+- A **search bar** in the header that searches across quizzes, posts, friendship quizzes, and puzzles at once.
+- A **"Quiz of the Day"** and **"Puzzle of the Day"** banner at the top — one quiz and one puzzle are automatically featured each day (the same ones for everyone, changing daily); completing either one keeps the same "streak" counter going, encouraging people to come back daily (like Wordle).
 - A **dark mode toggle** in the header — switches the whole site to a dark color scheme, remembered for next time.
 
 ### Quizzes
@@ -36,6 +36,10 @@ Personality-style quizzes ("What's Your Skincare Personality?", "Which K-pop Ido
 - **Compare with a friend** — send them a link to take the same quiz; when they finish, you both see a side-by-side "did you match?" reveal, which can also be shared as its own branded side-by-side image (not just a plain link).
 - See a few **"You might also like"** suggestions for other quizzes, plus a small "play a game" / "quick fun" prompt pointing at something completely different, so there's always a next thing to do.
 - **Report** the quiz if something's wrong or offensive.
+
+### Puzzles
+
+Short riddles and brain-teasers — a question, and an answer that stays hidden until you tap "🔍 Reveal Answer." Some are picture puzzles (a photo alongside the riddle). Filter by difficulty (Easy/Medium/Hard). Solving the day's featured puzzle counts toward the same daily streak as the daily quiz.
 
 ### Friendship Quiz ("How well do you know me?")
 
@@ -98,7 +102,7 @@ There's no "sign up" for admins — a Superadmin creates every admin account man
 
 ### Managing content
 
-Each content type (Quizzes, Posts [jokes/funny lines/quotes/motivational/memes], Stories, Friendship Quizzes) has its own list page in the admin panel, where you can:
+Each content type (Quizzes, Puzzles, Posts [jokes/funny lines/quotes/motivational/memes], Stories, Friendship Quizzes) has its own list page in the admin panel, where you can:
 - **Search and filter** by category, language, or published/draft status.
 - **Create new** content through a form.
 - **Edit** or **delete** existing content.

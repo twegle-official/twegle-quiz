@@ -7,6 +7,7 @@ const ENGAGEMENT_SECTIONS = [
   { contentType: 'friendshipQuiz', title: 'Friendship Quiz Engagement', columnLabel: 'Friendship Quiz' },
   { contentType: 'game', title: 'Game Engagement', columnLabel: 'Game' },
   { contentType: 'story', title: 'Story Engagement', columnLabel: 'Story' },
+  { contentType: 'puzzle', title: 'Puzzle Engagement', columnLabel: 'Puzzle' },
   { contentType: 'horoscope', title: 'Horoscope Engagement', columnLabel: 'Sign' },
 ]
 

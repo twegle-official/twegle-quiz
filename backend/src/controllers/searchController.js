@@ -2,6 +2,7 @@ import Quiz from '../models/Quiz.js'
 import Post from '../models/Post.js'
 import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import Story from '../models/Story.js'
+import Puzzle from '../models/Puzzle.js'
 
 const RESULTS_PER_TYPE = 8
 const MIN_QUERY_LENGTH = 2
@@ -28,7 +29,7 @@ export async function search(req, res) {
   const regex = { $regex: pattern, $options: 'i' }
   const language = req.query.language
 
-  const [quizzes, posts, friendshipQuizzes, stories] = await Promise.all([
+  const [quizzes, posts, friendshipQuizzes, stories, puzzles] = await Promise.all([
     Quiz.find(withTextMatch(publishedFilter(language), [{ title: regex }, { description: regex }]))
       .select('title slug description emoji gradient category')
       .limit(RESULTS_PER_TYPE),
@@ -40,6 +41,9 @@ export async function search(req, res) {
       .limit(RESULTS_PER_TYPE),
     Story.find(withTextMatch(publishedFilter(language), [{ title: regex }, { body: regex }]))
       .select('title slug category emoji gradient')
+      .limit(RESULTS_PER_TYPE),
+    Puzzle.find(withTextMatch(publishedFilter(language), [{ question: regex }]))
+      .select('question imageUrl difficulty emoji gradient')
       .limit(RESULTS_PER_TYPE),
   ])
 
@@ -77,6 +81,15 @@ export async function search(req, res) {
         author: p.author,
         category: p.category,
         imageUrl: p.imageUrl,
+      })),
+      ...puzzles.map((p) => ({
+        type: 'puzzle',
+        _id: p._id,
+        question: p.question,
+        imageUrl: p.imageUrl,
+        emoji: p.emoji,
+        gradient: p.gradient,
+        difficulty: p.difficulty,
       })),
     ],
   })

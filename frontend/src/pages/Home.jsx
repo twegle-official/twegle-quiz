@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPostReactionsBatch, setPostReaction } from '../api'
+import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPuzzles, fetchPostReactionsBatch, setPostReaction } from '../api'
 import { GAMES } from '../games/registry'
 import QuizCard from '../components/QuizCard'
 import FriendshipQuizCard from '../components/FriendshipQuizCard'
@@ -8,27 +8,41 @@ import PostCard from '../components/PostCard'
 import GameCard from '../components/GameCard'
 import StoryCard from '../components/StoryCard'
 import ZodiacCard from '../components/ZodiacCard'
+import PuzzleCard from '../components/PuzzleCard'
 import DailyQuizBanner from '../components/DailyQuizBanner'
+import PuzzleOfTheDayBanner from '../components/PuzzleOfTheDayBanner'
 import AdSlot from '../components/AdSlot'
 
 // Ordered by expected usage/revenue impact, most to least: Quizzes stays
 // first — biggest content library and the strongest share loop (a solo
 // quiz result is the easiest thing to reshare, no second person needed),
-// so it drives the most pageviews/ad impressions. Friendship Quiz second
-// (same growth-loop idea, but needs a friend to join, so more friction on
-// a first click). Games next — replayable, has its own "beat me" share
-// hook. Posts (merged from the previous 5 separate Jokes/Funny
+// so it drives the most pageviews/ad impressions. Puzzles right after —
+// added 2026-08-06, placed here (not at the end) since it shares the same
+// daily-streak mechanism as Quiz of the Day (see dailyQuiz.js's
+// recordDailyActivityCompletion), so it reads as a natural pair with
+// Quizzes rather than a separate, disconnected content type. Friendship
+// Quiz next (same growth-loop idea, but needs a friend to join, so more
+// friction on a first click). Games next — replayable, has its own "beat
+// me" share hook. Posts (merged from the previous 5 separate Jokes/Funny
 // Lines/Quotes/Motivational/Memes tabs — same underlying Post model with a
 // category filter, just one continuous scroll-through feed instead of 5
 // homepage tabs) after Games. Stories and Horoscope last — longer-dwell,
 // less share-driven formats.
 const TABS = [
   { key: 'quizzes', label: 'Quizzes', emoji: '🎯' },
+  { key: 'puzzles', label: 'Puzzles', emoji: '🧩' },
   { key: 'friendship', label: 'Friendship Quiz', emoji: '🤝' },
   { key: 'games', label: 'Games', emoji: '🎮' },
   { key: 'posts', label: 'Posts', emoji: '💬' },
   { key: 'stories', label: 'Stories', emoji: '📖' },
   { key: 'horoscope', label: 'Horoscope', emoji: '🔮' },
+]
+
+const PUZZLE_DIFFICULTIES = [
+  { key: 'all', label: 'All' },
+  { key: 'easy', label: 'Easy', emoji: '🟢' },
+  { key: 'medium', label: 'Medium', emoji: '🟡' },
+  { key: 'hard', label: 'Hard', emoji: '🔴' },
 ]
 
 const POST_CATEGORIES = [
@@ -108,6 +122,7 @@ export default function Home() {
   const [quizCategory, setQuizCategory] = useState('all')
   const [storyCategory, setStoryCategory] = useState('all')
   const [postCategory, setPostCategory] = useState('all')
+  const [puzzleDifficulty, setPuzzleDifficulty] = useState('all')
   const [sortMode, setSortMode] = useState('newest')
   // Tagged with the tab/language/category that produced it, so a render can
   // never show content fetched for a different filter while the real fetch
@@ -125,6 +140,8 @@ export default function Home() {
   // Full, unfiltered quiz list — reused for the Quiz of the Day banner below
   // rather than a separate fetch, since this effect already loads it all.
   const [allQuizzes, setAllQuizzes] = useState([])
+  // Same reasoning, for the Puzzle of the Day banner.
+  const [allPuzzles, setAllPuzzles] = useState([])
 
   // Resets scroll to the true top on every filter change (tab, language,
   // quiz/story category, sort mode) so the newly-filtered content is fully
@@ -139,7 +156,7 @@ export default function Home() {
   // together from the top — rather than a different spot each time.
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [activeTab, language, quizCategory, storyCategory, postCategory, sortMode])
+  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, sortMode])
 
   useEffect(() => {
     Promise.all([fetchQuizzes(), fetchPosts()])
@@ -162,6 +179,14 @@ export default function Home() {
       .catch(() => {})
   }, [language])
 
+  // Same reasoning as the allQuizzes effect above, for PuzzleOfTheDayBanner
+  // and PuzzleView.jsx's own streak check to agree on the same daily pick.
+  useEffect(() => {
+    fetchPuzzles(language)
+      .then(setAllPuzzles)
+      .catch(() => {})
+  }, [language])
+
   useEffect(() => {
     let cancelled = false
     setError(false)
@@ -173,6 +198,8 @@ export default function Home() {
         ? storyCategory
         : activeTab === 'posts'
         ? postCategory
+        : activeTab === 'puzzles'
+        ? puzzleDifficulty
         : 'all'
 
     const fetcher =
@@ -186,6 +213,8 @@ export default function Home() {
         ? fetchStories(language, storyCategory === 'all' ? undefined : storyCategory)
         : activeTab === 'horoscope'
         ? fetchZodiacSigns(language)
+        : activeTab === 'puzzles'
+        ? fetchPuzzles(language, puzzleDifficulty === 'all' ? undefined : puzzleDifficulty)
         : fetchPosts(postCategory === 'all' ? undefined : postCategory, language)
     fetcher
       .then((data) => {
@@ -198,7 +227,7 @@ export default function Home() {
     return () => {
       cancelled = true
     }
-  }, [activeTab, language, quizCategory, storyCategory, postCategory])
+  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty])
 
   const activeCategory =
     activeTab === 'quizzes'
@@ -207,6 +236,8 @@ export default function Home() {
       ? storyCategory
       : activeTab === 'posts'
       ? postCategory
+      : activeTab === 'puzzles'
+      ? puzzleDifficulty
       : 'all'
 
   const items =
@@ -276,6 +307,7 @@ export default function Home() {
 
       <div className="max-w-6xl mx-auto px-4 pt-4">
         <DailyQuizBanner quizzes={allQuizzes} />
+        <PuzzleOfTheDayBanner puzzles={allPuzzles} />
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
@@ -405,6 +437,24 @@ export default function Home() {
             ))}
           </div>
         )}
+
+        {activeTab === 'puzzles' && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+            {PUZZLE_DIFFICULTIES.map((diff) => (
+              <button
+                key={diff.key}
+                onClick={() => setPuzzleDifficulty(diff.key)}
+                className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full lg:rounded-lg text-xs font-semibold transition-colors lg:text-left ${
+                  puzzleDifficulty === diff.key
+                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {diff.emoji} {diff.label}
+              </button>
+            ))}
+          </div>
+        )}
       </aside>
 
       <div>
@@ -496,6 +546,14 @@ export default function Home() {
               reactionCounts={reactionCounts[post._id]}
               onReact={handleReact}
             />
+          ))}
+        </div>
+      )}
+
+      {displayedItems && displayedItems.length > 0 && activeTab === 'puzzles' && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {displayedItems.map((puzzle, i) => (
+            <PuzzleCard key={puzzle._id} puzzle={puzzle} index={i} />
           ))}
         </div>
       )}

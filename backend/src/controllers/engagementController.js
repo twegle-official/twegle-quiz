@@ -3,11 +3,12 @@ import Engagement from '../models/Engagement.js'
 import Quiz from '../models/Quiz.js'
 import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import Story from '../models/Story.js'
+import Puzzle from '../models/Puzzle.js'
 import { GAME_SLUGS } from './gameController.js'
 import { ZODIAC_KEYS } from '../data/zodiacSigns.js'
 
-const CONTENT_TYPES = ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope']
-const MODEL_BY_TYPE = { quiz: Quiz, friendshipQuiz: FriendshipQuiz, story: Story }
+const CONTENT_TYPES = ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope', 'puzzle']
+const MODEL_BY_TYPE = { quiz: Quiz, friendshipQuiz: FriendshipQuiz, story: Story, puzzle: Puzzle }
 
 // Confirms the referenced content is real (and published, where that
 // applies) before recording an engagement against it — same reasoning as
@@ -74,9 +75,11 @@ export async function getEngagementSummary(req, res) {
   } else if (contentType === 'horoscope') {
     items = ids.map((key) => ({ id: key, title: key.charAt(0).toUpperCase() + key.slice(1) }))
   } else {
+    // Puzzle has no `title` field — its display text is `question` instead.
     const model = MODEL_BY_TYPE[contentType]
-    const docs = await model.find({ _id: { $in: ids } }).select('title')
-    items = docs.map((d) => ({ id: d._id.toString(), title: d.title }))
+    const titleField = contentType === 'puzzle' ? 'question' : 'title'
+    const docs = await model.find({ _id: { $in: ids } }).select(titleField)
+    items = docs.map((d) => ({ id: d._id.toString(), title: d[titleField] }))
   }
 
   const summary = items

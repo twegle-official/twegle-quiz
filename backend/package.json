@@ -10,7 +10,8 @@
     "seed:quizzes": "node src/scripts/seedQuizzes.js",
     "seed:friendship-quizzes": "node src/scripts/seedFriendshipQuizzes.js",
     "seed:posts": "node src/scripts/seedPosts.js",
-    "seed:stories": "node src/scripts/seedStories.js"
+    "seed:stories": "node src/scripts/seedStories.js",
+    "seed:puzzles": "node src/scripts/seedPuzzles.js"
   },
   "keywords": [],
   "author": "",

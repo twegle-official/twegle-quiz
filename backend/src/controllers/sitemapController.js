@@ -2,6 +2,7 @@ import Quiz from '../models/Quiz.js'
 import Post from '../models/Post.js'
 import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import Story from '../models/Story.js'
+import Puzzle from '../models/Puzzle.js'
 
 // Generates sitemap.xml straight from the database so it never goes stale as
 // content is added/published — a static file would need manual updates every
@@ -42,11 +43,12 @@ export async function getSitemap(req, res) {
     { loc: `${base}/browse/motivational-quotes`, changefreq: 'weekly', priority: '0.6' },
   ]
 
-  const [quizzes, posts, friendshipQuizzes, stories] = await Promise.all([
+  const [quizzes, posts, friendshipQuizzes, stories, puzzles] = await Promise.all([
     Quiz.find({ status: 'published' }).select('slug updatedAt'),
     Post.find({ status: 'published' }).select('_id updatedAt'),
     FriendshipQuiz.find({ status: 'published' }).select('slug updatedAt'),
     Story.find({ status: 'published' }).select('slug updatedAt'),
+    Puzzle.find({ status: 'published' }).select('_id updatedAt'),
   ])
 
   quizzes.forEach((q) => {
@@ -79,6 +81,14 @@ export async function getSitemap(req, res) {
       lastmod: s.updatedAt.toISOString(),
       changefreq: 'monthly',
       priority: '0.6',
+    })
+  })
+  puzzles.forEach((p) => {
+    urls.push({
+      loc: `${base}/puzzle/${p._id}`,
+      lastmod: p.updatedAt.toISOString(),
+      changefreq: 'monthly',
+      priority: '0.5',
     })
   })
 

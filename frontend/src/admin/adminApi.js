@@ -72,6 +72,15 @@ export const updateStory = (token, id, payload) =>
   request(`/admin/stories/${id}`, { token, method: 'PUT', body: payload })
 export const deleteStory = (token, id) => request(`/admin/stories/${id}`, { token, method: 'DELETE' })
 
+export const listPuzzlesAdmin = (token, params) =>
+  request(`/admin/puzzles${toQueryString(params)}`, { token })
+export const getPuzzleAdmin = (token, id) => request(`/admin/puzzles/${id}`, { token })
+export const createPuzzle = (token, payload) =>
+  request('/admin/puzzles', { token, method: 'POST', body: payload })
+export const updatePuzzle = (token, id, payload) =>
+  request(`/admin/puzzles/${id}`, { token, method: 'PUT', body: payload })
+export const deletePuzzle = (token, id) => request(`/admin/puzzles/${id}`, { token, method: 'DELETE' })
+
 export const listFriendshipQuizzesAdmin = (token, params) =>
   request(`/admin/friendship-quizzes${toQueryString(params)}`, { token })
 export const getFriendshipQuizAdmin = (token, id) =>

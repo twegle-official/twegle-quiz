@@ -1,6 +1,7 @@
 import Quiz from '../models/Quiz.js'
 import Post from '../models/Post.js'
 import Story from '../models/Story.js'
+import Puzzle from '../models/Puzzle.js'
 import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import PlaySession from '../models/PlaySession.js'
 import GameSession from '../models/GameSession.js'
@@ -45,6 +46,7 @@ export async function getDashboard(req, res) {
     quizCount,
     postCount,
     storyCount,
+    puzzleCount,
     friendshipQuizCount,
     unreadFeedbackCount,
     topQuizzes,
@@ -57,6 +59,7 @@ export async function getDashboard(req, res) {
     Quiz.countDocuments({ status: 'published' }),
     Post.countDocuments({ status: 'published' }),
     Story.countDocuments({ status: 'published' }),
+    Puzzle.countDocuments({ status: 'published' }),
     FriendshipQuiz.countDocuments({ status: 'published' }),
     Feedback.countDocuments({ read: false }),
     PlaySession.aggregate([
@@ -110,6 +113,7 @@ export async function getDashboard(req, res) {
       quizzes: quizCount,
       posts: postCount,
       stories: storyCount,
+      puzzles: puzzleCount,
       friendshipQuizzes: friendshipQuizCount,
     },
     unreadFeedbackCount,

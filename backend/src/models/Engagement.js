@@ -9,7 +9,7 @@ import mongoose from 'mongoose'
 // — see PostEngagement.js for the older, separately-evolved equivalent.
 const engagementSchema = new mongoose.Schema(
   {
-    contentType: { type: String, enum: ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope'], required: true },
+    contentType: { type: String, enum: ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope', 'puzzle'], required: true },
     // Quiz/FriendshipQuiz/Story: the content's own Mongo _id, as a string.
     // Game: the game's slug (games have no database row — see GameSession.js).
     // Horoscope: the zodiac sign's key (also has no database row — see zodiacSigns.js).

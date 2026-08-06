@@ -13,7 +13,7 @@ const feedbackSchema = new mongoose.Schema(
     message: { type: String, required: true },
     email: { type: String, default: '' },
     read: { type: Boolean, default: false },
-    contentType: { type: String, enum: ['quiz', 'post', 'story', null], default: null },
+    contentType: { type: String, enum: ['quiz', 'post', 'story', 'puzzle', null], default: null },
     contentId: { type: mongoose.Schema.Types.ObjectId, default: null },
     // Denormalized title/slug so the admin list can show what was reported
     // without a join — same reasoning as ActivityLog's resourceLabel.

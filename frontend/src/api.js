@@ -90,6 +90,24 @@ export async function fetchStoryBySlug(slug) {
   return data.story
 }
 
+export async function fetchPuzzles(language, difficulty) {
+  const params = new URLSearchParams()
+  if (language) params.set('language', language)
+  if (difficulty) params.set('difficulty', difficulty)
+  const qs = params.toString() ? `?${params.toString()}` : ''
+  const res = await fetch(`${API_URL}/puzzles${qs}`)
+  if (!res.ok) throw new Error('Failed to load puzzles')
+  const data = await res.json()
+  return data.puzzles
+}
+
+export async function fetchPuzzleById(id) {
+  const res = await fetch(`${API_URL}/puzzles/${id}`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.puzzle
+}
+
 export async function fetchPostById(id) {
   const res = await fetch(`${API_URL}/posts/${id}`)
   if (!res.ok) return null
@@ -273,6 +291,10 @@ export function getPostShareUrl(id) {
 
 export function getStoryShareUrl(slug) {
   return `${API_URL}/share/story/${slug}`
+}
+
+export function getPuzzleShareUrl(id) {
+  return `${API_URL}/share/puzzle/${id}`
 }
 
 export function getGameShareUrl(slug) {

@@ -7,6 +7,7 @@ import FriendshipAttempt from '../models/FriendshipAttempt.js'
 import QuizCompare from '../models/QuizCompare.js'
 import TicTacToeGame from '../models/TicTacToeGame.js'
 import Story from '../models/Story.js'
+import Puzzle from '../models/Puzzle.js'
 import { findZodiacSign } from '../data/zodiacSigns.js'
 import { computeHoroscope } from '../utils/horoscope.js'
 
@@ -202,6 +203,26 @@ export async function shareStory(req, res) {
       title: `${story.emoji || ''} ${story.title}`.trim(),
       description: `${story.body.slice(0, 140)}${story.body.length > 140 ? '...' : ''} — read it on Twegle!`,
       redirectUrl: `${frontendUrl()}/story/${slug}`,
+    })
+  )
+}
+
+export async function sharePuzzle(req, res) {
+  const { id } = req.params
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).send('Not found')
+  }
+
+  const puzzle = await Puzzle.findOne({ _id: id, status: 'published' })
+  if (!puzzle) return res.status(404).send('Not found')
+
+  res.set('Content-Type', 'text/html')
+  res.send(
+    renderSharePage({
+      title: `${puzzle.emoji || ''} Can you solve this?`.trim(),
+      description: `${puzzle.question} — try it on Twegle!`,
+      redirectUrl: `${frontendUrl()}/puzzle/${id}`,
+      image: puzzle.imageUrl || null,
     })
   )
 }
