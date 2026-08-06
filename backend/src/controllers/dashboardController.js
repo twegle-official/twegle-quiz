@@ -98,7 +98,7 @@ export async function getDashboard(req, res) {
         $project: {
           _id: 0,
           id: '$post._id',
-          label: { $cond: [{ $eq: ['$post.category', 'meme'] }, 'Meme', '$post.text'] },
+          label: '$post.text',
           total: 1,
         },
       },

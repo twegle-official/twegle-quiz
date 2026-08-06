@@ -5,10 +5,9 @@ import { createPost } from '../adminApi'
 // A fast, phone-friendly "type it, publish it" flow — deliberately just the
 // fields that matter for a one-liner (category, language, text, optional
 // author), skipping everything PostForm.jsx has that a joke/quote never
-// needs (imageUrl, scheduled publishAt, draft status). Memes are excluded on
-// purpose — they need an image URL, not a one-field text flow. Publishes
-// straight to 'published' via the same POST /api/admin/posts createPost
-// already uses, so nothing new on the backend.
+// needs (scheduled publishAt, draft status). Publishes straight to
+// 'published' via the same POST /api/admin/posts createPost already uses,
+// so nothing new on the backend.
 const CATEGORIES = [
   { value: 'joke', label: '😂 Joke' },
   { value: 'funny-line', label: '😜 Funny Line' },
@@ -54,7 +53,7 @@ export default function QuickAdd() {
       <h1 className="text-2xl font-bold text-gray-900 mb-2">Quick Add</h1>
       <p className="text-gray-500 mb-6">
         Type it, publish it — no drafts, no extra fields. For jokes, funny lines, quotes, and
-        motivational quotes. Memes still go through the regular Posts form (they need an image).
+        motivational quotes.
       </p>
 
       <form onSubmit={handleSubmit}>

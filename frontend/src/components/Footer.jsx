@@ -118,7 +118,6 @@ export default function Footer() {
             <li><Link to="/browse/funny-lines" className="hover:text-gray-900 dark:hover:text-gray-100">Funny Lines</Link></li>
             <li><Link to="/browse/quotes" className="hover:text-gray-900 dark:hover:text-gray-100">Quotes</Link></li>
             <li><Link to="/browse/motivational-quotes" className="hover:text-gray-900 dark:hover:text-gray-100">Motivational Quotes</Link></li>
-            <li><Link to="/browse/memes" className="hover:text-gray-900 dark:hover:text-gray-100">Memes</Link></li>
           </ul>
         </div>
 

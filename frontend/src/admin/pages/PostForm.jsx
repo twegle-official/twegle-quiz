@@ -8,7 +8,6 @@ const emptyPost = {
   category: 'joke',
   text: '',
   author: '',
-  imageUrl: '',
   language: 'en',
   status: 'draft',
   publishAt: null,
@@ -81,7 +80,6 @@ export default function PostForm() {
               <option value="funny-line">Funny Line</option>
               <option value="quote">Quote</option>
               <option value="motivational-quote">Motivational Quote</option>
-              <option value="meme">Meme</option>
             </select>
           </div>
           <div>
@@ -119,37 +117,13 @@ export default function PostForm() {
           </div>
         </div>
 
-        {post.category === 'meme' && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-            <input
-              required
-              type="url"
-              placeholder="https://..."
-              value={post.imageUrl}
-              onChange={(e) => setPost({ ...post, imageUrl: e.target.value })}
-              className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-            <p className="text-xs text-gray-400 mt-1">
-              A link to an image already hosted somewhere (no file upload yet — paste a direct
-              image URL, e.g. ending in .jpg/.png).
-            </p>
-          </div>
-        )}
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {post.category === 'meme' ? (
-              <>Caption <span className="text-gray-400 font-normal">(optional)</span></>
-            ) : (
-              'Text'
-            )}
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
           <textarea
-            required={post.category !== 'meme'}
+            required
             value={post.text}
             onChange={(e) => setPost({ ...post, text: e.target.value })}
-            rows={post.category === 'meme' ? 2 : 4}
+            rows={4}
             maxLength={500}
             className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />

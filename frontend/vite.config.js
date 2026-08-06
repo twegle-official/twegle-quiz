@@ -58,8 +58,8 @@ export default defineConfig({
             },
           },
           {
-            // Meme images (and anything else image-typed) — these rarely
-            // change once posted, so cache-first is the right trade-off.
+            // Puzzle/quiz images and any other image-typed request — these
+            // rarely change once posted, so cache-first is the right trade-off.
             urlPattern: ({ request }) => request.destination === 'image',
             handler: 'CacheFirst',
             options: {

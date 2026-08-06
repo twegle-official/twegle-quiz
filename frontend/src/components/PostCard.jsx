@@ -5,14 +5,9 @@ import TileShareButton from './TileShareButton'
 import TileReactions from './TileReactions'
 
 function shareTextFor(post) {
-  if (post.category === 'meme') {
-    return post.text ? `${post.text} — on Twegle!` : 'Check out this meme on Twegle!'
-  }
   return `"${post.text}" — on Twegle!`
 }
 
-// Memes render as an actual image (the whole point of a meme), everything
-// else (jokes/quotes/etc.) renders as the existing colored text card.
 export default function PostCard({ post, index = 0, reactionCounts, onReact }) {
   const style = POST_CATEGORY_STYLE[post.category]
   if (!style) return null
@@ -25,30 +20,6 @@ export default function PostCard({ post, index = 0, reactionCounts, onReact }) {
       shareText={shareTextFor(post)}
     />
   )
-
-  if (post.category === 'meme') {
-    return (
-      <Link
-        to={`/post/${post._id}`}
-        className="relative flex h-full flex-col rounded-2xl overflow-hidden shadow-md hover:scale-[1.02] transition-transform animate-fade-slide-in bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
-        style={animationStyle}
-      >
-        {shareButton}
-        <img
-          src={post.imageUrl}
-          alt={post.text || 'Meme'}
-          loading="lazy"
-          className="w-full aspect-square object-cover bg-gray-100 dark:bg-gray-700"
-        />
-        <div className="p-3">
-          {post.text && (
-            <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">{post.text}</p>
-          )}
-          {onReact && <TileReactions postId={post._id} counts={reactionCounts} onReact={onReact} />}
-        </div>
-      </Link>
-    )
-  }
 
   return (
     <Link

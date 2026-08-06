@@ -117,20 +117,6 @@ const posts = [
   // --- और मजेदार लाइनें / More Funny Lines (Hindi) ---
   { category: 'funny-line', language: 'hi', status: 'published', text: 'मेरा वजन कम नहीं होता, बस दिल बड़ा है इसलिए थोड़ा फैला हुआ है।' },
   { category: 'funny-line', language: 'hi', status: 'published', text: 'जितना मैं प्लान बनाता हूं, उतना ही भगवान हंसता है।' },
-
-  // --- Memes (English) ---
-  // Placeholder images from Lorem Picsum (royalty-free, no attribution
-  // required — see https://picsum.photos) since there's no image upload
-  // pipeline yet, only paste-a-URL. Swap for real meme images any time via
-  // the admin panel's Image URL field.
-  { category: 'meme', language: 'en', status: 'published', imageUrl: 'https://picsum.photos/seed/twegle-meme-1/600/600', text: 'Me pretending to study while actually planning what to eat for dinner.' },
-  { category: 'meme', language: 'en', status: 'published', imageUrl: 'https://picsum.photos/seed/twegle-meme-2/600/600', text: 'My bank account after one weekend trip.' },
-  { category: 'meme', language: 'en', status: 'published', imageUrl: 'https://picsum.photos/seed/twegle-meme-3/600/600', text: 'When the WiFi finally works after 10 restarts.' },
-
-  // --- मीम्स / Memes (Hindi) ---
-  { category: 'meme', language: 'hi', status: 'published', imageUrl: 'https://picsum.photos/seed/twegle-meme-4/600/600', text: 'जब मम्मी बोले "थोड़ा और खाना बाकी है" और आप पहले ही फुल हो।' },
-  { category: 'meme', language: 'hi', status: 'published', imageUrl: 'https://picsum.photos/seed/twegle-meme-5/600/600', text: 'सोमवार सुबह ऑफिस जाते वक्त मेरा चेहरा।' },
-  { category: 'meme', language: 'hi', status: 'published', imageUrl: 'https://picsum.photos/seed/twegle-meme-6/600/600', text: 'सैलरी आने के अगले दिन बैंक बैलेंस।' },
 ]
 
 export async function seedPosts() {

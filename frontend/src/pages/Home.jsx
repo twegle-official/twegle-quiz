@@ -24,9 +24,9 @@ import AdSlot from '../components/AdSlot'
 // Quiz next (same growth-loop idea, but needs a friend to join, so more
 // friction on a first click). Games next — replayable, has its own "beat
 // me" share hook. Posts (merged from the previous 5 separate Jokes/Funny
-// Lines/Quotes/Motivational/Memes tabs — same underlying Post model with a
-// category filter, just one continuous scroll-through feed instead of 5
-// homepage tabs) after Games. Stories and Horoscope last — longer-dwell,
+// Lines/Quotes/Motivational tabs — same underlying Post model with a
+// category filter, just one continuous scroll-through feed instead of
+// several homepage tabs) after Games. Stories and Horoscope last — longer-dwell,
 // less share-driven formats.
 const TABS = [
   { key: 'quizzes', label: 'Quizzes', emoji: '🎯' },
@@ -51,7 +51,6 @@ const POST_CATEGORIES = [
   { key: 'funny-line', label: 'Funny Lines', emoji: '😜' },
   { key: 'quote', label: 'Quotes', emoji: '💬' },
   { key: 'motivational-quote', label: 'Motivational', emoji: '💪' },
-  { key: 'meme', label: 'Memes', emoji: '😹' },
 ]
 
 const QUIZ_CATEGORIES = [
@@ -75,7 +74,7 @@ const STORY_CATEGORIES = [
 
 // What "popularity" means per tab, for the Trending sort — quizzes/
 // friendship quizzes/games all have a real completion count; posts (jokes/
-// quotes/funny-lines/motivational-quotes/memes) and stories don't have a
+// quotes/funny-lines/motivational-quotes) and stories don't have a
 // "completion," so they fall back to `totalEngagement` (views+shares, from
 // the shared Engagement/PostEngagement models) via the default below.
 const TRENDING_FIELD_BY_TAB = {
@@ -204,7 +203,7 @@ export default function Home() {
       .then(([quizzes, posts]) => {
         setStats({
           quizzes: quizzes.length,
-          posts: posts.filter((p) => p.category !== 'meme').length,
+          posts: posts.length,
         })
       })
       .catch(() => {})

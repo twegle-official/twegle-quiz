@@ -13,7 +13,6 @@ const CATEGORY_LABELS = {
   'funny-line': 'Funny Line',
   quote: 'Quote',
   'motivational-quote': 'Motivational Quote',
-  meme: 'Meme',
 }
 
 export default function PostList() {
@@ -79,7 +78,6 @@ export default function PostList() {
         category: post.category,
         text: post.text,
         author: post.author,
-        imageUrl: post.imageUrl,
         language: post.language,
         status: 'draft',
       })
@@ -169,13 +167,6 @@ export default function PostList() {
           {posts.map((post) => (
             <div key={post._id} className="flex items-center justify-between gap-4 p-4">
               <div className="min-w-0 flex items-center gap-3">
-                {post.category === 'meme' && post.imageUrl && (
-                  <img
-                    src={post.imageUrl}
-                    alt=""
-                    className="w-12 h-12 rounded-lg object-cover shrink-0 bg-gray-100"
-                  />
-                )}
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-violet-600 uppercase tracking-wide flex items-center gap-2">
                     {CATEGORY_LABELS[post.category]} · {post.language.toUpperCase()}
@@ -188,9 +179,7 @@ export default function PostList() {
                       </span>
                     )}
                   </p>
-                  <p className="text-gray-900 truncate">
-                    {post.text || (post.category === 'meme' ? <span className="text-gray-400 italic">(no caption)</span> : '')}
-                  </p>
+                  <p className="text-gray-900 truncate">{post.text}</p>
                   <p className="text-sm text-gray-400">
                     {post.author && <>— {post.author} · </>}
                     <StatusLabel item={post} /> · {engagementCounts[post._id] || 0} views/shares

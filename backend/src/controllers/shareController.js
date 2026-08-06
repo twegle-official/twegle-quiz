@@ -236,7 +236,7 @@ export async function sharePost(req, res) {
   const post = await Post.findOne({ _id: id, status: 'published' })
   if (!post) return res.status(404).send('Not found')
 
-  const displayText = post.text || (post.category === 'meme' ? 'A meme from Twegle' : '')
+  const displayText = post.text || ''
 
   res.set('Content-Type', 'text/html')
   res.send(

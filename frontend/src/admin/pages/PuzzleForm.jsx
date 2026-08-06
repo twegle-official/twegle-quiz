@@ -115,7 +115,7 @@ export default function PuzzleForm() {
             className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
           />
           <p className="text-xs text-gray-400 mt-1">
-            Paste a link to an already-hosted image (no upload yet — same as Memes today).
+            Paste a link to an already-hosted image (no upload yet).
           </p>
         </div>
 

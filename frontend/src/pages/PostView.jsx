@@ -49,7 +49,7 @@ export default function PostView() {
 
   const style = post && POST_CATEGORY_STYLE[post.category]
 
-  const displayText = post && (post.text || (post.category === 'meme' ? 'A meme from Twegle' : ''))
+  const displayText = post && post.text
 
   useDocumentMeta(
     post && (displayText.length > 60 ? `${displayText.slice(0, 57)}...` : displayText),
@@ -99,54 +99,28 @@ export default function PostView() {
 
   const shareUrl = getPostShareUrl(post._id)
 
-  const isMeme = post.category === 'meme'
-
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       <div className="text-left mb-4"><BackButton /></div>
-      {isMeme ? (
-        <div className="animate-pop-in">
-          <img
-            src={post.imageUrl}
-            alt={post.text || 'Meme'}
-            className="w-full rounded-3xl shadow-lg bg-gray-100 dark:bg-gray-800"
-          />
-          {post.text && <p className="text-gray-700 dark:text-gray-300 mt-4 whitespace-pre-line">{post.text}</p>}
-        </div>
-      ) : (
-        <div
-          className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}
-        >
-          <div className="text-6xl mb-4">{style.emoji}</div>
-          <p className="text-2xl font-bold mb-2 leading-snug whitespace-pre-line">{post.text}</p>
-          {post.author && <p className="text-white/80 mt-2">— {post.author}</p>}
-        </div>
-      )}
+      <div
+        className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}
+      >
+        <div className="text-6xl mb-4">{style.emoji}</div>
+        <p className="text-2xl font-bold mb-2 leading-snug whitespace-pre-line">{post.text}</p>
+        {post.author && <p className="text-white/80 mt-2">— {post.author}</p>}
+      </div>
 
       <div className="mt-5">
         <PostReactions postId={post._id} />
       </div>
 
-      {isMeme ? (
-        <a
-          href={post.imageUrl}
-          download
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => recordPostEngagement(post._id, 'share')}
-          className="inline-block mt-6 mb-4 px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
-        >
-          ⬇️ Download Image
-        </a>
-      ) : (
-        <button
-          onClick={handleShareImage}
-          disabled={generating}
-          className="mt-6 mb-4 px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
-        >
-          {generating ? 'Preparing image...' : '📸 Share as Image'}
-        </button>
-      )}
+      <button
+        onClick={handleShareImage}
+        disabled={generating}
+        className="mt-6 mb-4 px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+      >
+        {generating ? 'Preparing image...' : '📸 Share as Image'}
+      </button>
 
       <ShareButtons
         title={displayText}

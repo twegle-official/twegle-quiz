@@ -4,30 +4,15 @@ import { parsePublishAt } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
 
-const CATEGORIES = ['joke', 'funny-line', 'quote', 'motivational-quote', 'meme']
+const CATEGORIES = ['joke', 'funny-line', 'quote', 'motivational-quote']
 const MAX_TEXT_LENGTH = 500
 const MAX_AUTHOR_LENGTH = 100
-const MAX_IMAGE_URL_LENGTH = 2000
 
-// Memes carry their content as an image URL (admin pastes a link to an
-// already-hosted image — no upload/storage pipeline exists yet) with an
-// optional text caption; every other category is the reverse: text required,
-// no image at all.
-function validatePostPayload({ category, text, author, imageUrl }) {
+function validatePostPayload({ category, text, author }) {
   if (!CATEGORIES.includes(category)) {
     return `Category must be one of: ${CATEGORIES.join(', ')}`
   }
-  if (category === 'meme') {
-    if (typeof imageUrl !== 'string' || !imageUrl.trim()) {
-      return 'Image URL is required for a meme'
-    }
-    if (!/^https?:\/\//i.test(imageUrl.trim())) {
-      return 'Image URL must start with http:// or https://'
-    }
-    if (imageUrl.length > MAX_IMAGE_URL_LENGTH) {
-      return `Image URL must be ${MAX_IMAGE_URL_LENGTH} characters or fewer`
-    }
-  } else if (typeof text !== 'string' || !text.trim()) {
+  if (typeof text !== 'string' || !text.trim()) {
     return 'Text is required'
   }
   if (text && text.length > MAX_TEXT_LENGTH) {
@@ -39,12 +24,9 @@ function validatePostPayload({ category, text, author, imageUrl }) {
   return null
 }
 
-// Activity-log entries need a short human-readable label — a meme usually
-// has no text, so fall back to something sensible instead of an empty string.
+// Activity-log entries need a short human-readable label.
 function postLabel(post) {
-  if (post.text) return post.text.slice(0, 60)
-  if (post.category === 'meme') return '(meme image, no caption)'
-  return '(untitled post)'
+  return post.text ? post.text.slice(0, 60) : '(untitled post)'
 }
 
 // --- Admin-facing (requires auth) ---
@@ -75,9 +57,9 @@ export async function getPostAdmin(req, res) {
 }
 
 export async function createPost(req, res) {
-  const { category, text, author, imageUrl, language, status, publishAt } = req.body
+  const { category, text, author, language, status, publishAt } = req.body
 
-  const validationError = validatePostPayload({ category, text, author, imageUrl })
+  const validationError = validatePostPayload({ category, text, author })
   if (validationError) {
     return res.status(400).json({ error: validationError })
   }
@@ -90,7 +72,6 @@ export async function createPost(req, res) {
     category,
     text,
     author,
-    imageUrl: category === 'meme' ? imageUrl : '',
     language: language === 'hi' ? 'hi' : 'en',
     status,
     publishAt: parsedPublishAt || null,
@@ -109,16 +90,12 @@ export async function createPost(req, res) {
 }
 
 export async function updatePost(req, res) {
-  const { category, text, author, imageUrl, language, status, publishAt } = req.body
+  const { category, text, author, language, status, publishAt } = req.body
 
   if (category !== undefined && !CATEGORIES.includes(category)) {
     return res.status(400).json({ error: `Category must be one of: ${CATEGORIES.join(', ')}` })
   }
-  if (category === 'meme') {
-    if (imageUrl !== undefined && (typeof imageUrl !== 'string' || !imageUrl.trim() || !/^https?:\/\//i.test(imageUrl.trim()))) {
-      return res.status(400).json({ error: 'Image URL must start with http:// or https://' })
-    }
-  } else if (text !== undefined && (typeof text !== 'string' || !text.trim() || text.length > MAX_TEXT_LENGTH)) {
+  if (text !== undefined && (typeof text !== 'string' || !text.trim() || text.length > MAX_TEXT_LENGTH)) {
     return res.status(400).json({ error: `Text is required and must be ${MAX_TEXT_LENGTH} characters or fewer` })
   }
   if (author !== undefined && author.length > MAX_AUTHOR_LENGTH) {
@@ -135,7 +112,6 @@ export async function updatePost(req, res) {
   if (category !== undefined) post.category = category
   if (text !== undefined) post.text = text
   if (author !== undefined) post.author = author
-  if (imageUrl !== undefined) post.imageUrl = imageUrl
   if (language !== undefined) post.language = language === 'hi' ? 'hi' : 'en'
   if (status !== undefined) post.status = status
   if (parsedPublishAt !== undefined) post.publishAt = parsedPublishAt
@@ -180,7 +156,7 @@ export async function listPublishedPosts(req, res) {
 
   const posts = await Post.find(filter).sort({ createdAt: -1 })
 
-  // Jokes/quotes/funny-lines/motivational-quotes/memes have no "completion"
+  // Jokes/quotes/funny-lines/motivational-quotes have no "completion"
   // concept like a quiz play, so "Trending" falls back to total view+share
   // engagement — same aggregate pattern as listPublishedQuizzes's
   // PlaySession count and listPublishedStories's Engagement count.

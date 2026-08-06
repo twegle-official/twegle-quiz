@@ -10,7 +10,6 @@ const CATEGORY_META = {
   'funny-lines': { category: 'funny-line', ...POST_CATEGORY_STYLE['funny-line'], title: 'Funny Lines' },
   quotes: { category: 'quote', ...POST_CATEGORY_STYLE.quote, title: 'Quotes' },
   'motivational-quotes': { category: 'motivational-quote', ...POST_CATEGORY_STYLE['motivational-quote'], title: 'Motivational Quotes' },
-  memes: { category: 'meme', ...POST_CATEGORY_STYLE.meme, title: 'Memes' },
 }
 
 export default function Browse() {

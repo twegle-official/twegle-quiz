@@ -1,19 +1,15 @@
 import mongoose from 'mongoose'
 
-// A single shareable card — jokes, funny lines, quotes, motivational quotes,
-// memes. Unlike Quiz, there's no question/answer engine here: just content to
-// share. `text` is required for every category except 'meme', where it's an
-// optional caption and `imageUrl` carries the actual content instead — see
-// validatePostPayload() in postController.js for the category-specific rule.
+// A single shareable card — jokes, funny lines, quotes, motivational quotes.
+// Unlike Quiz, there's no question/answer engine here: just content to share.
 const postSchema = new mongoose.Schema(
   {
     category: {
       type: String,
-      enum: ['joke', 'funny-line', 'quote', 'motivational-quote', 'meme'],
+      enum: ['joke', 'funny-line', 'quote', 'motivational-quote'],
       required: true,
     },
     text: { type: String, default: '' },
-    imageUrl: { type: String, default: '' },
     author: { type: String, default: '' },
     language: { type: String, enum: ['en', 'hi'], default: 'en' },
     status: { type: String, enum: ['draft', 'published'], default: 'draft' },

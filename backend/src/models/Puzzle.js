@@ -6,7 +6,7 @@ import mongoose from 'mongoose'
 // already driving traffic via Quiz/Post, and unlimited/cheap to keep adding.
 // A picture puzzle isn't a separate category, just a puzzle that happens to
 // have `imageUrl` set (e.g. rebus/"guess what this is") — imageUrl is paste-
-// a-URL for now, same as Post's meme category, until real upload exists.
+// a-URL for now, until real upload exists.
 const puzzleSchema = new mongoose.Schema(
   {
     question: { type: String, required: true },

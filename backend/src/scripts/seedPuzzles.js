@@ -137,9 +137,8 @@ const puzzles = [
   },
 
   // --- Picture puzzle (uses Lorem Picsum placeholder — royalty-free, swap
-  // for a real rebus/zoomed-photo image any time via the admin panel; same
-  // placeholder-image approach the seeded Memes already use, and for the
-  // same reason — no upload pipeline exists yet, see BACKEND.md). ---
+  // for a real rebus/zoomed-photo image any time via the admin panel — no
+  // upload pipeline exists yet, see BACKEND.md). ---
   {
     question: 'Look closely at this picture. What everyday object is this a close-up of?',
     answer: 'It\'s a zoomed-in photo — take a guess, then compare notes with a friend! (Swap this for a real themed image any time.)',

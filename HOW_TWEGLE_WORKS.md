@@ -22,7 +22,7 @@ Twegle stays free by showing ads (currently placeholder boxes reserved for real 
 
 ### The homepage
 
-The homepage has tabs across the side (or top, on mobile) for each type of content: Quizzes, Puzzles, Friendship Quiz, Memes, Games, Stories, Horoscope, Jokes, Funny Lines, Quotes, Motivational Quotes. Clicking a tab shows a grid of that content type. There's also:
+The homepage has tabs across the side (or top, on mobile) for each type of content: Quizzes, Puzzles, Friendship Quiz, Games, Posts (Jokes, Funny Lines, Quotes, Motivational Quotes), Stories, Horoscope. Clicking a tab shows a grid of that content type. There's also:
 - An **EN / हिंदी** toggle to switch every piece of content between English and Hindi.
 - A **Newest / Trending** toggle to sort content either by "just added" or "most played/viewed."
 - A **search bar** in the header that searches across quizzes, posts, friendship quizzes, and puzzles at once.
@@ -45,12 +45,12 @@ Short riddles and brain-teasers — a question, and an answer that stays hidden 
 
 A two-person format. One person answers 8 questions about themselves, gets a shareable link, and sends it to friends. Each friend who opens the link guesses what the first person would have said — no peeking at the real answers first — then sees their own score (e.g. "6/8 correct") plus a right/wrong breakdown, a "🏆 Challenge Your Friend" button that re-shares the *original* link (so a new friend can also take a guess), and can share their own score to pull in more friends. The same original link can be reused by many different people, so one setup can generate many rounds of sharing.
 
-### Memes, Jokes, Funny Lines, Quotes, Motivational Quotes
+### Jokes, Funny Lines, Quotes, Motivational Quotes
 
-Five simple content types — short, quick things to read and share. Memes are images (with an optional caption); the other four are short text cards with a colorful background. Each one can be:
+Four simple content types — short, quick things to read and share, each a short text card with a colorful background. Each one can be:
 - **Reacted to** directly on its card — tap 😂, 🔥, 😭, or 👍 without even opening it. Tap again to change your reaction.
 - **Shared** — either from the card itself (a small 🔗 icon) or from its own full page.
-- **Downloaded as an image** (memes) or **shared as a branded image** (the text ones).
+- **Shared as a branded image**, generated from the card's text.
 
 ### Games
 
@@ -102,7 +102,7 @@ There's no "sign up" for admins — a Superadmin creates every admin account man
 
 ### Managing content
 
-Each content type (Quizzes, Puzzles, Posts [jokes/funny lines/quotes/motivational/memes], Stories, Friendship Quizzes) has its own list page in the admin panel, where you can:
+Each content type (Quizzes, Puzzles, Posts [jokes/funny lines/quotes/motivational], Stories, Friendship Quizzes) has its own list page in the admin panel, where you can:
 - **Search and filter** by category, language, or published/draft status.
 - **Create new** content through a form.
 - **Edit** or **delete** existing content.
@@ -111,7 +111,7 @@ Each content type (Quizzes, Puzzles, Posts [jokes/funny lines/quotes/motivationa
 
 ### Quick Add
 
-A fast shortcut for jokes, funny lines, quotes, and motivational quotes (not memes, which need an image): pick a category, type the text into one box, hit Publish. No drafts, no extra fields — meant for adding something quickly from a phone.
+A fast shortcut for jokes, funny lines, quotes, and motivational quotes: pick a category, type the text into one box, hit Publish. No drafts, no extra fields — meant for adding something quickly from a phone.
 
 ### Content freshness flags
 
