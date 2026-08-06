@@ -8,9 +8,9 @@ const COLLAPSE_KEY = 'twegle-admin-sidebar-collapsed'
 const NAV_ITEMS = [
   { to: '/admin/dashboard', label: 'Dashboard', emoji: '🏠' },
   { to: '/admin/quizzes', label: 'Quizzes', emoji: '🎯' },
+  { to: '/admin/friendship-quizzes', label: 'Friendship Quizzes', emoji: '🤝' },
   { to: '/admin/posts', label: 'Posts', emoji: '📝' },
   { to: '/admin/stories', label: 'Stories', emoji: '📖' },
-  { to: '/admin/friendship-quizzes', label: 'Friendship Quizzes', emoji: '🤝' },
   { to: '/admin/analytics', label: 'Analytics', emoji: '📊' },
   { to: '/admin/activity', label: 'Activity', emoji: '📋' },
   { to: '/admin/feedback', label: 'Feedback', emoji: '📨' },
@@ -70,9 +70,9 @@ export default function AdminLayout() {
   }
 
   const items = [
-    ...NAV_ITEMS.slice(0, 3),
+    ...NAV_ITEMS.slice(0, 4),
     ...(hasRole('superadmin', 'editor') ? [QUICK_ADD_ITEM, BULK_IMPORT_ITEM] : []),
-    ...NAV_ITEMS.slice(3),
+    ...NAV_ITEMS.slice(4),
     ...(hasRole('superadmin') ? [ADMINS_ITEM] : []),
   ]
 
