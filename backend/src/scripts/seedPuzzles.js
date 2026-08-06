@@ -22,7 +22,7 @@ const puzzles = [
     answer: 'An egg.',
     difficulty: 'easy',
     emoji: '🥚',
-    gradient: 'from-amber-400 to-yellow-500',
+    gradient: 'from-amber-400 to-orange-500',
     status: 'published',
   },
   {
@@ -30,7 +30,7 @@ const puzzles = [
     answer: 'A candle.',
     difficulty: 'easy',
     emoji: '🕯️',
-    gradient: 'from-orange-400 to-red-400',
+    gradient: 'from-red-400 to-orange-400',
     status: 'published',
   },
   {
@@ -46,7 +46,7 @@ const puzzles = [
     answer: 'A towel.',
     difficulty: 'easy',
     emoji: '🧺',
-    gradient: 'from-cyan-400 to-teal-500',
+    gradient: 'from-emerald-400 to-teal-500',
     status: 'published',
   },
   {
@@ -54,7 +54,7 @@ const puzzles = [
     answer: 'दिन (सुबह)।',
     difficulty: 'easy',
     emoji: '🌅',
-    gradient: 'from-pink-400 to-rose-500',
+    gradient: 'from-pink-400 to-rose-400',
     language: 'hi',
     status: 'published',
   },
@@ -65,7 +65,7 @@ const puzzles = [
     answer: 'An echo.',
     difficulty: 'medium',
     emoji: '🔊',
-    gradient: 'from-fuchsia-400 to-purple-500',
+    gradient: 'from-fuchsia-400 to-pink-500',
     status: 'published',
   },
   {
@@ -73,7 +73,7 @@ const puzzles = [
     answer: 'Footsteps.',
     difficulty: 'medium',
     emoji: '👣',
-    gradient: 'from-emerald-400 to-green-500',
+    gradient: 'from-lime-400 to-green-500',
     status: 'published',
   },
   {
@@ -81,7 +81,7 @@ const puzzles = [
     answer: 'A postage stamp.',
     difficulty: 'medium',
     emoji: '✉️',
-    gradient: 'from-red-400 to-pink-500',
+    gradient: 'from-purple-400 to-fuchsia-500',
     status: 'published',
   },
   {
@@ -89,7 +89,7 @@ const puzzles = [
     answer: 'A piano.',
     difficulty: 'medium',
     emoji: '🎹',
-    gradient: 'from-gray-500 to-gray-700',
+    gradient: 'from-cyan-400 to-sky-500',
     status: 'published',
   },
   {
@@ -97,7 +97,7 @@ const puzzles = [
     answer: '"Short" — add "er" to make "shorter."',
     difficulty: 'medium',
     emoji: '🔤',
-    gradient: 'from-lime-400 to-green-500',
+    gradient: 'from-amber-400 to-orange-500',
     status: 'published',
   },
   {
@@ -105,7 +105,7 @@ const puzzles = [
     answer: 'दिन और रात (सूरज और चाँद के प्रतीक)।',
     difficulty: 'medium',
     emoji: '🌗',
-    gradient: 'from-indigo-400 to-blue-600',
+    gradient: 'from-violet-400 to-indigo-500',
     language: 'hi',
     status: 'published',
   },
@@ -116,7 +116,7 @@ const puzzles = [
     answer: 'His own son.',
     difficulty: 'hard',
     emoji: '🖼️',
-    gradient: 'from-slate-500 to-slate-700',
+    gradient: 'from-sky-400 to-blue-500',
     status: 'published',
   },
   {
@@ -124,7 +124,7 @@ const puzzles = [
     answer: '1 hour — the first pill is taken immediately, the second 30 minutes later, the third 30 minutes after that.',
     difficulty: 'hard',
     emoji: '💊',
-    gradient: 'from-teal-400 to-cyan-600',
+    gradient: 'from-emerald-400 to-teal-500',
     status: 'published',
   },
   {
@@ -132,7 +132,7 @@ const puzzles = [
     answer: 'A cold.',
     difficulty: 'hard',
     emoji: '🤧',
-    gradient: 'from-blue-400 to-indigo-600',
+    gradient: 'from-red-400 to-orange-400',
     status: 'published',
   },
 

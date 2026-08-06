@@ -108,22 +108,63 @@ function sortItems(items, tab, mode) {
 }
 
 export default function Home() {
-  // The active tab lives in the URL (?tab=friendship) rather than local
-  // state, so switching tabs is bookmarkable/shareable and the browser
-  // back/forward buttons move between tabs, not just other pages.
+  // Every filter (tab, language, sort, and each tab's own category/
+  // difficulty chip) lives in the URL rather than local state, so all of
+  // them are bookmarkable/shareable, and — the reason this matters most —
+  // survive the browser Back button. Home.jsx fully unmounts when you
+  // navigate to a quiz/puzzle/post detail page, so any filter kept in plain
+  // React state is lost the moment you come back; reading it from the URL
+  // instead means Back simply restores the same URL, filters included.
   const [searchParams, setSearchParams] = useSearchParams()
-  const activeTab = TABS.some((t) => t.key === searchParams.get('tab'))
-    ? searchParams.get('tab')
-    : 'quizzes'
-  function setActiveTab(tab) {
-    setSearchParams(tab === 'quizzes' ? {} : { tab })
+
+  function getParam(key, allowedKeys, fallback) {
+    const value = searchParams.get(key)
+    return allowedKeys.includes(value) ? value : fallback
   }
-  const [language, setLanguage] = useState('en')
-  const [quizCategory, setQuizCategory] = useState('all')
-  const [storyCategory, setStoryCategory] = useState('all')
-  const [postCategory, setPostCategory] = useState('all')
-  const [puzzleDifficulty, setPuzzleDifficulty] = useState('all')
-  const [sortMode, setSortMode] = useState('newest')
+
+  // Filter changes replace the current history entry (no new Back stop per
+  // click) — only switching tabs pushes a new entry, preserving the
+  // existing "Back/Forward move between tabs" behavior.
+  function setParam(key, value, defaultValue, { push = false } = {}) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value === defaultValue) next.delete(key)
+        else next.set(key, value)
+        return next
+      },
+      { replace: !push }
+    )
+  }
+
+  const activeTab = getParam('tab', TABS.map((t) => t.key), 'quizzes')
+  function setActiveTab(tab) {
+    setParam('tab', tab, 'quizzes', { push: true })
+  }
+  const language = getParam('lang', ['en', 'hi'], 'en')
+  function setLanguage(lang) {
+    setParam('lang', lang, 'en')
+  }
+  const quizCategory = getParam('qcat', QUIZ_CATEGORIES.map((c) => c.key), 'all')
+  function setQuizCategory(cat) {
+    setParam('qcat', cat, 'all')
+  }
+  const storyCategory = getParam('scat', STORY_CATEGORIES.map((c) => c.key), 'all')
+  function setStoryCategory(cat) {
+    setParam('scat', cat, 'all')
+  }
+  const postCategory = getParam('pcat', POST_CATEGORIES.map((c) => c.key), 'all')
+  function setPostCategory(cat) {
+    setParam('pcat', cat, 'all')
+  }
+  const puzzleDifficulty = getParam('pzcat', PUZZLE_DIFFICULTIES.map((c) => c.key), 'all')
+  function setPuzzleDifficulty(cat) {
+    setParam('pzcat', cat, 'all')
+  }
+  const sortMode = getParam('sort', ['newest', 'trending'], 'newest')
+  function setSortMode(mode) {
+    setParam('sort', mode, 'newest')
+  }
   // Tagged with the tab/language/category that produced it, so a render can
   // never show content fetched for a different filter while the real fetch
   // is in flight — this is what previously caused a crash and a "duplicate
