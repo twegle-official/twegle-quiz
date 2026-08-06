@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom'
 import { pickPuzzleOfTheDay } from '../utils/dailyQuiz'
 
-// Deliberately no streak badge here — DailyQuizBanner right above already
-// shows the one shared streak count (see dailyQuiz.js's
+// Deliberately no streak *count* here — DailyQuizBanner right above already
+// shows the one shared streak number (see dailyQuiz.js's
 // recordDailyActivityCompletion), so repeating the same number on a second
-// banner would just be redundant, not clearer.
+// banner would just be redundant, not clearer. The "🔥" prefix stays though
+// (added 2026-08-06, matching DailyQuizBanner's "🔥 Daily Streak" eyebrow)
+// so it's clear revealing today's puzzle also counts toward that same
+// streak, not just finishing the quiz — that wasn't visible anywhere before.
 export default function PuzzleOfTheDayBanner({ puzzles }) {
   const puzzle = pickPuzzleOfTheDay(puzzles)
   if (!puzzle) return null
@@ -16,7 +19,7 @@ export default function PuzzleOfTheDayBanner({ puzzles }) {
     >
       <span className="text-2xl sm:text-3xl shrink-0">{puzzle.emoji || '🧩'}</span>
       <div className="min-w-0">
-        <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">Puzzle of the Day</p>
+        <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Puzzle of the Day</p>
         <p className="text-sm sm:text-base font-bold truncate">{puzzle.question}</p>
       </div>
     </Link>

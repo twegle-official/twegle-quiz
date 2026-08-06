@@ -7,13 +7,15 @@ export default function DailyQuizBanner({ quizzes }) {
 
   const streak = getStreak()
 
-  // The streak badge is a separate shrink-0 chip, not folded into the
-  // truncating title line — on the cramped 2-column mobile row (this banner
-  // shares a row with Puzzle of the Day), "Quiz of the Day · 🔥 3" was
-  // getting clipped by the line's own `truncate`, silently hiding the
-  // streak count and, with it, any sense that this is a daily habit rather
-  // than a one-off "today's quiz" label. A fixed chip can't be truncated
-  // away like that.
+  // Eyebrow label leads with "🔥 Daily Streak" (not "Quiz of the Day") so the
+  // streak mechanic itself is always visible, even to a first-time visitor
+  // with no streak yet — the previous "Quiz of the Day" wording never told
+  // anyone that finishing it daily builds/keeps a running streak. The count
+  // chip (only shown once there's a real streak to show) is a separate
+  // shrink-0 element, not folded into the truncating title line — on the
+  // cramped 2-column mobile row (this banner shares a row with Puzzle of
+  // the Day), a combined "Quiz of the Day · 🔥 3" string used to get clipped
+  // by the line's own `truncate`, silently hiding the count.
   return (
     <Link
       to={`/quiz/${quiz.slug}`}
@@ -22,13 +24,13 @@ export default function DailyQuizBanner({ quizzes }) {
       <span className="text-2xl sm:text-3xl shrink-0">{quiz.emoji || '🎯'}</span>
       <div className="min-w-0 flex-1">
         <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">
-          Quiz of the Day
+          🔥 Daily Streak
         </p>
         <p className="text-sm sm:text-base font-bold truncate">{quiz.title}</p>
       </div>
       {streak.count > 0 && (
         <span className="shrink-0 text-[10px] sm:text-xs font-bold bg-white/25 rounded-full px-1.5 py-0.5 sm:px-2 sm:py-1 whitespace-nowrap">
-          🔥 Day {streak.count}
+          Day {streak.count}
         </span>
       )}
     </Link>
