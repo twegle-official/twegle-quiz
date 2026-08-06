@@ -12,6 +12,7 @@ export default function EndUserList() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [selectedUser, setSelectedUser] = useState(null)
   const canModerate = hasRole('superadmin', 'editor')
 
   const isFirstRender = useRef(true)
@@ -46,6 +47,7 @@ export default function EndUserList() {
     if (!window.confirm(`${verb} account "${user.displayName}"?${nextStatus === 'disabled' ? ' They will be logged out and unable to sign in until re-enabled.' : ''}`)) return
     try {
       await updateEndUserStatus(session.token, user._id, nextStatus)
+      setSelectedUser(null)
       load()
     } catch (err) {
       setError(err.message)
@@ -56,6 +58,7 @@ export default function EndUserList() {
     if (!window.confirm(`Permanently delete account "${displayName}"? This cannot be undone — their username becomes available again and all account data is gone.`)) return
     try {
       await deleteEndUser(session.token, id)
+      setSelectedUser(null)
       load()
     } catch (err) {
       setError(err.message)
@@ -91,7 +94,11 @@ export default function EndUserList() {
             </p>
           )}
           {users.map((user) => (
-            <div key={user._id} className="flex items-center justify-between p-4 gap-3">
+            <div
+              key={user._id}
+              onClick={() => setSelectedUser(user)}
+              className="flex items-center justify-between p-4 gap-3 cursor-pointer hover:bg-gray-50"
+            >
               <div className="min-w-0">
                 <p className="font-semibold text-gray-900 truncate">
                   {user.avatar ? `${user.avatar} ` : ''}{user.displayName}
@@ -108,7 +115,10 @@ export default function EndUserList() {
               {canModerate && (
                 <div className="flex gap-2 shrink-0">
                   <button
-                    onClick={() => handleToggleStatus(user)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleToggleStatus(user)
+                    }}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
                       user.status === 'disabled'
                         ? 'bg-green-50 hover:bg-green-100 text-green-700'
@@ -118,7 +128,10 @@ export default function EndUserList() {
                     {user.status === 'disabled' ? 'Re-enable' : 'Disable'}
                   </button>
                   <button
-                    onClick={() => handleDelete(user._id, user.displayName)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDelete(user._id, user.displayName)
+                    }}
                     className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-sm font-medium text-red-600"
                   >
                     Delete
@@ -132,6 +145,76 @@ export default function EndUserList() {
 
       {pagination && (
         <Pager page={pagination.page} totalPages={pagination.totalPages} total={pagination.total} onPageChange={setPage} />
+      )}
+
+      {selectedUser && (
+        <div
+          className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
+          onClick={() => setSelectedUser(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div className="text-4xl">{selectedUser.avatar || '👤'}</div>
+              <button
+                onClick={() => setSelectedUser(null)}
+                aria-label="Close"
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            <h2 className="text-lg font-bold text-gray-900 mb-1">{selectedUser.displayName}</h2>
+            <p className="text-sm text-gray-500 mb-4">Gamer Tag — shown publicly (leaderboards etc.)</p>
+
+            <dl className="space-y-3 text-sm mb-6">
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500">Username (private login)</dt>
+                <dd className="text-gray-900 font-medium">@{selectedUser.username}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500">Status</dt>
+                <dd className={`font-medium ${selectedUser.status === 'disabled' ? 'text-red-600' : 'text-green-700'}`}>
+                  {selectedUser.status === 'disabled' ? 'Disabled' : 'Active'}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500">Joined</dt>
+                <dd className="text-gray-900 font-medium">
+                  {new Date(selectedUser.createdAt).toLocaleString()}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500">Password / Recovery Code</dt>
+                <dd className="text-gray-400 italic">Never visible — hashed only</dd>
+              </div>
+            </dl>
+
+            {canModerate && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleToggleStatus(selectedUser)}
+                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold ${
+                    selectedUser.status === 'disabled'
+                      ? 'bg-green-50 hover:bg-green-100 text-green-700'
+                      : 'bg-amber-50 hover:bg-amber-100 text-amber-700'
+                  }`}
+                >
+                  {selectedUser.status === 'disabled' ? 'Re-enable' : 'Disable'}
+                </button>
+                <button
+                  onClick={() => handleDelete(selectedUser._id, selectedUser.displayName)}
+                  className="flex-1 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-sm font-semibold text-red-600"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   )

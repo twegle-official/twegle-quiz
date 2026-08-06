@@ -66,6 +66,16 @@ export default function AdminLayout() {
     })
   }
 
+  // Locks background scroll while the mobile drawer is open — without this,
+  // the page behind the backdrop could still scroll, which reads oddly for
+  // an overlay that's meant to fully take over the screen.
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? 'hidden' : ''
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [mobileMenuOpen])
+
   function handleLogout() {
     logout()
     navigate('/admin/login')
@@ -80,18 +90,86 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 lg:flex lg:items-start">
-      {/* Sidebar on lg+ (sticky, full-height, collapsible to an icon rail to
-          reclaim width); falls back to a simple stacked top bar below lg —
-          same responsive strategy as the public site's Home.jsx filter
-          sidebar, just as a row instead of a grid. */}
+      {/* Mobile/tablet top bar (below lg only) — just the logo + hamburger,
+          always visible and sticky. The nav itself lives in the off-canvas
+          drawer below, not stacked inline here, so opening it no longer
+          pushes the page content downward the way an inline dropdown did. */}
+      <div className="lg:hidden sticky top-0 z-30 bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between">
+        <Link to="/admin/dashboard" title="Dashboard">
+          <LogoWithWordmark size={28} />
+        </Link>
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          aria-label="Open menu"
+          aria-expanded={mobileMenuOpen}
+          className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-xl"
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* Mobile off-canvas drawer — slides in from the left (same side the
+          sidebar already lives on for lg+, so it's spatially consistent
+          rather than a menu that drops down from the top). Always mounted
+          so the slide transition can animate both open and closed instead
+          of the panel just appearing/disappearing. */}
+      <div
+        className={`lg:hidden fixed inset-0 z-40 transition-opacity duration-200 ${
+          mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="absolute inset-0 bg-black/40" onClick={() => setMobileMenuOpen(false)} />
+        {/* Uses an inline transform (not Tailwind's translate-x-* utilities)
+            — those compile to the standalone CSS `translate` property in
+            this Tailwind version, which wasn't resolving correctly here;
+            a plain `transform` inline style sidesteps it entirely. */}
+        <div
+          className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-white shadow-xl flex flex-col transition-transform duration-200 ease-out"
+          style={{ transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)' }}
+        >
+          <div className="px-4 py-4 flex items-center justify-between border-b border-gray-200">
+            <LogoWithWordmark size={28} />
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Close menu"
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-xl"
+            >
+              ✕
+            </button>
+          </div>
+
+          <nav className="flex flex-col gap-1 px-4 py-4 flex-1 overflow-y-auto">
+            {items.map((item) => (
+              <NavLink key={item.to} to={item.to} className={makeNavClass(false)} title={item.label}>
+                <span>{item.emoji}</span>
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="flex flex-col items-stretch gap-3 px-4 py-3 border-t border-gray-200 text-sm text-gray-500">
+            <span className="truncate">
+              {session?.admin?.name} ({session?.admin?.role})
+            </span>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium"
+            >
+              <span>🚪</span>
+              <span>Log out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop sidebar (lg+ only) — sticky, full-height, collapsible to an
+          icon rail to reclaim width. Unchanged from before, just now scoped
+          to lg+ since mobile has its own drawer above. */}
       <aside
-        className={`relative bg-white border-b lg:border-b-0 lg:border-r border-gray-200 lg:shrink-0 lg:sticky lg:top-0 lg:h-screen lg:flex lg:flex-col ${
+        className={`hidden lg:flex relative bg-white lg:border-r border-gray-200 lg:shrink-0 lg:sticky lg:top-0 lg:h-screen lg:flex-col ${
           collapsed ? 'lg:w-16' : 'lg:w-56'
         }`}
       >
-        {/* Straddles the sidebar's right edge so it doesn't need to fit
-            inside the collapsed 64px-wide rail. Desktop-only — collapsing
-            has nothing to do on a mobile-width stacked layout. */}
         <button
           onClick={toggleCollapsed}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
@@ -100,28 +178,13 @@ export default function AdminLayout() {
           {collapsed ? '›' : '‹'}
         </button>
 
-        <div className="px-4 py-4 flex items-center justify-between lg:justify-start">
+        <div className="px-4 py-4 flex items-center lg:justify-start">
           <Link to="/admin/dashboard" title="Dashboard">
             {collapsed ? <LogoMark size={28} /> : <LogoWithWordmark size={28} />}
           </Link>
-          {/* Hamburger toggle — mobile/tablet only. Below lg there's no
-              permanent sidebar, so nav items used to always render inline
-              above the page content, pushing it down. Now they're hidden
-              behind this toggle instead, same as the public site's mobile
-              nav pattern. */}
-          <button
-            onClick={() => setMobileMenuOpen((v) => !v)}
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={mobileMenuOpen}
-            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-xl"
-          >
-            {mobileMenuOpen ? '✕' : '☰'}
-          </button>
         </div>
 
-        <nav
-          className={`${mobileMenuOpen ? 'flex' : 'hidden'} flex-col gap-1 px-4 pb-4 lg:flex lg:flex-1 lg:flex-col lg:flex-nowrap lg:px-3 lg:pb-0`}
-        >
+        <nav className="flex flex-1 flex-col flex-nowrap gap-1 px-3">
           {items.map((item) => (
             <NavLink key={item.to} to={item.to} className={makeNavClass(collapsed)} title={item.label}>
               <span>{item.emoji}</span>
@@ -130,9 +193,7 @@ export default function AdminLayout() {
           ))}
         </nav>
 
-        <div
-          className={`${mobileMenuOpen ? 'flex' : 'hidden'} flex-col items-stretch gap-3 px-4 py-3 border-t border-gray-200 text-sm text-gray-500 lg:flex lg:items-stretch`}
-        >
+        <div className="flex flex-col items-stretch gap-3 px-4 py-3 border-t border-gray-200 text-sm text-gray-500">
           <span className={`truncate ${labelClass(collapsed)}`}>
             {session?.admin?.name} ({session?.admin?.role})
           </span>

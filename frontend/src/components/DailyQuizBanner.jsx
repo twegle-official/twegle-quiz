@@ -7,23 +7,23 @@ export default function DailyQuizBanner({ quizzes }) {
 
   const streak = getStreak()
 
+  // The streak lives in this same label line (rather than a separate pill
+  // off to the side) so this banner stays a fixed, compact height — with
+  // Puzzle of the Day now sitting right next to it in a 2-column row on
+  // mobile, a variable-width side pill was pushing the title into a second
+  // line and blowing out the combined height of both banners together.
   return (
     <Link
       to={`/quiz/${quiz.slug}`}
-      className="flex items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-white px-4 py-3 mb-4 hover:opacity-95 transition-opacity"
+      className="flex items-center gap-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-2.5 sm:px-4 sm:py-3 hover:opacity-95 transition-opacity min-w-0"
     >
-      <div className="flex items-center gap-3 min-w-0">
-        <span className="text-3xl shrink-0">{quiz.emoji || '🎯'}</span>
-        <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-white/80">Quiz of the Day</p>
-          <p className="font-bold truncate">{quiz.title}</p>
-        </div>
+      <span className="text-2xl sm:text-3xl shrink-0">{quiz.emoji || '🎯'}</span>
+      <div className="min-w-0">
+        <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">
+          Quiz of the Day{streak.count > 0 ? ` · 🔥 ${streak.count}` : ''}
+        </p>
+        <p className="text-sm sm:text-base font-bold truncate">{quiz.title}</p>
       </div>
-      {streak.count > 0 && (
-        <span className="shrink-0 text-sm font-bold bg-white/20 rounded-full px-3 py-1.5 whitespace-nowrap">
-          🔥 {streak.count}-day streak
-        </span>
-      )}
     </Link>
   )
 }

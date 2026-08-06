@@ -319,26 +319,31 @@ export default function Home() {
     '@type': 'WebSite',
     name: 'Twegle',
     url: import.meta.env.VITE_SITE_URL || 'http://localhost:5173',
-    description: 'Quizzes, jokes, quotes, games, stories, horoscope & chaos — no sign up, just pick something and go. New stuff added regularly.',
+    description: 'Quizzes, puzzles, jokes, quotes, games, stories, horoscope & chaos — no sign up, just pick something and go. New stuff added regularly.',
   }
 
   return (
     <div>
       <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
       <div className="bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+        <div className="max-w-6xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-center sm:text-left">
           <div>
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/80">
               Where Fun Goes Viral
             </p>
-            <h1 className="text-lg sm:text-xl font-extrabold text-white">
-              Quizzes, Jokes, Quotes, Games, Stories &amp; Horoscope
+            <h1 className="text-base sm:text-xl font-extrabold text-white">
+              Quizzes, Puzzles, Jokes, Quotes, Games, Stories &amp; Horoscope
             </h1>
-            <p className="text-white/90 text-xs sm:text-sm">
+            <p className="text-white/90 text-[11px] sm:text-sm">
               No sign up, no waiting — just pick something and go.
             </p>
           </div>
-          <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-white/80 text-xs sm:text-sm font-medium shrink-0">
+          {/* Hidden below `sm` — on a phone this row was two extra stacked
+              lines below an already-longer heading (now that Puzzles is
+              listed too), pushing real content further down before it's
+              visible at all. It's decorative/secondary info, not something
+              a mobile visitor needs before scrolling. */}
+          <div className="hidden sm:flex flex-wrap justify-center gap-x-5 gap-y-1 text-white/80 text-xs sm:text-sm font-medium shrink-0">
             <span>🎯 {stats.quizzes ?? '24'} quizzes</span>
             <span>💬 {stats.posts ?? '85'}+ jokes &amp; quotes</span>
             <span>🌐 English &amp; हिंदी</span>
@@ -346,7 +351,11 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 pt-4">
+      {/* Side by side (not stacked) on every screen size, including mobile —
+          each banner is a single compact row now (see DailyQuizBanner /
+          PuzzleOfTheDayBanner), so a 2-column grid halves the vertical space
+          the pair takes versus stacking two full-width banners. */}
+      <div className="max-w-6xl mx-auto px-4 pt-3 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-4">
         <DailyQuizBanner quizzes={allQuizzes} />
         <PuzzleOfTheDayBanner puzzles={allPuzzles} />
       </div>

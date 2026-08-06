@@ -52,8 +52,8 @@ export default function Footer() {
         <div>
           <LogoWithWordmark size={28} />
           <p className="text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
-            Quizzes, jokes, quotes, games, stories, horoscope &amp; chaos — no sign up, just pick
-            something and go. New stuff added regularly.
+            Quizzes, puzzles, jokes, quotes, games, stories, horoscope &amp; chaos — no sign up, just
+            pick something and go. New stuff added regularly.
           </p>
           <div className="flex items-center gap-4 mt-4">
             <a
