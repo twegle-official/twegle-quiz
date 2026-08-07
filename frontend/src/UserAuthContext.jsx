@@ -1,5 +1,5 @@
-import { createContext, useContext, useState } from 'react'
-import { signupUser, loginUser } from './userApi'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { signupUser, loginUser, fetchCurrentUser } from './userApi'
 
 // Separate, parallel context from admin/AuthContext.jsx — different name,
 // different localStorage key (`userSession` vs `adminSession`), wraps only
@@ -14,6 +14,23 @@ export function UserAuthProvider({ children }) {
     const raw = localStorage.getItem('userSession')
     return raw ? JSON.parse(raw) : null
   })
+
+  // The cached session (including displayName/avatar) is only ever written
+  // at login/signup or by an explicit updateSession() call on *this*
+  // device — a profile change made on another device (or another browser
+  // on the same device) never reaches an already-open session here. Found
+  // directly: an account logged into both a phone and a desktop browser
+  // showed two different avatars, since only the device the change was
+  // made on had the new value. Refetching once on load keeps this device's
+  // cache in sync with whatever the account actually looks like server-side
+  // right now, without needing a fresh login.
+  useEffect(() => {
+    if (!session?.token) return
+    fetchCurrentUser(session.token)
+      .then((data) => updateSession({ token: session.token, user: data.user }))
+      .catch(() => {})
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function signup(username, password, displayName) {
     const data = await signupUser(username, password, displayName)
