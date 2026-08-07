@@ -182,6 +182,22 @@ export default function Home() {
   const [allQuizzes, setAllQuizzes] = useState([])
   // Same reasoning, for the Puzzle of the Day banner.
   const [allPuzzles, setAllPuzzles] = useState([])
+  // Unused directly — exists purely to force a re-render. QuizCard/PuzzleCard
+  // read their "already attempted" mark straight from localStorage at render
+  // time (see hasCompletedQuiz/hasRevealedPuzzle in badges.js), with no
+  // React state backing it, so a background cross-device sync landing new
+  // data in localStorage (see statsSync.js's 'twegle-stats-synced' event)
+  // wouldn't otherwise cause an already-mounted Home to notice and re-render
+  // its tiles. Found directly: revealing a puzzle on mobile didn't show the
+  // mark on an already-open desktop tab even after the sync itself ran.
+  const [, forceStatsRerender] = useState(0)
+  useEffect(() => {
+    function handleStatsSynced() {
+      forceStatsRerender((n) => n + 1)
+    }
+    window.addEventListener('twegle-stats-synced', handleStatsSynced)
+    return () => window.removeEventListener('twegle-stats-synced', handleStatsSynced)
+  }, [])
 
   // Resets scroll to the true top on every filter change (tab, language,
   // quiz/story category, sort mode) so the newly-filtered content is fully

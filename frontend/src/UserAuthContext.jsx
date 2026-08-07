@@ -35,8 +35,25 @@ export function UserAuthProvider({ children }) {
     // exists, not just right after login, so two devices that were never
     // both open "at once" still converge the next time either one loads.
     syncStatsOnLogin(session.token)
+
+    // A one-time sync on load isn't enough on its own — this provider wraps
+    // the whole app and doesn't remount on client-side navigation, so a
+    // visitor who stays on one tab (switching between the Quizzes/Puzzles
+    // tabs, or between pages) never re-syncs after that first load, even if
+    // another device (or tab) changed something server-side in the
+    // meantime. Found directly: revealed a puzzle on mobile, the desktop
+    // tab (already loaded before that happened) never picked it up without
+    // a full reload. Re-syncing whenever the tab regains focus — the moment
+    // a visitor coming back from doing something elsewhere is most likely
+    // to actually check — closes that gap without needing to poll
+    // constantly while the tab is already active.
+    function handleVisibility() {
+      if (document.visibilityState === 'visible') syncStatsOnLogin(session.token)
+    }
+    document.addEventListener('visibilitychange', handleVisibility)
+    return () => document.removeEventListener('visibilitychange', handleVisibility)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [session?.token])
 
   async function signup(username, password, displayName) {
     const data = await signupUser(username, password, displayName)

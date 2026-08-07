@@ -110,4 +110,14 @@ export async function syncStatsOnLogin(token) {
 
   writeLocalBlob(merged)
   pushStats(token, merged).catch(() => {})
+
+  // QuizCard/PuzzleCard read localStorage directly at render time (see
+  // hasCompletedQuiz/hasRevealedPuzzle in badges.js) — there's no React
+  // state backing them, so writing fresh data to localStorage above doesn't
+  // by itself make an already-rendered tile pick it up. This event (same
+  // pattern badges.js already uses for the unlock toast) lets any mounted
+  // page force a re-render once synced data actually changes something —
+  // see Home.jsx's listener, which is what makes an "already attempted"
+  // mark from another device actually show up without a manual reload.
+  window.dispatchEvent(new CustomEvent('twegle-stats-synced'))
 }
