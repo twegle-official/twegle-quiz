@@ -10,14 +10,21 @@ export default function About() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">About Twegle</h1>
 
       <p className="mb-4">
-        Twegle is a free entertainment site — quick personality quizzes, jokes, funny lines,
-        quotes, and motivational quotes, made to be taken in a minute and shared with a friend.
-        No sign up, no waiting, nothing to install — just pick something and go.
+        Twegle is a free entertainment site — personality &amp; trivia quizzes, puzzles, a
+        two-person "friendship quiz," quick games, jokes, funny lines, quotes, motivational
+        quotes, short stories, and light horoscopes, made to be taken in a minute and shared with
+        a friend. No sign up required, no waiting, nothing to install — just pick something and
+        go.
+      </p>
+      <p className="mb-4">
+        If you'd like your daily streak, badges, and progress to follow you across devices, you
+        can create a free account with just a username and password — no email or phone number
+        needed. It's entirely optional; every feature on Twegle works fully for guests too.
       </p>
       <p className="mb-4">
         Everything on Twegle is available in both English and Hindi, with more languages planned
-        as the site grows. New quizzes and posts are added regularly, so there's always something
-        new to come back for.
+        as the site grows. New content is added regularly, so there's always something new to
+        come back for.
       </p>
       <p className="mb-8">
         Twegle is built and run independently, with content written to be light, family-friendly,

@@ -8,28 +8,47 @@ export default function Terms() {
     <div className="max-w-2xl mx-auto px-4 py-10 text-gray-700 dark:text-gray-300">
       <BackButton className="mb-4" />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Terms of Service</h1>
-      <p className="text-sm text-gray-400 dark:text-gray-500 mb-8">Last updated: 27 July 2026</p>
+      <p className="text-sm text-gray-400 dark:text-gray-500 mb-8">Last updated: 7 August 2026</p>
 
       <p className="mb-6">
         By using Twegle, you agree to these terms. They're written in plain language on purpose —
-        Twegle is a free entertainment site, not a service with contracts or paid accounts, so
-        there's no need to make this complicated.
+        Twegle is a free entertainment site, not a service with paid contracts, so there's no need
+        to make this complicated.
       </p>
 
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">1. Entertainment only</h2>
       <p className="mb-6">
-        Quizzes, results, jokes, funny lines, quotes, and motivational quotes on Twegle are for
-        fun and entertainment only. Nothing on this site is professional advice of any kind —
-        medical, psychological, legal, financial, or otherwise — and quiz results are not a
-        real assessment of your personality, health, or anything else. Don't rely on anything
-        here for a decision that actually matters.
+        Quizzes, results, puzzles, games, horoscopes, stories, jokes, funny lines, quotes, and
+        motivational quotes on Twegle are for fun and entertainment only. Nothing on this site is
+        professional advice of any kind — medical, psychological, legal, financial, or otherwise —
+        and quiz results, puzzle-solving, and horoscopes are not a real assessment of your
+        personality, health, future, or anything else. Don't rely on anything here for a decision
+        that actually matters.
       </p>
 
-      <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">2. No account required</h2>
+      <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">2. Accounts are optional</h2>
+      <p className="mb-3">
+        You can use every feature on Twegle without signing up. If you'd like your streak, badges,
+        and progress to follow you across devices, you can create a free account with a username
+        and password — no email or phone number required.
+      </p>
+      <p className="mb-3">
+        Since there's no email or phone number on file, forgotten passwords can only be reset with
+        the one-time Recovery Code shown when you sign up — it's your responsibility to keep it
+        somewhere safe. If both your password and Recovery Code are lost, we have no way to verify
+        or restore access to the account, and it is permanently unrecoverable. You're welcome to
+        create a new one at any time.
+      </p>
+      <p className="mb-3">
+        Your public Gamer Tag may be shown to other visitors (for example, on a game leaderboard).
+        Please don't use it, or your login username, to share your real name or any other
+        identifying information.
+      </p>
       <p className="mb-6">
-        You can use Twegle without signing up. Since there's no account, there's nothing for you
-        to manage, cancel, or delete — using the site simply means you agree to these terms for
-        as long as you're on it.
+        We may disable or remove an account that violates Section 3 below (Acceptable use). You
+        can stop using an account at any time; since accounts hold no personal information beyond
+        a username and password, there's nothing further for us to delete on request beyond the
+        account record itself — contact us below if you'd like that removed.
       </p>
 
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">3. Acceptable use</h2>
@@ -42,11 +61,11 @@ export default function Terms() {
 
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">4. Content ownership</h2>
       <p className="mb-6">
-        The quizzes, questions, results, jokes, funny lines, quotes, motivational quotes, logo,
-        and design on Twegle belong to us (unless a quote is attributed to someone else, in which
-        case it belongs to them). You're welcome to share a link or a generated result image with
-        others — that's what it's for — but please don't copy the site's content wholesale to
-        run elsewhere.
+        The quizzes, questions, results, puzzles, stories, horoscope text, jokes, funny lines,
+        quotes, motivational quotes, logo, and design on Twegle belong to us (unless a quote is
+        attributed to someone else, in which case it belongs to them). You're welcome to share a
+        link or a generated result image with others — that's what it's for — but please don't
+        copy the site's content wholesale to run elsewhere.
       </p>
 
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">5. Advertising &amp; affiliate links</h2>
@@ -74,8 +93,8 @@ export default function Terms() {
 
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">8. Changes to these terms</h2>
       <p className="mb-6">
-        We may update these terms as the site grows — for example, if we add optional accounts or
-        new features. The "last updated" date above will always reflect the latest version, and
+        We may update these terms as the site grows — for example, if we add new features or
+        content types. The "last updated" date above will always reflect the latest version, and
         continuing to use Twegle after a change means you accept the updated terms.
       </p>
 
