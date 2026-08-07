@@ -10,6 +10,13 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      // Registration is done explicitly in main.jsx (via `virtual:pwa-register`)
+      // instead of the plugin's auto-injected script, so the app can force an
+      // update check on every tab focus and reload once a new service worker
+      // takes control — see main.jsx for why. injectRegister: false stops the
+      // plugin from also injecting its own bare registration script, which
+      // would double-register the worker.
+      injectRegister: false,
       // Lets the service worker actually run under `npm run dev` too, not
       // just a production build — otherwise "is it working" can only ever
       // be answered after a full build+preview, which is a slow feedback
@@ -37,6 +44,9 @@ export default defineConfig({
         // already-viewed quiz/post/etc. actually show real data offline,
         // not just an empty shell.
         globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+        // Deletes precaches left over from a previous deploy once the new
+        // service worker activates, instead of letting them accumulate.
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             // Public read endpoints only — deliberately excludes
