@@ -22,7 +22,13 @@ export default function Login() {
     setSubmitting(true)
     try {
       await login(username.trim(), password)
-      navigate('/account', { replace: true })
+      // Signup still lands on /account (Signup.jsx) since there's real
+      // setup context to show right after creating an account (the
+      // recovery code). A regular login has nothing new to show, so it
+      // returns to the homepage instead — landing on the Account page
+      // every time felt like being redirected away from what the visitor
+      // actually came to do.
+      navigate('/', { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {
