@@ -43,15 +43,28 @@ export function UserAuthProvider({ children }) {
     // another device (or tab) changed something server-side in the
     // meantime. Found directly: revealed a puzzle on mobile, the desktop
     // tab (already loaded before that happened) never picked it up without
-    // a full reload. Re-syncing whenever the tab regains focus — the moment
-    // a visitor coming back from doing something elsewhere is most likely
-    // to actually check — closes that gap without needing to poll
-    // constantly while the tab is already active.
+    // a full reload.
+    //
+    // First fix was re-syncing on visibilitychange — but that only fires
+    // when the tab itself is hidden/shown (switching browser tabs, apps, or
+    // minimizing). Reported directly as still not working: switching
+    // in-app between the Games and Quizzes homepage tabs never hides the
+    // page at all, so visibilitychange never fires there, even though it's
+    // exactly the moment a visitor is most likely to check. A full reload
+    // "worked" only because a reload always re-syncs on mount regardless.
+    // Closed that gap with a plain interval poll instead — re-syncs every
+    // 20s while a session exists, independent of any visibility or
+    // navigation event, so switching between in-app tabs (or just leaving
+    // the tab open) converges on its own within a few seconds either way.
     function handleVisibility() {
       if (document.visibilityState === 'visible') syncStatsOnLogin(session.token)
     }
     document.addEventListener('visibilitychange', handleVisibility)
-    return () => document.removeEventListener('visibilitychange', handleVisibility)
+    const intervalId = setInterval(() => syncStatsOnLogin(session.token), 20000)
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility)
+      clearInterval(intervalId)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.token])
 
