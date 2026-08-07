@@ -10,6 +10,7 @@ import BackButton from '../components/BackButton'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { pickPuzzleOfTheDay, recordDailyActivityCompletion } from '../utils/dailyQuiz'
+import { recordPuzzleRevealed } from '../utils/badges'
 
 const SUGGESTION_COUNT = 4
 const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
@@ -58,6 +59,10 @@ export default function PuzzleView() {
   function handleReveal() {
     if (revealed) return
     setRevealed(true)
+    // Tracked for every puzzle (not just today's), so the homepage grid can
+    // show an "already attempted" mark on any puzzle tile — separate from
+    // the daily-streak recording below, which only fires for today's pick.
+    recordPuzzleRevealed(puzzle._id)
     if (isDailyPuzzle) {
       setDailyStreak(recordDailyActivityCompletion(puzzle._id, puzzle._id))
     }

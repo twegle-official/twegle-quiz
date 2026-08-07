@@ -68,6 +68,7 @@ function mergeStats(a = {}, b = {}) {
     gamesPlayed,
     gameWins: Math.max(a.gameWins || 0, b.gameWins || 0),
     quizzesCompleted: [...new Set([...(a.quizzesCompleted || []), ...(b.quizzesCompleted || [])])],
+    puzzlesRevealed: [...new Set([...(a.puzzlesRevealed || []), ...(b.puzzlesRevealed || [])])],
     reactionsGiven: Math.max(a.reactionsGiven || 0, b.reactionsGiven || 0),
     sharesGiven: Math.max(a.sharesGiven || 0, b.sharesGiven || 0),
     perfectTrivia: !!(a.perfectTrivia || b.perfectTrivia),

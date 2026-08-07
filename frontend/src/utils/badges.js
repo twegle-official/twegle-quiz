@@ -15,13 +15,14 @@ function getStats() {
       gamesPlayed: {},
       gameWins: 0,
       quizzesCompleted: [],
+      puzzlesRevealed: [],
       reactionsGiven: 0,
       sharesGiven: 0,
       perfectTrivia: false,
       ...JSON.parse(localStorage.getItem(STATS_KEY)),
     }
   } catch {
-    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false }
+    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false }
   }
 }
 
@@ -82,6 +83,26 @@ export function recordQuizCompleted(slug) {
   update((s) => {
     if (!s.quizzesCompleted.includes(slug)) s.quizzesCompleted.push(slug)
   })
+}
+
+// Tracks every puzzle a visitor has revealed the answer to (not just the
+// daily one — see PuzzleView.jsx), so the homepage grid can show an
+// "already attempted" mark on any puzzle tile, not only today's pick.
+export function recordPuzzleRevealed(puzzleId) {
+  update((s) => {
+    if (!s.puzzlesRevealed.includes(puzzleId)) s.puzzlesRevealed.push(puzzleId)
+  })
+}
+
+// Cheap lookups for tile components — reads the same underlying stats a
+// QuizCard/PuzzleCard needs to decide whether to show an "already
+// attempted" mark, without each one re-implementing the localStorage read.
+export function hasCompletedQuiz(slug) {
+  return getStats().quizzesCompleted.includes(slug)
+}
+
+export function hasRevealedPuzzle(puzzleId) {
+  return getStats().puzzlesRevealed.includes(puzzleId)
 }
 
 export function recordPerfectTrivia() {

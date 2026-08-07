@@ -1,11 +1,24 @@
 import { Link } from 'react-router-dom'
 import { getPuzzleShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import { hasRevealedPuzzle } from '../utils/badges'
 
 const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
 
 export default function PuzzleCard({ puzzle, index = 0 }) {
   const animationStyle = { animationDelay: `${index * 60}ms`, animationFillMode: 'backwards' }
+  const attempted = hasRevealedPuzzle(puzzle._id)
+
+  // Same absolute-overlay "already attempted" mark as QuizCard — never a
+  // flex sibling, so it can't add height to the tile.
+  const attemptedBadge = attempted && (
+    <span
+      title="You've already revealed this puzzle's answer"
+      className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[11px] font-bold flex items-center justify-center ring-2 ring-black/10"
+    >
+      ✓
+    </span>
+  )
 
   return (
     <Link
@@ -20,13 +33,19 @@ export default function PuzzleCard({ puzzle, index = 0 }) {
       />
 
       {puzzle.imageUrl ? (
-        <img
-          src={puzzle.imageUrl}
-          alt=""
-          className="w-full h-28 object-cover rounded-xl mb-3"
-        />
+        <div className="relative mb-3">
+          <img
+            src={puzzle.imageUrl}
+            alt=""
+            className="w-full h-28 object-cover rounded-xl"
+          />
+          {attemptedBadge}
+        </div>
       ) : (
-        <div className="text-4xl mb-3">{puzzle.emoji || '🧩'}</div>
+        <div className="relative inline-block mb-3 w-fit">
+          <div className="text-4xl">{puzzle.emoji || '🧩'}</div>
+          {attemptedBadge}
+        </div>
       )}
       <h2 className="text-lg font-bold mb-1 pr-8 line-clamp-3">{puzzle.question}</h2>
 
