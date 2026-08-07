@@ -101,7 +101,15 @@ export default function Quiz() {
         }
       }
 
-      const state = isTrivia ? { score: nextScores.correct || 0, total: quiz.questions.length } : undefined
+      // `finished: true` is the signal Result.jsx uses to tell "this browser
+      // just played it" apart from a cold visit to a shared result link
+      // (same URL either way) — score/total only exist for trivia quizzes,
+      // but every quiz needs that signal so "already attempted" tracking
+      // (badges.js's quizzesCompleted) works for personality quizzes too,
+      // not just trivia.
+      const state = isTrivia
+        ? { score: nextScores.correct || 0, total: quiz.questions.length, finished: true }
+        : { finished: true }
       navigate(`/result/${slug}/${winningResult}`, { state })
       return
     }

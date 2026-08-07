@@ -22,7 +22,7 @@ export default function Result() {
   // from Quiz.jsx) — a cold visit to a shared result link has no router
   // state, so the score line below is a nice-to-have, not load-bearing;
   // the result's own authored title/description still convey the tier either way.
-  const { score, total } = location.state || {}
+  const { score, total, finished } = location.state || {}
   const [quiz, setQuiz] = useState(null)
   const [notFound, setNotFound] = useState(false)
   const [generating, setGenerating] = useState(false)
@@ -49,14 +49,19 @@ export default function Result() {
     recordPlay(slug, resultKey)
   }, [slug, resultKey])
 
-  // Only counts as "completed" for badge purposes when this browser is the
-  // one that actually just finished (score/total present via router state)
-  // — a cold visit to a shared result link shouldn't count as having played it.
+  // Only counts as "completed" for badge/"already attempted" purposes when
+  // this browser is the one that actually just finished (`finished: true`
+  // present via router state, set by Quiz.jsx) — a cold visit to a shared
+  // result link is the exact same URL and shouldn't count as having played
+  // it. `score`/`total` only exist for trivia quizzes, so they can't be the
+  // signal on their own (personality quizzes have neither) — `finished` is
+  // set for both quiz types, `score`/`total` are only used here for the
+  // trivia-only perfect-score check.
   useEffect(() => {
-    if (score == null || total == null || !quiz) return
+    if (!finished || !quiz) return
     recordQuizCompleted(slug)
-    if (quiz.type === 'trivia' && score === total) recordPerfectTrivia()
-  }, [slug, score, total, quiz])
+    if (quiz.type === 'trivia' && score != null && total != null && score === total) recordPerfectTrivia()
+  }, [slug, finished, score, total, quiz])
 
   useEffect(() => {
     if (!quiz) return
