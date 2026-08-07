@@ -1,16 +1,19 @@
 import { Link } from 'react-router-dom'
-import { pickPuzzleOfTheDay } from '../utils/dailyQuiz'
+import { pickPuzzleOfTheDay, getStreak } from '../utils/dailyQuiz'
 
-// Deliberately no streak *count* here — DailyQuizBanner right above already
-// shows the one shared streak number (see dailyQuiz.js's
-// recordDailyActivityCompletion), so repeating the same number on a second
-// banner would just be redundant, not clearer. The "🔥" prefix stays though
-// (added 2026-08-06, matching DailyQuizBanner's "🔥 Daily Streak" eyebrow)
-// so it's clear revealing today's puzzle also counts toward that same
-// streak, not just finishing the quiz — that wasn't visible anywhere before.
+// Originally left the streak *count* off this banner, reasoning that
+// DailyQuizBanner right above already shows the one shared number (see
+// dailyQuiz.js's recordDailyActivityCompletion) and repeating it here would
+// be redundant. In practice this backfired — the owner reported that
+// finishing the puzzle "displays nothing" on the homepage even though the
+// puzzle detail page confirmed the streak advanced, reading as if the
+// puzzle wasn't actually contributing. Showing the same real number on both
+// banners removes that doubt, even though it's not new information.
 export default function PuzzleOfTheDayBanner({ puzzles }) {
   const puzzle = pickPuzzleOfTheDay(puzzles)
   if (!puzzle) return null
+
+  const streak = getStreak()
 
   return (
     <Link
@@ -18,10 +21,15 @@ export default function PuzzleOfTheDayBanner({ puzzles }) {
       className="flex items-center gap-2 rounded-xl sm:rounded-2xl bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-3 py-2.5 sm:px-4 sm:py-3 hover:opacity-95 transition-opacity min-w-0"
     >
       <span className="text-2xl sm:text-3xl shrink-0">{puzzle.emoji || '🧩'}</span>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Puzzle of the Day</p>
         <p className="text-sm sm:text-base font-bold truncate">{puzzle.question}</p>
       </div>
+      {streak.count > 0 && (
+        <span className="shrink-0 text-[10px] sm:text-xs font-bold bg-white/25 rounded-full px-1.5 py-0.5 sm:px-2 sm:py-1 whitespace-nowrap">
+          Day {streak.count}
+        </span>
+      )}
     </Link>
   )
 }
