@@ -55,7 +55,7 @@ export default function FriendshipQuizList() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Friendship Quizzes</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Friendship Quizzes</h1>
         {canWrite && (
           <Link
             to="/admin/friendship-quizzes/new"
@@ -65,26 +65,26 @@ export default function FriendshipQuizList() {
           </Link>
         )}
       </div>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
         These are question templates — "how well do you know me" style. A visitor picks one, fills
         in their own real answers, and shares the resulting link with friends to guess.
       </p>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      {!quizzes && !error && <p className="text-gray-400">Loading...</p>}
+      {!quizzes && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
       {quizzes && (
-        <div className="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
           {quizzes.length === 0 && (
-            <p className="p-6 text-gray-400 text-center">No friendship quizzes yet.</p>
+            <p className="p-6 text-gray-400 dark:text-gray-500 text-center">No friendship quizzes yet.</p>
           )}
           {quizzes.map((quiz) => (
             <div key={quiz._id} className="flex items-center justify-between p-4">
               <div>
-                <p className="font-semibold text-gray-900">
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
                   {quiz.emoji} {quiz.title}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   /{quiz.slug} · {quiz.questions.length} questions · <StatusLabel item={quiz} />
                 </p>
               </div>
@@ -92,19 +92,19 @@ export default function FriendshipQuizList() {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleClone(quiz)}
-                    className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700"
+                    className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Clone
                   </button>
                   <Link
                     to={`/admin/friendship-quizzes/${quiz._id}/edit`}
-                    className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700"
+                    className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => handleDelete(quiz._id, quiz.title)}
-                    className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-sm font-medium text-red-600"
+                    className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/60 text-sm font-medium text-red-600 dark:text-red-400"
                   >
                     Delete
                   </button>

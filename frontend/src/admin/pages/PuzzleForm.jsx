@@ -65,34 +65,34 @@ export default function PuzzleForm() {
     }
   }
 
-  if (loading) return <p className="text-gray-400">Loading...</p>
+  if (loading) return <p className="text-gray-400 dark:text-gray-500">Loading...</p>
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         {isEdit ? 'Edit Puzzle' : 'New Puzzle'}
       </h1>
 
       {error && (
-        <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>
+        <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm p-5 space-y-4">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Question</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Question</label>
           <textarea
             required
             value={puzzle.question}
             onChange={(e) => setPuzzle({ ...puzzle, question: e.target.value })}
             rows={3}
             maxLength={500}
-            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Answer <span className="text-gray-400 font-normal">(shown after "Reveal Answer" is tapped)</span>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Answer <span className="text-gray-400 dark:text-gray-500 font-normal">(shown after "Reveal Answer" is tapped)</span>
           </label>
           <textarea
             required
@@ -100,32 +100,32 @@ export default function PuzzleForm() {
             onChange={(e) => setPuzzle({ ...puzzle, answer: e.target.value })}
             rows={3}
             maxLength={500}
-            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Image URL <span className="text-gray-400 font-normal">(optional — makes this a picture puzzle, e.g. a rebus or zoomed-in photo)</span>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Image URL <span className="text-gray-400 dark:text-gray-500 font-normal">(optional — makes this a picture puzzle, e.g. a rebus or zoomed-in photo)</span>
           </label>
           <input
             value={puzzle.imageUrl}
             onChange={(e) => setPuzzle({ ...puzzle, imageUrl: e.target.value })}
             placeholder="https://..."
-            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
             Paste a link to an already-hosted image (no upload yet).
           </p>
         </div>
 
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Difficulty</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Difficulty</label>
             <select
               value={puzzle.difficulty}
               onChange={(e) => setPuzzle({ ...puzzle, difficulty: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               {DIFFICULTIES.map((d) => (
                 <option key={d.value} value={d.value}>{d.label}</option>
@@ -133,20 +133,20 @@ export default function PuzzleForm() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Emoji</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Emoji</label>
             <input
               value={puzzle.emoji}
               onChange={(e) => setPuzzle({ ...puzzle, emoji: e.target.value })}
               maxLength={4}
-              className="bg-white text-gray-900 w-16 px-3 py-2 border border-gray-300 rounded-lg text-center"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-16 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-center"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Card gradient</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Card gradient</label>
             <select
               value={puzzle.gradient}
               onChange={(e) => setPuzzle({ ...puzzle, gradient: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               {GRADIENT_OPTIONS.map((g) => (
                 <option key={g.value} value={g.value}>{g.label}</option>
@@ -157,36 +157,36 @@ export default function PuzzleForm() {
 
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
             <select
               value={puzzle.language}
               onChange={(e) => setPuzzle({ ...puzzle, language: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               <option value="en">English</option>
               <option value="hi">Hindi</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
             <select
               value={puzzle.status}
               onChange={(e) => setPuzzle({ ...puzzle, status: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Publish at <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Publish at <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span>
             </label>
             <input
               type="datetime-local"
               value={publishAtLocal}
               onChange={(e) => setPublishAtLocal(e.target.value)}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             />
           </div>
         </div>

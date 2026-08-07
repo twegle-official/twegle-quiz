@@ -67,30 +67,30 @@ export default function StoryForm() {
     }
   }
 
-  if (loading) return <p className="text-gray-400">Loading...</p>
+  if (loading) return <p className="text-gray-400 dark:text-gray-500">Loading...</p>
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         {isEdit ? 'Edit Story' : 'New Story'}
       </h1>
 
       {error && (
-        <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>
+        <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm p-5 space-y-4">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5 space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
           <input
             required
             value={story.title}
             onChange={(e) => setStory({ ...story, title: e.target.value })}
             maxLength={200}
-            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
           {isEdit && (
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
               Slug (fixed at creation, used in the shareable URL): <code>{story.slug}</code>
             </p>
           )}
@@ -98,11 +98,11 @@ export default function StoryForm() {
 
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
             <select
               value={story.category}
               onChange={(e) => setStory({ ...story, category: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               {STORY_CATEGORIES.map((c) => (
                 <option key={c.value} value={c.value}>{c.label}</option>
@@ -110,20 +110,20 @@ export default function StoryForm() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Emoji</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Emoji</label>
             <input
               value={story.emoji}
               onChange={(e) => setStory({ ...story, emoji: e.target.value })}
               maxLength={4}
-              className="bg-white text-gray-900 w-16 px-3 py-2 border border-gray-300 rounded-lg text-center"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-16 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-center"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Card gradient</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Card gradient</label>
             <select
               value={story.gradient}
               onChange={(e) => setStory({ ...story, gradient: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               {GRADIENT_OPTIONS.map((g) => (
                 <option key={g.value} value={g.value}>{g.label}</option>
@@ -134,43 +134,43 @@ export default function StoryForm() {
 
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
             <select
               value={story.language}
               onChange={(e) => setStory({ ...story, language: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               <option value="en">English</option>
               <option value="hi">Hindi</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
             <select
               value={story.status}
               onChange={(e) => setStory({ ...story, status: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Publish at <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Publish at <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span>
             </label>
             <input
               type="datetime-local"
               value={publishAtLocal}
               onChange={(e) => setPublishAtLocal(e.target.value)}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Story text <span className="text-gray-400 font-normal">(this is also what gets read aloud)</span>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Story text <span className="text-gray-400 dark:text-gray-500 font-normal">(this is also what gets read aloud)</span>
           </label>
           <textarea
             required
@@ -178,9 +178,9 @@ export default function StoryForm() {
             onChange={(e) => setStory({ ...story, body: e.target.value })}
             rows={14}
             maxLength={6000}
-            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
-          <p className="text-xs text-gray-400 mt-1">{story.body.length}/6000 characters</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{story.body.length}/6000 characters</p>
         </div>
       </div>
 

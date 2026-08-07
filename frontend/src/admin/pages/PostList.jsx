@@ -92,7 +92,7 @@ export default function PostList() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Posts</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Posts</h1>
         {canWrite && (
           <Link
             to="/admin/posts/new"
@@ -109,12 +109,12 @@ export default function PostList() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by text or author..."
-          className="bg-white text-gray-900 flex-1 min-w-[200px] px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 min-w-[200px] px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm"
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm"
         >
           <option value="">All categories</option>
           {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
@@ -124,7 +124,7 @@ export default function PostList() {
         <select
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm"
         >
           <option value="">All languages</option>
           <option value="en">English</option>
@@ -133,7 +133,7 @@ export default function PostList() {
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="bg-white text-gray-900 px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm"
         >
           <option value="">All statuses</option>
           <option value="published">Published</option>
@@ -147,7 +147,7 @@ export default function PostList() {
               setLanguage('')
               setStatus('')
             }}
-            className="px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-gray-700"
+            className="px-3 py-2 rounded-lg text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
           >
             Clear
           </button>
@@ -155,12 +155,12 @@ export default function PostList() {
       </div>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      {!posts && !error && <p className="text-gray-400">Loading...</p>}
+      {!posts && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
       {posts && (
-        <div className="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
           {posts.length === 0 && (
-            <p className="p-6 text-gray-400 text-center">
+            <p className="p-6 text-gray-400 dark:text-gray-500 text-center">
               {hasFilters ? 'No posts match these filters.' : 'No posts yet.'}
             </p>
           )}
@@ -168,19 +168,19 @@ export default function PostList() {
             <div key={post._id} className="flex items-center justify-between gap-4 p-4">
               <div className="min-w-0 flex items-center gap-3">
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-violet-600 uppercase tracking-wide flex items-center gap-2">
+                  <p className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide flex items-center gap-2">
                     {CATEGORY_LABELS[post.category]} · {post.language.toUpperCase()}
                     {post.status === 'published' && isStale(post.createdAt, engagementCounts[post._id] || 0) && (
                       <span
                         title="Live a while with very little engagement — might be worth a refresh"
-                        className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[11px] font-semibold normal-case tracking-normal"
+                        className="px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 text-[11px] font-semibold normal-case tracking-normal"
                       >
                         ⚠️ Needs a refresh
                       </span>
                     )}
                   </p>
-                  <p className="text-gray-900 truncate">{post.text}</p>
-                  <p className="text-sm text-gray-400">
+                  <p className="text-gray-900 dark:text-gray-100 truncate">{post.text}</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500">
                     {post.author && <>— {post.author} · </>}
                     <StatusLabel item={post} /> · {engagementCounts[post._id] || 0} views/shares
                   </p>
@@ -190,19 +190,19 @@ export default function PostList() {
                 <div className="flex gap-2 shrink-0">
                   <button
                     onClick={() => handleClone(post)}
-                    className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700"
+                    className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Clone
                   </button>
                   <Link
                     to={`/admin/posts/${post._id}/edit`}
-                    className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700"
+                    className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Edit
                   </Link>
                   <button
                     onClick={() => handleDelete(post._id)}
-                    className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-sm font-medium text-red-600"
+                    className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/60 text-sm font-medium text-red-600 dark:text-red-400"
                   >
                     Delete
                   </button>

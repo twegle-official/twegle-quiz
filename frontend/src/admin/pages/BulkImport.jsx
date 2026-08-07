@@ -47,14 +47,14 @@ function ResultLog({ results }) {
   const succeeded = results.filter((r) => r.ok).length
   return (
     <div className="mt-4">
-      <p className="text-sm font-semibold text-gray-700 mb-2">
+      <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
         {succeeded} of {results.length} imported successfully
       </p>
       <div className="space-y-1 max-h-64 overflow-y-auto">
         {results.map((r, i) => (
           <div
             key={i}
-            className={`px-3 py-2 rounded-lg text-sm ${r.ok ? 'bg-green-50 text-gray-700' : 'bg-red-50 text-red-600'}`}
+            className={`px-3 py-2 rounded-lg text-sm ${r.ok ? 'bg-green-50 dark:bg-green-950/40 text-gray-700 dark:text-gray-300' : 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400'}`}
           >
             {r.ok ? '✅' : '❌'} {r.label} {!r.ok && `— ${r.error}`}
           </div>
@@ -104,8 +104,8 @@ function BulkPosts() {
             onClick={() => setCategory(c.value)}
             className={`px-4 py-3 rounded-xl text-sm font-semibold border-2 transition-colors ${
               category === c.value
-                ? 'border-violet-500 bg-violet-50 text-violet-700'
-                : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                ? 'border-violet-500 bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400'
+                : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
             }`}
           >
             {c.label}
@@ -113,24 +113,24 @@ function BulkPosts() {
         ))}
       </div>
 
-      <div className="inline-flex bg-gray-100 rounded-full p-0.5 mb-4">
+      <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5 mb-4">
         <button
           type="button"
           onClick={() => setLanguage('en')}
-          className={`px-4 py-1.5 rounded-full text-sm font-semibold ${language === 'en' ? 'bg-white shadow text-gray-900' : 'text-gray-500'}`}
+          className={`px-4 py-1.5 rounded-full text-sm font-semibold ${language === 'en' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'}`}
         >
           EN
         </button>
         <button
           type="button"
           onClick={() => setLanguage('hi')}
-          className={`px-4 py-1.5 rounded-full text-sm font-semibold ${language === 'hi' ? 'bg-white shadow text-gray-900' : 'text-gray-500'}`}
+          className={`px-4 py-1.5 rounded-full text-sm font-semibold ${language === 'hi' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'}`}
         >
           हिंदी
         </button>
       </div>
 
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
         One per line ({lineCount} {lineCount === 1 ? 'item' : 'items'})
       </label>
       <textarea
@@ -138,7 +138,7 @@ function BulkPosts() {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={'Why did the chicken cross the road?\nAnother joke here\nOne more...'}
-        className="bg-white text-gray-900 w-full px-4 py-3 border border-gray-300 rounded-xl text-sm font-mono mb-4"
+        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-sm font-mono mb-4"
       />
 
       <button
@@ -190,7 +190,7 @@ function BulkQuizzes() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
+      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
         Paste a JSON array of quizzes — same shape the regular Quiz form saves
       </label>
       <textarea
@@ -198,14 +198,14 @@ function BulkQuizzes() {
         value={json}
         onChange={(e) => setJson(e.target.value)}
         placeholder={QUIZ_EXAMPLE}
-        className="bg-white text-gray-900 w-full px-4 py-3 border border-gray-300 rounded-xl text-xs font-mono mb-2"
+        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-xs font-mono mb-2"
       />
       <details className="mb-4">
-        <summary className="text-sm text-violet-600 cursor-pointer">Show example format</summary>
-        <pre className="mt-2 p-3 bg-gray-50 rounded-lg text-xs overflow-x-auto">{QUIZ_EXAMPLE}</pre>
+        <summary className="text-sm text-violet-600 dark:text-violet-400 cursor-pointer">Show example format</summary>
+        <pre className="mt-2 p-3 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs overflow-x-auto">{QUIZ_EXAMPLE}</pre>
       </details>
 
-      {parseError && <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{parseError}</p>}
+      {parseError && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{parseError}</p>}
 
       <button
         type="submit"
@@ -225,8 +225,8 @@ export default function BulkImport() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Bulk Import</h1>
-      <p className="text-gray-500 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Bulk Import</h1>
+      <p className="text-gray-500 dark:text-gray-400 mb-6">
         Add many pieces of content at once, published immediately. Each item goes through the same
         checks as the regular forms, so anything invalid is skipped and reported below.
       </p>
@@ -234,13 +234,13 @@ export default function BulkImport() {
       <div className="flex gap-2 mb-6">
         <button
           onClick={() => setTab('posts')}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold ${tab === 'posts' ? 'bg-violet-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold ${tab === 'posts' ? 'bg-violet-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}
         >
           Posts (one per line)
         </button>
         <button
           onClick={() => setTab('quizzes')}
-          className={`px-4 py-2 rounded-lg text-sm font-semibold ${tab === 'quizzes' ? 'bg-violet-600 text-white' : 'bg-gray-100 text-gray-600'}`}
+          className={`px-4 py-2 rounded-lg text-sm font-semibold ${tab === 'quizzes' ? 'bg-violet-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'}`}
         >
           Quizzes (JSON)
         </button>

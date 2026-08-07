@@ -55,26 +55,26 @@ export default function PostForm() {
     }
   }
 
-  if (loading) return <p className="text-gray-400">Loading...</p>
+  if (loading) return <p className="text-gray-400 dark:text-gray-500">Loading...</p>
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
         {isEdit ? 'Edit Post' : 'New Post'}
       </h1>
 
       {error && (
-        <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>
+        <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm p-5 space-y-4">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5 space-y-4">
         <div className="flex flex-wrap gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
             <select
               value={post.category}
               onChange={(e) => setPost({ ...post, category: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               <option value="joke">Joke</option>
               <option value="funny-line">Funny Line</option>
@@ -83,60 +83,60 @@ export default function PostForm() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Language</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Language</label>
             <select
               value={post.language}
               onChange={(e) => setPost({ ...post, language: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               <option value="en">English</option>
               <option value="hi">Hindi</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
             <select
               value={post.status}
               onChange={(e) => setPost({ ...post, status: e.target.value })}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               <option value="draft">Draft</option>
               <option value="published">Published</option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Publish at <span className="text-gray-400 font-normal">(optional)</span>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Publish at <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span>
             </label>
             <input
               type="datetime-local"
               value={publishAtLocal}
               onChange={(e) => setPublishAtLocal(e.target.value)}
-              className="bg-white text-gray-900 px-3 py-2 border border-gray-300 rounded-lg"
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Text</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Text</label>
           <textarea
             required
             value={post.text}
             onChange={(e) => setPost({ ...post, text: e.target.value })}
             rows={4}
             maxLength={500}
-            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            Author <span className="text-gray-400 font-normal">(optional, for quotes)</span>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Author <span className="text-gray-400 dark:text-gray-500 font-normal">(optional, for quotes)</span>
           </label>
           <input
             value={post.author}
             onChange={(e) => setPost({ ...post, author: e.target.value })}
-            className="bg-white text-gray-900 w-full px-3 py-2 border border-gray-300 rounded-lg"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
         </div>
       </div>

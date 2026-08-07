@@ -67,8 +67,8 @@ export default function EndUserList() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Members</h1>
-      <p className="text-sm text-gray-500 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Members</h1>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
         Visitors who created an optional account (no email/phone collected — see FRONTEND.md). Read-only fields
         only; passwords and recovery codes are never visible here.
       </p>
@@ -79,17 +79,17 @@ export default function EndUserList() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by username or Gamer Tag..."
-          className="bg-white text-gray-900 flex-1 min-w-[240px] px-3 py-2 rounded-lg border border-gray-200 text-sm"
+          className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 flex-1 min-w-[240px] px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 text-sm"
         />
       </div>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      {!users && !error && <p className="text-gray-400">Loading...</p>}
+      {!users && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
       {users && (
-        <div className="bg-white rounded-xl shadow-sm divide-y divide-gray-100">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
           {users.length === 0 && (
-            <p className="p-6 text-gray-400 text-center">
+            <p className="p-6 text-gray-400 dark:text-gray-500 text-center">
               {search ? 'No accounts match that search.' : 'No end-user accounts yet.'}
             </p>
           )}
@@ -97,18 +97,18 @@ export default function EndUserList() {
             <div
               key={user._id}
               onClick={() => setSelectedUser(user)}
-              className="flex items-center justify-between p-4 gap-3 cursor-pointer hover:bg-gray-50"
+              className="flex items-center justify-between p-4 gap-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               <div className="min-w-0">
-                <p className="font-semibold text-gray-900 truncate">
+                <p className="font-semibold text-gray-900 dark:text-gray-100 truncate">
                   {user.avatar ? `${user.avatar} ` : ''}{user.displayName}
                   {user.status === 'disabled' && (
-                    <span className="ml-2 text-xs font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full align-middle">
+                    <span className="ml-2 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 px-2 py-0.5 rounded-full align-middle">
                       Disabled
                     </span>
                   )}
                 </p>
-                <p className="text-sm text-gray-500 truncate">
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                   @{user.username} · Joined {new Date(user.createdAt).toLocaleDateString()}
                 </p>
               </div>
@@ -121,8 +121,8 @@ export default function EndUserList() {
                     }}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
                       user.status === 'disabled'
-                        ? 'bg-green-50 hover:bg-green-100 text-green-700'
-                        : 'bg-amber-50 hover:bg-amber-100 text-amber-700'
+                        ? 'bg-green-50 dark:bg-green-950/40 hover:bg-green-100 dark:hover:bg-green-950/60 text-green-700 dark:text-green-400'
+                        : 'bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60 text-amber-700 dark:text-amber-400'
                     }`}
                   >
                     {user.status === 'disabled' ? 'Re-enable' : 'Disable'}
@@ -132,7 +132,7 @@ export default function EndUserList() {
                       e.stopPropagation()
                       handleDelete(user._id, user.displayName)
                     }}
-                    className="px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-sm font-medium text-red-600"
+                    className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/60 text-sm font-medium text-red-600 dark:text-red-400"
                   >
                     Delete
                   </button>
@@ -153,7 +153,7 @@ export default function EndUserList() {
           onClick={() => setSelectedUser(null)}
         >
           <div
-            className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6"
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-sm p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">
@@ -161,29 +161,29 @@ export default function EndUserList() {
               <button
                 onClick={() => setSelectedUser(null)}
                 aria-label="Close"
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300"
               >
                 ✕
               </button>
             </div>
 
-            <h2 className="text-lg font-bold text-gray-900 mb-1">{selectedUser.displayName}</h2>
-            <p className="text-sm text-gray-500 mb-4">Gamer Tag — shown publicly (leaderboards etc.)</p>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">{selectedUser.displayName}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Gamer Tag — shown publicly (leaderboards etc.)</p>
 
             <dl className="space-y-3 text-sm mb-6">
               <div className="flex justify-between gap-3">
-                <dt className="text-gray-500">Username (private login)</dt>
-                <dd className="text-gray-900 font-medium">@{selectedUser.username}</dd>
+                <dt className="text-gray-500 dark:text-gray-400">Username (private login)</dt>
+                <dd className="text-gray-900 dark:text-gray-100 font-medium">@{selectedUser.username}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-gray-500">Status</dt>
-                <dd className={`font-medium ${selectedUser.status === 'disabled' ? 'text-red-600' : 'text-green-700'}`}>
+                <dt className="text-gray-500 dark:text-gray-400">Status</dt>
+                <dd className={`font-medium ${selectedUser.status === 'disabled' ? 'text-red-600 dark:text-red-400' : 'text-green-700 dark:text-green-400'}`}>
                   {selectedUser.status === 'disabled' ? 'Disabled' : 'Active'}
                 </dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-gray-500">Joined</dt>
-                <dd className="text-gray-900 font-medium">
+                <dt className="text-gray-500 dark:text-gray-400">Joined</dt>
+                <dd className="text-gray-900 dark:text-gray-100 font-medium">
                   {new Date(selectedUser.createdAt).toLocaleString()}
                 </dd>
               </div>
@@ -193,7 +193,7 @@ export default function EndUserList() {
                 a plain note rather than a fake label/value row. Answers the
                 "can an admin see the password or recovery code" question
                 directly, since it's a reasonable thing to wonder. */}
-            <p className="text-xs text-gray-400 -mt-3 mb-6">
+            <p className="text-xs text-gray-400 dark:text-gray-500 -mt-3 mb-6">
               🔒 Password and Recovery Code are never visible to admins — only their hashes are stored.
             </p>
 
@@ -203,15 +203,15 @@ export default function EndUserList() {
                   onClick={() => handleToggleStatus(selectedUser)}
                   className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold ${
                     selectedUser.status === 'disabled'
-                      ? 'bg-green-50 hover:bg-green-100 text-green-700'
-                      : 'bg-amber-50 hover:bg-amber-100 text-amber-700'
+                      ? 'bg-green-50 dark:bg-green-950/40 hover:bg-green-100 dark:hover:bg-green-950/60 text-green-700 dark:text-green-400'
+                      : 'bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60 text-amber-700 dark:text-amber-400'
                   }`}
                 >
                   {selectedUser.status === 'disabled' ? 'Re-enable' : 'Disable'}
                 </button>
                 <button
                   onClick={() => handleDelete(selectedUser._id, selectedUser.displayName)}
-                  className="flex-1 px-3 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-sm font-semibold text-red-600"
+                  className="flex-1 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/60 text-sm font-semibold text-red-600 dark:text-red-400"
                 >
                   Delete
                 </button>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from './AuthContext'
 import LogoMark, { LogoWithWordmark } from '../components/Logo'
+import ThemeToggle from '../components/ThemeToggle'
 
 const COLLAPSE_KEY = 'twegle-admin-sidebar-collapsed'
 
@@ -34,7 +35,7 @@ function makeNavClass(collapsed) {
   return function navClass({ isActive }) {
     return `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium lg:w-full ${
       collapsed ? 'lg:justify-center' : ''
-    } ${isActive ? 'bg-violet-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`
+    } ${isActive ? 'bg-violet-600 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'}`
   }
 }
 
@@ -43,11 +44,6 @@ export default function AdminLayout() {
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Same reasoning as Login.jsx: guards against the `dark` class surviving a
-  // client-side navigation into admin from a dark-mode public page.
-  useEffect(() => {
-    document.documentElement.classList.remove('dark')
-  }, [])
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -89,23 +85,26 @@ export default function AdminLayout() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 lg:flex lg:items-start">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 lg:flex lg:items-start">
       {/* Mobile/tablet top bar (below lg only) — just the logo + hamburger,
           always visible and sticky. The nav itself lives in the off-canvas
           drawer below, not stacked inline here, so opening it no longer
           pushes the page content downward the way an inline dropdown did. */}
-      <div className="lg:hidden sticky top-0 z-30 bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between">
+      <div className="lg:hidden sticky top-0 z-30 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-4 flex items-center justify-between">
         <Link to="/admin/dashboard" title="Dashboard">
           <LogoWithWordmark size={28} />
         </Link>
-        <button
-          onClick={() => setMobileMenuOpen(true)}
-          aria-label="Open menu"
-          aria-expanded={mobileMenuOpen}
-          className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-xl"
-        >
-          ☰
-        </button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={mobileMenuOpen}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-xl"
+          >
+            ☰
+          </button>
+        </div>
       </div>
 
       {/* Mobile off-canvas drawer — slides in from the left (same side the
@@ -124,15 +123,15 @@ export default function AdminLayout() {
             this Tailwind version, which wasn't resolving correctly here;
             a plain `transform` inline style sidesteps it entirely. */}
         <div
-          className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-white shadow-xl flex flex-col transition-transform duration-200 ease-out"
+          className="absolute left-0 top-0 h-full w-72 max-w-[80vw] bg-white dark:bg-gray-900 shadow-xl flex flex-col transition-transform duration-200 ease-out"
           style={{ transform: mobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)' }}
         >
-          <div className="px-4 py-4 flex items-center justify-between border-b border-gray-200">
+          <div className="px-4 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
             <LogoWithWordmark size={28} />
             <button
               onClick={() => setMobileMenuOpen(false)}
               aria-label="Close menu"
-              className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 text-xl"
+              className="w-9 h-9 flex items-center justify-center rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-xl"
             >
               ✕
             </button>
@@ -147,13 +146,13 @@ export default function AdminLayout() {
             ))}
           </nav>
 
-          <div className="flex flex-col items-stretch gap-3 px-4 py-3 border-t border-gray-200 text-sm text-gray-500">
+          <div className="flex flex-col items-stretch gap-3 px-4 py-3 border-t border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
             <span className="truncate">
               {session?.admin?.name} ({session?.admin?.role})
             </span>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium"
             >
               <span>🚪</span>
               <span>Log out</span>
@@ -166,14 +165,14 @@ export default function AdminLayout() {
           icon rail to reclaim width. Unchanged from before, just now scoped
           to lg+ since mobile has its own drawer above. */}
       <aside
-        className={`hidden lg:flex relative bg-white lg:border-r border-gray-200 lg:shrink-0 lg:sticky lg:top-0 lg:h-screen lg:flex-col ${
+        className={`hidden lg:flex relative bg-white dark:bg-gray-900 lg:border-r border-gray-200 dark:border-gray-800 lg:shrink-0 lg:sticky lg:top-0 lg:h-screen lg:flex-col ${
           collapsed ? 'lg:w-16' : 'lg:w-56'
         }`}
       >
         <button
           onClick={toggleCollapsed}
           title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="hidden lg:flex absolute -right-3 top-6 w-6 h-6 rounded-full bg-white border border-gray-200 shadow items-center justify-center text-gray-400 hover:text-gray-600 z-10"
+          className="hidden lg:flex absolute -right-3 top-6 w-6 h-6 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow items-center justify-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 z-10"
         >
           {collapsed ? '›' : '‹'}
         </button>
@@ -199,14 +198,17 @@ export default function AdminLayout() {
           ))}
         </nav>
 
-        <div className="flex flex-col items-stretch gap-3 px-4 py-3 border-t border-gray-200 text-sm text-gray-500">
-          <span className={`truncate ${labelClass(collapsed)}`}>
-            {session?.admin?.name} ({session?.admin?.role})
-          </span>
+        <div className="flex flex-col items-stretch gap-3 px-4 py-3 border-t border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
+          <div className={`flex items-center ${collapsed ? 'lg:justify-center' : 'justify-between'}`}>
+            <span className={`truncate ${labelClass(collapsed)}`}>
+              {session?.admin?.name} ({session?.admin?.role})
+            </span>
+            <ThemeToggle />
+          </div>
           <button
             onClick={handleLogout}
             title="Log out"
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium lg:w-full ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium lg:w-full ${
               collapsed ? 'lg:justify-center' : ''
             }`}
           >

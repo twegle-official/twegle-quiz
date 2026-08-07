@@ -9,7 +9,7 @@ export default function ProtectedRoute({ roles, children }) {
   }
   if (roles && !roles.includes(session.admin.role)) {
     return (
-      <div className="max-w-xl mx-auto px-4 py-16 text-center text-gray-600">
+      <div className="max-w-xl mx-auto px-4 py-16 text-center text-gray-600 dark:text-gray-400">
         You don't have permission to view this page.
       </div>
     )

@@ -15,9 +15,9 @@ const RESOURCE_LABELS = {
 }
 
 const ACTION_STYLE = {
-  create: 'text-green-600',
-  update: 'text-blue-600',
-  delete: 'text-red-600',
+  create: 'text-green-600 dark:text-green-400',
+  update: 'text-blue-600 dark:text-blue-400',
+  delete: 'text-red-600 dark:text-red-400',
 }
 
 export default function Activity() {
@@ -38,16 +38,16 @@ export default function Activity() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Activity</h1>
-      <p className="text-sm text-gray-500 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Activity</h1>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
         Who created, edited, or deleted each quiz, post, or friendship quiz, and when.
       </p>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
-      {!entries && !error && <p className="text-gray-400">Loading...</p>}
+      {!entries && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
       {entries && entries.length === 0 && (
-        <p className="bg-white rounded-xl shadow-sm px-4 py-6 text-center text-gray-400">
+        <p className="bg-white dark:bg-gray-900 rounded-xl shadow-sm px-4 py-6 text-center text-gray-400 dark:text-gray-500">
           No activity recorded yet.
         </p>
       )}
@@ -59,24 +59,24 @@ export default function Activity() {
               scrollable at all, so it just reads as cut off. A stacked card
               per entry (same pattern as the Dashboard's Recent Activity
               widget) needs no horizontal scroll in the first place. */}
-          <div className="sm:hidden bg-white rounded-xl shadow-sm divide-y divide-gray-100">
+          <div className="sm:hidden bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
             {entries.map((entry) => (
               <div key={entry._id} className="px-4 py-3 text-sm">
                 <span className={`font-semibold capitalize ${ACTION_STYLE[entry.action]}`}>
                   {entry.action}
                 </span>{' '}
-                <span className="text-gray-600">{RESOURCE_LABELS[entry.resourceType] || entry.resourceType}</span>
-                <div className="text-gray-900 font-medium truncate">{entry.resourceLabel}</div>
-                <div className="text-gray-400 text-xs">
+                <span className="text-gray-600 dark:text-gray-400">{RESOURCE_LABELS[entry.resourceType] || entry.resourceType}</span>
+                <div className="text-gray-900 dark:text-gray-100 font-medium truncate">{entry.resourceLabel}</div>
+                <div className="text-gray-400 dark:text-gray-500 text-xs">
                   {entry.adminName} · {new Date(entry.createdAt).toLocaleString()}
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="hidden sm:block bg-white rounded-xl shadow-sm overflow-x-auto">
+          <div className="hidden sm:block bg-white dark:bg-gray-900 rounded-xl shadow-sm overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">
-              <thead className="bg-gray-50 text-gray-500 text-left">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-left">
                 <tr>
                   <th className="px-4 py-3 font-medium">When</th>
                   <th className="px-4 py-3 font-medium">Admin</th>
@@ -85,18 +85,18 @@ export default function Activity() {
                   <th className="px-4 py-3 font-medium">Item</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {entries.map((entry) => (
                   <tr key={entry._id}>
-                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                       {new Date(entry.createdAt).toLocaleString()}
                     </td>
-                    <td className="px-4 py-3 text-gray-900 font-medium">{entry.adminName}</td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium">{entry.adminName}</td>
                     <td className={`px-4 py-3 font-semibold capitalize ${ACTION_STYLE[entry.action]}`}>
                       {entry.action}
                     </td>
-                    <td className="px-4 py-3 text-gray-600">{RESOURCE_LABELS[entry.resourceType] || entry.resourceType}</td>
-                    <td className="px-4 py-3 text-gray-600 max-w-xs truncate">{entry.resourceLabel}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{RESOURCE_LABELS[entry.resourceType] || entry.resourceType}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400 max-w-xs truncate">{entry.resourceLabel}</td>
                   </tr>
                 ))}
               </tbody>

@@ -50,8 +50,8 @@ export default function QuickAdd() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Quick Add</h1>
-      <p className="text-gray-500 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Quick Add</h1>
+      <p className="text-gray-500 dark:text-gray-400 mb-6">
         Type it, publish it — no drafts, no extra fields. For jokes, funny lines, quotes, and
         motivational quotes.
       </p>
@@ -65,8 +65,8 @@ export default function QuickAdd() {
               onClick={() => setCategory(c.value)}
               className={`px-4 py-3 rounded-xl text-sm font-semibold border-2 transition-colors ${
                 category === c.value
-                  ? 'border-violet-500 bg-violet-50 text-violet-700'
-                  : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  ? 'border-violet-500 bg-violet-50 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400'
+                  : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600'
               }`}
             >
               {c.label}
@@ -74,12 +74,12 @@ export default function QuickAdd() {
           ))}
         </div>
 
-        <div className="inline-flex bg-gray-100 rounded-full p-0.5 mb-4">
+        <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5 mb-4">
           <button
             type="button"
             onClick={() => setLanguage('en')}
             className={`px-4 py-1.5 rounded-full text-sm font-semibold ${
-              language === 'en' ? 'bg-white shadow text-gray-900' : 'text-gray-500'
+              language === 'en' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
             }`}
           >
             EN
@@ -88,14 +88,14 @@ export default function QuickAdd() {
             type="button"
             onClick={() => setLanguage('hi')}
             className={`px-4 py-1.5 rounded-full text-sm font-semibold ${
-              language === 'hi' ? 'bg-white shadow text-gray-900' : 'text-gray-500'
+              language === 'hi' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
             }`}
           >
             हिंदी
           </button>
         </div>
 
-        {error && <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>}
+        {error && <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>}
 
         <textarea
           required
@@ -104,7 +104,7 @@ export default function QuickAdd() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type the joke, quote, or line..."
-          className="bg-white text-gray-900 w-full px-4 py-3 border border-gray-300 rounded-xl text-base mb-3"
+          className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl text-base mb-3"
         />
 
         {category === 'quote' && (
@@ -112,7 +112,7 @@ export default function QuickAdd() {
             value={author}
             onChange={(e) => setAuthor(e.target.value)}
             placeholder="Author (optional)"
-            className="bg-white text-gray-900 w-full px-4 py-2.5 border border-gray-300 rounded-xl text-sm mb-3"
+            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm mb-3"
           />
         )}
 
@@ -127,10 +127,10 @@ export default function QuickAdd() {
 
       {justAdded.length > 0 && (
         <div className="mt-8">
-          <p className="text-sm font-semibold text-gray-500 mb-2">Just added</p>
+          <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Just added</p>
           <div className="space-y-2">
             {justAdded.map((item, i) => (
-              <div key={i} className="px-4 py-2.5 rounded-xl bg-green-50 text-sm text-gray-700 flex items-start gap-2">
+              <div key={i} className="px-4 py-2.5 rounded-xl bg-green-50 dark:bg-green-950/40 text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
                 <span>✅</span>
                 <span className="truncate">{item.text}</span>
               </div>

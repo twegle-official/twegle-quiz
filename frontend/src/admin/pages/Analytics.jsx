@@ -18,31 +18,31 @@ const ENGAGEMENT_SECTIONS = [
 function EngagementTable({ title, columnLabel, summary, error }) {
   return (
     <>
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">{title}</h2>
-      {!summary && !error && <p className="text-gray-400 mb-8">Loading...</p>}
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{title}</h2>
+      {!summary && !error && <p className="text-gray-400 dark:text-gray-500 mb-8">Loading...</p>}
       {summary && (
-        <div className="bg-white rounded-xl shadow-sm mb-10 overflow-x-auto">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-10 overflow-x-auto">
           <table className="w-full min-w-[420px] text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-left">
+            <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">{columnLabel}</th>
                 <th className="px-4 py-3 font-medium">Views</th>
                 <th className="px-4 py-3 font-medium">Shares</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {summary.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-gray-400">
+                  <td colSpan={3} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
                     No views or shares recorded yet.
                   </td>
                 </tr>
               )}
               {summary.map((row) => (
                 <tr key={row.id}>
-                  <td className="px-4 py-3 text-gray-900 font-medium max-w-xs truncate">{row.title}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.views}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.shares}</td>
+                  <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium max-w-xs truncate">{row.title}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.views}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.shares}</td>
                 </tr>
               ))}
             </tbody>
@@ -82,7 +82,7 @@ export default function Analytics() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Analytics</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Analytics</h1>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -99,31 +99,31 @@ export default function Analytics() {
         </div>
       )}
 
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">Quiz Plays</h2>
-      {!summary && !error && <p className="text-gray-400 mb-8">Loading...</p>}
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Quiz Plays</h2>
+      {!summary && !error && <p className="text-gray-400 dark:text-gray-500 mb-8">Loading...</p>}
       {summary && (
-        <div className="bg-white rounded-xl shadow-sm mb-10 overflow-x-auto">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-10 overflow-x-auto">
           <table className="w-full min-w-[420px] text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-left">
+            <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">Quiz</th>
                 <th className="px-4 py-3 font-medium">Total Plays</th>
                 <th className="px-4 py-3 font-medium">Unique Players</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {summary.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-gray-400">
+                  <td colSpan={3} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
                     No plays recorded yet.
                   </td>
                 </tr>
               )}
               {summary.map((row) => (
                 <tr key={row.quizId}>
-                  <td className="px-4 py-3 text-gray-900 font-medium">{row.title}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.totalPlays}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.uniquePlayers}</td>
+                  <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium">{row.title}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.totalPlays}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.uniquePlayers}</td>
                 </tr>
               ))}
             </tbody>
@@ -131,31 +131,31 @@ export default function Analytics() {
         </div>
       )}
 
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">Post Engagement</h2>
-      {!postSummary && !error && <p className="text-gray-400 mb-8">Loading...</p>}
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Post Engagement</h2>
+      {!postSummary && !error && <p className="text-gray-400 dark:text-gray-500 mb-8">Loading...</p>}
       {postSummary && (
-        <div className="bg-white rounded-xl shadow-sm mb-10 overflow-x-auto">
+        <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-10 overflow-x-auto">
           <table className="w-full min-w-[420px] text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-left">
+            <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-left">
               <tr>
                 <th className="px-4 py-3 font-medium">Post</th>
                 <th className="px-4 py-3 font-medium">Views</th>
                 <th className="px-4 py-3 font-medium">Shares</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
               {postSummary.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="px-4 py-6 text-center text-gray-400">
+                  <td colSpan={3} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">
                     No post views or shares recorded yet.
                   </td>
                 </tr>
               )}
               {postSummary.map((row) => (
                 <tr key={row.postId}>
-                  <td className="px-4 py-3 text-gray-900 font-medium max-w-xs truncate">{row.text}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.views}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.shares}</td>
+                  <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium max-w-xs truncate">{row.text}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.views}</td>
+                  <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.shares}</td>
                 </tr>
               ))}
             </tbody>
