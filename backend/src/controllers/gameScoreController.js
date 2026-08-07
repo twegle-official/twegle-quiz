@@ -9,6 +9,8 @@ export const GAME_LEADERBOARDS = {
   'memory-match': { order: 'asc' },
   'word-guess': { order: 'desc' },
   'guess-the-number': { order: 'asc' },
+  'simon-says': { order: 'desc' },
+  'whack-a-mole': { order: 'desc' },
 }
 
 export async function getLeaderboard(req, res) {

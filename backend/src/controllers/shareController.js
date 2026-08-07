@@ -102,6 +102,16 @@ const GAME_META = {
     emoji: '🔢',
     description: 'Fill the grid so every row, column, and 3x3 box has 1-9.',
   },
+  'simon-says': {
+    title: 'Simon Says',
+    emoji: '🎨',
+    description: 'Watch the pattern, then repeat it — how many rounds can you remember?',
+  },
+  'whack-a-mole': {
+    title: 'Whack-a-Mole',
+    emoji: '🔨',
+    description: 'Moles pop up fast — whack as many as you can in 20 seconds.',
+  },
 }
 
 export async function shareQuizIntro(req, res) {

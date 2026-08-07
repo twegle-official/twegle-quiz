@@ -10,6 +10,8 @@ export const GAME_SLUGS = [
   'word-guess',
   'guess-the-number',
   'sudoku',
+  'simon-says',
+  'whack-a-mole',
 ]
 
 // Anonymous by design — see GameSession.js. anonymousId is a client-generated

@@ -53,4 +53,18 @@ export const GAMES = [
     gradient: 'from-cyan-400 to-blue-600',
     description: 'Fill the grid so every row, column, and 3x3 box has 1-9.',
   },
+  {
+    slug: 'simon-says',
+    title: 'Simon Says',
+    emoji: '🎨',
+    gradient: 'from-red-400 to-orange-400',
+    description: 'Watch the pattern, then repeat it — how many rounds can you remember?',
+  },
+  {
+    slug: 'whack-a-mole',
+    title: 'Whack-a-Mole',
+    emoji: '🔨',
+    gradient: 'from-violet-400 to-indigo-500',
+    description: "Moles pop up fast — whack as many as you can in 20 seconds.",
+  },
 ]

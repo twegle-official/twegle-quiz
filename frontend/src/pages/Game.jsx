@@ -8,6 +8,8 @@ import Game2048 from '../games/Game2048'
 import WordGuess from '../games/WordGuess'
 import GuessTheNumber from '../games/GuessTheNumber'
 import Sudoku from '../games/Sudoku'
+import SimonSays from '../games/SimonSays'
+import WhackAMole from '../games/WhackAMole'
 import { recordGamePlay, createTicTacToeGame, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
@@ -25,6 +27,8 @@ const LEADERBOARD_LABEL = {
   'memory-match': 'Moves',
   'word-guess': 'Lives left',
   'guess-the-number': 'Tries',
+  'simon-says': 'Rounds reached',
+  'whack-a-mole': 'Moles whacked',
 }
 
 // Tic-Tac-Toe/Rock Paper Scissors are explicitly framed as "vs the house," so
@@ -55,6 +59,14 @@ const SHARE_TEXT_OVERRIDES = {
   },
   sudoku: {
     win: (title) => `I just solved a ${title} puzzle on Twegle! Give it a try.`,
+  },
+  'simon-says': {
+    win: () => `I mastered Simon Says on Twegle! Can you keep up with the pattern?`,
+    loss: (title) => `Tripped up by ${title} on Twegle — how many rounds can you remember?`,
+  },
+  'whack-a-mole': {
+    win: () => `I whacked my way to a high score on Twegle! Beat it if you can.`,
+    loss: (title) => `Only got a few moles in ${title} on Twegle — think you're faster?`,
   },
 }
 
@@ -182,6 +194,12 @@ export default function Game() {
       )}
       {game.slug === 'sudoku' && (
         <Sudoku onGameEnd={handleGameEnd} onReset={handleGameReset} />
+      )}
+      {game.slug === 'simon-says' && (
+        <SimonSays onGameEnd={handleGameEnd} onReset={handleGameReset} />
+      )}
+      {game.slug === 'whack-a-mole' && (
+        <WhackAMole onGameEnd={handleGameEnd} onReset={handleGameReset} />
       )}
 
       {outcome && (
