@@ -27,18 +27,40 @@ For deeper detail on any development item, see `DEVELOPMENT_PLAN.md` / `APPLICAT
 
 ## Development Tasks
 
-### Up next
-- [ ] **"Find the Difference" as a second puzzle type** — requested 2026-08-05, for later (not part of the first Puzzles build). Two near-identical images side by side, 5-10 deliberate differences to spot. Fits the same admin-authored-content model as the riddle puzzles (each puzzle = 2 image URLs + a list of difference coordinates + difficulty, editable via the admin panel, unlimited going forward once built) — but needs one upfront engineering build for the interactive click-to-find/highlight mechanic (comparable in scope to how Sudoku needed its own one-time build among the Games). The real bottleneck is **content sourcing, not code**: unlike a riddle (write it in 30 seconds), a spot-the-difference pair needs an actual edited image pair — licensed image sets or manual editing — which is slower/costlier to produce than text puzzles. Do this after the riddle-style puzzles are live and proven, once there's a plan for where the image pairs come from.
-
 ### Suggested (Phase 1), not started
-*Phase 1 (MVP) is functionally complete per `DEVELOPMENT_PLAN.md` §4 — public guest quiz flow, shareable OG-tagged result pages, role-based admin with a full quiz builder, ad slots, affiliate placement, and basic analytics are all live. Everything below is polish/growth work on top of a finished MVP, not a gap in it.*
+*Phase 1 (MVP) is functionally complete per `DEVELOPMENT_PLAN.md` §4 — public guest quiz flow, shareable OG-tagged result pages, role-based admin with a full quiz builder, ad slots, affiliate placement, and basic analytics are all live. Everything below is polish/growth work on top of a finished MVP, not a gap in it — none of it needs end-user accounts.*
 - [ ] Basic automated test suite (login, quiz-taking flow, friendship-quiz flow) — currently everything is verified by hand each session
 - [ ] **Real image uploads via cloud storage** (Cloudinary recommended — 25GB free tier) — picture Puzzles currently use paste-a-URL since no persistent storage exists yet (Render's server disk is ephemeral, wiped on every redeploy, so a naive server-disk upload would silently break). Explicitly deferred by the owner (2026-08-05) until after Puzzles ships with paste-a-URL — **requires the owner to create the Cloudinary account themselves first** (Claude can't sign up for third-party services on their behalf) and share the API credentials (Cloud Name/API Key/API Secret, ideally as Render env vars, not pasted in chat) before this can be built.
+- [ ] **"Find the Difference" as a second puzzle type** — requested 2026-08-05, for later (not part of the first Puzzles build). Two near-identical images side by side, 5-10 deliberate differences to spot. Fits the same admin-authored-content model as the riddle puzzles (each puzzle = 2 image URLs + a list of difference coordinates + difficulty, editable via the admin panel, unlimited going forward once built) — but needs one upfront engineering build for the interactive click-to-find/highlight mechanic (comparable in scope to how Sudoku needed its own one-time build among the Games). The real bottleneck is **content sourcing, not code**: unlike a riddle (write it in 30 seconds), a spot-the-difference pair needs an actual edited image pair — licensed image sets or manual editing — which is slower/costlier to produce than text puzzles. Do this after the riddle-style puzzles are live and proven, once there's a plan for where the image pairs come from. Also benefits from real image uploads (above) rather than paste-a-URL.
+
+**User-side ideas**
+- [ ] **"Surprise Me" button** on the homepage — jumps straight to one random quiz/puzzle/game/story/post, for a visitor who wants to be shown something rather than browse the grid. Purely client-side (pick a random item from whatever's already loaded), no backend work.
+- [ ] **Async multiplayer trivia** — extend the existing "🆚 Challenge a friend" pattern (built for Tic-Tac-Toe: a shareable code/link, no accounts needed) to trivia-type quizzes, so two people can compare real answers turn-by-turn instead of just comparing final scores after the fact (which "Compare with a friend" already covers).
+- [ ] **"Continue where you left off" row** on the homepage — a localStorage-based "Recently played" strip (last 5-6 items across all content types), no account needed since it's just a local list, same spirit as the existing anonymous streak/badges.
+- [ ] **Sound effects toggle for Games** — small, optional audio cues (win/lose/click) behind a mute-by-default toggle; polish, not a functional gap.
+- [ ] **FAQ / Help page with FAQ schema markup** — a real content gap (there's no help/FAQ page at all today) that also earns Google's FAQ rich-snippet treatment in search results, a cheap SEO win layered on top of the existing meta-tag/structured-data work.
+
+**Admin-side ideas**
+- [ ] **Draft preview link** — a way to view an unpublished draft exactly as a visitor would see it (a signed/temporary preview URL) without flipping its status to Published. Today the only way to check how a draft actually looks is to publish it first.
+- [ ] **CSV export on Analytics tables** — a plain "Export CSV" button on each Analytics/Engagement table, for the owner's own tracking or spreadsheet work outside the admin dashboard.
+- [ ] **Bulk publish/unpublish/delete on list pages** — checkbox multi-select on Quiz/Post/Story/Puzzle/Friendship Quiz lists. Bulk Import already covers fast *creation*; this is the equivalent convenience for managing content that already exists.
+- [ ] **Filters on the Activity log** — filter by admin and by resource type (currently a flat paginated feed with no way to narrow it down), useful once there are more than a couple of active admins.
 
 ### Suggested (Phase 2), not started
-*Phase 2 in `DEVELOPMENT_PLAN.md` §4 is end-user accounts plus what accounts unlock. "Compare with a friend" and Friendship Quizzes were already pulled forward and shipped in Phase 1 (real accounts weren't actually needed for either).*
-- [ ] Push notifications (if PWA installed) — needs accounts (or at least a persistent subscription) to be worth anything beyond a generic broadcast
+*Phase 2 in `DEVELOPMENT_PLAN.md` §4 is end-user accounts plus what accounts unlock. "Compare with a friend" and Friendship Quizzes were already pulled forward and shipped in Phase 1 (real accounts weren't actually needed for either) — end-user accounts themselves are now live (2026-08-05), so everything below is genuinely buildable, not blocked on a prerequisite that doesn't exist yet.*
+
+**User-side ideas**
+- [ ] Push notifications (if PWA installed) — the account/subscription piece now exists to make this worth more than a generic broadcast; still needs real push infrastructure (web push + a service worker handler) to be built.
+- [ ] **Personal history page** — a "My Activity" section on `/account` (quizzes taken, puzzles solved, games played, badges earned) surfaced from the account stats that already sync across devices — currently that data exists server-side but has no dedicated view of its own beyond the small Badges page.
+- [ ] **Bookmarks / Favorites** — save a quiz, post, or story to revisit later, tied to the account (guests keep working exactly as they do today; this is additive, same as everything else account-related).
+- [ ] **Friends-only leaderboards** — game leaderboards are currently global by nickname; a lightweight "share your profile link, see just each other's scores" friend view would need some kind of friend-linking, but no follow-graph infrastructure beyond that.
+- [ ] **Streak-reminder notifications** — "You're on a 5-day streak, don't lose it!" — depends on push notifications (above) actually being built first.
+
+**Admin-side ideas**
 - [ ] A/B testing on quiz questions or ad placements
+- [ ] **Content approval workflow** — Editor submits, Superadmin approves before it goes live. Meaningful once there are more than a couple of active admins; today Editor can publish directly, which is fine at the current team size.
+- [ ] **Community-submitted content with a moderation queue** — e.g. visitor-submitted jokes/quotes, reviewed before publishing. Genuinely needs accounts (to attribute submissions and rate-limit spam) plus a real moderation UI, not a quick add-on.
+- [ ] **Cohort/retention analytics** — weekly active users, day-7 retention, etc. — meaningfully needs real accounts to track a "user" across sessions; the current anonymous-ID analytics can count plays/views but can't answer "did the same person come back."
 
 ### Deferred on purpose (not needed now)
 - [ ] Native mobile app — a real App Store/Play Store app, not the current web app. Only worth considering later, if the web version proves traction first (see `DEVELOPMENT_PLAN.md`'s Phase 3).
