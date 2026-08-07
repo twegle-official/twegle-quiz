@@ -40,3 +40,8 @@ export const updateAvatar = (token, avatar) =>
 
 export const regenerateRecoveryCode = (token) =>
   request('/users/me/regenerate-recovery-code', { token, method: 'POST' })
+
+export const fetchStats = (token) => request('/users/me/stats', { token })
+
+export const pushStats = (token, stats) =>
+  request('/users/me/stats', { token, method: 'PUT', body: { stats } })

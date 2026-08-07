@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { signupUser, loginUser, fetchCurrentUser } from './userApi'
+import { syncStatsOnLogin } from './utils/statsSync'
 
 // Separate, parallel context from admin/AuthContext.jsx — different name,
 // different localStorage key (`userSession` vs `adminSession`), wraps only
@@ -29,6 +30,11 @@ export function UserAuthProvider({ children }) {
     fetchCurrentUser(session.token)
       .then((data) => updateSession({ token: session.token, user: data.user }))
       .catch(() => {})
+    // Merges this device's local streak/badge progress with the account's
+    // server-side copy (see statsSync.js) — runs on every load a session
+    // exists, not just right after login, so two devices that were never
+    // both open "at once" still converge the next time either one loads.
+    syncStatsOnLogin(session.token)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -36,6 +42,7 @@ export function UserAuthProvider({ children }) {
     const data = await signupUser(username, password, displayName)
     localStorage.setItem('userSession', JSON.stringify({ token: data.token, user: data.user }))
     setSession({ token: data.token, user: data.user })
+    syncStatsOnLogin(data.token)
     return data.recoveryCode
   }
 
@@ -43,6 +50,7 @@ export function UserAuthProvider({ children }) {
     const data = await loginUser(username, password)
     localStorage.setItem('userSession', JSON.stringify(data))
     setSession(data)
+    syncStatsOnLogin(data.token)
   }
 
   function logout() {

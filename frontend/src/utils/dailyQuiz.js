@@ -1,7 +1,10 @@
 // Wordle-style daily habit loop — a deterministic "Quiz of the Day" picked
 // from whatever quizzes exist, plus a localStorage streak counter. No
-// backend involved: same date-derived-index pattern already used for
-// Horoscope, just applied to picking a quiz instead of picking a sentence.
+// backend involved for anonymous visitors: same date-derived-index pattern
+// already used for Horoscope, just applied to picking a quiz instead of
+// picking a sentence. Logged-in visitors additionally get this streak
+// synced to their account server-side — see statsSync.js.
+import { pushLocalStatsToServer } from './statsSync'
 
 function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
@@ -34,7 +37,7 @@ export function pickPuzzleOfTheDay(puzzles) {
   return sorted[index]
 }
 
-const STREAK_KEY = 'dailyQuizStreak'
+export const STREAK_KEY = 'dailyQuizStreak'
 
 export function getStreak() {
   try {
@@ -67,5 +70,6 @@ export function recordDailyActivityCompletion(finishedId, todaysId) {
   const count = current.lastDate === previousDateKey(today) ? current.count + 1 : 1
   const updated = { count, lastDate: today }
   localStorage.setItem(STREAK_KEY, JSON.stringify(updated))
+  pushLocalStatsToServer()
   return updated
 }

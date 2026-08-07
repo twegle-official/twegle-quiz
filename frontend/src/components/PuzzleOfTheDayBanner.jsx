@@ -9,6 +9,12 @@ import { pickPuzzleOfTheDay, getStreak } from '../utils/dailyQuiz'
 // puzzle detail page confirmed the streak advanced, reading as if the
 // puzzle wasn't actually contributing. Showing the same real number on both
 // banners removes that doubt, even though it's not new information.
+//
+// Eyebrow text matches DailyQuizBanner's "🔥 Daily Streak" exactly (not
+// "🔥 Puzzle of the Day") — having each banner use different wording for
+// what's actually the same mechanic read as inconsistent/confusing; the
+// puzzle's own identity is already carried by its emoji and question text
+// below, so the eyebrow line is free to just name the mechanic instead.
 export default function PuzzleOfTheDayBanner({ puzzles }) {
   const puzzle = pickPuzzleOfTheDay(puzzles)
   if (!puzzle) return null
@@ -22,7 +28,7 @@ export default function PuzzleOfTheDayBanner({ puzzles }) {
     >
       <span className="text-2xl sm:text-3xl shrink-0">{puzzle.emoji || '🧩'}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Puzzle of the Day</p>
+        <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Daily Streak</p>
         <p className="text-sm sm:text-base font-bold truncate">{puzzle.question}</p>
       </div>
       {streak.count > 0 && (

@@ -4,9 +4,10 @@
 // stats, checked fresh every time rather than stored as "unlocked" flags,
 // so raising a threshold later never leaves stale state to migrate.
 import { getStreak } from './dailyQuiz'
+import { pushLocalStatsToServer } from './statsSync'
 
-const STATS_KEY = 'twegleStats'
-const SEEN_KEY = 'twegleBadgesSeen'
+export const STATS_KEY = 'twegleStats'
+export const SEEN_KEY = 'twegleBadgesSeen'
 
 function getStats() {
   try {
@@ -67,6 +68,7 @@ function update(mutate) {
   mutate(stats)
   saveStats(stats)
   notifyNewBadges(before, unlockedIds(stats))
+  pushLocalStatsToServer()
 }
 
 export function recordGamePlayed(slug, outcome) {

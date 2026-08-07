@@ -178,6 +178,34 @@ export async function updateProfile(req, res) {
   res.json({ user: publicUser(user) })
 }
 
+const MAX_STATS_BYTES = 10_000
+
+export async function getStats(req, res) {
+  const user = await EndUser.findById(req.user.id)
+  if (!user) {
+    return res.status(404).json({ error: 'Account not found' })
+  }
+  res.json({ stats: user.stats || {} })
+}
+
+// Overwrites wholesale rather than merging — the frontend already computes
+// the merged/max'd result client-side (see statsSync.js) before pushing, so
+// the server just needs to store whatever it's handed. No cross-user
+// meaning to any of these numbers (badge progress, streak count), so there's
+// nothing here worth validating beyond a rough size cap against abuse.
+export async function updateStats(req, res) {
+  const { stats } = req.body
+  if (typeof stats !== 'object' || stats === null || Array.isArray(stats)) {
+    return res.status(400).json({ error: 'stats must be an object' })
+  }
+  if (JSON.stringify(stats).length > MAX_STATS_BYTES) {
+    return res.status(400).json({ error: 'stats payload too large' })
+  }
+
+  await EndUser.findByIdAndUpdate(req.user.id, { stats })
+  res.status(204).send()
+}
+
 // Lets a user proactively rotate their recovery code any time (not just
 // after a password reset) — e.g. if they're worried it was seen by someone
 // else. Same "shown once" contract as signup/reset.

@@ -25,6 +25,13 @@ const endUserSchema = new mongoose.Schema(
     // (not deleted), so this is reversible. Default 'active' so nothing
     // changes for the accounts that already exist.
     status: { type: String, enum: ['active', 'disabled'], default: 'active' },
+    // Mirrors the shape of the anonymous localStorage stats blob (daily
+    // streak + badge-progress counters — see FRONTEND.md's "Cross-device
+    // stats sync"). Mixed rather than a fixed sub-schema since the frontend
+    // owns the shape entirely (badge criteria/thresholds can change without
+    // a migration here) and the server only stores/returns it, never reads
+    // into it. Not validated beyond a rough size cap in the controller.
+    stats: { type: mongoose.Schema.Types.Mixed, default: {} },
   },
   { timestamps: true }
 )

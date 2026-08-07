@@ -1,9 +1,11 @@
 import { getBadgeStatus } from '../utils/badges'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { useUserAuth } from '../UserAuthContext'
 
 export default function Badges() {
   useDocumentMeta('My Badges', 'Achievements earned by playing games, taking quizzes, and sharing on Twegle.')
+  const { session } = useUserAuth()
   const badges = getBadgeStatus()
   const unlockedCount = badges.filter((b) => b.unlocked).length
 
@@ -12,7 +14,10 @@ export default function Badges() {
       <BackButton className="mb-4" />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">🏆 My Badges</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">
-        {unlockedCount} of {badges.length} unlocked. Tracked only in this browser — no account needed.
+        {unlockedCount} of {badges.length} unlocked.{' '}
+        {session
+          ? 'Synced to your account — same progress on every device you log into.'
+          : 'Tracked only in this browser — log in to sync progress across devices.'}
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

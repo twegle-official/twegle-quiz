@@ -6,6 +6,8 @@ import {
   me,
   updateProfile,
   regenerateRecoveryCode,
+  getStats,
+  updateStats,
 } from '../controllers/endUserAuthController.js'
 import { requireUserAuth } from '../middleware/userAuth.js'
 
@@ -17,5 +19,7 @@ router.post('/reset-password', resetPassword)
 router.get('/me', requireUserAuth, me)
 router.patch('/me', requireUserAuth, updateProfile)
 router.post('/me/regenerate-recovery-code', requireUserAuth, regenerateRecoveryCode)
+router.get('/me/stats', requireUserAuth, getStats)
+router.put('/me/stats', requireUserAuth, updateStats)
 
 export default router
