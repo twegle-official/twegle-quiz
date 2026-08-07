@@ -1,146 +1,228 @@
-# How Twegle Works — Plain-Language Guide
+# How Twegle Works — A Simple Guide for Everyone
 
-**This is a living document.** Every time something is added, removed, or changed on the site (for visitors or for admins), this file gets updated in the same session, so it always describes what the app actually does today — not a history of how it got there (see `APPLICATION_FLOW.md` for that kind of changelog). No code, no technical jargon — if someone with zero coding background reads this, they should understand what Twegle does and how it works.
+**This is a living document.** Every time something is added, changed, or removed on the site — for visitors or for admins — this file gets updated the same day, so it always describes what the app actually does *right now*. It is not a history of how things got built (see `APPLICATION_FLOW.md` for that). There is no code and no technical jargon here. If someone with zero computer background reads this from top to bottom, they should come away understanding exactly what Twegle does, what a visitor can do on it, and what an admin can do on it.
 
-**Last updated:** 2026-08-06 (added **Puzzles** — a new "🧩 Puzzles" homepage tab of short riddles/brain-teasers, sitting right after Quizzes since it shares the same daily streak; a "Puzzle of the Day" banner joins the existing "Quiz of the Day" one) — earlier, 2026-08-05 (applied for Google AdSense and added an "Advertisement" placeholder box to the homepage and search results, matching the ones already on result/detail pages — real ads will appear here automatically once AdSense approves the site; Google Analytics + Search Console also set up, both invisible to visitors) — earlier, 2026-08-04 (upgraded the admin Dashboard: a Day/Week/Month/Year/All range picker, Top Content sections for Friendship Quizzes/Games/Posts alongside Quizzes, and the sidebar logo now links back to Dashboard; earlier the same day added the Dashboard itself with this-week stats, content counts, top quizzes, and recent activity; fixed Analytics/Activity tables cropping instead of scrolling on mobile; fixed blank search/filter fields and an always-expanded mobile nav in the admin panel; Friendship Quiz results now have a "🏆 Challenge Your Friend" button that re-shares the original invite link, not just the score; every quiz/post/story result page now also nudges toward one other content type — a game, plus a post or quiz — so a visitor never dead-ends after finishing one thing; fixed the Back button not scrolling to top after following one of those links)
-
----
-
-## What Twegle is, in one paragraph
-
-Twegle (`twegle.in`) is a free entertainment website — quizzes, jokes, quotes, games, short stories, and daily horoscopes, in English and Hindi. Nobody needs to sign up or log in to use it; you just open the site and start playing, reading, or laughing — there's an optional account you can create if you want to keep your streak/badges/name across devices, but it's never required. It's designed to be shared — every quiz result, joke, or game outcome has a "share" button, so the site grows mainly through people sending things to friends on WhatsApp, Instagram, etc.
-
-There are two completely separate sides to the app:
-- **The public website** — what any visitor sees at `twegle.in`. No login.
-- **The admin panel** — where content is added/edited/removed, at `twegle.in/admin`. Login required.
-
-Twegle stays free by showing ads (currently placeholder boxes reserved for real ads, pending Google AdSense approval) — a small labeled space appears on the homepage, search results, and after finishing a quiz/post/story/game, never blocking or interrupting anything you're doing. Behind the scenes, Google Analytics and Search Console quietly track visits and search performance (anonymous, same spirit as the rest of the site) — invisible to visitors, useful only to the admin team.
+**Last updated:** 7 August 2026.
 
 ---
 
-## Part 1: The Public Website (what visitors see)
+## What is Twegle, in simple words?
 
-### The homepage
+Twegle (`twegle.in`) is a free fun website. It has quizzes, riddles, jokes, quotes, small games, short stories, and daily horoscopes — in both English and Hindi.
 
-The homepage has tabs across the side (or top, on mobile) for each type of content: Quizzes, Puzzles, Friendship Quiz, Games, Posts (Jokes, Funny Lines, Quotes, Motivational Quotes), Stories, Horoscope. Clicking a tab shows a grid of that content type. There's also:
-- An **EN / हिंदी** toggle to switch every piece of content between English and Hindi.
-- A **Newest / Trending** toggle to sort content either by "just added" or "most played/viewed."
-- A **search bar** in the header that searches across quizzes, posts, friendship quizzes, and puzzles at once.
-- A **"Quiz of the Day"** and **"Puzzle of the Day"** banner at the top — one quiz and one puzzle are automatically featured each day (the same ones for everyone, changing daily); completing either one keeps the same "streak" counter going, encouraging people to come back daily (like Wordle).
-- A **dark mode toggle** in the header — switches the whole site to a dark color scheme, remembered for next time.
+Nobody has to create an account or log in to use it. You just open the site and start playing, reading, or laughing. Everything is designed to be shared with friends — every quiz result, joke, or game has a "Share" button, and that is how the site mainly grows: people send things to each other on WhatsApp, Instagram, and similar apps.
 
-### Quizzes
+There are **two completely separate parts** to Twegle:
 
-Personality-style quizzes ("What's Your Skincare Personality?", "Which K-pop Idol Position Are You?", etc.) and a few trivia-style quizzes ("How Well Do You Know Bollywood?"). You answer 5 questions one at a time, then land on a result page showing your personality type (or score, for trivia quizzes) with a fun description. From there you can:
-- Share the result as a **branded image** (auto-generated, looks good on Instagram/WhatsApp Stories) or as a plain link.
-- **Compare with a friend** — send them a link to take the same quiz; when they finish, you both see a side-by-side "did you match?" reveal, which can also be shared as its own branded side-by-side image (not just a plain link).
-- See a few **"You might also like"** suggestions for other quizzes, plus a small "play a game" / "quick fun" prompt pointing at something completely different, so there's always a next thing to do.
-- **Report** the quiz if something's wrong or offensive.
+1. **The public website** — this is what any visitor sees at `twegle.in`. No login needed.
+2. **The admin panel** — this is where the Twegle team adds, edits, and manages all the content, at `twegle.in/admin`. A login is required, and only people the team has approved can get in.
 
-### Puzzles
-
-Short riddles and brain-teasers — a question, and an answer that stays hidden until you tap "🔍 Reveal Answer." Some are picture puzzles (a photo alongside the riddle). Filter by difficulty (Easy/Medium/Hard). Solving the day's featured puzzle counts toward the same daily streak as the daily quiz.
-
-### Friendship Quiz ("How well do you know me?")
-
-A two-person format. One person answers 8 questions about themselves, gets a shareable link, and sends it to friends. Each friend who opens the link guesses what the first person would have said — no peeking at the real answers first — then sees their own score (e.g. "6/8 correct") plus a right/wrong breakdown, a "🏆 Challenge Your Friend" button that re-shares the *original* link (so a new friend can also take a guess), and can share their own score to pull in more friends. The same original link can be reused by many different people, so one setup can generate many rounds of sharing.
-
-### Jokes, Funny Lines, Quotes, Motivational Quotes
-
-Four simple content types — short, quick things to read and share, each a short text card with a colorful background. Each one can be:
-- **Reacted to** directly on its card — tap 😂, 🔥, 😭, or 👍 without even opening it. Tap again to change your reaction.
-- **Shared** — either from the card itself (a small 🔗 icon) or from its own full page.
-- **Shared as a branded image**, generated from the card's text.
-
-### Games
-
-Seven small browser games, all playable instantly, no download: Tic-Tac-Toe (vs. an unbeatable computer, or challenge a friend via link for a real back-and-forth match), Rock Paper Scissors, Memory Match, 2048, Word Guess, Guess the Number, and Sudoku. Four of them (2048, Memory Match, Word Guess, Guess the Number) have a **leaderboard** — after finishing, you can save your score with a nickname and see how you rank against everyone else who's played.
-
-### Stories
-
-Original short stories across 6 categories (Horror, Comedy, Romance, Mystery, Moral Tales, Motivational). Each one can be read on-screen or **listened to** — a "🔊 Listen to this story" button uses the phone/browser's built-in text-to-speech, so no recording or narrator was needed.
-
-### Horoscope
-
-All 12 zodiac signs, each with a Day/Week/Month/Year horoscope, written to be funny and India-specific (family WhatsApp groups, "shaadi kab karoge," chai stalls, EMI reminders, etc.) rather than generic astrology. Purely for entertainment — a small disclaimer makes that clear. The horoscope text for any given sign/period/day is always the same for everyone (not personalized), but changes automatically as the date changes.
-
-### Achievement badges
-
-A "🏆 My Badges" page (linked from the footer) tracks 7 lightweight achievements — things like beating the house 3 times, trying every game, completing 5 quizzes, or getting a perfect score on a trivia quiz. Earning one shows a brief popup in the corner of the screen. Like the daily streak, this is tracked only in your browser, no account needed.
-
-### Other things anyone can do
-
-- **Give feedback** or **report a problem** with any piece of content, via a Feedback page — no account needed, goes straight to the admin team.
-- Read the **Privacy Policy**, **Terms of Service**, and **About/Contact** pages.
-- Follow Twegle's social media accounts (Instagram, Facebook, YouTube, LinkedIn) via icons in the footer.
-
-None of this requires creating an account. The site quietly remembers an anonymous ID in your browser (not tied to your name/email/anything personal) purely so it can count "how many people played this" and remember things like your reaction picks and daily streak.
-
-### Optional accounts (no email or phone number, ever)
-
-Anyone can create an account (a 👤 icon in the header) if they want a name that follows them across devices, but it's entirely optional — every feature above works exactly the same whether you're logged in or not. Signing up only asks for a username, a password, and a "Gamer Tag" (a public nickname, separate from your private username) — deliberately **no email address or phone number is ever collected**, so there's nothing personally identifying to leak or misuse. Since there's no email to send a "reset your password" link to, forgetting a password is handled differently: at signup (and again any time it's used or regenerated), you're shown a one-time **Recovery Code** to save somewhere safe — it's the only way back into the account if the password is forgotten. If both the password and the code are lost, the account can't be recovered — this is explained plainly on the reset page so it's never a surprise.
+This document explains both parts, one at a time, in plain language.
 
 ---
 
-## Part 2: The Admin Panel (`twegle.in/admin`)
+# PART 1 — The Public Website (what a visitor sees)
 
-This is where content is created, edited, and monitored. Login required.
+## Getting started
 
-### Dashboard
+Open `twegle.in` in any browser — on a phone, tablet, or computer. There is nothing to install (though you *can* choose to "install" it like an app on your phone if you want — more on that below), nothing to sign up for, and nothing to pay. You land straight on the homepage and can start using everything immediately.
 
-The first thing an admin sees after logging in (and one click away any time via the logo in the sidebar). A quick "how's the site doing" overview with a Day/Week/Month/Year/All range picker at the top: plays/views/new-content numbers for the chosen period, how many quizzes/posts/stories/friendship quizzes are currently published (tap any to jump to that list — this count is always "right now," not affected by the range picker), an unread feedback/report count when there is one, the top 5 quizzes/friendship quizzes/games/posts for the chosen period, and the 5 most recent admin actions — with a link through to the full Activity log.
+## The homepage — where everything starts
 
-### Who can do what
+The homepage is the hub. From here you can reach every kind of content on the site. It has:
 
-| Role | Can do |
+- **A row of tabs**, one for each type of content: Quizzes, Puzzles, Friendship Quiz, Games, Posts (jokes/quotes/etc.), Stories, and Horoscope. Tapping a tab shows you a grid of that type of content, like tiles you can tap into.
+- **A language switch** (EN / हिंदी) — flips everything on the page between English and Hindi.
+- **A sort switch** (Newest / Trending) — "Newest" shows what was added most recently; "Trending" shows what's currently the most popular.
+- **A search box** at the top of every page — type anything and it looks across quizzes, puzzles, posts, and friendship quizzes at once for a match.
+- **Two daily banners** at the top — one quiz and one puzzle are picked automatically each day (the same ones for every visitor, and they change every day at midnight). Finishing either one keeps your daily streak going (explained below).
+- **A dark mode switch** — a small button that flips the whole site between a light look and a dark look. Your choice is remembered the next time you visit.
+- **A "Where Fun Goes Viral" tagline and hero banner**, plus a small floating share panel on the side of the screen so you can share Twegle itself with a friend at any time, from any page.
+
+## 1. Quizzes
+
+These are the heart of the site. Most are **personality quizzes** — fun questions like "What's Your Skincare Personality?" or "Which K-pop Idol Position Are You?" — where you answer a short series of questions (usually around 5) and land on a result that describes "you." A few are **trivia quizzes** — like "How Well Do You Know Bollywood?" — where there are actually right and wrong answers and you get a real score at the end.
+
+After finishing a quiz, on the result page you can:
+- **Share the result** — either as a plain link, or as a nicely designed image made just for that result (great for posting to an Instagram or WhatsApp Story).
+- **Compare with a friend** — send them a link to take the exact same quiz; once they finish too, you both see a side-by-side "did you match?" screen, which can also be shared as its own image.
+- See a few **"you might also like"** suggestions for other quizzes to try next, plus a small nudge toward something completely different (a game, a joke) so there's always a next thing to do.
+- **Report** the quiz if something about it seems wrong, broken, or inappropriate.
+
+If you play a quiz you've already taken before, the tile for it on the homepage shows a small green checkmark, so you can tell at a glance what you've already tried.
+
+## 2. Puzzles
+
+Short riddles and brain-teasers. You see the question, and there's a "🔍 Reveal Answer" button — tap it whenever you're ready to see the answer, no rush. Some puzzles include a picture alongside the riddle. Every puzzle is labeled with a difficulty: **Warm-Up**, **Challenge**, or **Brain Buster**, and you can filter the list by any of those. Revealing the day's featured puzzle counts toward the same daily streak as the daily quiz — they're two ways of keeping one streak alive. Puzzles you've already revealed also get the small green checkmark on their tile.
+
+## 3. Friendship Quiz ("How well do you know me?")
+
+This one is built for two (or more) people. One person picks a topic and answers a set of questions about themselves — favorite food, biggest fear, that kind of thing — and gets a shareable link when done. Anyone who opens that link becomes a "guesser": they try to predict what the first person answered, without ever seeing the real answers first. Once a guesser submits their guesses, they see their own score (like "6 out of 8 correct"), a full breakdown of which guesses were right or wrong, and a button to reshare the *same original link* so even more friends can take a turn guessing. One person's setup can be reused by as many friends as want to try it.
+
+## 4. Posts — Jokes, Funny Lines, Quotes & Motivational Quotes
+
+Four simple, quick-to-read content types, shown together in one "Posts" tab (with chips to narrow it down to just one category if you like). Each one is a short card with a colorful background. On any card you can:
+- **Tap a reaction emoji** (😂 🔥 😭 👍) right on the card, no need to open it — tap again to change your mind.
+- **Share it**, either straight from the card or from its own full page.
+- **Turn it into a shareable image**, generated automatically from the text.
+
+## 5. Games
+
+Nine small games, all playable instantly in the browser — nothing to download:
+
+- **Tic-Tac-Toe** — play against a computer that never loses (the best you can do is tie), or challenge a real friend via a shareable link for a genuine back-and-forth match.
+- **Rock Paper Scissors** — one round against the computer, which picks completely randomly.
+- **Memory Match** — flip cards, find the matching pairs, try to do it in as few tries as possible.
+- **2048** — slide numbered tiles to combine them and reach the tile numbered 2048.
+- **Word Guess** — guess a hidden word one letter at a time before you run out of tries.
+- **Guess the Number** — the site picks a secret number between 1 and 100; you guess, and it tells you higher or lower.
+- **Sudoku** — the classic number grid puzzle, fill it so every row, column, and box has 1 through 9.
+- **Simon Says** — watch a pattern of flashing colors, then repeat it back; the pattern gets one step longer every round.
+- **Whack-a-Mole** — moles pop up one at a time for less than a second each; whack as many as you can in 20 seconds.
+
+Six of these nine (2048, Memory Match, Word Guess, Guess the Number, Simon Says, Whack-a-Mole) have a **leaderboard** — after finishing, you can save your score under a nickname and see how you stack up against everyone else who's played.
+
+## 6. Stories
+
+Original short stories, sorted into 6 categories: Horror, Comedy, Romance, Mystery, Moral Tales, and Motivational. You can read any story on-screen, or tap **"🔊 Listen to this story"** and have your phone or browser read it out loud to you — this uses a built-in feature every modern phone/browser already has, so there's no separate app or download needed.
+
+## 7. Horoscope
+
+All 12 zodiac signs, each with a horoscope for Today, This Week, This Month, or This Year. The horoscopes are written to be funny and India-specific (think family WhatsApp groups, "shaadi kab karoge," chai stalls) rather than serious astrology — a small disclaimer makes clear this is just for fun. The text for a given sign and period is the same for everyone reading it that day, and it changes automatically as the date changes — nobody has to write new horoscopes every single day.
+
+## Daily streak — come back every day
+
+If you finish the daily quiz or reveal the daily puzzle, a small counter shows how many days in a row you've kept it up (like popular word games do). It's a light nudge to come back tomorrow, nothing more — there's no penalty for missing a day, your count just goes back to zero and you can start again anytime.
+
+## Achievement badges
+
+A "🏆 My Badges" page (reachable from the header and the footer) tracks small achievements — things like beating the computer at a game three times, trying every single game at least once, completing five quizzes, or getting a perfect score on a trivia quiz. Whenever you unlock one, a small notification pops up in the corner of the screen to let you know. There are 7 badges to collect in total.
+
+## Sharing — how things spread
+
+Nearly everything on Twegle has a share option, and there are three different ways to share depending on where you are:
+- **A plain link** — copy it or send it directly through WhatsApp.
+- **A branded image** — a nicely designed picture generated on the spot (for a quiz result, a joke, a compare-with-a-friend reveal, and more), perfect for posting as an Instagram or WhatsApp Story.
+- **The device's own native share menu** — on a phone, tapping share can pop up your phone's regular share sheet, letting you send it through any app you already have installed.
+
+## Search
+
+The search box (always available in the header) looks across quizzes, puzzles, posts, and friendship quizzes at the same time, and shows you matching results grouped by type.
+
+## Giving feedback or reporting a problem
+
+There is a **Feedback page**, reachable from the footer, where anyone can type a message to the Twegle team — no account needed, an email address is entirely optional if you'd like a reply. Separately, most individual pieces of content (quizzes, posts, etc.) have their own small **"🚩 Report"** button, for flagging something specific as broken, incorrect, or inappropriate.
+
+## Legal pages
+
+Standard pages exist and are kept up to date: a **Privacy Policy** (what information is and isn't collected), **Terms of Service** (the rules for using the site), and an **About & Contact** page (who's behind Twegle and how to reach out). All are written in plain language, not legal jargon.
+
+## Social media
+
+Icons in the footer link to Twegle's Instagram, Facebook, YouTube, and LinkedIn accounts.
+
+## Dark mode
+
+A single toggle switches the entire public site between a light look and a dark look. It's remembered for your next visit, and it applies instantly with no flash of the wrong color when the page loads.
+
+## Installing Twegle like an app (optional)
+
+On a phone, most browsers let you "Add to Home Screen" for Twegle, which puts an icon on your phone just like a real app. It isn't required at all — the website works the same either way — but it's a shortcut for people who visit often. Pages you've already visited also keep working even with a spotty internet connection, since the app remembers them.
+
+## Optional accounts — no email or phone number, ever
+
+Everything described above works completely without ever creating an account. But if you'd like your daily streak, badges, and "already played" history to follow you from your phone to your computer and back, you can create a free account (the 👤 icon in the header).
+
+Here's exactly what that involves:
+
+- **You only ever need a username and a password.** Twegle never asks for an email address or a phone number — not at signup, not ever. There is nothing personally identifying for anyone to lose or misuse.
+- You also pick a public **Gamer Tag** — a nickname that can appear on game leaderboards. It's completely separate from your private username, which is never shown to anyone else.
+- Since there's no email or phone number on file, a forgotten password can't be reset by clicking a link in an email the way most sites do it. Instead, the moment you sign up (and again any time it's regenerated), you're shown a one-time **Recovery Code** — write it down somewhere safe. It is the *only* way back into your account if you ever forget your password. If both the password and the Recovery Code are lost, the account genuinely cannot be recovered by anyone, including the Twegle team — this is stated plainly on the page itself, so it's never a surprise later.
+- **Everything about accounts is optional.** No feature anywhere on the site is ever locked behind having one.
+
+### What actually syncs across your devices once you're logged in
+
+If you're logged into the same account on, say, your phone and your laptop, three things automatically stay in sync between them:
+1. Your **daily streak** count.
+2. Your **unlocked badges**.
+3. Your **"already played" history** — the small green checkmarks on quiz and puzzle tiles.
+
+This sync happens **automatically in the background**, with no button to press. If you do something on your phone and then look at an already-open tab on your laptop, it picks up the change within about 20 seconds on its own — you never need to manually refresh the page or clear anything for it to catch up.
+
+---
+
+# PART 2 — The Admin Panel (`twegle.in/admin`)
+
+This is the separate, password-protected part of the site where the Twegle team creates and manages every piece of content, and keeps an eye on how the site is doing. A regular visitor never sees any of this.
+
+## Logging in
+
+Every admin has their own email and password, created for them by someone with the highest level of access (a Superadmin — see below). There's no public "sign up" page for admins; accounts are handed out deliberately, one at a time.
+
+## Who can do what — the three roles
+
+Every admin account has one of three roles, which controls exactly what they're allowed to do:
+
+| Role | What they can do |
 |---|---|
-| **Analyst** | View content and analytics only — can't create, edit, or delete anything |
-| **Editor** | Everything Analyst can do, plus create/edit/delete/publish content |
-| **Superadmin** | Everything Editor can do, plus create/remove other admin accounts |
+| **Analyst** | Look at content and view all the analytics/stats — cannot create, change, or delete anything |
+| **Editor** | Everything an Analyst can do, plus create, edit, delete, and publish content |
+| **Superadmin** | Everything an Editor can do, plus create or remove other admin accounts |
 
-There's no "sign up" for admins — a Superadmin creates every admin account manually from the Admins page.
+## Dashboard
 
-### Managing content
+The very first screen after logging in (and reachable any time by tapping the logo). It gives a quick "how's the site doing" snapshot: a Day/Week/Month/Year/All time-range picker at the top controls a summary of plays, views, and newly published content for that period; below that, a live count of how many quizzes/posts/stories/puzzles/friendship quizzes are currently published (always "right now," unaffected by the time-range picker — tap any number to jump straight to that content list); an alert if there's unread feedback waiting; the top-performing quizzes/friendship quizzes/games/posts for the chosen period; and the 5 most recent admin actions, with a link through to the complete history.
 
-Each content type (Quizzes, Puzzles, Posts [jokes/funny lines/quotes/motivational], Stories, Friendship Quizzes) has its own list page in the admin panel, where you can:
-- **Search and filter** by category, language, or published/draft status.
-- **Create new** content through a form.
-- **Edit** or **delete** existing content.
-- **Clone** an existing item as a starting point for a new one, instead of starting from scratch.
-- **Schedule** something to go live automatically at a future date/time, instead of publishing it immediately.
+## Managing content
 
-### Quick Add
+Five different types of content each have their own dedicated page in the admin panel: **Quizzes**, **Puzzles**, **Posts** (jokes/funny lines/quotes/motivational quotes), **Stories**, and **Friendship Quizzes**. On every one of these pages, an admin with the right role can:
 
-A fast shortcut for jokes, funny lines, quotes, and motivational quotes: pick a category, type the text into one box, hit Publish. No drafts, no extra fields — meant for adding something quickly from a phone.
+- **Search and filter** the list — by category, by language, or by whether it's Published or still a Draft.
+- **Create something new** through a dedicated form built for that content type.
+- **Edit or delete** anything that already exists.
+- **Clone** an existing item as a starting point for a new one, instead of writing everything from scratch.
+- **Schedule** something to automatically go live at a chosen future date and time, instead of publishing it right away.
 
-### Content freshness flags
+## Quick Add
 
-The Quizzes and Posts lists show a small **"⚠️ Needs a refresh"** badge next to anything that's been live a while (2+ weeks) but has barely been played or viewed — a nudge to reword it, reshare it, or leave it as-is. Every item also now shows its actual play/view count right in the list.
+A fast shortcut built specifically for jokes, funny lines, quotes, and motivational quotes — pick a category, type the text into one box, tap Publish. There are no extra fields and nothing gets saved as a draft; it's meant for adding something in a few seconds, even from a phone.
 
-### Bulk Import
+## Bulk Import
 
-A way to add many pieces of content at once instead of one form at a time. Two modes: **Posts** — paste a list of jokes/quotes/etc. (one per line), pick a category and language, and every line becomes its own published post. **Quizzes** — paste a block of quiz data (in the same format the regular quiz form saves) to create several quizzes in one go — useful if quizzes were drafted somewhere else first (a spreadsheet, ChatGPT, etc.). Either way, each item is checked the same way the normal forms check it, and anything that fails is reported individually rather than blocking the whole batch.
+A way to add many pieces of content in one go, rather than filling out one form at a time. It works two ways: **Posts** — paste a whole list of jokes/quotes/etc. (one per line), pick a category and language once, and every single line becomes its own published post. **Quizzes** — paste a specially-formatted block of quiz data to create several full quizzes at once — handy if quizzes were drafted somewhere else first (a spreadsheet, or with the help of an AI tool). Either way, each item goes through the exact same checks the normal forms use, and if anything fails, it's reported individually rather than blocking the whole batch.
 
-### Analytics
+## Content freshness flags
 
-A dashboard showing which quizzes, posts, friendship quizzes, games, and stories are actually getting played/viewed/shared the most — so it's obvious what's working and what isn't, without guessing. At the top, a **"This week" summary** gives three quick numbers (plays this week, views/shares this week, new content published this week) without needing to scroll through every table.
+On the Quizzes and Posts lists, anything that's been live for a couple of weeks but has barely been played or viewed gets a small **"⚠️ Needs a refresh"** badge — a gentle nudge that it might be worth rewording, resharing, or just leaving as-is. Every item in every list also shows its real play/view count right there, no need to dig into Analytics separately.
 
-### Activity log
+## Analytics
 
-A running record of who (which admin) created, edited, or deleted what, and when — useful once more than one person has admin access.
+A dedicated page showing exactly which quizzes, posts, friendship quizzes, games, puzzles, stories, and horoscope signs are actually getting played, viewed, or shared the most — so it's obvious what's working, not a guess. A "This week" summary sits at the top with three quick numbers (plays, views/shares, and new content published) before diving into the full breakdown tables further down.
 
-### Feedback inbox
+## Activity log
 
-Every message submitted through the public Feedback page (plus every "Report" flagged on a piece of content) lands here, newest first, with a way to mark things as read/handled.
+A running, timestamped record of every admin action — who created, edited, or deleted what, and when. Useful for keeping track once more than one person has admin access. It can be searched page by page.
 
-### End-user accounts
+## Feedback inbox
 
-A list of everyone who's created an optional visitor account (username + Gamer Tag, no password or recovery code ever shown to admins) — searchable, with a **Disable** button for a problem account (reversible — it can be re-enabled any time) and a **Delete** button for permanent removal. A disabled account is logged out immediately and can't sign back in until re-enabled.
+Every message submitted through the public Feedback page, plus every 🚩 report flagged against a specific piece of content, lands here — newest first, with a way to mark each one as read once it's been handled.
+
+## Members (visitor accounts)
+
+A searchable list of everyone who's created an optional visitor account. Admins can see a member's Gamer Tag, avatar, and join date — but never their password or Recovery Code, which are never visible to anyone, including admins. Two actions are available for a problem account: **Disable** (reversible — logs the account out immediately and blocks sign-in until an admin re-enables it) and **Delete** (permanent removal).
+
+## Admin accounts
+
+Only a Superadmin can see and manage this page — creating new admin accounts (assigning them a role) or removing existing ones.
+
+## Dark mode for the admin panel
+
+Just like the public site, the entire admin panel has its own dark mode toggle, remembered separately for next time an admin logs in.
 
 ---
 
-## The short version
+# The short version
 
-**Visitors:** open the site, no login, pick something (quiz/joke/game/story/horoscope), enjoy it, optionally share it or react to it. That's the entire loop — repeated across many content types, all designed to be quick to consume and easy to reshare.
+**If you're a visitor:** open the site, no login needed, pick whatever looks fun — a quiz, a puzzle, a game, a story, a horoscope — enjoy it, and share it with a friend if you want to. If you'd like your progress to follow you across your phone and computer, you can optionally create a free account with just a username and password. That's the entire experience, repeated across many different kinds of content, all designed to be quick to enjoy and easy to pass along.
 
-**Admins:** log in, add/edit/schedule content through the admin panel, keep an eye on what's performing well via Analytics and freshness flags, and handle visitor feedback/reports.
+**If you're an admin:** log in, create and manage content through the admin panel, keep an eye on what's performing well through Analytics and the freshness flags, and handle whatever feedback or reports come in from visitors.
