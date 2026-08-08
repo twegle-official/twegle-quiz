@@ -47,6 +47,13 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2005648459702569"
      crossorigin="anonymous"></script>
     <meta name="description" content="Twegle — quizzes, puzzles, jokes, quotes, games, stories, horoscope & chaos. No sign up, just share-worthy content for everyone." />
+    <!-- Static fallback (root URL) for crawlers that read before React
+         hydrates; App.jsx's CanonicalLink rewrites this to the real current
+         path on every route change. Without any canonical tag at all, Google
+         Search Console flags query-string variants of the same page (e.g.
+         "/?tab=games" vs "/") as "Duplicate without user-selected canonical"
+         since it has to guess which URL is authoritative. -->
+    <link rel="canonical" href="https://www.twegle.in/" />
     <!-- Generic fallback preview for the homepage/general links. Individual
          quiz results and posts get their own accurate preview via the
          /api/share/* redirect pages (see backend/src/controllers/shareController.js)

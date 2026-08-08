@@ -82,6 +82,28 @@ function ScrollToTop() {
   return null
 }
 
+const SITE_URL = import.meta.env.VITE_SITE_URL || 'http://localhost:5173'
+
+// Query-string variants of the same path (homepage tabs like "?tab=games",
+// sort toggles, search) are all declared canonical to the bare path — the
+// same clean URLs already listed in sitemap.xml — so Search Console has a
+// clear answer instead of guessing and flagging them as duplicates. Ignores
+// `search` on purpose: every variant of a path should point at one canonical
+// URL, not re-declare itself canonical on every query change.
+function CanonicalLink() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    let link = document.querySelector('link[rel="canonical"]')
+    if (!link) {
+      link = document.createElement('link')
+      link.setAttribute('rel', 'canonical')
+      document.head.appendChild(link)
+    }
+    link.setAttribute('href', `${SITE_URL}${pathname}`)
+  }, [pathname])
+  return null
+}
+
 function PublicSite() {
   return (
     <UserAuthProvider>
@@ -130,6 +152,7 @@ export default function App() {
   return (
     <AuthProvider>
       <ScrollToTop />
+      <CanonicalLink />
       <Routes>
         <Route path="/admin/login" element={<Login />} />
         <Route
