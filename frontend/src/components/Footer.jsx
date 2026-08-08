@@ -127,6 +127,7 @@ export default function Footer() {
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Company</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
             <li><Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-100">About &amp; Contact</Link></li>
+            <li><Link to="/faq" className="hover:text-gray-900 dark:hover:text-gray-100">FAQ &amp; Help</Link></li>
             <li><Link to="/feedback" className="hover:text-gray-900 dark:hover:text-gray-100">Feedback</Link></li>
             <li><Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-100">Privacy Policy</Link></li>
             <li><Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-100">Terms of Service</Link></li>

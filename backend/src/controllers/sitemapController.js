@@ -35,6 +35,7 @@ export async function getSitemap(req, res) {
   const urls = [
     { loc: `${base}/`, changefreq: 'daily', priority: '1.0' },
     { loc: `${base}/about`, changefreq: 'monthly', priority: '0.3' },
+    { loc: `${base}/faq`, changefreq: 'monthly', priority: '0.3' },
     { loc: `${base}/privacy`, changefreq: 'monthly', priority: '0.2' },
     { loc: `${base}/terms`, changefreq: 'monthly', priority: '0.2' },
     { loc: `${base}/browse/jokes`, changefreq: 'weekly', priority: '0.6' },

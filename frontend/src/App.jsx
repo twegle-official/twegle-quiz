@@ -14,6 +14,7 @@ import HoroscopeView from './pages/HoroscopeView'
 import Privacy from './pages/Privacy'
 import Terms from './pages/Terms'
 import About from './pages/About'
+import Faq from './pages/Faq'
 import FriendshipSetup from './pages/FriendshipSetup'
 import FriendshipPlay from './pages/FriendshipPlay'
 import FriendshipResult from './pages/FriendshipResult'
@@ -109,6 +110,7 @@ function PublicSite() {
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/about" element={<About />} />
+          <Route path="/faq" element={<Faq />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/badges" element={<Badges />} />
           <Route path="/friendship/:slug" element={<FriendshipSetup />} />
