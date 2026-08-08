@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
 import { updateDisplayName, updateAvatar, regenerateRecoveryCode } from '../userApi'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { getStats } from '../utils/badges'
+import { getStreak } from '../utils/dailyQuiz'
+import { fetchQuizzes, fetchPuzzles } from '../api'
+import { GAMES } from '../games/registry'
 
 // Must match backend/src/utils/validators.js's AVATAR_OPTIONS exactly — a
 // fixed emoji preset, not an upload, so no file storage is ever needed.
@@ -18,13 +22,31 @@ export default function Account() {
   const [newRecoveryCode, setNewRecoveryCode] = useState(null)
   const [regenerating, setRegenerating] = useState(false)
   const [savingAvatar, setSavingAvatar] = useState(null)
+  const [quizzes, setQuizzes] = useState(null)
+  const [puzzles, setPuzzles] = useState(null)
 
   useDocumentMeta('My Account', 'Manage your Twegle account.')
+
+  // Fetched once to turn the stats blob's bare slugs/ids (see badges.js)
+  // into real titles for the activity lists below — there's no per-play
+  // history stored server-side (see BACKEND.md), only "which ones," so this
+  // is the only way to show a title instead of a slug.
+  useEffect(() => {
+    fetchQuizzes().then(setQuizzes).catch(() => setQuizzes([]))
+    fetchPuzzles().then(setPuzzles).catch(() => setPuzzles([]))
+  }, [])
 
   if (!session) {
     navigate('/login')
     return null
   }
+
+  const stats = getStats()
+  const streak = getStreak()
+  const completedQuizzes = quizzes?.filter((q) => stats.quizzesCompleted.includes(q.slug)) || []
+  const solvedPuzzles = puzzles?.filter((p) => stats.puzzlesRevealed.includes(p._id)) || []
+  const playedGames = GAMES.filter((g) => stats.gamesPlayed[g.slug] > 0)
+  const totalGamesPlayed = Object.values(stats.gamesPlayed).reduce((sum, n) => sum + n, 0)
 
   async function handleSelectAvatar(avatar) {
     if (avatar === session.user.avatar || savingAvatar) return
@@ -142,6 +164,94 @@ export default function Account() {
         </button>
         {saved && <span className="ml-3 text-sm text-green-600 dark:text-green-400">Saved ✓</span>}
       </form>
+
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">My Activity</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          Synced to your account — same progress on every device you log into.
+        </p>
+
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center">
+            <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{stats.quizzesCompleted.length}</p>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Quizzes taken</p>
+          </div>
+          <div className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center">
+            <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{stats.puzzlesRevealed.length}</p>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Puzzles solved</p>
+          </div>
+          <div className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center">
+            <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{totalGamesPlayed}</p>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Games played</p>
+          </div>
+          <div className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center">
+            <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">🔥 {streak.count}</p>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Day streak</p>
+          </div>
+        </div>
+
+        {completedQuizzes.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
+              Quizzes you've taken
+            </p>
+            <ul className="max-h-40 overflow-y-auto space-y-1.5">
+              {completedQuizzes.map((q) => (
+                <li key={q._id}>
+                  <Link
+                    to={`/quiz/${q.slug}`}
+                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400"
+                  >
+                    {q.emoji} {q.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {solvedPuzzles.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
+              Puzzles you've solved
+            </p>
+            <ul className="max-h-40 overflow-y-auto space-y-1.5">
+              {solvedPuzzles.map((p) => (
+                <li key={p._id}>
+                  <Link
+                    to={`/puzzle/${p._id}`}
+                    className="text-sm text-gray-700 dark:text-gray-300 hover:text-violet-600 dark:hover:text-violet-400"
+                  >
+                    {p.emoji || '🧩'} {p.question}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {playedGames.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
+              Games you've played
+            </p>
+            <ul className="space-y-1.5">
+              {playedGames.map((g) => (
+                <li key={g.slug} className="text-sm text-gray-700 dark:text-gray-300">
+                  {g.emoji} {g.title} — {stats.gamesPlayed[g.slug]}x
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <Link
+          to="/badges"
+          className="inline-block text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+        >
+          🏆 View my badges →
+        </Link>
+      </div>
 
       <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
         <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Recovery Code</p>

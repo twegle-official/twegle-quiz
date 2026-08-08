@@ -9,7 +9,7 @@ import { pushLocalStatsToServer } from './statsSync'
 export const STATS_KEY = 'twegleStats'
 export const SEEN_KEY = 'twegleBadgesSeen'
 
-function getStats() {
+export function getStats() {
   try {
     return {
       gamesPlayed: {},
