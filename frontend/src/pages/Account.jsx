@@ -276,7 +276,7 @@ export default function Account() {
         </div>
 
         {completedQuizzes.length > 0 && (
-          <div id="activity-quizzes" className="mb-4 scroll-mt-4">
+          <div id="activity-quizzes" className="mb-4 scroll-mt-20">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Quizzes you've taken
             </p>
@@ -296,7 +296,7 @@ export default function Account() {
         )}
 
         {solvedPuzzles.length > 0 && (
-          <div id="activity-puzzles" className="mb-4 scroll-mt-4">
+          <div id="activity-puzzles" className="mb-4 scroll-mt-20">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Puzzles you've solved
             </p>
@@ -316,7 +316,7 @@ export default function Account() {
         )}
 
         {playedGames.length > 0 && (
-          <div id="activity-games" className="mb-4 scroll-mt-4">
+          <div id="activity-games" className="mb-4 scroll-mt-20">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Games you've played
             </p>
@@ -331,7 +331,7 @@ export default function Account() {
         )}
 
         {streak.count > 0 && (
-          <div id="activity-streak" className="mb-4 scroll-mt-4">
+          <div id="activity-streak" className="mb-4 scroll-mt-20">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Streak
             </p>
