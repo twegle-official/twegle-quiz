@@ -36,6 +36,22 @@ export default function Account() {
     fetchPuzzles().then(setPuzzles).catch(() => setPuzzles([]))
   }, [])
 
+  // getStats()/getStreak() below read localStorage directly with no React
+  // state behind them, so landing here right after logging in on a new
+  // device — before UserAuthProvider's background cross-device sync has
+  // finished pulling the server's copy down — rendered all zeros until a
+  // manual reload picked up the by-then-synced localStorage. Same fix
+  // Home.jsx already uses for its "already attempted" tiles: force a
+  // re-render once statsSync.js reports the sync actually landed.
+  const [, forceStatsRerender] = useState(0)
+  useEffect(() => {
+    function handleStatsSynced() {
+      forceStatsRerender((n) => n + 1)
+    }
+    window.addEventListener('twegle-stats-synced', handleStatsSynced)
+    return () => window.removeEventListener('twegle-stats-synced', handleStatsSynced)
+  }, [])
+
   if (!session) {
     navigate('/login')
     return null
