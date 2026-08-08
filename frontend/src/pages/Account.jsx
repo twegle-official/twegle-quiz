@@ -351,13 +351,6 @@ export default function Account() {
         </Link>
       </div>
       </div>
-
-      <button
-        onClick={handleLogout}
-        className="w-full px-5 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold hover:bg-gray-200 dark:hover:bg-gray-700"
-      >
-        Log Out
-      </button>
     </div>
   )
 }
