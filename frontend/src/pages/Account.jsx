@@ -112,6 +112,10 @@ export default function Account() {
     navigate('/')
   }
 
+  function scrollToActivitySection(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
       {/* Deliberately a plain link to "/" rather than the shared BackButton's
@@ -188,26 +192,46 @@ export default function Account() {
         </p>
 
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center">
+          <button
+            type="button"
+            onClick={() => scrollToActivitySection('activity-quizzes')}
+            disabled={stats.quizzesCompleted.length === 0}
+            className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center hover:bg-gray-200 dark:hover:bg-gray-700 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800 disabled:cursor-default transition"
+          >
             <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{stats.quizzesCompleted.length}</p>
             <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Quizzes taken</p>
-          </div>
-          <div className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center">
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToActivitySection('activity-puzzles')}
+            disabled={stats.puzzlesRevealed.length === 0}
+            className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center hover:bg-gray-200 dark:hover:bg-gray-700 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800 disabled:cursor-default transition"
+          >
             <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{stats.puzzlesRevealed.length}</p>
             <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Puzzles solved</p>
-          </div>
-          <div className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center">
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToActivitySection('activity-games')}
+            disabled={totalGamesPlayed === 0}
+            className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center hover:bg-gray-200 dark:hover:bg-gray-700 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800 disabled:cursor-default transition"
+          >
             <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">{totalGamesPlayed}</p>
             <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Games played</p>
-          </div>
-          <div className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center">
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToActivitySection('activity-streak')}
+            disabled={streak.count === 0}
+            className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center hover:bg-gray-200 dark:hover:bg-gray-700 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800 disabled:cursor-default transition"
+          >
             <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">🔥 {streak.count}</p>
             <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Day streak</p>
-          </div>
+          </button>
         </div>
 
         {completedQuizzes.length > 0 && (
-          <div className="mb-4">
+          <div id="activity-quizzes" className="mb-4 scroll-mt-4">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Quizzes you've taken
             </p>
@@ -227,7 +251,7 @@ export default function Account() {
         )}
 
         {solvedPuzzles.length > 0 && (
-          <div className="mb-4">
+          <div id="activity-puzzles" className="mb-4 scroll-mt-4">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Puzzles you've solved
             </p>
@@ -247,7 +271,7 @@ export default function Account() {
         )}
 
         {playedGames.length > 0 && (
-          <div className="mb-4">
+          <div id="activity-games" className="mb-4 scroll-mt-4">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Games you've played
             </p>
@@ -262,7 +286,7 @@ export default function Account() {
         )}
 
         {streak.count > 0 && (
-          <div className="mb-4">
+          <div id="activity-streak" className="mb-4 scroll-mt-4">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Streak
             </p>
