@@ -130,7 +130,19 @@ export default function Account() {
       >
         ← Back
       </Link>
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">My Account</h1>
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Account</h1>
+        {/* A second, compact Log Out next to the heading — requested directly
+            so logging out doesn't require scrolling past the whole page to
+            reach the full-width button at the bottom. Both stay in sync
+            since they call the same handleLogout. */}
+        <button
+          onClick={handleLogout}
+          className="text-sm font-semibold text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+        >
+          Log Out
+        </button>
+      </div>
       <p className="text-gray-500 dark:text-gray-400 mb-8">
         Logged in as <span className="font-semibold text-gray-700 dark:text-gray-300">{session.user.username}</span>
       </p>
