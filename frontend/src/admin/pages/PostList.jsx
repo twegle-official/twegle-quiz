@@ -4,6 +4,7 @@ import { useAuth } from '../AuthContext'
 import { listPostsAdmin, deletePost, createPost, fetchPostAnalytics } from '../adminApi'
 import StatusLabel from '../components/StatusLabel'
 import Pager from '../components/Pager'
+import AdminPreviewButton from '../components/AdminPreviewButton'
 import { isStale } from '../freshness'
 
 const PAGE_SIZE = 20
@@ -186,28 +187,31 @@ export default function PostList() {
                   </p>
                 </div>
               </div>
-              {canWrite && (
-                <div className="flex gap-2 shrink-0">
-                  <button
-                    onClick={() => handleClone(post)}
-                    className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    Clone
-                  </button>
-                  <Link
-                    to={`/admin/posts/${post._id}/edit`}
-                    className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    Edit
-                  </Link>
-                  <button
-                    onClick={() => handleDelete(post._id)}
-                    className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/60 text-sm font-medium text-red-600 dark:text-red-400"
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
+              <div className="flex gap-2 shrink-0">
+                <AdminPreviewButton contentType="post" id={post._id} publicPath={`/post/${post._id}`} />
+                {canWrite && (
+                  <>
+                    <button
+                      onClick={() => handleClone(post)}
+                      className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Clone
+                    </button>
+                    <Link
+                      to={`/admin/posts/${post._id}/edit`}
+                      className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Edit
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(post._id)}
+                      className="px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/60 text-sm font-medium text-red-600 dark:text-red-400"
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>

@@ -3,6 +3,7 @@ import FriendshipAttempt from '../models/FriendshipAttempt.js'
 import { validateFriendshipQuizPayload, parsePublishAt } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
+import { isValidPreviewToken } from '../utils/previewToken.js'
 
 // Same reasoning as quizController.js's slugify — a pure-Hindi (or any
 // non-Latin-script) title reduces to an empty string, which would collide
@@ -168,11 +169,11 @@ export async function listPublishedFriendshipQuizzes(req, res) {
 }
 
 export async function getPublishedFriendshipQuizBySlug(req, res) {
-  const quiz = await FriendshipQuiz.findOne({
-    slug: req.params.slug,
-    status: 'published',
-    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }],
-  })
+  const quiz = await FriendshipQuiz.findOne({ slug: req.params.slug })
   if (!quiz) return res.status(404).json({ error: 'Friendship quiz not found' })
+  const isLive = quiz.status === 'published' && (!quiz.publishAt || quiz.publishAt <= new Date())
+  if (!isLive && !isValidPreviewToken(req.query.preview, 'friendshipQuiz', quiz._id)) {
+    return res.status(404).json({ error: 'Friendship quiz not found' })
+  }
   res.json({ quiz })
 }

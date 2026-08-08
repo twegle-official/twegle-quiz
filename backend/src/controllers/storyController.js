@@ -3,6 +3,7 @@ import Engagement from '../models/Engagement.js'
 import { parsePublishAt } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
+import { isValidPreviewToken } from '../utils/previewToken.js'
 
 export const STORY_CATEGORIES = ['horror', 'comedy', 'romance', 'mystery', 'moral', 'motivational']
 const MAX_TITLE_LENGTH = 200
@@ -201,11 +202,11 @@ export async function listPublishedStories(req, res) {
 }
 
 export async function getPublishedStoryBySlug(req, res) {
-  const story = await Story.findOne({
-    slug: req.params.slug,
-    status: 'published',
-    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }],
-  })
+  const story = await Story.findOne({ slug: req.params.slug })
   if (!story) return res.status(404).json({ error: 'Story not found' })
+  const isLive = story.status === 'published' && (!story.publishAt || story.publishAt <= new Date())
+  if (!isLive && !isValidPreviewToken(req.query.preview, 'story', story._id)) {
+    return res.status(404).json({ error: 'Story not found' })
+  }
   res.json({ story })
 }

@@ -49,6 +49,10 @@ export const fetchDashboard = (token, range) =>
 export const fetchAnalytics = (token) => request('/admin/quizzes/analytics', { token })
 export const fetchPostAnalytics = (token) => request('/admin/posts/analytics', { token })
 
+// Shared across all 5 admin-authored content types — see AdminPreviewButton.jsx.
+export const createPreviewLink = (token, contentType, id) =>
+  request(`/admin/preview-link${toQueryString({ contentType, id })}`, { token })
+
 export const listAdmins = (token) => request('/admins', { token })
 export const createAdmin = (token, payload) =>
   request('/admins', { token, method: 'POST', body: payload })

@@ -1,12 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { fetchFriendshipQuizBySlug, createFriendshipInstance, getFriendshipShareUrl, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import BackButton from '../components/BackButton'
+import PreviewBanner from '../components/PreviewBanner'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 export default function FriendshipSetup() {
   const { slug } = useParams()
+  const [searchParams] = useSearchParams()
+  const previewToken = searchParams.get('preview')
   const [quiz, setQuiz] = useState(null)
   const [notFound, setNotFound] = useState(false)
   const [subjectName, setSubjectName] = useState('')
@@ -17,20 +20,21 @@ export default function FriendshipSetup() {
   const viewedRef = useRef(false)
 
   useEffect(() => {
-    fetchFriendshipQuizBySlug(slug)
+    fetchFriendshipQuizBySlug(slug, previewToken)
       .then((data) => {
         if (!data) return setNotFound(true)
         setQuiz(data)
         setAnswers(new Array(data.questions.length).fill(null))
       })
       .catch(() => setNotFound(true))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
   useEffect(() => {
-    if (!quiz || viewedRef.current) return
+    if (!quiz || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordEngagement('friendshipQuiz', quiz._id, 'view')
-  }, [quiz])
+  }, [quiz, previewToken])
 
   useDocumentMeta(quiz?.title, quiz?.description)
 
@@ -96,6 +100,7 @@ export default function FriendshipSetup() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
+      {previewToken && <PreviewBanner />}
       <BackButton className="mb-4" />
       <div className="text-center mb-8">
         <div className="text-5xl mb-3">{quiz.emoji}</div>

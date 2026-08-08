@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { fetchStoryBySlug, fetchStories, getStoryShareUrl, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
@@ -7,6 +7,7 @@ import StoryCard from '../components/StoryCard'
 import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
+import PreviewBanner from '../components/PreviewBanner'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -66,6 +67,8 @@ function useReadAloud(text, language) {
 
 export default function StoryView() {
   const { slug } = useParams()
+  const [searchParams] = useSearchParams()
+  const previewToken = searchParams.get('preview')
   const [story, setStory] = useState(null)
   const [notFound, setNotFound] = useState(false)
   const [suggestions, setSuggestions] = useState([])
@@ -73,16 +76,17 @@ export default function StoryView() {
   const viewedRef = useRef(false)
 
   useEffect(() => {
-    fetchStoryBySlug(slug)
+    fetchStoryBySlug(slug, previewToken)
       .then((data) => (data ? setStory(data) : setNotFound(true)))
       .catch(() => setNotFound(true))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
   useEffect(() => {
-    if (!story || viewedRef.current) return
+    if (!story || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordEngagement('story', story._id, 'view')
-  }, [story])
+  }, [story, previewToken])
 
   useEffect(() => {
     if (!story) return
@@ -124,6 +128,7 @@ export default function StoryView() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      {previewToken && <PreviewBanner />}
       <div className="text-left mb-4"><BackButton /></div>
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}
@@ -179,7 +184,7 @@ export default function StoryView() {
           title={story.title}
           url={shareUrl}
           shareText={`"${story.title}" — a ${style.label.toLowerCase()} story on Twegle!`}
-          onShare={() => recordEngagement('story', story._id, 'share')}
+          onShare={() => !previewToken && recordEngagement('story', story._id, 'share')}
         />
       </div>
 

@@ -46,8 +46,12 @@ export async function searchContent(q, language) {
   return data.results
 }
 
-export async function fetchQuizBySlug(slug) {
-  const res = await fetch(`${API_URL}/quizzes/${slug}`)
+// previewToken is only ever passed by an admin's preview link (see
+// AdminPreviewButton.jsx) — a guest visitor's normal fetch call omits it
+// entirely, so this is purely additive to the existing published-only path.
+export async function fetchQuizBySlug(slug, previewToken) {
+  const qs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
+  const res = await fetch(`${API_URL}/quizzes/${slug}${qs}`)
   if (!res.ok) return null
   const data = await res.json()
   return data.quiz
@@ -83,8 +87,9 @@ export async function fetchStories(language, category) {
   return data.stories
 }
 
-export async function fetchStoryBySlug(slug) {
-  const res = await fetch(`${API_URL}/stories/${slug}`)
+export async function fetchStoryBySlug(slug, previewToken) {
+  const qs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
+  const res = await fetch(`${API_URL}/stories/${slug}${qs}`)
   if (!res.ok) return null
   const data = await res.json()
   return data.story
@@ -101,15 +106,17 @@ export async function fetchPuzzles(language, difficulty) {
   return data.puzzles
 }
 
-export async function fetchPuzzleById(id) {
-  const res = await fetch(`${API_URL}/puzzles/${id}`)
+export async function fetchPuzzleById(id, previewToken) {
+  const qs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
+  const res = await fetch(`${API_URL}/puzzles/${id}${qs}`)
   if (!res.ok) return null
   const data = await res.json()
   return data.puzzle
 }
 
-export async function fetchPostById(id) {
-  const res = await fetch(`${API_URL}/posts/${id}`)
+export async function fetchPostById(id, previewToken) {
+  const qs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
+  const res = await fetch(`${API_URL}/posts/${id}${qs}`)
   if (!res.ok) return null
   const data = await res.json()
   return data.post
@@ -192,8 +199,9 @@ export async function fetchFriendshipQuizzes(language) {
   return data.quizzes
 }
 
-export async function fetchFriendshipQuizBySlug(slug) {
-  const res = await fetch(`${API_URL}/friendship/quizzes/${slug}`)
+export async function fetchFriendshipQuizBySlug(slug, previewToken) {
+  const qs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
+  const res = await fetch(`${API_URL}/friendship/quizzes/${slug}${qs}`)
   if (!res.ok) return null
   const data = await res.json()
   return data.quiz

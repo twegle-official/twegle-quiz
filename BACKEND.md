@@ -104,6 +104,7 @@ Admins previously had zero visibility into `EndUser` accounts — no list, no wa
 - `GET /api/admin/activity?page=&limit=` — paginated create/update/delete actions across quizzes, posts, stories, puzzles, end-user moderation, and friendship-quiz templates, newest first (same `parsePagination`/`paginationMeta` convention as every other admin list — previously a flat `.limit(200)` with no way to page further back). All roles can view (read-only, like Analytics). See "Activity log" below.
 - `GET /api/admin/feedback` — paginated (`?page=&limit=`), newest first, all roles can view. `PUT /api/admin/feedback/:id` (toggle `read`) and `DELETE /api/admin/feedback/:id` are superadmin/editor only, same read-vs-write split as everything else. See "Feedback" below.
 - `GET/POST /api/admins`, `DELETE /api/admins/:id` — superadmin only
+- `GET /api/admin/preview-link?contentType=&id=` — all roles; mints a 30-minute signed preview token for a specific draft, forwarded to the public page as `?preview=<token>`. See "Draft preview link" below.
 
 ## Seeding starter content
 
@@ -268,6 +269,12 @@ No new backend endpoints at all — cloning a quiz/post/friendship-quiz is just 
 ## Activity log
 
 A lightweight audit trail — not a generic library, just a Mongoose model (`ActivityLog`) and one helper (`logActivity()` in `utils/activityLog.js`) called from every quiz/post/friendship-quiz create, update, and delete controller. Records who (`admin`/`adminName`, `adminName` denormalized so the log still reads right if that account is later removed), what action, what resource type, and a short `resourceLabel` (denormalized too, for the same reason, and because a deleted resource obviously can't be looked up afterward). Deliberately fire-and-forget: `logActivity()` swallows its own errors (logging to the server console instead) so a logging failure can never break the actual create/update/delete it's describing. `GET /api/admin/activity` returns the 200 most recent entries, newest first, viewable by all three roles.
+
+## Draft preview link
+
+A signed, temporary URL that lets an admin view an unpublished draft exactly as a visitor would see it, without flipping its status to Published. `utils/previewToken.js` exports `signPreviewToken(contentType, id)`, a 30-minute JWT signed off the same `JWT_SECRET` used for admin/end-user auth, carrying `{ purpose: 'preview', contentType, id }` — a payload shape that shares no fields with an admin session token (`{ id, role, name }`) or a user session token (`{ id, type: 'user' }`), so a preview token can never be replayed as either, and `isValidPreviewToken(token, contentType, id)` verifies a token matches a specific resolved document. `GET /api/admin/preview-link?contentType=&id=` (role-gated the same as read access — Super/Editor/Analyst) mints one on demand; the admin panel opens the real public page in a new tab with `?preview=<token>` appended rather than rendering a separate preview view.
+
+The 5 public "get by slug/id" controllers (`getPublishedQuizBySlug`, `getPublishedPostById`, `getPublishedStoryBySlug`, `getPublishedPuzzleById`, `getPublishedFriendshipQuizBySlug`) were all rewritten the same way: fetch the document unconditionally (no `status`/`publishAt` filter at the DB level), compute `isLive` in JS from those same fields, and only 404 if it's not live *and* `isValidPreviewToken` fails against that document's real `_id`/`contentType`. This lets slug-based and id-based lookups share one scheme without a separate token-keying design for each — the token is always checked against the actual resolved document, not the route param.
 
 ## Security hardening
 

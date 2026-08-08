@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { fetchPuzzleById, fetchPuzzles, getPuzzleShareUrl, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
@@ -7,6 +7,7 @@ import PuzzleCard from '../components/PuzzleCard'
 import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
+import PreviewBanner from '../components/PreviewBanner'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { pickPuzzleOfTheDay, recordDailyActivityCompletion } from '../utils/dailyQuiz'
@@ -17,6 +18,8 @@ const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Bu
 
 export default function PuzzleView() {
   const { id } = useParams()
+  const [searchParams] = useSearchParams()
+  const previewToken = searchParams.get('preview')
   const [puzzle, setPuzzle] = useState(null)
   const [notFound, setNotFound] = useState(false)
   const [revealed, setRevealed] = useState(false)
@@ -26,16 +29,17 @@ export default function PuzzleView() {
   const viewedRef = useRef(false)
 
   useEffect(() => {
-    fetchPuzzleById(id)
+    fetchPuzzleById(id, previewToken)
       .then((data) => (data ? setPuzzle(data) : setNotFound(true)))
       .catch(() => setNotFound(true))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   useEffect(() => {
-    if (!puzzle || viewedRef.current) return
+    if (!puzzle || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordEngagement('puzzle', puzzle._id, 'view')
-  }, [puzzle])
+  }, [puzzle, previewToken])
 
   useEffect(() => {
     if (!puzzle) return
@@ -59,6 +63,7 @@ export default function PuzzleView() {
   function handleReveal() {
     if (revealed) return
     setRevealed(true)
+    if (previewToken) return
     // Tracked for every puzzle (not just today's), so the homepage grid can
     // show an "already attempted" mark on any puzzle tile — separate from
     // the daily-streak recording below, which only fires for today's pick.
@@ -94,6 +99,7 @@ export default function PuzzleView() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      {previewToken && <PreviewBanner />}
       <div className="text-left mb-4"><BackButton /></div>
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${puzzle.gradient}`}
@@ -140,7 +146,7 @@ export default function PuzzleView() {
           title="Can you solve this?"
           url={shareUrl}
           shareText={`${puzzle.question} — try it on Twegle!`}
-          onShare={() => recordEngagement('puzzle', puzzle._id, 'share')}
+          onShare={() => !previewToken && recordEngagement('puzzle', puzzle._id, 'share')}
         />
       </div>
 

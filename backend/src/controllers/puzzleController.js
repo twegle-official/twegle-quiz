@@ -3,6 +3,7 @@ import Engagement from '../models/Engagement.js'
 import { parsePublishAt } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
+import { isValidPreviewToken } from '../utils/previewToken.js'
 
 export const PUZZLE_DIFFICULTIES = ['easy', 'medium', 'hard']
 const MAX_QUESTION_LENGTH = 500
@@ -183,11 +184,11 @@ export async function listPublishedPuzzles(req, res) {
 }
 
 export async function getPublishedPuzzleById(req, res) {
-  const puzzle = await Puzzle.findOne({
-    _id: req.params.id,
-    status: 'published',
-    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }],
-  })
+  const puzzle = await Puzzle.findOne({ _id: req.params.id })
   if (!puzzle) return res.status(404).json({ error: 'Puzzle not found' })
+  const isLive = puzzle.status === 'published' && (!puzzle.publishAt || puzzle.publishAt <= new Date())
+  if (!isLive && !isValidPreviewToken(req.query.preview, 'puzzle', puzzle._id)) {
+    return res.status(404).json({ error: 'Puzzle not found' })
+  }
   res.json({ puzzle })
 }

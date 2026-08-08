@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams, useLocation, Link } from 'react-router-dom'
+import { useNavigate, useParams, useLocation, useSearchParams, Link } from 'react-router-dom'
 import { fetchQuizBySlug, joinQuizCompare, recordEngagement } from '../api'
 import ProgressBar from '../components/ProgressBar'
 import BackButton from '../components/BackButton'
+import PreviewBanner from '../components/PreviewBanner'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
 function pickWinningResult(scores) {
@@ -34,6 +35,8 @@ export default function Quiz() {
   const { quizId: slug } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const previewToken = searchParams.get('preview')
   const { compareCode, compareName } = location.state || {}
 
   const [quiz, setQuiz] = useState(null)
@@ -43,16 +46,20 @@ export default function Quiz() {
   const viewedRef = useRef(false)
 
   useEffect(() => {
-    fetchQuizBySlug(slug)
+    fetchQuizBySlug(slug, previewToken)
       .then((data) => (data ? setQuiz(data) : setNotFound(true)))
       .catch(() => setNotFound(true))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
   useEffect(() => {
-    if (!quiz || viewedRef.current) return
+    // Previewing an unpublished draft shouldn't inflate its real view count
+    // once it actually goes live — same reasoning as the recordPlay/badge
+    // guards further down and in Result.jsx.
+    if (!quiz || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordEngagement('quiz', quiz._id, 'view')
-  }, [quiz])
+  }, [quiz, previewToken])
 
   useDocumentMeta(quiz?.title, quiz?.description)
 
@@ -110,7 +117,8 @@ export default function Quiz() {
       const state = isTrivia
         ? { score: nextScores.correct || 0, total: quiz.questions.length, finished: true }
         : { finished: true }
-      navigate(`/result/${slug}/${winningResult}`, { state })
+      const previewQs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
+      navigate(`/result/${slug}/${winningResult}${previewQs}`, { state })
       return
     }
 
@@ -120,6 +128,7 @@ export default function Quiz() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
+      {previewToken && <PreviewBanner />}
       <BackButton className="mb-4" />
       <ProgressBar current={questionIndex} total={quiz.questions.length} />
 

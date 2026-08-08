@@ -3,6 +3,7 @@ import PlaySession from '../models/PlaySession.js'
 import { validateQuizPayload, parsePublishAt } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
+import { isValidPreviewToken } from '../utils/previewToken.js'
 
 export const QUIZ_CATEGORIES = ['beauty', 'entertainment', 'kpop', 'lifestyle', 'fun']
 
@@ -190,11 +191,11 @@ export async function listPublishedQuizzes(req, res) {
 }
 
 export async function getPublishedQuizBySlug(req, res) {
-  const quiz = await Quiz.findOne({
-    slug: req.params.slug,
-    status: 'published',
-    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }],
-  })
+  const quiz = await Quiz.findOne({ slug: req.params.slug })
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
+  const isLive = quiz.status === 'published' && (!quiz.publishAt || quiz.publishAt <= new Date())
+  if (!isLive && !isValidPreviewToken(req.query.preview, 'quiz', quiz._id)) {
+    return res.status(404).json({ error: 'Quiz not found' })
+  }
   res.json({ quiz })
 }

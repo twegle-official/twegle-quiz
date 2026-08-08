@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { fetchPostById, fetchPosts, getPostShareUrl, recordPostEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
@@ -8,6 +8,7 @@ import CrossPromo from '../components/CrossPromo'
 import PostReactions from '../components/PostReactions'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
+import PreviewBanner from '../components/PreviewBanner'
 import { POST_CATEGORY_STYLE } from '../postStyles'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
@@ -17,6 +18,8 @@ const SUGGESTION_COUNT = 4
 
 export default function PostView() {
   const { id } = useParams()
+  const [searchParams] = useSearchParams()
+  const previewToken = searchParams.get('preview')
   const [post, setPost] = useState(null)
   const [notFound, setNotFound] = useState(false)
   const [generating, setGenerating] = useState(false)
@@ -24,16 +27,17 @@ export default function PostView() {
   const viewedRef = useRef(false)
 
   useEffect(() => {
-    fetchPostById(id)
+    fetchPostById(id, previewToken)
       .then((data) => (data ? setPost(data) : setNotFound(true)))
       .catch(() => setNotFound(true))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
   useEffect(() => {
-    if (!post || viewedRef.current) return
+    if (!post || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordPostEngagement(post._id, 'view')
-  }, [post])
+  }, [post, previewToken])
 
   useEffect(() => {
     if (!post) return
@@ -74,7 +78,7 @@ export default function PostView() {
           text: post.text,
         }
       )
-      recordPostEngagement(post._id, 'share')
+      if (!previewToken) recordPostEngagement(post._id, 'share')
     } finally {
       setGenerating(false)
     }
@@ -101,6 +105,7 @@ export default function PostView() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      {previewToken && <PreviewBanner />}
       <div className="text-left mb-4"><BackButton /></div>
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}
@@ -125,7 +130,7 @@ export default function PostView() {
       <ShareButtons
         title={displayText}
         url={shareUrl}
-        onShare={() => recordPostEngagement(post._id, 'share')}
+        onShare={() => !previewToken && recordPostEngagement(post._id, 'share')}
       />
 
       <div className="mt-8">

@@ -3,6 +3,7 @@ import PostEngagement from '../models/PostEngagement.js'
 import { parsePublishAt } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
+import { isValidPreviewToken } from '../utils/previewToken.js'
 
 const CATEGORIES = ['joke', 'funny-line', 'quote', 'motivational-quote']
 const MAX_TEXT_LENGTH = 500
@@ -172,11 +173,11 @@ export async function listPublishedPosts(req, res) {
 }
 
 export async function getPublishedPostById(req, res) {
-  const post = await Post.findOne({
-    _id: req.params.id,
-    status: 'published',
-    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }],
-  })
+  const post = await Post.findOne({ _id: req.params.id })
   if (!post) return res.status(404).json({ error: 'Post not found' })
+  const isLive = post.status === 'published' && (!post.publishAt || post.publishAt <= new Date())
+  if (!isLive && !isValidPreviewToken(req.query.preview, 'post', post._id)) {
+    return res.status(404).json({ error: 'Post not found' })
+  }
   res.json({ post })
 }

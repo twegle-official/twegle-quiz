@@ -24,6 +24,7 @@ import endUserAuthRoutes from './routes/endUserAuthRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import quizRoutes from './routes/quizRoutes.js'
 import adminQuizRoutes from './routes/adminQuizRoutes.js'
+import adminPreviewRoutes from './routes/adminPreviewRoutes.js'
 import postRoutes from './routes/postRoutes.js'
 import adminPostRoutes from './routes/adminPostRoutes.js'
 import storyRoutes from './routes/storyRoutes.js'
@@ -78,6 +79,7 @@ app.use('/api/users', endUserAuthRoutes)
 app.use('/api/admins', adminRoutes)
 app.use('/api/quizzes', quizRoutes)
 app.use('/api/admin/quizzes', adminQuizRoutes)
+app.use('/api/admin/preview-link', adminPreviewRoutes)
 app.use('/api/posts', postRoutes)
 app.use('/api/admin/posts', adminPostRoutes)
 app.use('/api/stories', storyRoutes)

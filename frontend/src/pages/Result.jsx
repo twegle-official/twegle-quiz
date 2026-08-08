@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useParams, useLocation } from 'react-router-dom'
+import { Link, useParams, useLocation, useSearchParams } from 'react-router-dom'
 import { fetchQuizBySlug, fetchQuizzes, recordPlay, getQuizShareUrl, createQuizCompare, getQuizCompareShareUrl, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
@@ -7,6 +7,7 @@ import QuizCard from '../components/QuizCard'
 import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
+import PreviewBanner from '../components/PreviewBanner'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -18,6 +19,8 @@ const SUGGESTION_COUNT = 4
 export default function Result() {
   const { quizId: slug, resultKey } = useParams()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const previewToken = searchParams.get('preview')
   // Only present for the player who just finished (passed via navigate()
   // from Quiz.jsx) — a cold visit to a shared result link has no router
   // state, so the score line below is a nice-to-have, not load-bearing;
@@ -38,16 +41,17 @@ export default function Result() {
   const [compareError, setCompareError] = useState('')
 
   useEffect(() => {
-    fetchQuizBySlug(slug)
+    fetchQuizBySlug(slug, previewToken)
       .then((data) => (data ? setQuiz(data) : setNotFound(true)))
       .catch(() => setNotFound(true))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
   useEffect(() => {
-    if (recordedRef.current) return
+    if (recordedRef.current || previewToken) return
     recordedRef.current = true
     recordPlay(slug, resultKey)
-  }, [slug, resultKey])
+  }, [slug, resultKey, previewToken])
 
   // Only counts as "completed" for badge/"already attempted" purposes when
   // this browser is the one that actually just finished (`finished: true`
@@ -58,10 +62,10 @@ export default function Result() {
   // set for both quiz types, `score`/`total` are only used here for the
   // trivia-only perfect-score check.
   useEffect(() => {
-    if (!finished || !quiz) return
+    if (!finished || !quiz || previewToken) return
     recordQuizCompleted(slug)
     if (quiz.type === 'trivia' && score != null && total != null && score === total) recordPerfectTrivia()
-  }, [slug, finished, score, total, quiz])
+  }, [slug, finished, score, total, quiz, previewToken])
 
   useEffect(() => {
     if (!quiz) return
@@ -78,8 +82,10 @@ export default function Result() {
         const todaysQuiz = pickQuizOfTheDay(all)
         if (todaysQuiz?.slug === slug) {
           setIsDailyQuiz(true)
-          setDailyStreak(recordDailyActivityCompletion(slug, todaysQuiz.slug))
-          checkStreakBadges()
+          if (!previewToken) {
+            setDailyStreak(recordDailyActivityCompletion(slug, todaysQuiz.slug))
+            checkStreakBadges()
+          }
         }
       })
       .catch(() => {})
@@ -154,6 +160,7 @@ export default function Result() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      {previewToken && <PreviewBanner />}
       <div className="text-left mb-4"><BackButton /></div>
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">{quiz.title}</p>
       <div className="animate-pop-in">
