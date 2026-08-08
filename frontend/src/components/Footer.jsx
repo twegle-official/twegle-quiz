@@ -109,6 +109,7 @@ export default function Footer() {
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Explore</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
             <li><Link to="/" className="hover:text-gray-900 dark:hover:text-gray-100">All Quizzes</Link></li>
+            <li><Link to="/?tab=puzzles" className="hover:text-gray-900 dark:hover:text-gray-100">Puzzles</Link></li>
             <li><Link to="/?tab=friendship" className="hover:text-gray-900 dark:hover:text-gray-100">Friendship Quiz</Link></li>
             <li><Link to="/?tab=games" className="hover:text-gray-900 dark:hover:text-gray-100">Games</Link></li>
             <li><Link to="/?tab=posts" className="hover:text-gray-900 dark:hover:text-gray-100">Posts</Link></li>
@@ -118,6 +119,7 @@ export default function Footer() {
             <li><Link to="/browse/funny-lines" className="hover:text-gray-900 dark:hover:text-gray-100">Funny Lines</Link></li>
             <li><Link to="/browse/quotes" className="hover:text-gray-900 dark:hover:text-gray-100">Quotes</Link></li>
             <li><Link to="/browse/motivational-quotes" className="hover:text-gray-900 dark:hover:text-gray-100">Motivational Quotes</Link></li>
+            <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Badges</Link></li>
           </ul>
         </div>
 
@@ -125,7 +127,6 @@ export default function Footer() {
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Company</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
             <li><Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-100">About &amp; Contact</Link></li>
-            <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Badges</Link></li>
             <li><Link to="/feedback" className="hover:text-gray-900 dark:hover:text-gray-100">Feedback</Link></li>
             <li><Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-100">Privacy Policy</Link></li>
             <li><Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-100">Terms of Service</Link></li>
