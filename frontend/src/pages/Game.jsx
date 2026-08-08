@@ -17,6 +17,7 @@ import BackButton from '../components/BackButton'
 import GameLeaderboard from '../components/GameLeaderboard'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordGamePlayed } from '../utils/badges'
+import { isSoundEnabled, setSoundEnabled, playSound } from '../utils/sound'
 
 // Only games with a natural numeric result get a leaderboard — Tic-Tac-Toe
 // (vs. an unbeatable minimax AI) and Rock Paper Scissors (pure luck) don't
@@ -85,6 +86,7 @@ export default function Game() {
   const [challengeName, setChallengeName] = useState('')
   const [challengeSubmitting, setChallengeSubmitting] = useState(false)
   const [challengeError, setChallengeError] = useState('')
+  const [soundOn, setSoundOn] = useState(isSoundEnabled)
   const viewedRef = useRef(false)
 
   useDocumentMeta(game?.title, game?.description)
@@ -109,11 +111,29 @@ export default function Game() {
     setScore(gameScore ?? null)
     recordGamePlay(slug, result)
     recordGamePlayed(slug, result)
+    playSound(result === 'win' ? 'win' : 'lose')
   }
 
   function handleGameReset() {
     setOutcome(null)
     setScore(null)
+  }
+
+  function toggleSound() {
+    setSoundOn((prev) => {
+      const next = !prev
+      setSoundEnabled(next)
+      return next
+    })
+  }
+
+  // A single click listener on the whole game area (rather than wiring a
+  // click sound into all nine separate game components) — plays a short
+  // blip whenever the click actually landed on a button, which is every
+  // meaningful interaction any of the games have (a cell, a card, a number
+  // pad key, etc.), without needing to touch each game's own code.
+  function handleGameAreaClick(e) {
+    if (e.target.closest('button')) playSound('click')
   }
 
   async function handleChallengeSubmit(e) {
@@ -134,7 +154,17 @@ export default function Game() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
-      <div className="text-left mb-4"><BackButton /></div>
+      <div className="flex items-center justify-between mb-4">
+        <BackButton />
+        <button
+          onClick={toggleSound}
+          title={soundOn ? 'Mute game sounds' : 'Unmute game sounds'}
+          aria-label={soundOn ? 'Mute game sounds' : 'Unmute game sounds'}
+          className="w-9 h-9 rounded-full flex items-center justify-center text-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          {soundOn ? '🔊' : '🔇'}
+        </button>
+      </div>
       <div className="text-5xl mb-3">{game.emoji}</div>
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{game.title}</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">{game.description}</p>
@@ -174,33 +204,35 @@ export default function Game() {
         </div>
       )}
 
-      {game.slug === 'tic-tac-toe' && (
-        <TicTacToe onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
-      {game.slug === 'rock-paper-scissors' && (
-        <RockPaperScissors onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
-      {game.slug === 'memory-match' && (
-        <MemoryMatch onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
-      {game.slug === '2048' && (
-        <Game2048 onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
-      {game.slug === 'word-guess' && (
-        <WordGuess onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
-      {game.slug === 'guess-the-number' && (
-        <GuessTheNumber onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
-      {game.slug === 'sudoku' && (
-        <Sudoku onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
-      {game.slug === 'simon-says' && (
-        <SimonSays onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
-      {game.slug === 'whack-a-mole' && (
-        <WhackAMole onGameEnd={handleGameEnd} onReset={handleGameReset} />
-      )}
+      <div onClick={handleGameAreaClick}>
+        {game.slug === 'tic-tac-toe' && (
+          <TicTacToe onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'rock-paper-scissors' && (
+          <RockPaperScissors onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'memory-match' && (
+          <MemoryMatch onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === '2048' && (
+          <Game2048 onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'word-guess' && (
+          <WordGuess onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'guess-the-number' && (
+          <GuessTheNumber onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'sudoku' && (
+          <Sudoku onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'simon-says' && (
+          <SimonSays onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'whack-a-mole' && (
+          <WhackAMole onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+      </div>
 
       {outcome && (
         <div className="mt-8">
