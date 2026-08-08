@@ -117,7 +117,7 @@ export default function Account() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
+    <div className="max-w-4xl mx-auto px-4 py-10">
       {/* Deliberately a plain link to "/" rather than the shared BackButton's
           navigate(-1) — this page is only ever reached right after a
           login/signup/reset action, whose browser-history shape varies (a
@@ -139,6 +139,12 @@ export default function Account() {
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
+      {/* Two columns from `lg:` up (settings left, the taller My Activity
+          right) — collapses to a single stacked column below `lg:`, in DOM
+          order, so Recovery Code (end of the left column) still renders
+          before My Activity (the right column) on mobile. */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-8">
+      <div>
       <div className="mb-8">
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Avatar</label>
         <div className="flex flex-wrap gap-2">
@@ -185,7 +191,34 @@ export default function Account() {
         {saved && <span className="ml-3 text-sm text-green-600 dark:text-green-400">Saved ✓</span>}
       </form>
 
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Recovery Code</p>
+        {newRecoveryCode ? (
+          <>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+              Your new code — save it now, this is the only time it's shown:
+            </p>
+            <div className="font-mono text-lg font-bold tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl px-4 py-3 mb-3">
+              {newRecoveryCode}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+            Lost your code, or worried someone else saw it? Generate a new one — the old code stops
+            working immediately.
+          </p>
+        )}
+        <button
+          onClick={handleRegenerateCode}
+          disabled={regenerating}
+          className="px-5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 disabled:opacity-40"
+        >
+          {regenerating ? 'Generating...' : newRecoveryCode ? 'Generate another' : 'Generate a new Recovery Code'}
+        </button>
+      </div>
+      </div>
+
+      <div className="border-t border-gray-200 dark:border-gray-700 lg:border-t-0 pt-6 lg:pt-0">
         <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">My Activity</p>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
           Synced to your account — same progress on every device you log into.
@@ -305,31 +338,6 @@ export default function Account() {
           🏆 View my badges →
         </Link>
       </div>
-
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mb-6">
-        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Recovery Code</p>
-        {newRecoveryCode ? (
-          <>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              Your new code — save it now, this is the only time it's shown:
-            </p>
-            <div className="font-mono text-lg font-bold tracking-wider bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-xl px-4 py-3 mb-3">
-              {newRecoveryCode}
-            </div>
-          </>
-        ) : (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-            Lost your code, or worried someone else saw it? Generate a new one — the old code stops
-            working immediately.
-          </p>
-        )}
-        <button
-          onClick={handleRegenerateCode}
-          disabled={regenerating}
-          className="px-5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400 disabled:opacity-40"
-        >
-          {regenerating ? 'Generating...' : newRecoveryCode ? 'Generate another' : 'Generate a new Recovery Code'}
-        </button>
       </div>
 
       <button
