@@ -113,7 +113,7 @@ export default function Account() {
   }
 
   return (
-    <div className="max-w-md mx-auto px-4 py-10">
+    <div className="max-w-2xl mx-auto px-4 py-10">
       {/* Deliberately a plain link to "/" rather than the shared BackButton's
           navigate(-1) — this page is only ever reached right after a
           login/signup/reset action, whose browser-history shape varies (a
@@ -208,10 +208,10 @@ export default function Account() {
 
         {completedQuizzes.length > 0 && (
           <div className="mb-4">
-            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
+            <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Quizzes you've taken
             </p>
-            <ul className="max-h-40 overflow-y-auto space-y-1.5">
+            <ul className="space-y-1.5">
               {completedQuizzes.map((q) => (
                 <li key={q._id}>
                   <Link
@@ -228,10 +228,10 @@ export default function Account() {
 
         {solvedPuzzles.length > 0 && (
           <div className="mb-4">
-            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
+            <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Puzzles you've solved
             </p>
-            <ul className="max-h-40 overflow-y-auto space-y-1.5">
+            <ul className="space-y-1.5">
               {solvedPuzzles.map((p) => (
                 <li key={p._id}>
                   <Link
@@ -248,7 +248,7 @@ export default function Account() {
 
         {playedGames.length > 0 && (
           <div className="mb-4">
-            <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
+            <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
               Games you've played
             </p>
             <ul className="space-y-1.5">
@@ -258,6 +258,19 @@ export default function Account() {
                 </li>
               ))}
             </ul>
+          </div>
+        )}
+
+        {streak.count > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
+              Streak
+            </p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              🔥 {streak.count}-day streak{streak.lastDate ? ` — last kept alive ${streak.lastDate}` : ''}.
+              Completing either the daily Quiz or the daily Puzzle keeps it going, so this one
+              counter covers both.
+            </p>
           </div>
         )}
 
