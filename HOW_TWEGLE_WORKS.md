@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, changed, or removed on the site — for visitors or for admins — this file gets updated the same day, so it always describes what the app actually does *right now*. It is not a history of how things got built (see `APPLICATION_FLOW.md` for that). There is no code and no technical jargon here. If someone with zero computer background reads this from top to bottom, they should come away understanding exactly what Twegle does, what a visitor can do on it, and what an admin can do on it.
 
-**Last updated:** 7 August 2026.
+**Last updated:** 9 August 2026.
 
 ---
 
@@ -35,7 +35,7 @@ The homepage is the hub. From here you can reach every kind of content on the si
 - **A language switch** (EN / हिंदी) — flips everything on the page between English and Hindi.
 - **A sort switch** (Newest / Trending) — "Newest" shows what was added most recently; "Trending" shows what's currently the most popular.
 - **A search box** at the top of every page — type anything and it looks across quizzes, puzzles, posts, and friendship quizzes at once for a match.
-- **Two daily banners** at the top — one quiz and one puzzle are picked automatically each day (the same ones for every visitor, and they change every day at midnight). Finishing either one keeps your daily streak going (explained below).
+- **Two daily banners** at the top — one quiz and one puzzle are picked automatically each day (the same ones for every visitor, and they change every day at midnight). Finishing the quiz keeps your Quiz streak going, and revealing the puzzle keeps your Puzzle streak going — two separate streaks (explained below).
 - **A dark mode switch** — a small button that flips the whole site between a light look and a dark look. Your choice is remembered the next time you visit.
 - **A "Where Fun Goes Viral" tagline and hero banner**, plus a small floating share panel on the side of the screen so you can share Twegle itself with a friend at any time, from any page.
 
@@ -53,7 +53,7 @@ If you play a quiz you've already taken before, the tile for it on the homepage 
 
 ## 2. Puzzles
 
-Short riddles and brain-teasers. You see the question, and there's a "🔍 Reveal Answer" button — tap it whenever you're ready to see the answer, no rush. Some puzzles include a picture alongside the riddle. Every puzzle is labeled with a difficulty: **Warm-Up**, **Challenge**, or **Brain Buster**, and you can filter the list by any of those. Revealing the day's featured puzzle counts toward the same daily streak as the daily quiz — they're two ways of keeping one streak alive. Puzzles you've already revealed also get the small green checkmark on their tile.
+Short riddles and brain-teasers. You see the question, and there's a "🔍 Reveal Answer" button — tap it whenever you're ready to see the answer, no rush. Some puzzles include a picture alongside the riddle. Every puzzle is labeled with a difficulty: **Warm-Up**, **Challenge**, or **Brain Buster**, and you can filter the list by any of those. Revealing the day's featured puzzle keeps your own Puzzle streak going, tracked separately from your Quiz streak. Puzzles you've already revealed also get the small green checkmark on their tile.
 
 ## 3. Friendship Quiz ("How well do you know me?")
 
@@ -90,13 +90,17 @@ Original short stories, sorted into 6 categories: Horror, Comedy, Romance, Myste
 
 All 12 zodiac signs, each with a horoscope for Today, This Week, This Month, or This Year. The horoscopes are written to be funny and India-specific (think family WhatsApp groups, "shaadi kab karoge," chai stalls) rather than serious astrology — a small disclaimer makes clear this is just for fun. The text for a given sign and period is the same for everyone reading it that day, and it changes automatically as the date changes — nobody has to write new horoscopes every single day.
 
-## Daily streak — come back every day
+## Daily streaks — come back every day
 
-If you finish the daily quiz or reveal the daily puzzle, a small counter shows how many days in a row you've kept it up (like popular word games do). It's a light nudge to come back tomorrow, nothing more — there's no penalty for missing a day, your count just goes back to zero and you can start again anytime.
+There are two separate streaks, one for quizzes and one for puzzles — finishing the daily quiz keeps your **Quiz streak** going, and revealing the daily puzzle keeps your **Puzzle streak** going. Each shows its own "how many days in a row" counter (like popular word games do), right on its own homepage banner. They're tracked independently on purpose — you might only ever do one of the two, and each still gets its own honest count rather than being lumped into one shared number. It's a light nudge to come back tomorrow, nothing more — there's no penalty for missing a day, a streak just goes back to zero and you can start it again anytime.
 
-## Achievement badges
+## Achievements — 10 levels to work toward
 
-A "🏆 My Badges" page (reachable from the header and the footer) tracks small achievements — things like beating the computer at a game three times, trying every single game at least once, completing five quizzes, or getting a perfect score on a trivia quiz. Whenever you unlock one, a small notification pops up in the corner of the screen to let you know. There are 7 badges to collect in total.
+A "🏆 My Achievements" page (reachable from the header and the footer) is the site's main progression system: 10 levels, from **Fresh Face** at the very start up to **Twegle Legend** at the top, each with its own fun name and emoji. You move up by earning points from basically everything you do on the site — taking quizzes, solving puzzles, playing games, reacting to posts, sharing things, and keeping your two daily streaks alive. The page itself shows exactly how many points each action is worth, so it's never a mystery what to do next to level up. Reaching a new level pops up a small celebration with a button to share it. To keep leveling up from taking real time rather than one big session, some repeatable actions (playing the same game over and over, reacting to lots of posts) only earn points up to a point — quizzes, puzzles, and sharing don't have that limit.
+
+There's also a public **leaderboard** (reachable from the same page) showing the top 100 accounts by points — you need a free account (see below) to appear on it, since a guest's progress only lives in their own browser with no identity to rank.
+
+Separately, a smaller set of **7 Bonus Badges** still exists too — things like beating the computer at a game three times, trying every single game at least once, or getting a perfect score on a trivia quiz. These are a lighter side-collection, not part of the level/points system above. Whenever you unlock a level or a bonus badge, a small notification pops up in the corner of the screen to let you know.
 
 ## Sharing — how things spread
 
@@ -127,11 +131,11 @@ A single toggle switches the entire public site between a light look and a dark 
 
 ## Installing Twegle like an app (optional)
 
-On a phone, most browsers let you "Add to Home Screen" for Twegle, which puts an icon on your phone just like a real app. It isn't required at all — the website works the same either way — but it's a shortcut for people who visit often. Pages you've already visited also keep working even with a spotty internet connection, since the app remembers them.
+On a phone, most browsers let you "Add to Home Screen" for Twegle, which puts an icon on your phone just like a real app — there's now a small "📲 Add to Home Screen" button in the footer for this too, on browsers that support it. It isn't required at all — the website works the same either way — but it's a shortcut for people who visit often. Pages you've already visited also keep working even with a spotty internet connection, since the app remembers them.
 
 ## Optional accounts — no email or phone number, ever
 
-Everything described above works completely without ever creating an account. But if you'd like your daily streak, badges, and "already played" history to follow you from your phone to your computer and back, you can create a free account (the 👤 icon in the header).
+Everything described above works completely without ever creating an account. But if you'd like your daily streaks, level/points progress, badges, and "already played" history to follow you from your phone to your computer and back, you can create a free account (the 👤 icon in the header).
 
 Here's exactly what that involves:
 
@@ -142,9 +146,9 @@ Here's exactly what that involves:
 
 ### What actually syncs across your devices once you're logged in
 
-If you're logged into the same account on, say, your phone and your laptop, three things automatically stay in sync between them:
-1. Your **daily streak** count.
-2. Your **unlocked badges**.
+If you're logged into the same account on, say, your phone and your laptop, these automatically stay in sync between them:
+1. Your **Quiz streak** and **Puzzle streak** counts (tracked separately).
+2. Your **level/points progress** and **unlocked badges**.
 3. Your **"already played" history** — the small green checkmarks on quiz and puzzle tiles.
 
 This sync happens **automatically in the background**, with no button to press. If you do something on your phone and then look at an already-open tab on your laptop, it picks up the change within about 20 seconds on its own — you never need to manually refresh the page or clear anything for it to catch up.

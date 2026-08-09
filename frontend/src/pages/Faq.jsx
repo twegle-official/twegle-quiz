@@ -5,7 +5,7 @@ import BackButton from '../components/BackButton'
 const FAQS = [
   {
     q: 'Do I need to sign up to use Twegle?',
-    a: 'No. Every quiz, puzzle, game, story, joke, and horoscope on Twegle works fully for guests — no account needed. Creating a free account is entirely optional, and only useful if you want your daily streak and badges to follow you across devices.',
+    a: 'No. Every quiz, puzzle, game, story, joke, and horoscope on Twegle works fully for guests — no account needed. Creating a free account is entirely optional, and only useful if you want your daily streaks, level/points progress, and badges to follow you across devices.',
   },
   {
     q: 'Is Twegle free?',
@@ -20,12 +20,12 @@ const FAQS = [
     a: 'A two-person format: you answer a set of questions about yourself, then share the resulting link with friends. They try to guess your answers and see how well they actually know you — no account needed for either side.',
   },
   {
-    q: 'What is the daily streak, and what happens if I miss a day?',
-    a: 'Playing today\'s Quiz of the Day or Puzzle of the Day keeps your streak going. If you miss a day, the streak resets to zero — but you can always start a new one right away, no penalty beyond that.',
+    q: 'What are the daily streaks, and what happens if I miss a day?',
+    a: 'There are two separate streaks: playing today\'s Quiz of the Day keeps your Quiz streak going, and revealing today\'s Puzzle of the Day keeps your Puzzle streak going. They\'re tracked independently, so doing only one still gives you an honest count for that one. If you miss a day on either, that streak resets to zero — but you can always start it again right away, no penalty beyond that.',
   },
   {
-    q: 'How do badges work?',
-    a: 'Badges unlock automatically as you use the site — things like completing a set number of quizzes, hitting a streak milestone, or getting a perfect trivia score. Check your progress anytime on the My Badges page.',
+    q: 'How do Achievements, levels, and badges work?',
+    a: 'The My Achievements page tracks 10 levels you work up through by earning points from pretty much everything you do — quizzes, puzzles, games, reactions, shares, and keeping your streaks alive. The page itself shows exactly how many points each action is worth. There\'s also a public leaderboard of the top accounts by points (an account is needed to appear on it). Separately, 7 smaller "Bonus Badges" exist too — things like completing a set number of quizzes or getting a perfect trivia score — as a lighter side-collection, not part of the points system.',
   },
   {
     q: 'Is my data safe, and what do you actually collect?',
