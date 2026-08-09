@@ -120,7 +120,8 @@ export default function Badges() {
             ['🎮', 'Play a game', `${POINTS_PER_GAME_PLAY} pts each`, `counts up to ${MAX_COUNTED_PLAYS_PER_GAME} plays per game`],
             ['😍', 'React to a post', `${POINTS_PER_REACTION} pt each`, `counts up to ${MAX_COUNTED_REACTIONS} total`],
             ['📢', 'Share something', `${POINTS_PER_SHARE} pts each`, 'no limit'],
-            ['🔥', 'Keep your daily streak', `${POINTS_PER_STREAK_WEEK} pts`, 'per full week'],
+            ['🔥', 'Keep your Quiz streak', `${POINTS_PER_STREAK_WEEK} pts`, 'per full week'],
+            ['🔥', 'Keep your Puzzle streak', `${POINTS_PER_STREAK_WEEK} pts`, 'per full week — tracked separately from your Quiz streak'],
           ].map(([emoji, label, pts, note]) => (
             <div key={label} className="flex items-center justify-between gap-3">
               <span className="text-gray-700 dark:text-gray-300">{emoji} {label}</span>

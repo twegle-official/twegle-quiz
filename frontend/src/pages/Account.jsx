@@ -4,7 +4,7 @@ import { useUserAuth } from '../UserAuthContext'
 import { updateDisplayName, updateAvatar, regenerateRecoveryCode } from '../userApi'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { getStats } from '../utils/badges'
-import { getStreak } from '../utils/dailyQuiz'
+import { getQuizStreak, getPuzzleStreak } from '../utils/dailyQuiz'
 import { fetchQuizzes, fetchPuzzles } from '../api'
 import { GAMES } from '../games/registry'
 
@@ -36,7 +36,7 @@ export default function Account() {
     fetchPuzzles().then(setPuzzles).catch(() => setPuzzles([]))
   }, [])
 
-  // getStats()/getStreak() below read localStorage directly with no React
+  // getStats()/getQuizStreak()/getPuzzleStreak() below read localStorage directly with no React
   // state behind them, so landing here right after logging in on a new
   // device — before UserAuthProvider's background cross-device sync has
   // finished pulling the server's copy down — rendered all zeros until a
@@ -58,7 +58,8 @@ export default function Account() {
   }
 
   const stats = getStats()
-  const streak = getStreak()
+  const quizStreak = getQuizStreak()
+  const puzzleStreak = getPuzzleStreak()
   const completedQuizzes = quizzes?.filter((q) => stats.quizzesCompleted.includes(q.slug)) || []
   const solvedPuzzles = puzzles?.filter((p) => stats.puzzlesRevealed.includes(p._id)) || []
   const playedGames = GAMES.filter((g) => stats.gamesPlayed[g.slug] > 0)
@@ -266,12 +267,21 @@ export default function Account() {
           </button>
           <button
             type="button"
-            onClick={() => scrollToActivitySection('activity-streak')}
-            disabled={streak.count === 0}
+            onClick={() => scrollToActivitySection('activity-quiz-streak')}
+            disabled={quizStreak.count === 0}
             className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center hover:bg-gray-200 dark:hover:bg-gray-700 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800 disabled:cursor-default transition"
           >
-            <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">🔥 {streak.count}</p>
-            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Day streak</p>
+            <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">🔥 {quizStreak.count}</p>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Quiz streak</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollToActivitySection('activity-puzzle-streak')}
+            disabled={puzzleStreak.count === 0}
+            className="rounded-xl bg-gray-100 dark:bg-gray-800 px-4 py-3 text-center hover:bg-gray-200 dark:hover:bg-gray-700 disabled:hover:bg-gray-100 dark:disabled:hover:bg-gray-800 disabled:cursor-default transition"
+          >
+            <p className="text-xl font-extrabold text-gray-900 dark:text-gray-100">🔥 {puzzleStreak.count}</p>
+            <p className="text-xs font-semibold text-gray-500 dark:text-gray-400">Puzzle streak</p>
           </button>
         </div>
 
@@ -330,15 +340,27 @@ export default function Account() {
           </div>
         )}
 
-        {streak.count > 0 && (
-          <div id="activity-streak" className="mb-8 scroll-mt-20">
+        {quizStreak.count > 0 && (
+          <div id="activity-quiz-streak" className="mb-8 scroll-mt-20">
             <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
-              Streak
+              Quiz Streak
             </p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              🔥 {streak.count}-day streak{streak.lastDate ? ` — last kept alive ${streak.lastDate}` : ''}.
-              Completing either the daily Quiz or the daily Puzzle keeps it going, so this one
-              counter covers both.
+              🔥 {quizStreak.count}-day streak{quizStreak.lastDate ? ` — last kept alive ${quizStreak.lastDate}` : ''}.
+              Keeps going as long as you complete the Quiz of the Day.
+            </p>
+          </div>
+        )}
+
+        {puzzleStreak.count > 0 && (
+          <div id="activity-puzzle-streak" className="mb-8 scroll-mt-20">
+            <p className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide mb-2">
+              Puzzle Streak
+            </p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              🔥 {puzzleStreak.count}-day streak{puzzleStreak.lastDate ? ` — last kept alive ${puzzleStreak.lastDate}` : ''}.
+              Keeps going as long as you solve the Puzzle of the Day — this is tracked
+              separately from your Quiz streak above.
             </p>
           </div>
         )}

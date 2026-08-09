@@ -10,7 +10,7 @@ import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
-import { pickPuzzleOfTheDay, recordDailyActivityCompletion } from '../utils/dailyQuiz'
+import { pickPuzzleOfTheDay, recordPuzzleStreakCompletion } from '../utils/dailyQuiz'
 import { recordPuzzleRevealed } from '../utils/badges'
 
 const SUGGESTION_COUNT = 4
@@ -69,7 +69,7 @@ export default function PuzzleView() {
     // the daily-streak recording below, which only fires for today's pick.
     recordPuzzleRevealed(puzzle._id)
     if (isDailyPuzzle) {
-      setDailyStreak(recordDailyActivityCompletion(puzzle._id, puzzle._id))
+      setDailyStreak(recordPuzzleStreakCompletion(puzzle._id, puzzle._id))
     }
   }
 

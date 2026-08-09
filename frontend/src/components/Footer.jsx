@@ -99,7 +99,7 @@ export default function Footer() {
           {canInstall && (
             <button
               onClick={promptInstall}
-              className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-xs font-semibold hover:border-violet-400 dark:hover:border-violet-500 hover:text-violet-600 dark:hover:text-violet-400"
+              className="mt-4 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white text-sm font-semibold shadow-sm hover:opacity-90"
             >
               📲 Add to Home Screen
             </button>

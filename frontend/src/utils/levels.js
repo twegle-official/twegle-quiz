@@ -35,22 +35,26 @@ export const LEVELS = [
   { emoji: '🏆', name: 'Twegle Legend', subtitle: 'Ultimate flex. Very few reach this — it takes real, sustained love for Twegle.', points: 1000 },
 ]
 
-// `stats` is badges.js's getStats() shape, `streakCount` is dailyQuiz.js's
-// getStreak().count.
-export function calculatePoints(stats, streakCount) {
+// `stats` is badges.js's getStats() shape; `quizStreakCount`/
+// `puzzleStreakCount` are dailyQuiz.js's getQuizStreak().count/
+// getPuzzleStreak().count — two independent streaks (split apart on direct
+// request; previously one shared counter), each contributing its own weekly
+// points.
+export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
   if (!stats) return 0
   const gamePlays = Object.values(stats.gamesPlayed || {}).reduce(
     (sum, n) => sum + Math.min(n, MAX_COUNTED_PLAYS_PER_GAME),
     0
   )
   const reactions = Math.min(stats.reactionsGiven || 0, MAX_COUNTED_REACTIONS)
+  const streakWeeks = Math.floor((quizStreakCount || 0) / 7) + Math.floor((puzzleStreakCount || 0) / 7)
   return (
     (stats.quizzesCompleted?.length || 0) * POINTS_PER_QUIZ +
     (stats.puzzlesRevealed?.length || 0) * POINTS_PER_PUZZLE +
     gamePlays * POINTS_PER_GAME_PLAY +
     (stats.sharesGiven || 0) * POINTS_PER_SHARE +
     reactions * POINTS_PER_REACTION +
-    Math.floor((streakCount || 0) / 7) * POINTS_PER_STREAK_WEEK
+    streakWeeks * POINTS_PER_STREAK_WEEK
   )
 }
 

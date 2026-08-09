@@ -3,7 +3,7 @@
 // games/quizzes/reacts/shares; badges are just named thresholds over those
 // stats, checked fresh every time rather than stored as "unlocked" flags,
 // so raising a threshold later never leaves stale state to migrate.
-import { getStreak } from './dailyQuiz'
+import { getQuizStreak, getPuzzleStreak } from './dailyQuiz'
 import { pushLocalStatsToServer } from './statsSync'
 import { calculatePoints, getLevelInfo } from './levels'
 
@@ -40,7 +40,7 @@ export const BADGES = [
   { id: 'tried-every-game', emoji: '🎮', label: 'Tried Every Game', description: 'Play all 7 games at least once.', check: (s) => Object.keys(s.gamesPlayed).length >= 7, progress: (s) => `${Object.keys(s.gamesPlayed).length}/7` },
   { id: 'quiz-explorer', emoji: '🧭', label: 'Quiz Explorer', description: 'Complete 5 different quizzes.', check: (s) => s.quizzesCompleted.length >= 5, progress: (s) => `${Math.min(s.quizzesCompleted.length, 5)}/5` },
   { id: 'perfect-score', emoji: '💯', label: 'Perfect Score', description: 'Get every question right on a trivia quiz.', check: (s) => s.perfectTrivia, progress: (s) => (s.perfectTrivia ? '1/1' : '0/1') },
-  { id: 'week-streak', emoji: '🔥', label: '7-Day Streak', description: 'Complete the Quiz of the Day 7 days in a row.', check: () => getStreak().count >= 7, progress: () => `${Math.min(getStreak().count, 7)}/7` },
+  { id: 'week-streak', emoji: '🔥', label: '7-Day Streak', description: 'Complete the Quiz of the Day 7 days in a row.', check: () => getQuizStreak().count >= 7, progress: () => `${Math.min(getQuizStreak().count, 7)}/7` },
   { id: 'reaction-fan', emoji: '😍', label: 'Reaction Fan', description: 'React to 10 posts.', check: (s) => s.reactionsGiven >= 10, progress: (s) => `${Math.min(s.reactionsGiven, 10)}/10` },
   { id: 'super-sharer', emoji: '📣', label: 'Super Sharer', description: 'Share 5 things from Twegle.', check: (s) => s.sharesGiven >= 5, progress: (s) => `${Math.min(s.sharesGiven, 5)}/5` },
 ]
@@ -74,7 +74,7 @@ function notifyNewBadges(before, after) {
 // a while), a visitor sees one "you leveled up" toast, not a pile of them.
 function checkLevelUp() {
   const stats = getStats()
-  const points = calculatePoints(stats, getStreak().count)
+  const points = calculatePoints(stats, getQuizStreak().count, getPuzzleStreak().count)
   const { index, level } = getLevelInfo(points)
   const seen = parseInt(localStorage.getItem(LEVEL_SEEN_KEY), 10) || 0
   if (index <= seen) return
@@ -144,8 +144,8 @@ export function recordShare() {
 }
 
 // Streak-based badges (and level points, since streak weeks count toward
-// them too) depend on dailyQuiz's own localStorage key, not the stats
-// object here — call this after a streak update so both get checked.
+// them too) depend on dailyQuiz's own localStorage keys, not the stats
+// object here — call this after either streak updates so both get checked.
 export function checkStreakBadges() {
   const stats = getStats()
   notifyNewBadges(new Set(), unlockedIds(stats))
@@ -157,9 +157,9 @@ export function getBadgeStatus() {
   return BADGES.map((b) => ({ ...b, unlocked: b.check(stats), progressLabel: b.progress(stats) }))
 }
 
-// Convenience for the Badges page — combines the two data sources
-// calculatePoints() needs (badge stats + daily streak) into one call.
+// Convenience for the Badges page — combines the three data sources
+// calculatePoints() needs (badge stats + both daily streaks) into one call.
 export function getCurrentLevelInfo() {
-  const points = calculatePoints(getStats(), getStreak().count)
+  const points = calculatePoints(getStats(), getQuizStreak().count, getPuzzleStreak().count)
   return { points, ...getLevelInfo(points) }
 }

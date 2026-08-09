@@ -11,7 +11,7 @@ import PreviewBanner from '../components/PreviewBanner'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
-import { pickQuizOfTheDay, recordDailyActivityCompletion } from '../utils/dailyQuiz'
+import { pickQuizOfTheDay, recordQuizStreakCompletion } from '../utils/dailyQuiz'
 import { recordQuizCompleted, recordPerfectTrivia, checkStreakBadges } from '../utils/badges'
 
 const SUGGESTION_COUNT = 4
@@ -83,7 +83,7 @@ export default function Result() {
         if (todaysQuiz?.slug === slug) {
           setIsDailyQuiz(true)
           if (!previewToken) {
-            setDailyStreak(recordDailyActivityCompletion(slug, todaysQuiz.slug))
+            setDailyStreak(recordQuizStreakCompletion(slug, todaysQuiz.slug))
             checkStreakBadges()
           }
         }

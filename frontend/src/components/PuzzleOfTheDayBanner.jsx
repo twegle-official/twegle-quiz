@@ -1,25 +1,17 @@
 import { Link } from 'react-router-dom'
-import { pickPuzzleOfTheDay, getStreak } from '../utils/dailyQuiz'
+import { pickPuzzleOfTheDay, getPuzzleStreak } from '../utils/dailyQuiz'
 
-// Originally left the streak *count* off this banner, reasoning that
-// DailyQuizBanner right above already shows the one shared number (see
-// dailyQuiz.js's recordDailyActivityCompletion) and repeating it here would
-// be redundant. In practice this backfired — the owner reported that
-// finishing the puzzle "displays nothing" on the homepage even though the
-// puzzle detail page confirmed the streak advanced, reading as if the
-// puzzle wasn't actually contributing. Showing the same real number on both
-// banners removes that doubt, even though it's not new information.
-//
-// Eyebrow text matches DailyQuizBanner's "🔥 Daily Streak" exactly (not
-// "🔥 Puzzle of the Day") — having each banner use different wording for
-// what's actually the same mechanic read as inconsistent/confusing; the
-// puzzle's own identity is already carried by its emoji and question text
-// below, so the eyebrow line is free to just name the mechanic instead.
+// Tracks its own independent streak from DailyQuizBanner right above it
+// (split apart on direct request — a shared counter read as confusing when
+// a visitor doing only quizzes or only puzzles saw one combined number).
+// Eyebrow text is "🔥 Puzzle Streak" specifically, matching DailyQuizBanner's
+// "🔥 Quiz Streak" pattern so the two banners read as two distinct
+// mechanics, not one duplicated between them.
 export default function PuzzleOfTheDayBanner({ puzzles }) {
   const puzzle = pickPuzzleOfTheDay(puzzles)
   if (!puzzle) return null
 
-  const streak = getStreak()
+  const streak = getPuzzleStreak()
 
   return (
     <Link
@@ -28,7 +20,7 @@ export default function PuzzleOfTheDayBanner({ puzzles }) {
     >
       <span className="text-2xl sm:text-3xl shrink-0">{puzzle.emoji || '🧩'}</span>
       <div className="min-w-0 flex-1">
-        <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Daily Streak</p>
+        <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Puzzle Streak</p>
         <p className="text-sm sm:text-base font-bold truncate">{puzzle.question}</p>
       </div>
       {streak.count > 0 && (

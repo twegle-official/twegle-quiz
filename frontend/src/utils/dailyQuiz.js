@@ -1,9 +1,12 @@
-// Wordle-style daily habit loop — a deterministic "Quiz of the Day" picked
-// from whatever quizzes exist, plus a localStorage streak counter. No
-// backend involved for anonymous visitors: same date-derived-index pattern
-// already used for Horoscope, just applied to picking a quiz instead of
-// picking a sentence. Logged-in visitors additionally get this streak
-// synced to their account server-side — see statsSync.js.
+// Wordle-style daily habit loop — a deterministic "Quiz of the Day" and
+// "Puzzle of the Day" picked from whatever content exists, plus two
+// independent localStorage streak counters (previously one shared counter —
+// split back apart on direct request, since a visitor doing only quizzes or
+// only puzzles found one combined number confusing). No backend involved for
+// anonymous visitors: same date-derived-index pattern already used for
+// Horoscope, just applied to picking a quiz/puzzle instead of a sentence.
+// Logged-in visitors additionally get both streaks synced to their account
+// server-side — see statsSync.js.
 import { pushLocalStatsToServer } from './statsSync'
 
 function dateKey(date) {
@@ -37,14 +40,28 @@ export function pickPuzzleOfTheDay(puzzles) {
   return sorted[index]
 }
 
-export const STREAK_KEY = 'dailyQuizStreak'
+// QUIZ_STREAK_KEY keeps the original localStorage key name from before this
+// was split, so anyone with an existing streak keeps it as their Quiz streak
+// rather than losing it — PUZZLE_STREAK_KEY is new and starts fresh at 0 for
+// everyone, since there's no way to retroactively untangle which past days
+// came from a quiz vs a puzzle under the old shared counter.
+export const QUIZ_STREAK_KEY = 'dailyQuizStreak'
+export const PUZZLE_STREAK_KEY = 'dailyPuzzleStreak'
 
-export function getStreak() {
+function readStreak(key) {
   try {
-    return JSON.parse(localStorage.getItem(STREAK_KEY)) || { count: 0, lastDate: null }
+    return JSON.parse(localStorage.getItem(key)) || { count: 0, lastDate: null }
   } catch {
     return { count: 0, lastDate: null }
   }
+}
+
+export function getQuizStreak() {
+  return readStreak(QUIZ_STREAK_KEY)
+}
+
+export function getPuzzleStreak() {
+  return readStreak(PUZZLE_STREAK_KEY)
 }
 
 function previousDateKey(todayKey) {
@@ -52,16 +69,8 @@ function previousDateKey(todayKey) {
   return dateKey(new Date(y, m - 1, d - 1))
 }
 
-// Called from Result.jsx after any quiz completes, and from PuzzleView.jsx
-// after revealing today's puzzle's answer — a no-op unless the thing that
-// was just finished is today's pick for its own type. One shared streak
-// (same STREAK_KEY/localStorage entry as before this was generalized, so no
-// existing streak resets) — completing *either* the daily quiz or the daily
-// puzzle keeps it alive; there's no requirement to do both. Safe to call
-// multiple times per day (already-recorded-today is a no-op, not a double
-// increment).
-export function recordDailyActivityCompletion(finishedId, todaysId) {
-  const current = getStreak()
+function recordStreak(key, finishedId, todaysId) {
+  const current = readStreak(key)
   if (finishedId !== todaysId) return current
 
   const today = getTodayKey()
@@ -69,7 +78,21 @@ export function recordDailyActivityCompletion(finishedId, todaysId) {
 
   const count = current.lastDate === previousDateKey(today) ? current.count + 1 : 1
   const updated = { count, lastDate: today }
-  localStorage.setItem(STREAK_KEY, JSON.stringify(updated))
+  localStorage.setItem(key, JSON.stringify(updated))
   pushLocalStatsToServer()
   return updated
+}
+
+// Called from Result.jsx after any quiz completes — a no-op unless the quiz
+// that was just finished is today's Quiz of the Day. Safe to call multiple
+// times per day (already-recorded-today is a no-op, not a double increment).
+export function recordQuizStreakCompletion(finishedSlug, todaysSlug) {
+  return recordStreak(QUIZ_STREAK_KEY, finishedSlug, todaysSlug)
+}
+
+// Called from PuzzleView.jsx after revealing today's puzzle's answer — same
+// no-op/once-per-day rules as the quiz streak above, just on its own
+// separate counter.
+export function recordPuzzleStreakCompletion(finishedId, todaysId) {
+  return recordStreak(PUZZLE_STREAK_KEY, finishedId, todaysId)
 }

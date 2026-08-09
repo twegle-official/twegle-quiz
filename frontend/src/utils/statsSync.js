@@ -12,7 +12,7 @@
 // already in localStorage under 'userSession', so this stays consistent
 // with how those modules already access their own keys.
 import { fetchStats, pushStats } from '../userApi'
-import { STREAK_KEY } from './dailyQuiz'
+import { QUIZ_STREAK_KEY, PUZZLE_STREAK_KEY } from './dailyQuiz'
 import { STATS_KEY, SEEN_KEY } from './badges'
 
 function getToken() {
@@ -34,14 +34,16 @@ function readJSON(key, fallback) {
 
 function readLocalBlob() {
   return {
-    streak: readJSON(STREAK_KEY, { count: 0, lastDate: null }),
+    quizStreak: readJSON(QUIZ_STREAK_KEY, { count: 0, lastDate: null }),
+    puzzleStreak: readJSON(PUZZLE_STREAK_KEY, { count: 0, lastDate: null }),
     stats: readJSON(STATS_KEY, {}),
     badgesSeen: readJSON(SEEN_KEY, []),
   }
 }
 
 function writeLocalBlob(blob) {
-  if (blob.streak) localStorage.setItem(STREAK_KEY, JSON.stringify(blob.streak))
+  if (blob.quizStreak) localStorage.setItem(QUIZ_STREAK_KEY, JSON.stringify(blob.quizStreak))
+  if (blob.puzzleStreak) localStorage.setItem(PUZZLE_STREAK_KEY, JSON.stringify(blob.puzzleStreak))
   if (blob.stats) localStorage.setItem(STATS_KEY, JSON.stringify(blob.stats))
   if (blob.badgesSeen) localStorage.setItem(SEEN_KEY, JSON.stringify(blob.badgesSeen))
 }
@@ -76,13 +78,26 @@ function mergeStats(a = {}, b = {}) {
 }
 
 // Fire-and-forget — called after every local mutation (see dailyQuiz.js's
-// recordDailyActivityCompletion and badges.js's update()) so the server
-// copy stays current. A logged-out visitor has no token, so this is a no-op
-// for the (still fully supported) anonymous path.
+// recordQuizStreakCompletion/recordPuzzleStreakCompletion and badges.js's
+// update()) so the server copy stays current. A logged-out visitor has no
+// token, so this is a no-op for the (still fully supported) anonymous path.
 export function pushLocalStatsToServer() {
   const token = getToken()
   if (!token) return
   pushStats(token, readLocalBlob()).catch(() => {})
+}
+
+// Accounts synced before the streak split only have a single `streak` field
+// server-side — treated as that account's Quiz streak (the original
+// localStorage key this used to be) so nobody's existing streak gets
+// dropped; `puzzleStreak` simply doesn't exist yet for them and starts fresh.
+function normalizeServerBlob(serverBlob) {
+  return {
+    quizStreak: serverBlob.quizStreak || serverBlob.streak,
+    puzzleStreak: serverBlob.puzzleStreak,
+    stats: serverBlob.stats,
+    badgesSeen: serverBlob.badgesSeen,
+  }
 }
 
 // Called once when a session is available (see UserAuthContext.jsx) —
@@ -96,14 +111,15 @@ export async function syncStatsOnLogin(token) {
   let serverBlob = {}
   try {
     const data = await fetchStats(token)
-    serverBlob = data?.stats || {}
+    serverBlob = normalizeServerBlob(data?.stats || {})
   } catch {
     return
   }
 
   const localBlob = readLocalBlob()
   const merged = {
-    streak: mergeStreak(localBlob.streak, serverBlob.streak),
+    quizStreak: mergeStreak(localBlob.quizStreak, serverBlob.quizStreak),
+    puzzleStreak: mergeStreak(localBlob.puzzleStreak, serverBlob.puzzleStreak),
     stats: mergeStats(localBlob.stats, serverBlob.stats),
     badgesSeen: [...new Set([...(localBlob.badgesSeen || []), ...(serverBlob.badgesSeen || [])])],
   }

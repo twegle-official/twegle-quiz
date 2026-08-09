@@ -18,9 +18,10 @@ import AdSlot from '../components/AdSlot'
 // quiz result is the easiest thing to reshare, no second person needed),
 // so it drives the most pageviews/ad impressions. Puzzles right after —
 // added 2026-08-06, placed here (not at the end) since it shares the same
-// daily-streak mechanism as Quiz of the Day (see dailyQuiz.js's
-// recordDailyActivityCompletion), so it reads as a natural pair with
-// Quizzes rather than a separate, disconnected content type. Friendship
+// daily-streak mechanism as Quiz of the Day (see dailyQuiz.js — each keeps
+// its own independent streak, but both are the same "do it every day" habit
+// loop), so it reads as a natural pair with Quizzes rather than a separate,
+// disconnected content type. Friendship
 // Quiz next (same growth-loop idea, but needs a friend to join, so more
 // friction on a first click). Games next — replayable, has its own "beat
 // me" share hook. Posts (merged from the previous 5 separate Jokes/Funny
