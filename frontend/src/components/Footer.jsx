@@ -51,8 +51,8 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-gray-200 dark:border-gray-800 mt-16 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4 py-10 grid sm:grid-cols-3 gap-8 text-sm">
-        <div>
+      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm">
+        <div className="col-span-2 sm:col-span-1">
           <LogoWithWordmark size={28} />
           <p className="text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
             Quizzes, puzzles, jokes, quotes, games, stories, horoscope &amp; chaos — no sign up, just
@@ -112,6 +112,7 @@ export default function Footer() {
               title="Twegle — Quizzes, Quotes & Chaos for Everyone"
               url={window.location.origin}
               shareText="Check out Twegle — free quizzes, jokes, quotes & more, no sign up needed!"
+              align="start"
             />
           </div>
         </div>

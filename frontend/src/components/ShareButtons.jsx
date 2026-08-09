@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { recordShare } from '../utils/badges'
 
-export default function ShareButtons({ title, url, onShare, shareText: shareTextProp }) {
+export default function ShareButtons({ title, url, onShare, shareText: shareTextProp, align = 'center' }) {
   const [copied, setCopied] = useState(false)
 
   const shareText = shareTextProp || `${title} — take the quiz!`
@@ -34,7 +34,7 @@ export default function ShareButtons({ title, url, onShare, shareText: shareText
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${url}`)}`
 
   return (
-    <div className="flex flex-wrap justify-center gap-3">
+    <div className={`flex flex-wrap gap-3 ${align === 'start' ? 'justify-start' : 'justify-center'}`}>
       {typeof navigator !== 'undefined' && navigator.share && (
         <button
           onClick={handleNativeShare}
