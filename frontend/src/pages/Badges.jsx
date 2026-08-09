@@ -1,7 +1,17 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getBadgeStatus, getCurrentLevelInfo } from '../utils/badges'
-import { LEVELS } from '../utils/levels'
+import {
+  LEVELS,
+  POINTS_PER_QUIZ,
+  POINTS_PER_PUZZLE,
+  POINTS_PER_GAME_PLAY,
+  POINTS_PER_REACTION,
+  POINTS_PER_SHARE,
+  POINTS_PER_STREAK_WEEK,
+  MAX_COUNTED_PLAYS_PER_GAME,
+  MAX_COUNTED_REACTIONS,
+} from '../utils/levels'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { useUserAuth } from '../UserAuthContext'
@@ -97,6 +107,30 @@ export default function Badges() {
             </div>
           )
         })}
+      </div>
+
+      {/* Points are otherwise invisible — this makes "how do I level up"
+          concrete instead of a mystery number going up somewhere. */}
+      <div className="mb-10 rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
+        <p className="font-bold text-gray-900 dark:text-gray-100 mb-3">💡 How to earn points</p>
+        <div className="space-y-2 text-sm">
+          {[
+            ['🎯', 'Complete a quiz', `${POINTS_PER_QUIZ} pts each`, 'no limit'],
+            ['🧩', 'Solve a puzzle', `${POINTS_PER_PUZZLE} pts each`, 'no limit'],
+            ['🎮', 'Play a game', `${POINTS_PER_GAME_PLAY} pts each`, `counts up to ${MAX_COUNTED_PLAYS_PER_GAME} plays per game`],
+            ['😍', 'React to a post', `${POINTS_PER_REACTION} pt each`, `counts up to ${MAX_COUNTED_REACTIONS} total`],
+            ['📢', 'Share something', `${POINTS_PER_SHARE} pts each`, 'no limit'],
+            ['🔥', 'Keep your daily streak', `${POINTS_PER_STREAK_WEEK} pts`, 'per full week'],
+          ].map(([emoji, label, pts, note]) => (
+            <div key={label} className="flex items-center justify-between gap-3">
+              <span className="text-gray-700 dark:text-gray-300">{emoji} {label}</span>
+              <span className="text-right shrink-0">
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{pts}</span>
+                <span className="text-gray-400 dark:text-gray-500"> · {note}</span>
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* The original 7 badges — kept as a clearly separate, smaller section
