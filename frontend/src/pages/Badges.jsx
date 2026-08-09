@@ -123,9 +123,9 @@ export default function Badges() {
             ['🔥', 'Keep your Quiz streak', `${POINTS_PER_STREAK_WEEK} pts`, 'per full week'],
             ['🔥', 'Keep your Puzzle streak', `${POINTS_PER_STREAK_WEEK} pts`, 'per full week — tracked separately from your Quiz streak'],
           ].map(([emoji, label, pts, note]) => (
-            <div key={label} className="flex items-center justify-between gap-3">
+            <div key={label} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-0.5 sm:gap-3">
               <span className="text-gray-700 dark:text-gray-300">{emoji} {label}</span>
-              <span className="text-right shrink-0">
+              <span className="sm:text-right sm:shrink-0">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">{pts}</span>
                 <span className="text-gray-400 dark:text-gray-500"> · {note}</span>
               </span>
