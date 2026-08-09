@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { LogoWithWordmark } from './Logo'
 import ShareButtons from './ShareButtons'
+import { useInstallPrompt } from '../utils/useInstallPrompt'
 
 // Plain inline SVGs (currentColor) rather than emoji — emoji render as tiny,
 // inconsistent glyphs across platforms and don't clearly read as "this is the
@@ -46,6 +47,8 @@ function LinkedinIcon(props) {
 }
 
 export default function Footer() {
+  const { canInstall, promptInstall } = useInstallPrompt()
+
   return (
     <footer className="border-t border-gray-200 dark:border-gray-800 mt-16 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-6xl mx-auto px-4 py-10 grid sm:grid-cols-3 gap-8 text-sm">
@@ -93,6 +96,14 @@ export default function Footer() {
               <LinkedinIcon className="w-5 h-5" />
             </a>
           </div>
+          {canInstall && (
+            <button
+              onClick={promptInstall}
+              className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-300 text-xs font-semibold hover:border-violet-400 dark:hover:border-violet-500 hover:text-violet-600 dark:hover:text-violet-400"
+            >
+              📲 Add to Home Screen
+            </button>
+          )}
           <div className="mt-4 xl:hidden">
             <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
               Share Twegle
