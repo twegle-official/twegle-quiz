@@ -5,9 +5,14 @@
 // so raising a threshold later never leaves stale state to migrate.
 import { getStreak } from './dailyQuiz'
 import { pushLocalStatsToServer } from './statsSync'
+import { calculatePoints, getLevelInfo } from './levels'
 
 export const STATS_KEY = 'twegleStats'
 export const SEEN_KEY = 'twegleBadgesSeen'
+// The highest level index (into levels.js's LEVELS array) already notified
+// via a toast — separate from SEEN_KEY above since levels and the 7
+// one-off badges are two different systems (see FRONTEND.md).
+export const LEVEL_SEEN_KEY = 'twegleLevelSeen'
 
 export function getStats() {
   try {
@@ -63,12 +68,27 @@ function notifyNewBadges(before, after) {
   }
 }
 
+// Compares the current level against the highest one already toast-notified
+// and fires exactly one event for the new level reached — even if several
+// levels were crossed at once (e.g. the first stats sync after being away
+// a while), a visitor sees one "you leveled up" toast, not a pile of them.
+function checkLevelUp() {
+  const stats = getStats()
+  const points = calculatePoints(stats, getStreak().count)
+  const { index, level } = getLevelInfo(points)
+  const seen = parseInt(localStorage.getItem(LEVEL_SEEN_KEY), 10) || 0
+  if (index <= seen) return
+  localStorage.setItem(LEVEL_SEEN_KEY, String(index))
+  window.dispatchEvent(new CustomEvent('twegle-level-up', { detail: { index, level, points } }))
+}
+
 function update(mutate) {
   const stats = getStats()
   const before = unlockedIds(stats)
   mutate(stats)
   saveStats(stats)
   notifyNewBadges(before, unlockedIds(stats))
+  checkLevelUp()
   pushLocalStatsToServer()
 }
 
@@ -123,14 +143,23 @@ export function recordShare() {
   })
 }
 
-// Streak-based badges depend on dailyQuiz's own localStorage key, not the
-// stats object here — call this after a streak update so it gets checked too.
+// Streak-based badges (and level points, since streak weeks count toward
+// them too) depend on dailyQuiz's own localStorage key, not the stats
+// object here — call this after a streak update so both get checked.
 export function checkStreakBadges() {
   const stats = getStats()
   notifyNewBadges(new Set(), unlockedIds(stats))
+  checkLevelUp()
 }
 
 export function getBadgeStatus() {
   const stats = getStats()
   return BADGES.map((b) => ({ ...b, unlocked: b.check(stats), progressLabel: b.progress(stats) }))
+}
+
+// Convenience for the Badges page — combines the two data sources
+// calculatePoints() needs (badge stats + daily streak) into one call.
+export function getCurrentLevelInfo() {
+  const points = calculatePoints(getStats(), getStreak().count)
+  return { points, ...getLevelInfo(points) }
 }

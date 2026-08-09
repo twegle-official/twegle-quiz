@@ -25,6 +25,7 @@ import Game from './pages/Game'
 import TicTacToeMultiplayer from './pages/TicTacToeMultiplayer'
 import Feedback from './pages/Feedback'
 import Badges from './pages/Badges'
+import Leaderboard from './pages/Leaderboard'
 import BadgeToast from './components/BadgeToast'
 import NotFound from './pages/NotFound'
 import Signup from './pages/Signup'
@@ -135,6 +136,7 @@ function PublicSite() {
           <Route path="/faq" element={<Faq />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route path="/badges" element={<Badges />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/friendship/:slug" element={<FriendshipSetup />} />
           <Route path="/friendship/play/:code" element={<FriendshipPlay />} />
           <Route path="/friendship/result/:attemptId" element={<FriendshipResult />} />

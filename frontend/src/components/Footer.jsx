@@ -119,7 +119,8 @@ export default function Footer() {
             <li><Link to="/browse/funny-lines" className="hover:text-gray-900 dark:hover:text-gray-100">Funny Lines</Link></li>
             <li><Link to="/browse/quotes" className="hover:text-gray-900 dark:hover:text-gray-100">Quotes</Link></li>
             <li><Link to="/browse/motivational-quotes" className="hover:text-gray-900 dark:hover:text-gray-100">Motivational Quotes</Link></li>
-            <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Badges</Link></li>
+            <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Achievements</Link></li>
+            <li><Link to="/leaderboard" className="hover:text-gray-900 dark:hover:text-gray-100">🏅 Leaderboard</Link></li>
           </ul>
         </div>
 

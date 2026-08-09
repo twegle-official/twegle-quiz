@@ -37,6 +37,13 @@ export async function submitGameScore(slug, nickname, value) {
   return postJson(`/games/${slug}/leaderboard`, { nickname, value })
 }
 
+export async function fetchLevelLeaderboard() {
+  const res = await fetch(`${API_URL}/leaderboard/levels`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.leaderboard
+}
+
 export async function searchContent(q, language) {
   const params = new URLSearchParams({ q })
   if (language) params.set('language', language)

@@ -47,6 +47,7 @@ import horoscopeRoutes from './routes/horoscopeRoutes.js'
 import adminDigestRoutes from './routes/adminDigestRoutes.js'
 import adminDashboardRoutes from './routes/adminDashboardRoutes.js'
 import adminEndUserRoutes from './routes/adminEndUserRoutes.js'
+import leaderboardRoutes from './routes/leaderboardRoutes.js'
 
 const app = express()
 
@@ -92,6 +93,7 @@ app.use('/api/admin/friendship-quizzes', adminFriendshipRoutes)
 app.use('/api/admin/activity', activityRoutes)
 app.use('/api/search', searchRoutes)
 app.use('/api/games', gameRoutes)
+app.use('/api/leaderboard', leaderboardRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/admin/feedback', adminFeedbackRoutes)
 app.use('/api/tictactoe', ticTacToeRoutes)

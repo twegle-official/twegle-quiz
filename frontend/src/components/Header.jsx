@@ -52,8 +52,8 @@ export default function Header() {
           <ThemeToggle />
           <Link
             to="/badges"
-            title="My Badges"
-            aria-label="My Badges"
+            title="My Achievements"
+            aria-label="My Achievements"
             className="w-8 h-8 rounded-full flex items-center justify-center text-lg hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             🏆
