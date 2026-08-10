@@ -55,6 +55,7 @@ For deeper detail on any development item, see `DEVELOPMENT_PLAN.md` / `APPLICAT
 - [ ] **Streak-reminder notifications** — "You're on a 5-day streak, don't lose it!" — depends on push notifications (above) actually being built first.
 
 **Admin-side**
+- [ ] **Admin-generated account recovery code for end-users** — requested 2026-08-10: for a user who's lost access to their account (forgot password, no working email), an admin generates a one-time reset code/link from the admin panel and shares it manually (WhatsApp/email/etc.) so the user can set a new password, as a fallback to the existing self-service `ForgotPassword.jsx` flow. No legal blocker for a site this size, but should (a) log every admin-triggered reset in the existing Activity Log for accountability, and (b) avoid collecting any new identity-verification data beyond what's already on file (name/email), especially given the mostly-8-18 user base — matching existing account details is enough, no extra data collection needed.
 - [ ] A/B testing on quiz questions or ad placements
 - [ ] **Content approval workflow** — Editor submits, Superadmin approves before it goes live. Meaningful once there are more than a couple of active admins; today Editor can publish directly, which is fine at the current team size.
 - [ ] **Community-submitted content with a moderation queue** — e.g. visitor-submitted jokes/quotes, reviewed before publishing. Genuinely needs accounts (to attribute submissions and rate-limit spam) plus a real moderation UI, not a quick add-on.

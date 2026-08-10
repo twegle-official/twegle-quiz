@@ -629,7 +629,7 @@ export default function Home() {
               className="animate-fade-slide-in"
               style={{ animationDelay: `${i * 60}ms`, animationFillMode: 'backwards' }}
             >
-              <GameCard game={game} />
+              <GameCard game={game} filterMode={gameCategory} />
             </div>
           ))}
         </div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { GAMES } from '../games/registry'
 import TicTacToe from '../games/TicTacToe'
 import RockPaperScissors from '../games/RockPaperScissors'
@@ -79,10 +79,15 @@ function getShareText(slug, outcome, title) {
 export default function Game() {
   const { slug } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const game = GAMES.find((g) => g.slug === slug)
   const [outcome, setOutcome] = useState(null)
   const [score, setScore] = useState(null)
-  const [showChallengeForm, setShowChallengeForm] = useState(false)
+  // Arriving via the homepage's "2 Player" filter (Connect Four's card
+  // appends ?mode=friend for games that also have a single-player mode —
+  // see GameCard.jsx) means the visitor already chose that mode, so open
+  // straight to the challenge form instead of the default single-player board.
+  const [showChallengeForm, setShowChallengeForm] = useState(searchParams.get('mode') === 'friend')
   const [challengeName, setChallengeName] = useState('')
   const [challengeSubmitting, setChallengeSubmitting] = useState(false)
   const [challengeError, setChallengeError] = useState('')

@@ -9,12 +9,20 @@ function formatPlays(n) {
   return `${n}`
 }
 
-export default function GameCard({ game }) {
+export default function GameCard({ game, filterMode }) {
   const engagementText = engagementLabel(game.totalPlays) || `${formatPlays(game.totalPlays)} played`
+  // Games that support both modes (currently just Tic-Tac-Toe) default to
+  // their single-player board — but arriving via the "2 Player" homepage
+  // filter means the visitor already chose that mode, so skip straight to
+  // the challenge form instead of making them find the toggle themselves.
+  const to =
+    filterMode === 'friend' && game.players?.includes('friend')
+      ? `/games/${game.slug}?mode=friend`
+      : `/games/${game.slug}`
 
   return (
     <Link
-      to={`/games/${game.slug}`}
+      to={to}
       className={`relative flex h-full flex-col rounded-2xl p-6 text-white shadow-md hover:scale-[1.02] transition-transform bg-gradient-to-br ${game.gradient}`}
     >
       <TileShareButton
