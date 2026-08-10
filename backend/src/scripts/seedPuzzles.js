@@ -7,13 +7,23 @@ import Puzzle from '../models/Puzzle.js'
 // Safe to re-run — upserts by question text instead of duplicating. All
 // riddles here are original/traditional public-domain puzzle phrasing, not
 // adapted from any copyrighted collection.
+//
+// IMPORTANT — emoji must never depict the answer itself: the emoji renders
+// right next to the question, visible before "Reveal Answer" is tapped (see
+// PuzzleView.jsx/PuzzleCard.jsx). Several of these originally used an emoji
+// of the literal answer object (🤧 for "a cold," 🎹 for "a piano," 👣 for
+// "footsteps") — reported directly as the puzzle spoiling itself before any
+// guessing happened. Fixed by swapping those to a neutral 🤔, or to an emoji
+// that only reflects something already stated in the question text (💊 for
+// the pills riddle, 🖼️ for the photo riddle — both objects the question
+// itself already names, not the hidden answer).
 const puzzles = [
   // --- Easy ---
   {
     question: 'What has hands but can\'t clap?',
     answer: 'A clock.',
     difficulty: 'easy',
-    emoji: '🕐',
+    emoji: '🤔',
     gradient: 'from-sky-400 to-blue-500',
     status: 'published',
   },
@@ -21,7 +31,7 @@ const puzzles = [
     question: 'What has to be broken before you can use it?',
     answer: 'An egg.',
     difficulty: 'easy',
-    emoji: '🥚',
+    emoji: '🤔',
     gradient: 'from-amber-400 to-orange-500',
     status: 'published',
   },
@@ -29,7 +39,7 @@ const puzzles = [
     question: 'I\'m tall when I\'m young and short when I\'m old. What am I?',
     answer: 'A candle.',
     difficulty: 'easy',
-    emoji: '🕯️',
+    emoji: '🤔',
     gradient: 'from-red-400 to-orange-400',
     status: 'published',
   },
@@ -37,7 +47,7 @@ const puzzles = [
     question: 'What has a face and two hands but no arms or legs?',
     answer: 'A clock.',
     difficulty: 'easy',
-    emoji: '⏰',
+    emoji: '🤔',
     gradient: 'from-violet-400 to-indigo-500',
     status: 'published',
   },
@@ -45,7 +55,7 @@ const puzzles = [
     question: 'What gets wetter the more it dries?',
     answer: 'A towel.',
     difficulty: 'easy',
-    emoji: '🧺',
+    emoji: '🤔',
     gradient: 'from-emerald-400 to-teal-500',
     status: 'published',
   },
@@ -53,7 +63,7 @@ const puzzles = [
     question: 'क्या चीज़ है जो हर सुबह टूटती है?',
     answer: 'दिन (सुबह)।',
     difficulty: 'easy',
-    emoji: '🌅',
+    emoji: '🤔',
     gradient: 'from-pink-400 to-rose-400',
     language: 'hi',
     status: 'published',
@@ -72,7 +82,7 @@ const puzzles = [
     question: 'The more you take, the more you leave behind. What am I?',
     answer: 'Footsteps.',
     difficulty: 'medium',
-    emoji: '👣',
+    emoji: '🤔',
     gradient: 'from-lime-400 to-green-500',
     status: 'published',
   },
@@ -80,7 +90,7 @@ const puzzles = [
     question: 'What can travel around the world while staying in a corner?',
     answer: 'A postage stamp.',
     difficulty: 'medium',
-    emoji: '✉️',
+    emoji: '🌍',
     gradient: 'from-purple-400 to-fuchsia-500',
     status: 'published',
   },
@@ -88,7 +98,7 @@ const puzzles = [
     question: 'What has many keys but can\'t open a single lock?',
     answer: 'A piano.',
     difficulty: 'medium',
-    emoji: '🎹',
+    emoji: '🔑',
     gradient: 'from-cyan-400 to-sky-500',
     status: 'published',
   },
@@ -104,7 +114,7 @@ const puzzles = [
     question: 'दो बहनें हैं: एक रात को जन्म लेती है और दिन में मर जाती है, दूसरी दिन को जन्म लेती है और रात में मर जाती है। वे कौन हैं?',
     answer: 'दिन और रात (सूरज और चाँद के प्रतीक)।',
     difficulty: 'medium',
-    emoji: '🌗',
+    emoji: '🤔',
     gradient: 'from-violet-400 to-indigo-500',
     language: 'hi',
     status: 'published',
@@ -131,7 +141,7 @@ const puzzles = [
     question: 'What can you catch but not throw?',
     answer: 'A cold.',
     difficulty: 'hard',
-    emoji: '🤧',
+    emoji: '🤔',
     gradient: 'from-red-400 to-orange-400',
     status: 'published',
   },
