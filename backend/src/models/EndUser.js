@@ -14,6 +14,13 @@ const endUserSchema = new mongoose.Schema(
     username: { type: String, required: true, unique: true, lowercase: true, trim: true },
     passwordHash: { type: String, required: true },
     recoveryCodeHash: { type: String, required: true },
+    // Only set when the current recoveryCodeHash was issued by an admin
+    // (see adminEndUserController.js's generateRecoveryCode) rather than
+    // the user's own permanent code — admin-issued codes expire 10 minutes
+    // after issuance, since they get shared over plain channels (WhatsApp/
+    // email) the admin doesn't control. null for a normal, non-expiring
+    // self-service code (set at signup or after a successful reset).
+    recoveryCodeExpiresAt: { type: Date, default: null },
     displayName: { type: String, required: true },
     // One of validators.js's AVATAR_OPTIONS (a fixed emoji preset, not an
     // upload — no file storage needed). Unset until the user picks one, in

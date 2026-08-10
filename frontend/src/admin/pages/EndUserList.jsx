@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../AuthContext'
-import { listEndUsersAdmin, updateEndUserStatus, deleteEndUser } from '../adminApi'
+import { listEndUsersAdmin, updateEndUserStatus, generateEndUserRecoveryCode, deleteEndUser } from '../adminApi'
 import Pager from '../components/Pager'
 
 const PAGE_SIZE = 20
@@ -13,6 +13,10 @@ export default function EndUserList() {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [selectedUser, setSelectedUser] = useState(null)
+  const [recoveryResult, setRecoveryResult] = useState(null)
+  const [recoveryError, setRecoveryError] = useState('')
+  const [generatingRecovery, setGeneratingRecovery] = useState(false)
+  const [copied, setCopied] = useState(false)
   const canModerate = hasRole('superadmin', 'editor')
 
   const isFirstRender = useRef(true)
@@ -62,6 +66,33 @@ export default function EndUserList() {
       load()
     } catch (err) {
       setError(err.message)
+    }
+  }
+
+  async function handleGenerateRecoveryCode(user) {
+    if (!window.confirm(`Generate a recovery code for "${user.displayName}"? It replaces their existing code and expires in 10 minutes.`)) return
+    setGeneratingRecovery(true)
+    setRecoveryError('')
+    try {
+      const data = await generateEndUserRecoveryCode(session.token, user._id)
+      setRecoveryResult(data)
+      setCopied(false)
+    } catch (err) {
+      setRecoveryError(err.message)
+    } finally {
+      setGeneratingRecovery(false)
+    }
+  }
+
+  async function handleCopyRecovery() {
+    if (!recoveryResult) return
+    const text = `Twegle account recovery\nUsername: ${recoveryResult.username}\nRecovery Code: ${recoveryResult.recoveryCode}\n\nThis code expires in 10 minutes — go to twegle.in, click "Forgot password?", and enter these to set a new password.`
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Clipboard permission denied/unsupported — admin can still select the text manually.
     }
   }
 
@@ -126,6 +157,16 @@ export default function EndUserList() {
                     }`}
                   >
                     {user.status === 'disabled' ? 'Re-enable' : 'Disable'}
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleGenerateRecoveryCode(user)
+                    }}
+                    disabled={generatingRecovery}
+                    className="px-3 py-1.5 rounded-lg bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-950/60 text-sm font-medium text-violet-700 dark:text-violet-400 disabled:opacity-50"
+                  >
+                    🔑 Recovery Code
                   </button>
                   <button
                     onClick={(e) => {
@@ -197,26 +238,89 @@ export default function EndUserList() {
               🔒 Password and Recovery Code are never visible to admins — only their hashes are stored.
             </p>
 
+            {recoveryError && <p className="text-sm text-red-500 -mt-3 mb-4">{recoveryError}</p>}
+
             {canModerate && (
-              <div className="flex gap-2">
+              <div className="space-y-2">
                 <button
-                  onClick={() => handleToggleStatus(selectedUser)}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold ${
-                    selectedUser.status === 'disabled'
-                      ? 'bg-green-50 dark:bg-green-950/40 hover:bg-green-100 dark:hover:bg-green-950/60 text-green-700 dark:text-green-400'
-                      : 'bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60 text-amber-700 dark:text-amber-400'
-                  }`}
+                  onClick={() => handleGenerateRecoveryCode(selectedUser)}
+                  disabled={generatingRecovery}
+                  className="w-full px-3 py-2 rounded-lg bg-violet-50 dark:bg-violet-950/40 hover:bg-violet-100 dark:hover:bg-violet-950/60 text-sm font-semibold text-violet-700 dark:text-violet-400 disabled:opacity-50"
                 >
-                  {selectedUser.status === 'disabled' ? 'Re-enable' : 'Disable'}
+                  {generatingRecovery ? 'Generating...' : '🔑 Generate Recovery Code'}
                 </button>
-                <button
-                  onClick={() => handleDelete(selectedUser._id, selectedUser.displayName)}
-                  className="flex-1 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/60 text-sm font-semibold text-red-600 dark:text-red-400"
-                >
-                  Delete
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleToggleStatus(selectedUser)}
+                    className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold ${
+                      selectedUser.status === 'disabled'
+                        ? 'bg-green-50 dark:bg-green-950/40 hover:bg-green-100 dark:hover:bg-green-950/60 text-green-700 dark:text-green-400'
+                        : 'bg-amber-50 dark:bg-amber-950/40 hover:bg-amber-100 dark:hover:bg-amber-950/60 text-amber-700 dark:text-amber-400'
+                    }`}
+                  >
+                    {selectedUser.status === 'disabled' ? 'Re-enable' : 'Disable'}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(selectedUser._id, selectedUser.displayName)}
+                    className="flex-1 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/60 text-sm font-semibold text-red-600 dark:text-red-400"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {recoveryResult && (
+        <div
+          className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"
+          onClick={() => setRecoveryResult(null)}
+        >
+          <div
+            className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl w-full max-w-sm p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-4">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">🔑 Recovery Code Generated</h2>
+              <button
+                onClick={() => setRecoveryResult(null)}
+                aria-label="Close"
+                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              Send this to <span className="font-semibold text-gray-700 dark:text-gray-300">{recoveryResult.displayName}</span> however
+              you'd normally reach them (WhatsApp, email, etc.). It expires in 10 minutes.
+            </p>
+
+            <dl className="space-y-2 text-sm mb-4 bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500 dark:text-gray-400">Username</dt>
+                <dd className="text-gray-900 dark:text-gray-100 font-mono font-medium">{recoveryResult.username}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500 dark:text-gray-400">Recovery Code</dt>
+                <dd className="text-gray-900 dark:text-gray-100 font-mono font-medium">{recoveryResult.recoveryCode}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-gray-500 dark:text-gray-400">Expires</dt>
+                <dd className="text-gray-900 dark:text-gray-100 font-medium">
+                  {new Date(recoveryResult.expiresAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                </dd>
+              </div>
+            </dl>
+
+            <button
+              onClick={handleCopyRecovery}
+              className="w-full px-3 py-2.5 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
+            >
+              {copied ? 'Copied! ✓' : '📋 Copy Username + Code'}
+            </button>
           </div>
         </div>
       )}

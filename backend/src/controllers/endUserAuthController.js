@@ -20,7 +20,9 @@ function randomGroup(length) {
 // whenever a reset rotates a fresh one). Only its bcrypt hash is ever
 // stored, same as the password, so a database leak alone can't be used to
 // take over an account.
-function generateRecoveryCode() {
+// Exported so adminEndUserController.js's admin-generated-recovery-code
+// action produces a code in the exact same format, not a second scheme.
+export function generateRecoveryCode() {
   return `TWEGLE-${randomGroup(4)}-${randomGroup(4)}`
 }
 
@@ -130,10 +132,16 @@ export async function resetPassword(req, res) {
     if (!valid) {
       return res.status(401).json({ error: 'Invalid username or recovery code' })
     }
+    // Only admin-generated codes carry an expiry (see EndUser.js) — a
+    // user's own permanent code has no expiresAt and skips this check.
+    if (user.recoveryCodeExpiresAt && user.recoveryCodeExpiresAt < new Date()) {
+      return res.status(401).json({ error: 'This recovery code has expired. Ask an admin for a new one.' })
+    }
 
     const newRecoveryCode = generateRecoveryCode()
     user.passwordHash = await bcrypt.hash(newPassword, 10)
     user.recoveryCodeHash = await bcrypt.hash(newRecoveryCode, 10)
+    user.recoveryCodeExpiresAt = null
     await user.save()
 
     res.json({

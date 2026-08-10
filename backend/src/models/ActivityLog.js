@@ -9,7 +9,7 @@ const activityLogSchema = new mongoose.Schema(
     admin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
     adminName: { type: String, required: true },
     action: { type: String, enum: ['create', 'update', 'delete'], required: true },
-    resourceType: { type: String, enum: ['quiz', 'post', 'friendshipQuiz', 'story'], required: true },
+    resourceType: { type: String, enum: ['quiz', 'post', 'friendshipQuiz', 'story', 'puzzle', 'endUser'], required: true },
     resourceId: { type: String, required: true },
     resourceLabel: { type: String, required: true },
   },

@@ -113,5 +113,7 @@ export const listEndUsersAdmin = (token, params) =>
   request(`/admin/end-users${toQueryString(params)}`, { token })
 export const updateEndUserStatus = (token, id, status) =>
   request(`/admin/end-users/${id}/status`, { token, method: 'PATCH', body: { status } })
+export const generateEndUserRecoveryCode = (token, id) =>
+  request(`/admin/end-users/${id}/recovery-code`, { token, method: 'POST' })
 export const deleteEndUser = (token, id) =>
   request(`/admin/end-users/${id}`, { token, method: 'DELETE' })
