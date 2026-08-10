@@ -10,7 +10,13 @@ import { GAMES } from '../games/registry'
 
 // Must match backend/src/utils/validators.js's AVATAR_OPTIONS exactly — a
 // fixed emoji preset, not an upload, so no file storage is ever needed.
-const AVATAR_OPTIONS = ['🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎', '🐶', '🐰', '🦁', '🐨', '🎉', '🌈']
+// First 14 are the original set; the next 7 are a "cute" batch and the
+// final 7 a "gamer" batch, added 2026-08-10 on direct request.
+const AVATAR_OPTIONS = [
+  '🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎', '🐶', '🐰', '🦁', '🐨', '🎉', '🌈',
+  '🐹', '🐧', '🐢', '🦋', '🐥', '🐻', '🦉',
+  '🎮', '🕹️', '👾', '🤖', '⚡', '🎯', '🎧',
+]
 
 export default function Account() {
   const { session, logout, updateSession } = useUserAuth()

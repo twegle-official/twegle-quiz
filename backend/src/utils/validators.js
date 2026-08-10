@@ -7,7 +7,14 @@ const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/
 
 // Fixed preset avatars for end-user accounts — deliberately emoji, not
 // image uploads, so no file storage is ever needed for this.
-export const AVATAR_OPTIONS = ['🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎', '🐶', '🐰', '🦁', '🐨', '🎉', '🌈']
+// First 14 are the original set; the next 7 are a "cute" batch and the
+// final 7 a "gamer" batch, added 2026-08-10 on direct request. Must match
+// frontend/src/pages/Account.jsx's AVATAR_OPTIONS exactly.
+export const AVATAR_OPTIONS = [
+  '🦄', '🐱', '🐼', '🦊', '🐸', '🌟', '🔥', '😎', '🐶', '🐰', '🦁', '🐨', '🎉', '🌈',
+  '🐹', '🐧', '🐢', '🦋', '🐥', '🐻', '🦉',
+  '🎮', '🕹️', '👾', '🤖', '⚡', '🎯', '🎧',
+]
 
 export const LIMITS = {
   MIN_PASSWORD_LENGTH: 8,
