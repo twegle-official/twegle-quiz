@@ -45,6 +45,7 @@ import adminFeedbackRoutes from './routes/adminFeedbackRoutes.js'
 import ticTacToeRoutes from './routes/ticTacToeRoutes.js'
 import connectFourRoutes from './routes/connectFourRoutes.js'
 import { registerConnectFourSocket } from './realtime/connectFourSocket.js'
+import { registerTicTacToeSocket } from './realtime/ticTacToeSocket.js'
 import engagementRoutes from './routes/engagementRoutes.js'
 import adminEngagementRoutes from './routes/adminEngagementRoutes.js'
 import horoscopeRoutes from './routes/horoscopeRoutes.js'
@@ -127,6 +128,7 @@ const io = new SocketIOServer(httpServer, {
   cors: { origin: process.env.CORS_ORIGIN || '*' },
 })
 registerConnectFourSocket(io)
+registerTicTacToeSocket(io)
 // Joining a game happens over REST (connectFourController.js), not the
 // socket — but the creator's tab is already connected and needs to know the
 // instant a friend joins, so the join controller reaches back into the same

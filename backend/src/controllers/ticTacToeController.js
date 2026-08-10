@@ -2,18 +2,8 @@ import crypto from 'node:crypto'
 import TicTacToeGame from '../models/TicTacToeGame.js'
 import { LIMITS } from '../utils/validators.js'
 
-const WIN_LINES = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8],
-  [0, 3, 6], [1, 4, 7], [2, 5, 8],
-  [0, 4, 8], [2, 4, 6],
-]
-
-function checkWinner(board) {
-  for (const [a, b, c] of WIN_LINES) {
-    if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a]
-  }
-  return null
-}
+// Room creation/joining stays REST; moves are handled by the socket instead
+// (see realtime/ticTacToeSocket.js) — same split Connect Four uses.
 
 function generateCode() {
   return crypto.randomBytes(6).toString('base64url')
@@ -86,46 +76,10 @@ export async function joinGame(req, res) {
   game.status = 'in_progress'
   await game.save()
 
-  res.json(gamePayload(game))
-}
+  // Same reasoning as connectFourController.js's joinGame: the creator's tab
+  // is already sitting in the socket room, so it needs a push here rather
+  // than waiting for a reload — joining is REST, not a socket event.
+  req.app.get('io')?.of('/tic-tac-toe').to(game.code).emit('gameState', gamePayload(game))
 
-export async function makeMove(req, res) {
-  const { role, cell } = req.body
-  if (role !== 'X' && role !== 'O') {
-    return res.status(400).json({ error: 'role must be X or O' })
-  }
-  if (!Number.isInteger(cell) || cell < 0 || cell > 8) {
-    return res.status(400).json({ error: 'cell must be an integer 0-8' })
-  }
-
-  const game = await TicTacToeGame.findOne({ code: req.params.code })
-  if (!game) return res.status(404).json({ error: 'Game not found' })
-
-  if (game.status !== 'in_progress') {
-    return res.status(400).json({ error: 'This game is not in progress' })
-  }
-  if (game.currentTurn !== role) {
-    return res.status(409).json({ error: "It's not your turn" })
-  }
-  if (game.board[cell] !== '') {
-    return res.status(409).json({ error: 'That cell is already taken' })
-  }
-
-  const board = [...game.board]
-  board[cell] = role
-  game.board = board
-
-  const winner = checkWinner(board)
-  if (winner) {
-    game.status = 'finished'
-    game.winner = winner
-  } else if (board.every((c) => c !== '')) {
-    game.status = 'finished'
-    game.winner = 'draw'
-  } else {
-    game.currentTurn = role === 'X' ? 'O' : 'X'
-  }
-
-  await game.save()
   res.json(gamePayload(game))
 }

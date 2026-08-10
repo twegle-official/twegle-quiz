@@ -280,10 +280,6 @@ export async function joinTicTacToeGame(code, name) {
   return postJson(`/tictactoe/${code}/join`, { name })
 }
 
-export async function makeTicTacToeMove(code, role, cell) {
-  return postJson(`/tictactoe/${code}/move`, { role, cell })
-}
-
 export function getTicTacToeShareUrl(code) {
   return `${API_URL}/share/tictactoe/${code}`
 }

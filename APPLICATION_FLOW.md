@@ -83,8 +83,9 @@ Enters their name → gets a shareable link, is always X, always goes first
         ↓
 Person B opens the link, enters their name → joins as O
         ↓
-Real alternating turns — each move is submitted to the backend, checked, and
-the board updates for whoever's turn it becomes next
+Real alternating turns — each move is sent over a live socket connection,
+checked server-side, and the board updates on both screens the instant it
+happens (no polling — converted to the same live approach Connect Four uses)
         ↓
 Game ends (win/draw) → both sides can share the result
         ↓
@@ -225,7 +226,7 @@ Feedback tab: see visitor feedback submitted through the public /feedback page,
 | Homepage polish (hero size, tab order, mobile filter overflow) | Done — shrunk the hero band (~136px → ~115px), reordered tabs by expected usage (Quizzes, Friendship Quiz, Games, then the 4 text-post categories), and fixed the tab/category-chip rows wrapping across multiple lines on mobile (now single-line horizontal scroll strips) |
 | Report a quiz/post | Done — a 🚩 "Report this" link on Result/Post pages, reusing the Feedback model/admin-list with contentType/contentId/contentLabel/reason attached; admin Feedback list shows a red "Report — {reason}" badge |
 | Non-personality (trivia) quizzes | Done — `Quiz.type` (`personality`/`trivia`); trivia options reuse the existing `result` field as `'correct'`/`'incorrect'`, results gain a minScore/maxScore range; one example seeded ("How Well Do You Know Bollywood?") |
-| Two-player async Tic-Tac-Toe | Done — a real turn-based match against a friend via a shareable link (`TicTacToeGame` model), separate from the existing single-player-vs-AI version; no accounts, each browser remembers its own role (X/O) in localStorage |
+| Two-player Tic-Tac-Toe (live) | Done — a real turn-based match against a friend via a shareable link (`TicTacToeGame` model), separate from the existing single-player-vs-AI version; no accounts, each browser remembers its own role (X/O) in localStorage. Converted from polling to live socket.io moves right after Connect Four shipped, same design. |
 | Live two-player Connect Four | Done — Twegle's first real-time feature; hybrid REST (room creation/join, `ConnectFourGame` model) + socket.io (live moves, instant broadcast to both players, no polling); no accounts, each browser remembers its own role (Red/Yellow) in localStorage |
 | "Trending on Social Media" quiz category removed | Done — reverted the same day it was added (see change log); 29 → 25 quizzes live |
 | Stories | Done — new content type, 6 categories (Horror/Comedy/Romance/Mystery/Moral Tales/Motivational), `/story/:slug` reader page with a "🔊 Listen to this story" button (browser Web Speech API, no server-side TTS); 8 original stories seeded (6 EN + 2 HI); full admin CRUD, search, sitemap, and Report integration |

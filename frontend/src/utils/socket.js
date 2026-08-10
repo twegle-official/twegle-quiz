@@ -10,3 +10,4 @@ const SERVER_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api')
 // user navigating away and back) instead of opening a fresh socket each
 // time. autoConnect is off so a component controls exactly when it joins.
 export const connectFourSocket = io(`${SERVER_URL}/connect-four`, { autoConnect: false })
+export const ticTacToeSocket = io(`${SERVER_URL}/tic-tac-toe`, { autoConnect: false })

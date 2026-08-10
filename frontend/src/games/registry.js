@@ -3,6 +3,12 @@
 // static list rather than something fetched from the database. Adding a new
 // game means adding an entry here, a component in this folder, and a case in
 // Game.jsx's switch.
+//
+// `players` marks which modes a game supports — 'single' (vs AI/house) and/or
+// 'friend' (a real second player, live or async). Most games are single-only;
+// Tic-Tac-Toe supports both (AI by default, plus "Challenge a friend");
+// Connect Four is friend-only (no single-player mode at all). Used to power
+// the Games tab's category filter on the homepage.
 export const GAMES = [
   {
     slug: 'tic-tac-toe',
@@ -10,6 +16,7 @@ export const GAMES = [
     emoji: '⭕',
     gradient: 'from-sky-400 to-blue-500',
     description: 'Classic 3x3 — think you can outsmart the house?',
+    players: ['single', 'friend'],
   },
   {
     slug: 'connect-four',
@@ -17,6 +24,7 @@ export const GAMES = [
     emoji: '🔴',
     gradient: 'from-red-500 to-yellow-400',
     description: 'Live 2-player — drop discs in real time and connect 4 to win!',
+    players: ['friend'],
   },
   {
     slug: 'rock-paper-scissors',
@@ -24,6 +32,7 @@ export const GAMES = [
     emoji: '✂️',
     gradient: 'from-emerald-400 to-teal-500',
     description: 'One round, no tricks — the house plays completely at random.',
+    players: ['single'],
   },
   {
     slug: 'memory-match',
@@ -31,6 +40,7 @@ export const GAMES = [
     emoji: '🧠',
     gradient: 'from-pink-400 to-rose-400',
     description: 'Flip cards, find the pairs — how few moves can you do it in?',
+    players: ['single'],
   },
   {
     slug: '2048',
@@ -38,6 +48,7 @@ export const GAMES = [
     emoji: '🔢',
     gradient: 'from-amber-400 to-orange-500',
     description: 'Slide and merge tiles to reach 2048.',
+    players: ['single'],
   },
   {
     slug: 'word-guess',
@@ -45,6 +56,7 @@ export const GAMES = [
     emoji: '🔤',
     gradient: 'from-lime-400 to-green-500',
     description: 'Guess the word one letter at a time before you run out of lives.',
+    players: ['single'],
   },
   {
     slug: 'guess-the-number',
@@ -52,6 +64,7 @@ export const GAMES = [
     emoji: '🎯',
     gradient: 'from-purple-400 to-fuchsia-500',
     description: "We're thinking of a number 1-100 — can you find it?",
+    players: ['single'],
   },
   {
     slug: 'sudoku',
@@ -59,6 +72,7 @@ export const GAMES = [
     emoji: '🔢',
     gradient: 'from-cyan-400 to-blue-600',
     description: 'Fill the grid so every row, column, and 3x3 box has 1-9.',
+    players: ['single'],
   },
   {
     slug: 'simon-says',
@@ -66,6 +80,7 @@ export const GAMES = [
     emoji: '🎨',
     gradient: 'from-red-400 to-orange-400',
     description: 'Watch the pattern, then repeat it — how many rounds can you remember?',
+    players: ['single'],
   },
   {
     slug: 'whack-a-mole',
@@ -73,5 +88,6 @@ export const GAMES = [
     emoji: '🔨',
     gradient: 'from-violet-400 to-indigo-500',
     description: "Moles pop up fast — whack as many as you can in 20 seconds.",
+    players: ['single'],
   },
 ]

@@ -1,11 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { fetchTicTacToeGame, joinTicTacToeGame, makeTicTacToeMove, getTicTacToeShareUrl } from '../api'
+import { fetchTicTacToeGame, joinTicTacToeGame, getTicTacToeShareUrl } from '../api'
+import { ticTacToeSocket } from '../utils/socket'
 import ShareButtons from '../components/ShareButtons'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
-
-const POLL_INTERVAL_MS = 4000
 
 // No accounts, so each browser remembers its own role for a given game code
 // in localStorage — set to 'X' the moment the creator's own "Challenge a
@@ -37,17 +36,38 @@ export default function TicTacToeMultiplayer() {
     load()
   }, [load])
 
-  // Poll while it's not our turn (includes "still waiting for someone to
-  // join at all") so the board updates without a manual refresh — but this
-  // is a nice-to-have, not load-bearing: revisiting later always shows the
-  // real current state regardless of whether polling ever ran.
+  // Live updates replace polling entirely (see ConnectFourMultiplayer.jsx —
+  // same pattern): connect once we know our role, join the room named after
+  // the code, and let every 'gameState' broadcast update local state
+  // directly. A dropped/reconnected socket re-joins and resyncs from Mongo,
+  // same recovery a fresh page load would give.
   useEffect(() => {
-    if (!game || game.status === 'finished') return
-    const isMyTurn = role && game.currentTurn === role
-    if (isMyTurn) return
-    const id = setInterval(load, POLL_INTERVAL_MS)
-    return () => clearInterval(id)
-  }, [game, role, load])
+    if (!role) return
+
+    function handleGameState(data) {
+      setGame(data)
+    }
+    function handleError(message) {
+      setError(message)
+    }
+    function joinRoom() {
+      ticTacToeSocket.emit('joinRoom', { code, role })
+    }
+
+    ticTacToeSocket.on('gameState', handleGameState)
+    ticTacToeSocket.on('errorMsg', handleError)
+    ticTacToeSocket.on('connect', joinRoom)
+
+    ticTacToeSocket.connect()
+    if (ticTacToeSocket.connected) joinRoom()
+
+    return () => {
+      ticTacToeSocket.off('gameState', handleGameState)
+      ticTacToeSocket.off('errorMsg', handleError)
+      ticTacToeSocket.off('connect', joinRoom)
+      ticTacToeSocket.disconnect()
+    }
+  }, [code, role])
 
   useDocumentMeta(
     game ? `${game.playerXName}'s Tic-Tac-Toe match` : 'Tic-Tac-Toe',
@@ -71,21 +91,14 @@ export default function TicTacToeMultiplayer() {
     }
   }
 
-  async function handleCellClick(cell) {
+  function handleCellClick(cell) {
     if (movingRef.current) return
     if (!role || game.board[cell] || game.status !== 'in_progress' || game.currentTurn !== role) return
     movingRef.current = true
-    try {
-      const data = await makeTicTacToeMove(code, role, cell)
-      setGame(data)
-    } catch {
-      // Likely a race (the poll hadn't caught up with an opponent move yet,
-      // or this tab's view of "whose turn" was briefly stale) — resync
-      // instead of showing a scary error for what's just a timing hiccup.
-      load()
-    } finally {
+    ticTacToeSocket.emit('makeMove', { code, role, cell })
+    setTimeout(() => {
       movingRef.current = false
-    }
+    }, 200)
   }
 
   if (notFound) {

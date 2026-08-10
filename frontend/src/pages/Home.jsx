@@ -54,6 +54,14 @@ const POST_CATEGORIES = [
   { key: 'motivational-quote', label: 'Motivational', emoji: '💪' },
 ]
 
+// Filters the static GAMES registry by its `players` field — client-side,
+// since games aren't database content (see registry.js's own comment).
+const GAME_CATEGORIES = [
+  { key: 'all', label: 'All' },
+  { key: 'single', label: 'Single Player', emoji: '🧑' },
+  { key: 'friend', label: '2 Player', emoji: '🤝' },
+]
+
 const QUIZ_CATEGORIES = [
   { key: 'all', label: 'All' },
   { key: 'beauty', label: 'Beauty', emoji: '💄' },
@@ -161,6 +169,10 @@ export default function Home() {
   function setPuzzleDifficulty(cat) {
     setParam('pzcat', cat, 'all')
   }
+  const gameCategory = getParam('gcat', GAME_CATEGORIES.map((c) => c.key), 'all')
+  function setGameCategory(cat) {
+    setParam('gcat', cat, 'all')
+  }
   const sortMode = getParam('sort', ['newest', 'trending'], 'newest')
   function setSortMode(mode) {
     setParam('sort', mode, 'newest')
@@ -213,7 +225,7 @@ export default function Home() {
   // together from the top — rather than a different spot each time.
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, sortMode])
+  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, gameCategory, sortMode])
 
   useEffect(() => {
     Promise.all([fetchQuizzes(), fetchPosts()])
@@ -302,7 +314,16 @@ export default function Home() {
       ? content.items
       : null
 
-  const displayedItems = sortItems(items, activeTab, sortMode)
+  // Games filtering happens client-side (unlike quizzes/stories/posts/
+  // puzzles above, which filter server-side via the fetch call) since
+  // GAMES is a static local list, not something the backend can query by
+  // category — see registry.js.
+  const filteredItems =
+    activeTab === 'games' && gameCategory !== 'all'
+      ? items?.filter((g) => g.players?.includes(gameCategory))
+      : items
+
+  const displayedItems = sortItems(filteredItems, activeTab, sortMode)
 
   const isPostTab = activeTab === 'posts'
 
@@ -527,6 +548,24 @@ export default function Home() {
                 }`}
               >
                 {diff.emoji} {diff.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'games' && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+            {GAME_CATEGORIES.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setGameCategory(cat.key)}
+                className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full lg:rounded-lg text-xs font-semibold transition-colors lg:text-left ${
+                  gameCategory === cat.key
+                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {cat.emoji} {cat.label}
               </button>
             ))}
           </div>
