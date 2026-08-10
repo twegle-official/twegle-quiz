@@ -10,7 +10,7 @@ import GuessTheNumber from '../games/GuessTheNumber'
 import Sudoku from '../games/Sudoku'
 import SimonSays from '../games/SimonSays'
 import WhackAMole from '../games/WhackAMole'
-import { recordGamePlay, createTicTacToeGame, recordEngagement } from '../api'
+import { recordGamePlay, createTicTacToeGame, createConnectFourGame, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
@@ -142,9 +142,15 @@ export default function Game() {
     setChallengeSubmitting(true)
     setChallengeError('')
     try {
-      const data = await createTicTacToeGame(challengeName.trim())
-      localStorage.setItem(`tictactoe-role-${data.code}`, 'X')
-      navigate(`/games/tic-tac-toe/${data.code}`)
+      if (game.slug === 'connect-four') {
+        const data = await createConnectFourGame(challengeName.trim())
+        localStorage.setItem(`connectfour-role-${data.code}`, 'red')
+        navigate(`/games/connect-four/${data.code}`)
+      } else {
+        const data = await createTicTacToeGame(challengeName.trim())
+        localStorage.setItem(`tictactoe-role-${data.code}`, 'X')
+        navigate(`/games/tic-tac-toe/${data.code}`)
+      }
     } catch (err) {
       setChallengeError(err.message)
     } finally {
@@ -169,9 +175,9 @@ export default function Game() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{game.title}</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">{game.description}</p>
 
-      {game.slug === 'tic-tac-toe' && (
+      {(game.slug === 'tic-tac-toe' || game.slug === 'connect-four') && (
         <div className="mb-8 max-w-xs mx-auto">
-          {showChallengeForm ? (
+          {showChallengeForm || game.slug === 'connect-four' ? (
             <form onSubmit={handleChallengeSubmit} className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
               <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">🆚 Challenge a friend</p>
               {challengeError && (

@@ -76,6 +76,18 @@ export const ticTacToeLimiter = rateLimit({
   message: { error: 'Too many requests. Please slow down.' },
 })
 
+// Applied to creating/joining a Connect Four match over REST — the actual
+// disc-drop moves go over the socket.io connection instead (see
+// realtime/connectFourSocket.js), so there's no per-move REST call to limit
+// here the way ticTacToeLimiter covers /move.
+export const connectFourLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})
+
 // Applied to submitting feedback — tighter than the analytics-style limiters
 // since this writes free-text content an admin will actually read, not just
 // an anonymous counter.

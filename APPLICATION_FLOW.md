@@ -93,12 +93,32 @@ Loser (or the drawer) shares "beat me/drew with me — think you can do better?"
 
 The only growth loop so far that's genuinely turn-based rather than "both people play independently, then reveal" — no accounts, so each browser just remembers its own role (X or O) in `localStorage` for that match's code (see `FRONTEND.md`).
 
+### Live two-player Connect Four flow (a fifth loop, on the Games side)
+
+```
+Person A opens Connect Four → challenge form is shown immediately (there's
+no single-player mode to opt out of first)
+        ↓
+Enters their name → gets a shareable link, is always Red, always goes first
+        ↓
+Person B opens the link, enters their name → joins as Yellow
+        ↓
+Both boards update the instant either player drops a disc — no polling,
+no manual refresh, moves arrive live over a socket.io connection
+        ↓
+Game ends (win/draw) → both sides can share the result
+        ↓
+Loser (or the drawer) shares "beat me/drew with me — think you can do better?" → pulls more people in
+```
+
+Twegle's first genuinely *real-time* growth loop — Tic-Tac-Toe's two-player mode above is turn-based but still async (poll-and-wait); this one is live. See `BACKEND.md`/`FRONTEND.md` for the hybrid REST+socket.io design and why MongoDB stays the source of truth even with a live connection in the mix.
+
 ### Content types
 
 - **Quizzes** — two shapes now. **Personality** (the original format): 5 questions, each answer maps to one of several possible results, whichever gets tallied the most wins. 12 topics (skincare, Bollywood, aesthetics, procrastination, chai/coffee, Korean beauty standards, squishies, blind bags, K-pop idol roles, K-pop comeback eras, texting personality, monsoon mood), each in English and Hindi (24 quizzes total). **Trivia**: right/wrong questions scored numerically, landing on whichever result's score range matches — 1 example seeded ("How Well Do You Know Bollywood?"). Every quiz also has a **category** — Beauty & Skincare, Bollywood & Pop Culture, K-pop, Lifestyle & Personality, or Fun & Random — so the homepage can offer filter chips instead of one long undifferentiated list.
 - **Friendship Quizzes** — a two-person format, unlike everything else on the site: one person picks a template (e.g. "How Well Does Anyone Know Me?") and answers questions about themselves, gets a shareable link, and any number of friends can open that link to guess what they'd say. Each friend gets their own scored, shareable result — right/wrong per question — which is what drives more people back to the original link. 4 templates live today (2 English + 2 Hindi).
 - **Jokes, Funny Lines, Quotes, Motivational Quotes** — single shareable cards, no questions involved. Browsable by category from the homepage tabs, or directly at `/browse/:category`. Each has its own permalink at `/post/:id` for sharing.
-- **Games** — interactive, code-driven content (not admin-authored like everything else above). Seven live: Tic-Tac-Toe (unbeatable AI), Rock Paper Scissors (random AI — fair, since a single round carries no information to exploit), Memory Match, 2048, Word Guess, Guess the Number, and Sudoku. No language split (none of the seven need translation) and no admin panel entry — adding a game is a code change, not a content-authoring task. Tic-Tac-Toe additionally has a real **two-player async mode** — share a link, a friend joins and takes real alternating turns against you, separate from its single-player-vs-AI version. See the growth-loop diagram below.
+- **Games** — interactive, code-driven content (not admin-authored like everything else above). Nine single-player games live: Tic-Tac-Toe (unbeatable AI), Rock Paper Scissors (random AI — fair, since a single round carries no information to exploit), Memory Match, 2048, Word Guess, Guess the Number, Sudoku, Simon Says, and Whack-a-Mole. No language split (none need translation) and no admin panel entry — adding a game is a code change, not a content-authoring task. Tic-Tac-Toe additionally has a real **two-player async mode** — share a link, a friend joins and takes real alternating turns against you, separate from its single-player-vs-AI version. **Connect Four** is a tenth entry in the games list, but purely live two-player — no single-player mode at all, moves sync instantly over a socket.io connection instead of a poll. See the growth-loop diagrams below.
 - **Stories** — original short-story content across 6 categories (Horror, Comedy, Romance, Mystery, Moral Tales, Motivational), read on-page or *listened to* via a "🔊 Listen to this story" button that narrates the full text using the browser's built-in Web Speech API — no recorded voice, no paid TTS service, nothing server-side. 8 stories live today (6 English across all categories, 2 Hindi). Every story is original writing, not adapted from any existing published work, which is what keeps the read-aloud feature copyright-clean (the narration carries no licensed voice, and the text itself isn't derived from anyone else's copyrighted work).
 
 ### Languages
@@ -206,6 +226,7 @@ Feedback tab: see visitor feedback submitted through the public /feedback page,
 | Report a quiz/post | Done — a 🚩 "Report this" link on Result/Post pages, reusing the Feedback model/admin-list with contentType/contentId/contentLabel/reason attached; admin Feedback list shows a red "Report — {reason}" badge |
 | Non-personality (trivia) quizzes | Done — `Quiz.type` (`personality`/`trivia`); trivia options reuse the existing `result` field as `'correct'`/`'incorrect'`, results gain a minScore/maxScore range; one example seeded ("How Well Do You Know Bollywood?") |
 | Two-player async Tic-Tac-Toe | Done — a real turn-based match against a friend via a shareable link (`TicTacToeGame` model), separate from the existing single-player-vs-AI version; no accounts, each browser remembers its own role (X/O) in localStorage |
+| Live two-player Connect Four | Done — Twegle's first real-time feature; hybrid REST (room creation/join, `ConnectFourGame` model) + socket.io (live moves, instant broadcast to both players, no polling); no accounts, each browser remembers its own role (Red/Yellow) in localStorage |
 | "Trending on Social Media" quiz category removed | Done — reverted the same day it was added (see change log); 29 → 25 quizzes live |
 | Stories | Done — new content type, 6 categories (Horror/Comedy/Romance/Mystery/Moral Tales/Motivational), `/story/:slug` reader page with a "🔊 Listen to this story" button (browser Web Speech API, no server-side TTS); 8 original stories seeded (6 EN + 2 HI); full admin CRUD, search, sitemap, and Report integration |
 | Trending/Newest sort on every tab | Done — generalized from Quizzes-only to all 9 homepage tabs; sorts by play/attempt counts, aggregated post/story engagement, or (for Games) reversed registry order |

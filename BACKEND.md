@@ -80,6 +80,7 @@ Admins previously had zero visibility into `EndUser` accounts — no list, no wa
 - `GET /api/share/quiz/:slug`, `GET /api/share/quiz/:slug/:resultKey`, `GET /api/share/game/:slug`, `GET /api/share/friendship-quiz/:slug`, `GET /api/share/post/:id`, `GET /api/share/story/:slug`, `GET /api/share/horoscope/:sign`, `GET /api/share/friendship/:code`, `GET /api/share/friendship-result/:id`, `GET /api/share/quiz-compare/:code` — **not for the frontend to call** — these are what the "Copy link"/WhatsApp buttons actually point at. They return static HTML with real `og:title`/`og:description` for link-preview crawlers (which don't run JavaScript), then instantly redirect a real browser to the actual React page. See "Link previews" below.
 - `POST /api/feedback` — anyone submits `{ message, email? }` (email optional), plus optional `{ contentType, contentId, contentLabel, reason }` when this submission is a 🚩 report on a specific quiz/post/story rather than general feedback. Rate-limited (10/15min per IP, stricter than the general analytics endpoints since a public free-text form is a more obvious spam target). See "Feedback" and "Report a quiz/post" below.
 - `POST /api/tictactoe`, `GET /api/tictactoe/:code`, `POST /api/tictactoe/:code/join`, `POST /api/tictactoe/:code/move` — a real two-player async Tic-Tac-Toe match (distinct from the single-player-vs-AI game under `/api/games/*`). See "Two-player Tic-Tac-Toe" below.
+- `POST /api/connect-four`, `GET /api/connect-four/:code`, `POST /api/connect-four/:code/join` — creates/fetches/joins a real-time Connect Four match. **No REST move endpoint** — dropping a disc happens over a socket.io connection instead. See "Live two-player Connect Four" below.
 - `GET /sitemap.xml` — **not under `/api`, and not for the frontend to call.** Generated straight from the database (all published quizzes, posts, and friendship-quiz templates plus static pages), pointed at `FRONTEND_URL`. See "SEO" below.
 - `GET /api/friendship/quizzes?language=en|hi` — list published friendship-quiz templates; each result includes `totalAttempts` (how many friends have guessed), `questionCount`, and `createdAt` (used for the homepage's "Newest" sort)
 - `GET /api/friendship/quizzes/:slug` — get one published template's full questions (for the person filling in their own answers)
@@ -192,6 +193,19 @@ A real async match against a friend — deliberately a separate system from the 
 - **Joining is idempotent**, same reasoning as `QuizCompare`'s join: once `playerOName` is set, a repeat `POST /:code/join` just returns the current state instead of erroring or overwriting the real second player (protects against double-submits or a third person opening an already-used link).
 - **Win/draw checking** is a plain 8-line-combination scan against the 3x3 board, run after every move — no minimax here, since this isn't an AI opponent to out-think, just a rules check.
 - The rate limiter (`ticTacToeLimiter`) is applied only to the three write routes (create/join/move) in `ticTacToeRoutes.js` directly, not mounted broadly like some other limiters — `GET /:code` is deliberately left unlimited since the frontend polls it every few seconds while waiting for the opponent's move, and rate-limiting that would break the wait experience.
+
+## Live two-player Connect Four
+
+Twegle's first genuinely real-time feature — both players' boards update the instant a disc drops, no polling. Everything before this was async (Tic-Tac-Toe) or purely request/response; this is the first time the backend holds an open connection to the browser at all.
+
+**Design: hybrid REST + socket.io, not a pure in-memory game server.** Room creation/joining still goes through plain REST (`connectFourController.js`, `connectFourRoutes.js`) and a `ConnectFourGame` Mongo document — same shape of pattern as `TicTacToeGame` (`code`, `board`, `playerRedName`/`playerYellowName`, `currentTurn`, `status: waiting|in_progress|finished`, `winner`). Only the actual disc-drop move happens over a socket.io connection instead of a REST call. **Why hybrid:** Mongo stays the single source of truth for the match, so a dropped connection — a phone losing signal, or Render's free tier waking the service back up after 15 minutes idle — never loses the game itself, only the "instant" delivery for however long the socket was down. A reconnecting client just re-fetches/re-joins and gets the real current state pulled from the DB, exactly like a fresh page load would. Pure in-memory room state would lose everything on a server restart or a cold start; this doesn't.
+
+- **Server wiring** (`server.js`): `app` is wrapped in a plain `http.createServer(app)` instead of calling `app.listen()` directly, so a `socket.io` `Server` instance can attach to the same HTTP server/port. Every other route in the app is untouched — still plain Express/REST. The `io` instance is also stashed on `app.set('io', io)` so REST route handlers (specifically `joinGame`) can reach back into it — see below.
+- **`realtime/connectFourSocket.js`** registers a `/connect-four` socket.io namespace with two events: `joinRoom { code, role }` (validates the game/role exist, joins a socket.io room named after `code`, sends back the current DB state — covers both a first join and a reconnect resync) and `dropDisc { code, role, column }` (re-validates everything server-side — `status === 'in_progress'`, `role === currentTurn`, column not full — computes the landing row via gravity, checks for a win or a full-board draw, saves to Mongo, then broadcasts the new state to every socket in that room). The server is sole authority on move validation, same trust model as Tic-Tac-Toe's `makeMove` — a client's claimed role is never trusted over what's actually saved in the DB.
+- **Board logic** lives in `utils/connectFour.js`, separate from the socket handler: `findLandingRow` (gravity — first empty cell scanning from the bottom of a column), `checkWinner` (checks only the 4 lines running through the *just-placed* disc — horizontal, vertical, both diagonals — rather than rescanning the whole board every move, which is both cheaper and the only way to know which disc's placement caused the win), `isBoardFull` (draw check).
+- **Joining still needs a socket broadcast of its own.** Since `POST /:code/join` is REST, not a socket event, the creator's tab (already connected and sitting in the room) would otherwise never find out a friend joined until its next manual reload. `joinGame` in `connectFourController.js` reaches into `req.app.get('io')` after saving and emits `gameState` to the room directly — the one place a REST handler pushes a live update rather than just returning a response.
+- No `disconnect` cleanup is needed on the socket handler — the Mongo doc persists regardless of who's connected; the next `joinRoom` on reconnect just re-syncs from it.
+- Same rate-limiter shape as Tic-Tac-Toe (`connectFourLimiter`, 120/15min), applied to the two REST write routes (create/join). There's no per-move REST call to limit at all, since moves go over the socket instead.
 
 ## Stories
 
@@ -318,20 +332,23 @@ backend/src/
   models/                 Admin, Quiz, Post, Story, PlaySession, PostEngagement,
                            Engagement, FriendshipQuiz, FriendshipInstance,
                            FriendshipAttempt, ActivityLog, GameSession, QuizCompare,
-                           Feedback, TicTacToeGame (Mongoose schemas)
+                           Feedback, TicTacToeGame, ConnectFourGame (Mongoose schemas)
   controllers/             business logic per resource, incl. shareController.js,
                            postEngagementController.js, storyController.js,
                            engagementController.js, friendshipQuizController.js,
                            friendshipInstanceController.js, sitemapController.js,
                            activityLogController.js, gameController.js,
                            quizCompareController.js, feedbackController.js,
-                           ticTacToeController.js
+                           ticTacToeController.js, connectFourController.js
   routes/                  URL → controller wiring + role requirements, incl. shareRoutes.js,
                            storyRoutes.js, adminStoryRoutes.js, engagementRoutes.js,
                            adminEngagementRoutes.js,
                            friendshipRoutes.js, adminFriendshipRoutes.js, activityRoutes.js,
                            gameRoutes.js, feedbackRoutes.js, adminFeedbackRoutes.js,
-                           ticTacToeRoutes.js
+                           ticTacToeRoutes.js, connectFourRoutes.js
+  realtime/                socket.io event handlers, incl. connectFourSocket.js
+                           (see "Live two-player Connect Four")
+  utils/connectFour.js     pure board logic (landing row, win check, draw check)
   middleware/auth.js       JWT verification + role check
   middleware/sanitize.js    NoSQL-injection protection
   middleware/rateLimiters.js  login/plays/engagement/friendship/feedback/tictactoe rate limits

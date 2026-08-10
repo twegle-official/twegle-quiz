@@ -1,0 +1,95 @@
+import ConnectFourGame from '../models/ConnectFourGame.js'
+import { findLandingRow, checkWinner, isBoardFull } from '../utils/connectFour.js'
+
+// The site's first real-time feature — everything else is plain REST +
+// polling (see TicTacToeGame's async pattern). MongoDB stays the source of
+// truth here on purpose: every drop is validated and saved to the game's
+// document first, *then* broadcast to whoever's connected. That means a
+// dropped connection (a phone losing signal, the free-tier host sleeping
+// and waking between moves) never loses the game itself — a reconnecting
+// client just re-joins the room and gets the real current state pulled from
+// the DB, the same way a fresh page load already would. Only the "instant"
+// delivery is at risk during a gap, never the game state.
+function gamePayload(game) {
+  return {
+    code: game.code,
+    board: game.board,
+    playerRedName: game.playerRedName,
+    playerYellowName: game.playerYellowName,
+    currentTurn: game.currentTurn,
+    status: game.status,
+    winner: game.winner,
+  }
+}
+
+export function registerConnectFourSocket(io) {
+  const nsp = io.of('/connect-four')
+
+  nsp.on('connection', (socket) => {
+    // A client joins (or re-joins after a reconnect) a room named after the
+    // game code — the server is the only thing that decides whether `role`
+    // is legitimate for this game, exactly the same "never trust the
+    // client's claimed identity" rule the async Tic-Tac-Toe move validation
+    // already follows.
+    socket.on('joinRoom', async ({ code, role }) => {
+      try {
+        const game = await ConnectFourGame.findOne({ code })
+        if (!game) return socket.emit('errorMsg', 'Game not found')
+        if (role !== 'red' && role !== 'yellow') return socket.emit('errorMsg', 'Invalid role')
+
+        socket.join(code)
+        socket.data.code = code
+        socket.data.role = role
+        socket.emit('gameState', gamePayload(game))
+      } catch {
+        socket.emit('errorMsg', 'Could not join the game')
+      }
+    })
+
+    socket.on('dropDisc', async ({ code, role, column }) => {
+      try {
+        if (role !== 'red' && role !== 'yellow') return socket.emit('errorMsg', 'Invalid role')
+        if (!Number.isInteger(column) || column < 0 || column > 6) {
+          return socket.emit('errorMsg', 'Invalid column')
+        }
+
+        const game = await ConnectFourGame.findOne({ code })
+        if (!game) return socket.emit('errorMsg', 'Game not found')
+        if (game.status !== 'in_progress') {
+          return socket.emit('errorMsg', 'This game is not in progress')
+        }
+        if (game.currentTurn !== role) {
+          return socket.emit('errorMsg', "It's not your turn")
+        }
+
+        const row = findLandingRow(game.board, column)
+        if (row === -1) {
+          return socket.emit('errorMsg', 'That column is full')
+        }
+
+        const board = game.board.map((r) => [...r])
+        board[row][column] = role
+        game.board = board
+
+        const winner = checkWinner(board, row, column)
+        if (winner) {
+          game.status = 'finished'
+          game.winner = winner
+        } else if (isBoardFull(board)) {
+          game.status = 'finished'
+          game.winner = 'draw'
+        } else {
+          game.currentTurn = role === 'red' ? 'yellow' : 'red'
+        }
+
+        await game.save()
+        // Broadcast to every socket in the room (both players), not just
+        // the one who moved — this single event replaces the 4-second poll
+        // Tic-Tac-Toe uses.
+        nsp.to(code).emit('gameState', gamePayload(game))
+      } catch {
+        socket.emit('errorMsg', 'Could not make that move')
+      }
+    })
+  })
+}

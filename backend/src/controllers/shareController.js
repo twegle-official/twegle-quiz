@@ -6,6 +6,7 @@ import FriendshipInstance from '../models/FriendshipInstance.js'
 import FriendshipAttempt from '../models/FriendshipAttempt.js'
 import QuizCompare from '../models/QuizCompare.js'
 import TicTacToeGame from '../models/TicTacToeGame.js'
+import ConnectFourGame from '../models/ConnectFourGame.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
 import { findZodiacSign } from '../data/zodiacSigns.js'
@@ -196,6 +197,23 @@ export async function shareTicTacToe(req, res) {
       title: `⭕ ${game.playerXName} wants to play Tic-Tac-Toe with you!`,
       description: 'Take your turn and see who wins — on Twegle!',
       redirectUrl: `${frontendUrl()}/games/tic-tac-toe/${code}`,
+    })
+  )
+}
+
+export async function shareConnectFour(req, res) {
+  const { code } = req.params
+  const game = await ConnectFourGame.findOne({ code })
+  if (!game) {
+    return res.status(404).send('Not found')
+  }
+
+  res.set('Content-Type', 'text/html')
+  res.send(
+    renderSharePage({
+      title: `🔴 ${game.playerRedName} wants to play Connect Four with you — live!`,
+      description: 'Real-time match, no waiting for your turn — join now on Twegle!',
+      redirectUrl: `${frontendUrl()}/games/connect-four/${code}`,
     })
   )
 }

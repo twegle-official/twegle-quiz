@@ -23,6 +23,7 @@ import CompareResult from './pages/CompareResult'
 import SearchResults from './pages/SearchResults'
 import Game from './pages/Game'
 import TicTacToeMultiplayer from './pages/TicTacToeMultiplayer'
+import ConnectFourMultiplayer from './pages/ConnectFourMultiplayer'
 import Feedback from './pages/Feedback'
 import Badges from './pages/Badges'
 import Leaderboard from './pages/Leaderboard'
@@ -126,6 +127,7 @@ function PublicSite() {
           <Route path="/search" element={<SearchResults />} />
           <Route path="/games/:slug" element={<Game />} />
           <Route path="/games/tic-tac-toe/:code" element={<TicTacToeMultiplayer />} />
+          <Route path="/games/connect-four/:code" element={<ConnectFourMultiplayer />} />
           <Route path="/post/:id" element={<PostView />} />
           <Route path="/story/:slug" element={<StoryView />} />
           <Route path="/puzzle/:id" element={<PuzzleView />} />

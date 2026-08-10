@@ -12,6 +12,13 @@ export const GAMES = [
     description: 'Classic 3x3 — think you can outsmart the house?',
   },
   {
+    slug: 'connect-four',
+    title: 'Connect Four',
+    emoji: '🔴',
+    gradient: 'from-red-500 to-yellow-400',
+    description: 'Live 2-player — drop discs in real time and connect 4 to win!',
+  },
+  {
     slug: 'rock-paper-scissors',
     title: 'Rock Paper Scissors',
     emoji: '✂️',

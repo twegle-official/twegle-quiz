@@ -1,7 +1,9 @@
 import 'dotenv/config'
+import http from 'node:http'
 import express from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import { Server as SocketIOServer } from 'socket.io'
 import { connectDB } from './config/db.js'
 import { ensureFirstAdmin } from './scripts/ensureFirstAdmin.js'
 import { sanitizeBody } from './middleware/sanitize.js'
@@ -41,6 +43,8 @@ import gameRoutes from './routes/gameRoutes.js'
 import feedbackRoutes from './routes/feedbackRoutes.js'
 import adminFeedbackRoutes from './routes/adminFeedbackRoutes.js'
 import ticTacToeRoutes from './routes/ticTacToeRoutes.js'
+import connectFourRoutes from './routes/connectFourRoutes.js'
+import { registerConnectFourSocket } from './realtime/connectFourSocket.js'
 import engagementRoutes from './routes/engagementRoutes.js'
 import adminEngagementRoutes from './routes/adminEngagementRoutes.js'
 import horoscopeRoutes from './routes/horoscopeRoutes.js'
@@ -97,6 +101,7 @@ app.use('/api/leaderboard', leaderboardRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/admin/feedback', adminFeedbackRoutes)
 app.use('/api/tictactoe', ticTacToeRoutes)
+app.use('/api/connect-four', connectFourRoutes)
 app.use('/api/engagement', engagementRoutes)
 app.use('/api/admin/engagement', adminEngagementRoutes)
 app.use('/api/horoscope', horoscopeRoutes)
@@ -112,10 +117,27 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 4000
 
+// Wrapped in a plain http.Server (instead of calling app.listen directly)
+// so socket.io can attach to the same server/port — this is the site's
+// first real-time feature (Connect Four, see realtime/connectFourSocket.js);
+// every route above is untouched, still plain REST served by the same
+// Express app.
+const httpServer = http.createServer(app)
+const io = new SocketIOServer(httpServer, {
+  cors: { origin: process.env.CORS_ORIGIN || '*' },
+})
+registerConnectFourSocket(io)
+// Joining a game happens over REST (connectFourController.js), not the
+// socket — but the creator's tab is already connected and needs to know the
+// instant a friend joins, so the join controller reaches back into the same
+// `io` instance to broadcast it. Stashed on `app` since Express doesn't
+// otherwise give route handlers a way to reach it.
+app.set('io', io)
+
 connectDB()
   .then(() => ensureFirstAdmin())
   .then(() => {
-    app.listen(port, () => console.log(`API running on http://localhost:${port}`))
+    httpServer.listen(port, () => console.log(`API running on http://localhost:${port}`))
   })
   .catch((err) => {
     console.error('Failed to connect to database', err)
