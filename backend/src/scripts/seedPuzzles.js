@@ -136,12 +136,18 @@ const puzzles = [
     status: 'published',
   },
 
-  // --- Picture puzzle (uses Lorem Picsum placeholder — royalty-free, swap
-  // for a real rebus/zoomed-photo image any time via the admin panel — no
-  // upload pipeline exists yet, see BACKEND.md). ---
+  // --- Picture puzzle (uses a fixed Lorem Picsum seed — royalty-free,
+  // swap for any real themed image any time via the admin panel — no
+  // upload pipeline exists yet, see BACKEND.md). The question/answer below
+  // must actually match whatever this seed's photo shows — the original
+  // question ("what everyday object is this a close-up of?") described a
+  // generic zoomed rebus shot, but the photo this seed actually returns is
+  // a full scenic landscape (a person standing on Trolltunga, a famous
+  // cliff in Norway), not a close-up of anything — reported directly as
+  // effectively spoiling itself, since there was nothing left to guess. ---
   {
-    question: 'Look closely at this picture. What everyday object is this a close-up of?',
-    answer: 'It\'s a zoomed-in photo — take a guess, then compare notes with a friend! (Swap this for a real themed image any time.)',
+    question: 'This famous cliff juts straight out over a fjord and is one of the most photographed hiking spots in the world. Do you know its name or country?',
+    answer: 'It\'s Trolltunga ("Troll\'s Tongue") in Norway — a flat slab of rock jutting horizontally off a mountain, a popular (and slightly terrifying) photo spot after a long hike.',
     imageUrl: 'https://picsum.photos/seed/twegle-puzzle-1/600/400',
     difficulty: 'medium',
     emoji: '🖼️',
