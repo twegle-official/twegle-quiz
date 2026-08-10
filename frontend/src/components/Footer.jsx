@@ -111,7 +111,7 @@ export default function Footer() {
             <ShareButtons
               title="Twegle — Quizzes, Quotes & Chaos for Everyone"
               url={window.location.origin}
-              shareText="Check out Twegle — free quizzes, jokes, quotes & more, no sign up needed!"
+              shareText="Check out Twegle — free quizzes, puzzles, games, jokes, quotes & more, no sign up needed!"
               align="start"
             />
           </div>

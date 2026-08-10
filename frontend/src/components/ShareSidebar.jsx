@@ -11,7 +11,7 @@ export default function ShareSidebar() {
   const [copied, setCopied] = useState(false)
 
   const url = window.location.origin
-  const shareText = 'Check out Twegle — free quizzes, jokes, quotes & more, no sign up needed!'
+  const shareText = 'Check out Twegle — free quizzes, puzzles, games, jokes, quotes & more, no sign up needed!'
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${url}`)}`
 
   async function handleNativeShare() {

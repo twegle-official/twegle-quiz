@@ -40,7 +40,7 @@ export default function Badges() {
         {
           filename: `twegle-level-${level.name.toLowerCase().replace(/\s+/g, '-')}.png`,
           title: level.name,
-          text: `I just reached "${level.name}" on Twegle!`,
+          text: `I just reached "${level.name}" on Twegle! ${window.location.origin}`,
         }
       )
     } finally {

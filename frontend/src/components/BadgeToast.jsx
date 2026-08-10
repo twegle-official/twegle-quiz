@@ -57,7 +57,7 @@ export default function BadgeToast() {
         {
           filename: `twegle-level-${current.label.toLowerCase().replace(/\s+/g, '-')}.png`,
           title: current.label,
-          text: `I just reached "${current.label}" on Twegle!`,
+          text: `I just reached "${current.label}" on Twegle! ${window.location.origin}`,
         }
       )
     } finally {

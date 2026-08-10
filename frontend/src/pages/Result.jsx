@@ -112,7 +112,7 @@ export default function Result() {
         {
           filename: `twegle-${slug}-${resultKey}.png`,
           title: result.title,
-          text: `I got "${result.title}" on ${quiz.title}!`,
+          text: `I got "${result.title}" on ${quiz.title}! ${getQuizShareUrl(slug, resultKey)}`,
         }
       )
     } finally {

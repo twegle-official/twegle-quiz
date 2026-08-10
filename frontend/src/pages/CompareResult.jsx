@@ -89,7 +89,7 @@ export default function CompareResult() {
         {
           filename: `twegle-compare-${code}.png`,
           title: compare.quizTitle,
-          text: compare.match ? 'We matched!' : 'We got different results!',
+          text: `${compare.match ? 'We matched!' : 'We got different results!'} ${shareUrl}`,
         }
       )
       recordShare()

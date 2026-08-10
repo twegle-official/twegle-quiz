@@ -52,6 +52,12 @@ function drawWrappedParagraphs(ctx, rawText, centerX, startY, maxWidth, lineHeig
   return y
 }
 
+// Native image shares (Instagram/WhatsApp Stories especially) frequently
+// drop the accompanying share text/URL entirely and post only the image
+// file — reported directly after a shared level-up image carried no link
+// back to the site at all. Baking "twegle.in" into the picture itself,
+// right under the wordmark, means the link survives regardless of what a
+// given platform does with the share text.
 function drawLogo(ctx, centerX, y) {
   const badgeRadius = 36
   const badgeX = centerX - 90
@@ -72,6 +78,11 @@ function drawLogo(ctx, centerX, y) {
   ctx.textAlign = 'left'
   ctx.textBaseline = 'alphabetic'
   ctx.fillText('Twegle', badgeX + badgeRadius + 20, y + 18)
+
+  ctx.font = '600 30px Nunito, sans-serif'
+  ctx.fillStyle = 'rgba(255,255,255,0.85)'
+  ctx.textAlign = 'center'
+  ctx.fillText('twegle.in', centerX, y + 64)
 }
 
 function drawShareCard(canvas, { gradient, emoji, title, text, author, tag }) {

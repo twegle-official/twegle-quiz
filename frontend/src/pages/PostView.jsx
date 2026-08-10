@@ -75,7 +75,7 @@ export default function PostView() {
         {
           filename: `twegle-${post._id}.png`,
           title: style.label,
-          text: post.text,
+          text: `${post.text} ${getPostShareUrl(post._id)}`,
         }
       )
       if (!previewToken) recordPostEngagement(post._id, 'share')
