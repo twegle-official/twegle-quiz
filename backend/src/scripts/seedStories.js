@@ -1,4 +1,5 @@
 import 'dotenv/config'
+import { pathToFileURL } from 'node:url'
 import { connectDB, disconnectDB } from '../config/db.js'
 import Story from '../models/Story.js'
 
@@ -207,7 +208,7 @@ async function main() {
   await disconnectDB()
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err) => {
     console.error(err)
     process.exit(1)
