@@ -89,5 +89,35 @@ export function registerTicTacToeSocket(io) {
         socket.emit('errorMsg', 'Could not make that move')
       }
     })
+
+    // Either player can trigger a rematch once the match is finished — no
+    // consent/confirmation round-trip, same trust model as everything else
+    // here (a client's request is just re-validated server-side, not gated
+    // behind the other player agreeing first). Reuses the same code/room so
+    // neither player needs a new link. The loser starts the next round (a
+    // draw keeps X starting, same as the very first game) — fairer than
+    // always giving the rematch to whoever clicks first.
+    socket.on('rematch', async ({ code, role }) => {
+      try {
+        if (role !== 'X' && role !== 'O') return socket.emit('errorMsg', 'Invalid role')
+
+        const game = await TicTacToeGame.findOne({ code })
+        if (!game) return socket.emit('errorMsg', 'Game not found')
+        if (game.status !== 'finished') {
+          return socket.emit('errorMsg', 'This game is still in progress')
+        }
+
+        const nextStarter = game.winner === 'draw' || !game.winner ? 'X' : game.winner === 'X' ? 'O' : 'X'
+        game.board = Array(9).fill('')
+        game.currentTurn = nextStarter
+        game.status = 'in_progress'
+        game.winner = null
+        await game.save()
+
+        nsp.to(code).emit('gameState', gamePayload(game))
+      } catch {
+        socket.emit('errorMsg', 'Could not start a rematch')
+      }
+    })
   })
 }

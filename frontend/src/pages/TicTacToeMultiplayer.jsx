@@ -101,6 +101,10 @@ export default function TicTacToeMultiplayer() {
     }, 200)
   }
 
+  function handleRematch() {
+    ticTacToeSocket.emit('rematch', { code, role })
+  }
+
   if (notFound) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
@@ -219,6 +223,12 @@ export default function TicTacToeMultiplayer() {
 
       {game.status === 'finished' && (
         <div className="mb-6">
+          <button
+            onClick={handleRematch}
+            className="w-full mb-4 px-5 py-3 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white font-semibold hover:opacity-90"
+          >
+            🔁 Rematch
+          </button>
           <ShareButtons
             title="Tic-Tac-Toe"
             url={shareUrl}

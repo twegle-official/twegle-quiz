@@ -1,5 +1,9 @@
-import ConnectFourGame from '../models/ConnectFourGame.js'
+import ConnectFourGame, { CONNECT_FOUR_ROWS, CONNECT_FOUR_COLS } from '../models/ConnectFourGame.js'
 import { findLandingRow, checkWinner, isBoardFull } from '../utils/connectFour.js'
+
+function emptyBoard() {
+  return Array.from({ length: CONNECT_FOUR_ROWS }, () => Array(CONNECT_FOUR_COLS).fill(''))
+}
 
 // The site's first real-time feature — everything else is plain REST +
 // polling (see TicTacToeGame's async pattern). MongoDB stays the source of
@@ -89,6 +93,33 @@ export function registerConnectFourSocket(io) {
         nsp.to(code).emit('gameState', gamePayload(game))
       } catch {
         socket.emit('errorMsg', 'Could not make that move')
+      }
+    })
+
+    // Same reasoning as ticTacToeSocket.js's rematch: either player can
+    // trigger it once finished, no consent needed, reuses the same
+    // code/room. The loser drops first next round (a draw keeps red
+    // starting, same as the very first game).
+    socket.on('rematch', async ({ code, role }) => {
+      try {
+        if (role !== 'red' && role !== 'yellow') return socket.emit('errorMsg', 'Invalid role')
+
+        const game = await ConnectFourGame.findOne({ code })
+        if (!game) return socket.emit('errorMsg', 'Game not found')
+        if (game.status !== 'finished') {
+          return socket.emit('errorMsg', 'This game is still in progress')
+        }
+
+        const nextStarter = game.winner === 'draw' || !game.winner ? 'red' : game.winner === 'red' ? 'yellow' : 'red'
+        game.board = emptyBoard()
+        game.currentTurn = nextStarter
+        game.status = 'in_progress'
+        game.winner = null
+        await game.save()
+
+        nsp.to(code).emit('gameState', gamePayload(game))
+      } catch {
+        socket.emit('errorMsg', 'Could not start a rematch')
       }
     })
   })
