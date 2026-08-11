@@ -35,7 +35,7 @@ export async function getFriendshipQuizAdmin(req, res) {
 }
 
 export async function createFriendshipQuiz(req, res) {
-  const { title, description, emoji, gradient, language, status, questions, publishAt } = req.body
+  const { title, description, emoji, gradient, language, status, questions, publishAt, slug: customSlug } = req.body
 
   if (typeof title !== 'string' || !title || !questions?.length) {
     return res.status(400).json({ error: 'Title and questions are required' })
@@ -49,7 +49,9 @@ export async function createFriendshipQuiz(req, res) {
     return res.status(400).json({ error: 'Publish date is not valid' })
   }
 
-  const slug = slugify(title)
+  // Non-Latin-script titles (e.g. Hindi) slugify to empty, so allow an
+  // explicit slug override — still sanitized, never trusted verbatim.
+  const slug = typeof customSlug === 'string' && customSlug.trim() ? slugify(customSlug) : slugify(title)
   const existing = await FriendshipQuiz.findOne({ slug })
   if (existing) {
     return res.status(409).json({ error: 'A friendship quiz with a matching slug already exists' })
