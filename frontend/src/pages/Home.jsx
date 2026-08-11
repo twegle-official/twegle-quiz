@@ -16,24 +16,22 @@ import AdSlot from '../components/AdSlot'
 // Ordered by expected usage/revenue impact, most to least: Quizzes stays
 // first — biggest content library and the strongest share loop (a solo
 // quiz result is the easiest thing to reshare, no second person needed),
-// so it drives the most pageviews/ad impressions. Puzzles right after —
-// added 2026-08-06, placed here (not at the end) since it shares the same
-// daily-streak mechanism as Quiz of the Day (see dailyQuiz.js — each keeps
-// its own independent streak, but both are the same "do it every day" habit
-// loop), so it reads as a natural pair with Quizzes rather than a separate,
-// disconnected content type. Friendship
-// Quiz next (same growth-loop idea, but needs a friend to join, so more
-// friction on a first click). Games next — replayable, has its own "beat
-// me" share hook. Posts (merged from the previous 5 separate Jokes/Funny
-// Lines/Quotes/Motivational tabs — same underlying Post model with a
-// category filter, just one continuous scroll-through feed instead of
-// several homepage tabs) after Games. Stories and Horoscope last — longer-dwell,
-// less share-driven formats.
+// so it drives the most pageviews/ad impressions. Friendship Quiz next
+// (same growth-loop idea, but needs a friend to join, so more friction on
+// a first click). Games next — replayable, has its own "beat me" share
+// hook. Puzzles after Games — shares the same daily-streak mechanism as
+// Quiz of the Day (see dailyQuiz.js — each keeps its own independent
+// streak, but both are the same "do it every day" habit loop). Posts
+// (merged from the previous 5 separate Jokes/Funny Lines/Quotes/
+// Motivational tabs — same underlying Post model with a category filter,
+// just one continuous scroll-through feed instead of several homepage
+// tabs) after Puzzles. Stories and Horoscope last — longer-dwell, less
+// share-driven formats.
 const TABS = [
   { key: 'quizzes', label: 'Quizzes', emoji: '🎯' },
-  { key: 'puzzles', label: 'Puzzles', emoji: '🧩' },
   { key: 'friendship', label: 'Friendship Quiz', emoji: '🤝' },
   { key: 'games', label: 'Games', emoji: '🎮' },
+  { key: 'puzzles', label: 'Puzzles', emoji: '🧩' },
   { key: 'posts', label: 'Posts', emoji: '💬' },
   { key: 'stories', label: 'Stories', emoji: '📖' },
   { key: 'horoscope', label: 'Horoscope', emoji: '🔮' },
