@@ -98,8 +98,9 @@ export function registerConnectFourSocket(io) {
 
     // Same reasoning as ticTacToeSocket.js's rematch: either player can
     // trigger it once finished, no consent needed, reuses the same
-    // code/room. The loser drops first next round (a draw keeps red
-    // starting, same as the very first game).
+    // code/room. Starter strictly alternates every round (red, then
+    // yellow, then red, ...) regardless of who won — otherwise the player
+    // who sent the invite would keep dropping first forever.
     socket.on('rematch', async ({ code, role }) => {
       try {
         if (role !== 'red' && role !== 'yellow') return socket.emit('errorMsg', 'Invalid role')
@@ -110,9 +111,10 @@ export function registerConnectFourSocket(io) {
           return socket.emit('errorMsg', 'This game is still in progress')
         }
 
-        const nextStarter = game.winner === 'draw' || !game.winner ? 'red' : game.winner === 'red' ? 'yellow' : 'red'
+        const nextStarter = game.roundStarter === 'red' ? 'yellow' : 'red'
         game.board = emptyBoard()
         game.currentTurn = nextStarter
+        game.roundStarter = nextStarter
         game.status = 'in_progress'
         game.winner = null
         await game.save()

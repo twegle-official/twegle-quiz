@@ -94,9 +94,9 @@ export function registerTicTacToeSocket(io) {
     // consent/confirmation round-trip, same trust model as everything else
     // here (a client's request is just re-validated server-side, not gated
     // behind the other player agreeing first). Reuses the same code/room so
-    // neither player needs a new link. The loser starts the next round (a
-    // draw keeps X starting, same as the very first game) — fairer than
-    // always giving the rematch to whoever clicks first.
+    // neither player needs a new link. Starter strictly alternates every
+    // round (X, then O, then X, ...) regardless of who won — otherwise the
+    // player who sent the invite would keep getting first move forever.
     socket.on('rematch', async ({ code, role }) => {
       try {
         if (role !== 'X' && role !== 'O') return socket.emit('errorMsg', 'Invalid role')
@@ -107,9 +107,10 @@ export function registerTicTacToeSocket(io) {
           return socket.emit('errorMsg', 'This game is still in progress')
         }
 
-        const nextStarter = game.winner === 'draw' || !game.winner ? 'X' : game.winner === 'X' ? 'O' : 'X'
+        const nextStarter = game.roundStarter === 'X' ? 'O' : 'X'
         game.board = Array(9).fill('')
         game.currentTurn = nextStarter
+        game.roundStarter = nextStarter
         game.status = 'in_progress'
         game.winner = null
         await game.save()

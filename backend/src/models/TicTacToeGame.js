@@ -14,6 +14,10 @@ const ticTacToeGameSchema = new mongoose.Schema(
     currentTurn: { type: String, enum: ['X', 'O'], default: 'X' },
     status: { type: String, enum: ['waiting', 'in_progress', 'finished'], default: 'waiting' },
     winner: { type: String, enum: ['X', 'O', 'draw', null], default: null },
+    // Who opened the current/most recent round — used to strictly alternate
+    // who goes first on rematch (see ticTacToeSocket.js), independent of
+    // who won. Not the same as currentTurn, which changes every move.
+    roundStarter: { type: String, enum: ['X', 'O'], default: 'X' },
   },
   { timestamps: true }
 )

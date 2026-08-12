@@ -30,6 +30,10 @@ const connectFourGameSchema = new mongoose.Schema(
     currentTurn: { type: String, enum: ['red', 'yellow'], default: 'red' },
     status: { type: String, enum: ['waiting', 'in_progress', 'finished'], default: 'waiting' },
     winner: { type: String, enum: ['red', 'yellow', 'draw', null], default: null },
+    // Who opened the current/most recent round — used to strictly alternate
+    // who drops first on rematch (see connectFourSocket.js), independent of
+    // who won. Not the same as currentTurn, which changes every move.
+    roundStarter: { type: String, enum: ['red', 'yellow'], default: 'red' },
   },
   { timestamps: true }
 )
