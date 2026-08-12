@@ -47,7 +47,7 @@ export async function getQuizAdmin(req, res) {
 }
 
 export async function createQuiz(req, res) {
-  const { title, description, emoji, gradient, category, language, type, status, questions, results, publishAt } = req.body
+  const { title, description, emoji, gradient, category, language, type, status, questions, results, publishAt, slug: customSlug } = req.body
 
   if (typeof title !== 'string' || !title || !questions?.length || !results?.length) {
     return res.status(400).json({ error: 'Title, questions, and results are required' })
@@ -64,7 +64,9 @@ export async function createQuiz(req, res) {
     return res.status(400).json({ error: 'Publish date is not valid' })
   }
 
-  const slug = slugify(title)
+  // Non-Latin-script titles (e.g. Hindi) slugify to empty, so allow an
+  // explicit slug override — still sanitized, never trusted verbatim.
+  const slug = typeof customSlug === 'string' && customSlug.trim() ? slugify(customSlug) : slugify(title)
   const existing = await Quiz.findOne({ slug })
   if (existing) {
     return res.status(409).json({ error: 'A quiz with a matching slug already exists' })

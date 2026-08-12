@@ -1600,6 +1600,324 @@ quizzes.push({
   ],
 })
 
+quizzes.push({
+  title: "What's Your Study Style?",
+  slug: 'study-style',
+  category: 'lifestyle',
+  description: 'Exam season reveals everyone\'s true colors. Let\'s find out yours.',
+  emoji: '📚',
+  gradient: 'from-blue-400 to-cyan-500',
+  status: 'published',
+  questions: [
+    {
+      text: "It's 11pm and you haven't opened a single book. You...",
+      options: [
+        { text: 'Finally feel alive. Let\'s do this.', result: 'owl' },
+        { text: 'Went to bed 3 hours ago, obviously.', result: 'early' },
+        { text: 'Panic. Full, five-alarm panic.', result: 'crammer' },
+        { text: 'Smile, because you finished this chapter yesterday.', result: 'planner' },
+      ],
+    },
+    {
+      text: 'Your notes look like...',
+      options: [
+        { text: 'A crime scene only you can decode.', result: 'owl' },
+        { text: 'A museum exhibit. Color-coded. Basically framed.', result: 'early' },
+        { text: 'One page, written in the last 40 minutes.', result: 'crammer' },
+        { text: 'A full, organized notebook, chapter by chapter.', result: 'planner' },
+      ],
+    },
+    {
+      text: "The night before a big test, you're...",
+      options: [
+        { text: 'Wide awake, somehow more productive than all day.', result: 'owl' },
+        { text: 'Already asleep. You finished a week ago.', result: 'early' },
+        { text: 'Reading everything at once and understanding none of it.', result: 'crammer' },
+        { text: 'Doing a calm final skim. Nothing new, no drama.', result: 'planner' },
+      ],
+    },
+    {
+      text: 'Your study fuel of choice:',
+      options: [
+        { text: 'Chai, coffee, anything to survive till 2am.', result: 'owl' },
+        { text: "A proper breakfast before the sun's even fully up.", result: 'early' },
+        { text: 'Whatever snack is closest. No time to choose.', result: 'crammer' },
+        { text: 'Same small snack, same time, every single day.', result: 'planner' },
+      ],
+    },
+    {
+      text: 'A friend asks for your #1 study tip. You say:',
+      options: [
+        { text: "Find your peak hours — even if it's midnight.", result: 'owl' },
+        { text: "Mornings are underrated. Start before the world wakes up.", result: 'early' },
+        { text: 'Deadlines are motivation. Trust the chaos.', result: 'crammer' },
+        { text: 'Little and often beats everything. Every time.', result: 'planner' },
+      ],
+    },
+  ],
+  results: [
+    { key: 'owl', emoji: '🦉', title: 'The Night Owl', description: 'Your brain clocks in right when everyone else clocks out. Late-night sessions are where the real work happens for you — just try to actually sleep before the exam itself.' },
+    { key: 'early', emoji: '🌅', title: 'The Early Bird', description: "You'd rather finish before breakfast than think about it all day. Mornings are basically your cheat code." },
+    { key: 'crammer', emoji: '⏰', title: 'The Last-Minute Crammer', description: "Deadlines aren't stress, they're fuel. Nobody knows how it always comes together — including you — but it does." },
+    { key: 'planner', emoji: '📅', title: 'The Steady Planner', description: "A little every day, zero drama, zero panic. By the time everyone else starts cramming, you're already done and relaxed." },
+  ],
+})
+
+quizzes.push({
+  title: 'Which Ice Cream Flavour Are You?',
+  slug: 'ice-cream-flavour',
+  category: 'fun',
+  description: "Chocolate, vanilla, strawberry, or mint chip — your personality has a flavor, and we're about to find it.",
+  emoji: '🍦',
+  gradient: 'from-pink-300 to-rose-400',
+  status: 'published',
+  questions: [
+    {
+      text: 'Friday night plan?',
+      options: [
+        { text: 'Movie marathon, blanket, zero interruptions.', result: 'chocolate' },
+        { text: 'Something simple. No plans, no stress.', result: 'vanilla' },
+        { text: 'Hanging out with friends, low-key but fun.', result: 'strawberry' },
+        { text: 'Trying something completely new.', result: 'mintchip' },
+      ],
+    },
+    {
+      text: 'Pick a word for your vibe:',
+      options: [
+        { text: 'Cozy.', result: 'chocolate' },
+        { text: 'Classic.', result: 'vanilla' },
+        { text: 'Sweet.', result: 'strawberry' },
+        { text: 'Unexpected.', result: 'mintchip' },
+      ],
+    },
+    {
+      text: 'Pick a color, fast:',
+      options: [
+        { text: 'Deep brown.', result: 'chocolate' },
+        { text: 'Soft white.', result: 'vanilla' },
+        { text: 'Bright pink.', result: 'strawberry' },
+        { text: 'Cool green.', result: 'mintchip' },
+      ],
+    },
+    {
+      text: 'Your comfort move when stressed:',
+      options: [
+        { text: 'Eat something sweet, no questions asked.', result: 'chocolate' },
+        { text: 'Do the exact same relaxing thing you always do.', result: 'vanilla' },
+        { text: 'Call your closest friend immediately.', result: 'strawberry' },
+        { text: 'Do something a little random to reset.', result: 'mintchip' },
+      ],
+    },
+    {
+      text: 'How would people describe you?',
+      options: [
+        { text: 'The comforting, dependable one.', result: 'chocolate' },
+        { text: 'Simple, honest, easy to be around.', result: 'vanilla' },
+        { text: 'Sweet, kind, easy to love.', result: 'strawberry' },
+        { text: 'A little different — in the best way.', result: 'mintchip' },
+      ],
+    },
+  ],
+  results: [
+    { key: 'chocolate', emoji: '🍫', title: 'Chocolate', description: 'Classic, comforting, and never going out of style — just like you. People always know what they\'re getting with you, and they love it every time.' },
+    { key: 'vanilla', emoji: '🤍', title: 'Vanilla', description: "Simple doesn't mean boring. You're the reliable one everyone secretly wants to be." },
+    { key: 'strawberry', emoji: '🍓', title: 'Strawberry', description: 'Sweet, warm, and impossible not to like. You make everything around you a little brighter.' },
+    { key: 'mintchip', emoji: '🌿', title: 'Mint Chocolate Chip', description: "Not everyone gets you right away — but once they do, nothing else compares. Unexpected and completely unforgettable." },
+  ],
+})
+
+quizzes.push({
+  title: 'आपकी स्टडी स्टाइल क्या है?',
+  slug: 'study-style-hi',
+  category: 'lifestyle',
+  description: 'हर कोई एग्जाम की तैयारी अलग तरीके से करता है — ये बताएगा आपकी स्टाइल क्या है।',
+  emoji: '📚',
+  gradient: 'from-blue-400 to-cyan-500',
+  language: 'hi',
+  status: 'published',
+  questions: [
+    {
+      text: 'रात के 11 बज गए और आपने अभी तक किताब खोली भी नहीं। आप...',
+      options: [
+        { text: 'आखिरकार ज़िंदा महसूस करते हैं। चलो शुरू करें।', result: 'owl' },
+        { text: 'तीन घंटे पहले ही सो गए, ज़ाहिर है।', result: 'early' },
+        { text: 'पूरी तरह पैनिक मोड में आ जाते हैं।', result: 'crammer' },
+        { text: 'मुस्कुराते हैं, क्योंकि ये चैप्टर कल ही खत्म कर लिया था।', result: 'planner' },
+      ],
+    },
+    {
+      text: 'आपके नोट्स कैसे दिखते हैं...',
+      options: [
+        { text: 'बस आपकी अपनी लिखावट, कोई और नहीं पढ़ सकता।', result: 'owl' },
+        { text: 'साफ-सुथरे, कलर-कोडेड, सबसे पहले तैयार।', result: 'early' },
+        { text: 'एक पेज, बस पिछले 40 मिनट में लिखा।', result: 'crammer' },
+        { text: 'पूरी नोटबुक, चैप्टर के हिसाब से सजी हुई।', result: 'planner' },
+      ],
+    },
+    {
+      text: 'बड़े टेस्ट से एक रात पहले आप...',
+      options: [
+        { text: 'जागे हुए हैं, और दिनभर से ज़्यादा प्रोडक्टिव हैं।', result: 'owl' },
+        { text: 'सो चुके हैं — एक हफ्ते पहले ही तैयारी खत्म कर ली थी।', result: 'early' },
+        { text: 'सब कुछ एक साथ पढ़ रहे हैं, कुछ समझ नहीं आ रहा।', result: 'crammer' },
+        { text: 'शांति से आखिरी रिवीज़न कर रहे हैं, कुछ नया नहीं।', result: 'planner' },
+      ],
+    },
+    {
+      text: 'पढ़ाई के दौरान आपका फ्यूल है...',
+      options: [
+        { text: 'चाय, कॉफी, कुछ भी जो रात 2 बजे तक जगाए रखे।', result: 'owl' },
+        { text: 'सूरज पूरी तरह निकलने से पहले भरपेट नाश्ता।', result: 'early' },
+        { text: 'जो भी स्नैक सबसे पास हो। सोचने का टाइम नहीं।', result: 'crammer' },
+        { text: 'वही छोटा सा स्नैक, वही समय, हर दिन।', result: 'planner' },
+      ],
+    },
+    {
+      text: 'दोस्त आपसे पढ़ाई की टिप मांगता है, आप कहेंगे...',
+      options: [
+        { text: 'अपना पीक टाइम ढूंढो — भले ही आधी रात हो।', result: 'owl' },
+        { text: 'सुबह का समय बेहतरीन है, दुनिया जागने से पहले शुरू करो।', result: 'early' },
+        { text: 'डेडलाइन ही असली मोटिवेशन है। भरोसा रखो।', result: 'crammer' },
+        { text: 'थोड़ा-थोड़ा रोज़ करो, यही सबसे सही तरीका है।', result: 'planner' },
+      ],
+    },
+  ],
+  results: [
+    { key: 'owl', emoji: '🦉', title: 'नाइट आउल', description: 'जब बाकी सबका दिमाग बंद हो जाता है, तब आपका दिमाग चलना शुरू होता है। देर रात के सेशन में ही आपका असली काम होता है — बस सोना मत भूलना।' },
+    { key: 'early', emoji: '🌅', title: 'अर्ली बर्ड', description: 'आप नाश्ते से पहले ही काम खत्म कर लेना पसंद करते/करती हैं, बजाय इसके कि दिनभर उसके बारे में सोचते रहें। सुबह ही आपका सीक्रेट हथियार है।' },
+    { key: 'crammer', emoji: '⏰', title: 'लास्ट-मिनट क्रैमर', description: 'डेडलाइन आपके लिए स्ट्रेस नहीं, फ्यूल है। पता नहीं कैसे, पर सब कुछ आखिरी वक्त पर ठीक हो ही जाता है।' },
+    { key: 'planner', emoji: '📅', title: 'स्टेडी प्लानर', description: 'हर दिन थोड़ा-थोड़ा, कोई ड्रामा नहीं, कोई पैनिक नहीं। जब बाकी सब क्रैम कर रहे होते हैं, तब तक आप पहले ही तैयार होते हैं।' },
+  ],
+})
+
+quizzes.push({
+  title: 'आप कौन सा आइसक्रीम फ्लेवर हैं?',
+  slug: 'ice-cream-flavour-hi',
+  category: 'fun',
+  description: 'चॉकलेट, वनीला, स्ट्रॉबेरी या मिंट चॉकलेट चिप — आपकी पर्सनैलिटी किस फ्लेवर जैसी है?',
+  emoji: '🍦',
+  gradient: 'from-pink-300 to-rose-400',
+  language: 'hi',
+  status: 'published',
+  questions: [
+    {
+      text: 'शुक्रवार की रात का प्लान चुनो:',
+      options: [
+        { text: 'मूवी मैराथन, कंबल, कोई डिस्टर्बेंस नहीं।', result: 'chocolate' },
+        { text: 'कुछ सिंपल सा। कोई प्लान नहीं, कोई स्ट्रेस नहीं।', result: 'vanilla' },
+        { text: 'दोस्तों के साथ, हल्का-फुल्का पर मज़ेदार।', result: 'strawberry' },
+        { text: 'कुछ बिल्कुल नया ट्राई करना।', result: 'mintchip' },
+      ],
+    },
+    {
+      text: 'एक शब्द में अपनी वाइब बताओ:',
+      options: [
+        { text: 'कोज़ी।', result: 'chocolate' },
+        { text: 'क्लासिक।', result: 'vanilla' },
+        { text: 'स्वीट।', result: 'strawberry' },
+        { text: 'अनएक्सपेक्टेड।', result: 'mintchip' },
+      ],
+    },
+    {
+      text: 'जल्दी से एक रंग चुनो:',
+      options: [
+        { text: 'गहरा भूरा।', result: 'chocolate' },
+        { text: 'हल्का सफेद।', result: 'vanilla' },
+        { text: 'चमकीला गुलाबी।', result: 'strawberry' },
+        { text: 'ठंडा हरा।', result: 'mintchip' },
+      ],
+    },
+    {
+      text: 'स्ट्रेस में आपकी कम्फर्ट मूव है...',
+      options: [
+        { text: 'बिना कुछ सोचे कुछ मीठा खा लेना।', result: 'chocolate' },
+        { text: 'वही रिलैक्सिंग चीज़ करना जो हमेशा करते हैं।', result: 'vanilla' },
+        { text: 'तुरंत अपने सबसे करीबी दोस्त को कॉल करना।', result: 'strawberry' },
+        { text: 'कुछ थोड़ा अलग करके रीसेट करना।', result: 'mintchip' },
+      ],
+    },
+    {
+      text: 'लोग आपको कैसे describe करेंगे?',
+      options: [
+        { text: 'भरोसेमंद और आरामदायक दोस्त।', result: 'chocolate' },
+        { text: 'सिंपल, ईमानदार, साथ रहना आसान।', result: 'vanilla' },
+        { text: 'स्वीट, प्यारा, साथ रहने लायक।', result: 'strawberry' },
+        { text: 'थोड़ा अलग — अच्छे तरीके से।', result: 'mintchip' },
+      ],
+    },
+  ],
+  results: [
+    { key: 'chocolate', emoji: '🍫', title: 'चॉकलेट', description: 'क्लासिक, कम्फर्टिंग, और कभी आउट ऑफ स्टाइल नहीं होता — बिल्कुल आपकी तरह। लोग जानते हैं उन्हें क्या मिलने वाला है, और उन्हें वो हर बार पसंद आता है।' },
+    { key: 'vanilla', emoji: '🤍', title: 'वनीला', description: 'सिंपल होने का मतलब बोरिंग नहीं होता — आप वो भरोसेमंद इंसान हैं जो हर कोई सीक्रेटली बनना चाहता है।' },
+    { key: 'strawberry', emoji: '🍓', title: 'स्ट्रॉबेरी', description: 'स्वीट, वॉर्म, और पसंद करने में आसान। आप अपने आसपास की हर चीज़ को थोड़ा और खूबसूरत बना देते/देती हैं।' },
+    { key: 'mintchip', emoji: '🌿', title: 'मिंट चॉकलेट चिप', description: 'हर कोई आपको तुरंत नहीं समझ पाता, पर जो समझ लेता है, वो कुछ और सोच ही नहीं सकता। अनएक्सपेक्टेड और अनफॉरगेटेबल।' },
+  ],
+})
+
+quizzes.push({
+  title: 'आपकी नींद की आदतें क्या कहती हैं?',
+  slug: 'sleep-habits-hi',
+  category: 'lifestyle',
+  description: 'आप कैसे सोते हैं, इससे आपके बारे में बहुत कुछ पता चलता है — चलो पता करते हैं।',
+  emoji: '😴',
+  gradient: 'from-indigo-400 to-violet-500',
+  language: 'hi',
+  status: 'published',
+  questions: [
+    {
+      text: 'आप सोते कैसे हैं...',
+      options: [
+        { text: 'जैसे ही सिर तकिये पे लगा, गायब।', result: 'deep' },
+        { text: 'हल्की सी आवाज़ से भी नींद खुल जाती है।', result: 'light' },
+        { text: 'सोते-सोते भी दिमाग में कहानियां चलती हैं।', result: 'dreamer' },
+        { text: 'रात को कम, दिन में झपकी ज़्यादा।', result: 'napper' },
+      ],
+    },
+    {
+      text: 'सुबह उठने पर आप...',
+      options: [
+        { text: 'अलार्म भी नहीं जगा पाता, इतनी गहरी नींद।', result: 'deep' },
+        { text: 'थोड़ी सी रोशनी से ही आंख खुल जाती है।', result: 'light' },
+        { text: 'सपना याद करने की कोशिश करते हैं।', result: 'dreamer' },
+        { text: 'उठकर फिर से सोने का मन करता है।', result: 'napper' },
+      ],
+    },
+    {
+      text: 'आपका पसंदीदा सोने का समय है...',
+      options: [
+        { text: 'जल्दी सोना, गहरी नींद के लिए।', result: 'deep' },
+        { text: 'थोड़ा शांत माहौल चाहिए, वरना नींद नहीं आती।', result: 'light' },
+        { text: 'देर रात, जब दिमाग में खयाल आते हैं।', result: 'dreamer' },
+        { text: 'जब भी मौका मिले, थोड़ी देर के लिए।', result: 'napper' },
+      ],
+    },
+    {
+      text: 'आपके दोस्त आपको सोने के बारे में क्या कहते हैं...',
+      options: [
+        { text: 'भूकंप भी आ जाए तो नहीं उठोगे।', result: 'deep' },
+        { text: 'थोड़ी सी हलचल से भी जाग जाते हो।', result: 'light' },
+        { text: 'हमेशा अजीब सपनों की कहानी सुनाते हो।', result: 'dreamer' },
+        { text: 'कहीं भी, कभी भी सो सकते हो।', result: 'napper' },
+      ],
+    },
+    {
+      text: 'अगर छुट्टी का दिन हो, तो आप...',
+      options: [
+        { text: 'देर तक गहरी नींद में सोते रहोगे।', result: 'deep' },
+        { text: 'जल्दी उठ जाओगे, ज़्यादा देर सो नहीं पाते।', result: 'light' },
+        { text: 'आधा दिन सपनों की दुनिया में बिताओगे।', result: 'dreamer' },
+        { text: 'बीच-बीच में कई छोटी झपकियां लोगे।', result: 'napper' },
+      ],
+    },
+  ],
+  results: [
+    { key: 'deep', emoji: '😴', title: 'डीप स्लीपर', description: 'एक बार सो गए तो दुनिया हिल जाए, फर्क नहीं पड़ता। आपकी नींद जितनी गहरी है, आपका आराम भी उतना ही असली है।' },
+    { key: 'light', emoji: '👂', title: 'लाइट स्लीपर', description: 'हल्की सी आवाज़ भी आपकी नींद तोड़ देती है। आप हमेशा अलर्ट रहते हैं, सोते हुए भी।' },
+    { key: 'dreamer', emoji: '💭', title: 'ड्रीमर', description: 'आपकी नींद में भी कहानियां चलती रहती हैं। दिमाग कभी पूरी तरह ऑफ नहीं होता, बस दुनिया बदल जाती है।' },
+    { key: 'napper', emoji: '☀️', title: 'नैपर', description: 'लंबी नींद से ज़्यादा आपको छोटी झपकियां पसंद हैं। जब भी मौका मिले, थोड़ी देर के लिए दुनिया से गायब हो जाते हैं।' },
+  ],
+})
+
 export async function seedQuizzes() {
   for (const q of quizzes) {
     await Quiz.findOneAndUpdate({ slug: q.slug }, q, { upsert: true, returnDocument: 'after' })
