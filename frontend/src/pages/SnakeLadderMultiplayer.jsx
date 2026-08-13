@@ -2,12 +2,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { fetchSnakeLadderGame, joinSnakeLadderGame, getSnakeLadderShareUrl } from '../api'
 import { snakeLadderSocket } from '../utils/socket'
-import { BOARD_SIZE, LADDERS, SNAKES, buildBoardGrid } from '../utils/snakeLadderBoard'
+import SnakeLadderBoard from '../games/SnakeLadderBoard'
+import DiceDisplay from '../games/DiceDisplay'
+import PlayerChip from '../games/PlayerChip'
 import ShareButtons from '../components/ShareButtons'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
-
-const GRID = buildBoardGrid()
 
 // No accounts, so each browser remembers its own role for a given game code
 // in localStorage — set to 'one' the moment the creator's own "Challenge a
@@ -16,12 +16,6 @@ const GRID = buildBoardGrid()
 // TicTacToeMultiplayer.jsx's tictactoe-role-${code}.
 function roleStorageKey(code) {
   return `snakeladder-role-${code}`
-}
-
-function cellStyle(num, isLadder, isSnake) {
-  if (isLadder) return 'bg-emerald-100 dark:bg-emerald-900/50'
-  if (isSnake) return 'bg-rose-100 dark:bg-rose-900/50'
-  return num % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900'
 }
 
 export default function SnakeLadderMultiplayer() {
@@ -174,6 +168,10 @@ export default function SnakeLadderMultiplayer() {
   const myName = role === 'one' ? game.playerOneName : game.playerTwoName
   const myPosition = role === 'one' ? game.positions.one : game.positions.two
   const opponentPosition = role === 'one' ? game.positions.two : game.positions.one
+  const myColor = role === 'one' ? 'blue' : 'orange'
+  const opponentColor = role === 'one' ? 'orange' : 'blue'
+  const myEmoji = role === 'one' ? '🔵' : '🟠'
+  const opponentEmoji = role === 'one' ? '🟠' : '🔵'
 
   let status
   if (game.status === 'waiting') {
@@ -189,49 +187,39 @@ export default function SnakeLadderMultiplayer() {
   return (
     <div className="max-w-md mx-auto px-4 py-10 text-center">
       <div className="text-left mb-4"><BackButton /></div>
-      <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">
-        You are {role === 'one' ? '🔵' : '🟠'} · {myName} vs {opponentName || '...'}
-      </p>
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">{status}</p>
-      {game.status !== 'waiting' && (
+      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
+
+      {game.status !== 'waiting' ? (
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <PlayerChip emoji={myEmoji} color={myColor} name={myName} position={myPosition} active={isMyTurn} />
+          <span className="text-xs font-bold text-gray-300 dark:text-gray-600">VS</span>
+          <PlayerChip
+            emoji={opponentEmoji}
+            color={opponentColor}
+            name={opponentName || '...'}
+            position={opponentPosition}
+            active={game.status === 'in_progress' && !isMyTurn}
+          />
+        </div>
+      ) : (
         <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">
-          You: {myPosition} &nbsp;·&nbsp; {opponentName}: {opponentPosition}
-          {game.lastRoll != null && <> &nbsp;·&nbsp; Last roll: 🎲 {game.lastRoll}</>}
+          You are {myEmoji} · {myName} vs {opponentName || '...'}
         </p>
       )}
       {error && (
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
-      <div className="inline-block border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden mb-6">
-        <div className="grid grid-cols-10">
-          {GRID.flat().map((num) => {
-            const isLadder = Boolean(LADDERS[num])
-            const isSnake = Boolean(SNAKES[num])
-            const hasMe = myPosition === num
-            const hasOpponent = opponentPosition === num
-            return (
-              <div
-                key={num}
-                className={`relative w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-800 ${cellStyle(num, isLadder, isSnake)}`}
-              >
-                {num}
-                {isLadder && <span className="absolute top-0 right-0 text-[8px]">🪜</span>}
-                {isSnake && <span className="absolute top-0 right-0 text-[8px]">🐍</span>}
-                {(hasMe || hasOpponent) && (
-                  <span className="absolute inset-0 flex items-center justify-center gap-0.5 text-sm">
-                    {hasMe && (role === 'one' ? '🔵' : '🟠')}
-                    {hasOpponent && (role === 'one' ? '🟠' : '🔵')}
-                  </span>
-                )}
-              </div>
-            )
-          })}
-        </div>
-      </div>
+      <SnakeLadderBoard
+        tokens={[
+          { id: 'me', position: myPosition, color: myColor, emoji: myEmoji },
+          { id: 'opponent', position: opponentPosition, color: opponentColor, emoji: opponentEmoji },
+        ]}
+      />
 
       {game.status === 'in_progress' && (
-        <div className="mb-6">
+        <div className="flex flex-col items-center gap-4 mb-6">
+          <DiceDisplay roll={game.lastRoll} rolling={rolling} />
           <button
             onClick={handleRoll}
             disabled={!isMyTurn || rolling}

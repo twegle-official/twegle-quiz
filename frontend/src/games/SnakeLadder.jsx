@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { BOARD_SIZE, LADDERS, SNAKES, computeLanding, buildBoardGrid } from '../utils/snakeLadderBoard'
-
-const GRID = buildBoardGrid()
+import { BOARD_SIZE, computeLanding } from '../utils/snakeLadderBoard'
+import SnakeLadderBoard from './SnakeLadderBoard'
+import DiceDisplay from './DiceDisplay'
+import PlayerChip from './PlayerChip'
 
 // The AI ("the house") has no real decisions to make in this game — the
 // only action every turn is rolling a die — so unlike TicTacToe.jsx's
@@ -9,12 +10,6 @@ const GRID = buildBoardGrid()
 // on a short delay, same as a human would.
 function rollDie() {
   return Math.floor(Math.random() * 6) + 1
-}
-
-function cellStyle(num, isLadder, isSnake) {
-  if (isLadder) return 'bg-emerald-100 dark:bg-emerald-900/50'
-  if (isSnake) return 'bg-rose-100 dark:bg-rose-900/50'
-  return num % 2 === 0 ? 'bg-white dark:bg-gray-800' : 'bg-gray-50 dark:bg-gray-900'
 }
 
 export default function SnakeLadder({ onGameEnd, onReset }) {
@@ -86,40 +81,23 @@ export default function SnakeLadder({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">{status}</p>
-      <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">
-        🔵 You: {myPosition} &nbsp;·&nbsp; 🤖 House: {housePosition}
-        {lastRoll != null && <> &nbsp;·&nbsp; Last roll: 🎲 {lastRoll}</>}
-      </p>
+      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
-      <div className="inline-block border-2 border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden mb-6">
-        <div className="grid grid-cols-10">
-          {GRID.flat().map((num) => {
-            const isLadder = Boolean(LADDERS[num])
-            const isSnake = Boolean(SNAKES[num])
-            const hasMe = myPosition === num
-            const hasHouse = housePosition === num
-            return (
-              <div
-                key={num}
-                className={`relative w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-[9px] sm:text-[10px] text-gray-400 dark:text-gray-500 border border-gray-100 dark:border-gray-800 ${cellStyle(num, isLadder, isSnake)}`}
-              >
-                {num}
-                {isLadder && <span className="absolute top-0 right-0 text-[8px]">🪜</span>}
-                {isSnake && <span className="absolute top-0 right-0 text-[8px]">🐍</span>}
-                {(hasMe || hasHouse) && (
-                  <span className="absolute inset-0 flex items-center justify-center gap-0.5 text-sm">
-                    {hasMe && '🔵'}
-                    {hasHouse && '🔴'}
-                  </span>
-                )}
-              </div>
-            )
-          })}
-        </div>
+      <div className="flex items-center justify-center gap-3 mb-4">
+        <PlayerChip emoji="🔵" color="blue" name="You" position={myPosition} active={turn === 'me' && !gameOver} />
+        <span className="text-xs font-bold text-gray-300 dark:text-gray-600">VS</span>
+        <PlayerChip emoji="🤖" color="red" name="House" position={housePosition} active={turn === 'house' && !gameOver} />
       </div>
 
-      <div>
+      <SnakeLadderBoard
+        tokens={[
+          { id: 'me', position: myPosition, color: 'blue', emoji: '🔵' },
+          { id: 'house', position: housePosition, color: 'red', emoji: '🤖' },
+        ]}
+      />
+
+      <div className="flex flex-col items-center gap-4">
+        <DiceDisplay roll={lastRoll} rolling={rolling} />
         {gameOver ? (
           <button
             onClick={handleReset}
