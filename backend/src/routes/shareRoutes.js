@@ -12,6 +12,7 @@ import {
   shareQuizCompare,
   shareTicTacToe,
   shareConnectFour,
+  shareSnakeLadder,
   shareHoroscope,
 } from '../controllers/shareController.js'
 
@@ -33,6 +34,7 @@ router.get('/friendship-result/:id', shareFriendshipAttempt)
 router.get('/quiz-compare/:code', shareQuizCompare)
 router.get('/tictactoe/:code', shareTicTacToe)
 router.get('/connect-four/:code', shareConnectFour)
+router.get('/snake-ladder/:code', shareSnakeLadder)
 router.get('/horoscope/:sign', shareHoroscope)
 
 export default router

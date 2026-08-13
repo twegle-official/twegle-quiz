@@ -5,6 +5,7 @@ import GameSession from '../models/GameSession.js'
 export const GAME_SLUGS = [
   'tic-tac-toe',
   'connect-four',
+  'snake-ladder',
   'rock-paper-scissors',
   'memory-match',
   '2048',

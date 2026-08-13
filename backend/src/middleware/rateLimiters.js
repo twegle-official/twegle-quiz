@@ -88,6 +88,16 @@ export const connectFourLimiter = rateLimit({
   message: { error: 'Too many requests. Please slow down.' },
 })
 
+// Same reasoning as connectFourLimiter — dice rolls happen over the socket,
+// not REST, so this only covers creating/joining a Snake and Ladder match.
+export const snakeLadderLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})
+
 // Applied to submitting feedback — tighter than the analytics-style limiters
 // since this writes free-text content an admin will actually read, not just
 // an anonymous counter.

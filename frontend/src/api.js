@@ -302,6 +302,24 @@ export function getConnectFourShareUrl(code) {
   return `${API_URL}/share/connect-four/${code}`
 }
 
+export async function createSnakeLadderGame(name) {
+  return postJson('/snake-ladder', { name })
+}
+
+export async function fetchSnakeLadderGame(code) {
+  const res = await fetch(`${API_URL}/snake-ladder/${code}`)
+  if (!res.ok) return null
+  return res.json()
+}
+
+export async function joinSnakeLadderGame(code, name) {
+  return postJson(`/snake-ladder/${code}/join`, { name })
+}
+
+export function getSnakeLadderShareUrl(code) {
+  return `${API_URL}/share/snake-ladder/${code}`
+}
+
 // URLs for the "Copy link" / WhatsApp share buttons. These point at the
 // backend's /api/share/* routes rather than the React page directly — see
 // shareController.js on the backend for why (link-preview crawlers don't run

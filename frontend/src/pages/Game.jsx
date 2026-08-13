@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { GAMES } from '../games/registry'
 import TicTacToe from '../games/TicTacToe'
 import ConnectFour from '../games/ConnectFour'
+import SnakeLadder from '../games/SnakeLadder'
 import RockPaperScissors from '../games/RockPaperScissors'
 import MemoryMatch from '../games/MemoryMatch'
 import Game2048 from '../games/Game2048'
@@ -11,7 +12,7 @@ import GuessTheNumber from '../games/GuessTheNumber'
 import Sudoku from '../games/Sudoku'
 import SimonSays from '../games/SimonSays'
 import WhackAMole from '../games/WhackAMole'
-import { recordGamePlay, createTicTacToeGame, createConnectFourGame, recordEngagement } from '../api'
+import { recordGamePlay, createTicTacToeGame, createConnectFourGame, createSnakeLadderGame, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
@@ -152,6 +153,10 @@ export default function Game() {
         const data = await createConnectFourGame(challengeName.trim())
         localStorage.setItem(`connectfour-role-${data.code}`, 'red')
         navigate(`/games/connect-four/${data.code}`)
+      } else if (game.slug === 'snake-ladder') {
+        const data = await createSnakeLadderGame(challengeName.trim())
+        localStorage.setItem(`snakeladder-role-${data.code}`, 'one')
+        navigate(`/games/snake-ladder/${data.code}`)
       } else {
         const data = await createTicTacToeGame(challengeName.trim())
         localStorage.setItem(`tictactoe-role-${data.code}`, 'X')
@@ -181,7 +186,7 @@ export default function Game() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{game.title}</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">{game.description}</p>
 
-      {(game.slug === 'tic-tac-toe' || game.slug === 'connect-four') && (
+      {(game.slug === 'tic-tac-toe' || game.slug === 'connect-four' || game.slug === 'snake-ladder') && (
         <div className="mb-8 max-w-xs mx-auto">
           {showChallengeForm ? (
             <form onSubmit={handleChallengeSubmit} className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
@@ -222,6 +227,9 @@ export default function Game() {
         )}
         {game.slug === 'connect-four' && (
           <ConnectFour onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'snake-ladder' && (
+          <SnakeLadder onGameEnd={handleGameEnd} onReset={handleGameReset} />
         )}
         {game.slug === 'rock-paper-scissors' && (
           <RockPaperScissors onGameEnd={handleGameEnd} onReset={handleGameReset} />

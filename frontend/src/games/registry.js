@@ -26,6 +26,14 @@ export const GAMES = [
     players: ['single', 'friend'],
   },
   {
+    slug: 'snake-ladder',
+    title: 'Snake and Ladder',
+    emoji: '🐍',
+    gradient: 'from-green-500 to-lime-400',
+    description: 'Roll the dice, dodge the snakes, race to 100 — vs the house, or live against a friend.',
+    players: ['single', 'friend'],
+  },
+  {
     slug: 'rock-paper-scissors',
     title: 'Rock Paper Scissors',
     emoji: '✂️',
