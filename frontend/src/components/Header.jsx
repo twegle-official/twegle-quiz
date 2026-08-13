@@ -5,6 +5,10 @@ import ThemeToggle from './ThemeToggle'
 import SurpriseMeButton from './SurpriseMeButton'
 import { useUserAuth } from '../UserAuthContext'
 
+// Toggle to bring the Surprise Me icon back later without re-wiring
+// anything — see the render site below.
+const SHOW_SURPRISE_ME = false
+
 export default function Header() {
   const { session } = useUserAuth()
   const [searchParams] = useSearchParams()
@@ -50,7 +54,10 @@ export default function Header() {
           </div>
         </form>
         <div className="flex items-center gap-2">
-          <SurpriseMeButton />
+          {/* Reported: crowds the search bar on mobile, and shouldn't be an
+              always-on icon anyway — keeping the component/feature intact
+              (see SurpriseMeButton.jsx), just not rendered here for now. */}
+          {SHOW_SURPRISE_ME && <SurpriseMeButton />}
           <ThemeToggle />
           <Link
             to="/badges"

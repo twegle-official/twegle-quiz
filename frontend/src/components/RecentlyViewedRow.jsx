@@ -18,7 +18,7 @@ export default function RecentlyViewedRow() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 mb-3">
-      <div className="flex items-center gap-2 overflow-x-auto -mx-4 px-4 py-1">
+      <div className="no-scrollbar flex items-center gap-2 overflow-x-auto -mx-4 px-4 py-1">
         <span className="shrink-0 text-xs font-semibold text-gray-400 dark:text-gray-500">Jump back in:</span>
         {items.map((item) => (
           <Link
