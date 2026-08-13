@@ -17,7 +17,7 @@ export default function RecentlyViewedRow() {
   if (items.length === 0) return null
 
   return (
-    <div className="max-w-6xl mx-auto px-4 mb-3">
+    <div className="max-w-6xl mx-auto px-4 mb-1 sm:mb-3">
       <div className="no-scrollbar flex items-center gap-2 overflow-x-auto -mx-4 px-4 py-1">
         <span className="shrink-0 text-xs font-semibold text-gray-400 dark:text-gray-500">Jump back in:</span>
         {items.map((item) => (

@@ -367,7 +367,7 @@ export default function Home() {
           people come to browse quickly, and one extra row of real content
           visible without scrolling matters more than a taller hero. */}
       <div className="bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500">
-        <div className="max-w-6xl mx-auto px-4 py-2.5 sm:py-3 flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-center sm:text-left">
+        <div className="max-w-6xl mx-auto px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-center sm:text-left">
           <div>
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/80">
               Where Fun Goes Viral
@@ -381,7 +381,11 @@ export default function Home() {
             <h1 className="text-base sm:text-lg font-extrabold text-white">
               Your Daily Dose of Fun — Play, Laugh &amp; Discover Something New
             </h1>
-            <p className="text-white/90 text-[11px] sm:text-sm">
+            {/* Hidden below `sm` per direct feedback — on a phone this line
+                just added height under an already-descriptive heading;
+                content types still get their own mention in meta
+                descriptions for SEO, so nothing is lost by dropping it here. */}
+            <p className="hidden sm:block text-white/90 text-[11px] sm:text-sm">
               Quizzes, puzzles, games, jokes &amp; more — no sign up, just pick something and go.
             </p>
           </div>
@@ -404,12 +408,12 @@ export default function Home() {
           each banner is a single compact row now (see DailyQuizBanner /
           PuzzleOfTheDayBanner), so a 2-column grid halves the vertical space
           the pair takes versus stacking two full-width banners. */}
-      <div className="max-w-6xl mx-auto px-4 pt-3 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-4">
+      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-1 sm:mb-4">
         <DailyQuizBanner quizzes={allQuizzes} />
         <PuzzleOfTheDayBanner puzzles={allPuzzles} />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
+      <div className="max-w-6xl mx-auto px-4 pt-2 sm:pt-6 pb-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
       <aside className="flex flex-col gap-1.5 mb-4 lg:mb-0 lg:gap-2 lg:sticky lg:top-6">
         {/* Language and Trending/Newest share one row below `lg` — both are
             "global" filters (apply the same way regardless of active tab),
