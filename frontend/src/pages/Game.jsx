@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { GAMES } from '../games/registry'
 import TicTacToe from '../games/TicTacToe'
+import ConnectFour from '../games/ConnectFour'
 import RockPaperScissors from '../games/RockPaperScissors'
 import MemoryMatch from '../games/MemoryMatch'
 import Game2048 from '../games/Game2048'
@@ -182,7 +183,7 @@ export default function Game() {
 
       {(game.slug === 'tic-tac-toe' || game.slug === 'connect-four') && (
         <div className="mb-8 max-w-xs mx-auto">
-          {showChallengeForm || game.slug === 'connect-four' ? (
+          {showChallengeForm ? (
             <form onSubmit={handleChallengeSubmit} className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
               <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">🆚 Challenge a friend</p>
               {challengeError && (
@@ -218,6 +219,9 @@ export default function Game() {
       <div onClick={handleGameAreaClick}>
         {game.slug === 'tic-tac-toe' && (
           <TicTacToe onGameEnd={handleGameEnd} onReset={handleGameReset} />
+        )}
+        {game.slug === 'connect-four' && (
+          <ConnectFour onGameEnd={handleGameEnd} onReset={handleGameReset} />
         )}
         {game.slug === 'rock-paper-scissors' && (
           <RockPaperScissors onGameEnd={handleGameEnd} onReset={handleGameReset} />

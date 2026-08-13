@@ -4,6 +4,7 @@ import GameSession from '../models/GameSession.js'
 // is the equivalent of Quiz's category enum, just for game slugs.
 export const GAME_SLUGS = [
   'tic-tac-toe',
+  'connect-four',
   'rock-paper-scissors',
   'memory-match',
   '2048',

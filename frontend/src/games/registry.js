@@ -6,9 +6,8 @@
 //
 // `players` marks which modes a game supports — 'single' (vs AI/house) and/or
 // 'friend' (a real second player, live or async). Most games are single-only;
-// Tic-Tac-Toe supports both (AI by default, plus "Challenge a friend");
-// Connect Four is friend-only (no single-player mode at all). Used to power
-// the Games tab's category filter on the homepage.
+// Tic-Tac-Toe and Connect Four support both (AI by default, plus "Challenge
+// a friend"). Used to power the Games tab's category filter on the homepage.
 export const GAMES = [
   {
     slug: 'tic-tac-toe',
@@ -23,8 +22,8 @@ export const GAMES = [
     title: 'Connect Four',
     emoji: '🔴',
     gradient: 'from-red-500 to-yellow-400',
-    description: 'Live 2-player — drop discs in real time and connect 4 to win!',
-    players: ['friend'],
+    description: 'Drop discs and connect 4 in a row — vs the house, or live against a friend.',
+    players: ['single', 'friend'],
   },
   {
     slug: 'rock-paper-scissors',
