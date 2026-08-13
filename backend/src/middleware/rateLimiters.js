@@ -98,6 +98,16 @@ export const snakeLadderLimiter = rateLimit({
   message: { error: 'Too many requests. Please slow down.' },
 })
 
+// Same reasoning as connectFourLimiter — moves happen over the socket, not
+// REST, so this only covers creating/joining a Chess match.
+export const chessLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})
+
 // Applied to submitting feedback — tighter than the analytics-style limiters
 // since this writes free-text content an admin will actually read, not just
 // an anonymous counter.

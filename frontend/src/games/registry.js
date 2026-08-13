@@ -34,6 +34,14 @@ export const GAMES = [
     players: ['single', 'friend'],
   },
   {
+    slug: 'chess',
+    title: 'Chess',
+    emoji: '♟️',
+    gradient: 'from-slate-600 to-slate-900',
+    description: 'The classic game of kings — outsmart the house, or challenge a friend live.',
+    players: ['single', 'friend'],
+  },
+  {
     slug: 'rock-paper-scissors',
     title: 'Rock Paper Scissors',
     emoji: '✂️',

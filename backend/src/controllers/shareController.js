@@ -8,6 +8,7 @@ import QuizCompare from '../models/QuizCompare.js'
 import TicTacToeGame from '../models/TicTacToeGame.js'
 import ConnectFourGame from '../models/ConnectFourGame.js'
 import SnakeLadderGame from '../models/SnakeLadderGame.js'
+import ChessGame from '../models/ChessGame.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
 import { findZodiacSign } from '../data/zodiacSigns.js'
@@ -215,6 +216,23 @@ export async function shareConnectFour(req, res) {
       title: `🔴 ${game.playerRedName} wants to play Connect Four with you — live!`,
       description: 'Real-time match, no waiting for your turn — join now on Twegle!',
       redirectUrl: `${frontendUrl()}/games/connect-four/${code}`,
+    })
+  )
+}
+
+export async function shareChess(req, res) {
+  const { code } = req.params
+  const game = await ChessGame.findOne({ code })
+  if (!game) {
+    return res.status(404).send('Not found')
+  }
+
+  res.set('Content-Type', 'text/html')
+  res.send(
+    renderSharePage({
+      title: `♟️ ${game.playerWhiteName} wants to play Chess with you — live!`,
+      description: 'Real-time match, no waiting for your turn — join now on Twegle!',
+      redirectUrl: `${frontendUrl()}/games/chess/${code}`,
     })
   )
 }
