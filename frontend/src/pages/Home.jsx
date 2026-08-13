@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPuzzles, fetchPostReactionsBatch, setPostReaction } from '../api'
 import { GAMES } from '../games/registry'
@@ -12,7 +12,6 @@ import PuzzleCard from '../components/PuzzleCard'
 import DailyQuizBanner from '../components/DailyQuizBanner'
 import PuzzleOfTheDayBanner from '../components/PuzzleOfTheDayBanner'
 import RecentlyViewedRow from '../components/RecentlyViewedRow'
-import SurpriseMeButton from '../components/SurpriseMeButton'
 import AdSlot from '../components/AdSlot'
 
 // Ordered by expected usage/revenue impact, most to least: Quizzes stays
@@ -256,26 +255,6 @@ export default function Home() {
       .catch(() => {})
   }, [language])
 
-  // "Surprise Me" picks from whatever's already loaded — no extra fetch just
-  // for this. allQuizzes/allPuzzles are always populated (see above); games
-  // are a static registry, no fetch needed at all; the active tab's own
-  // items (stories/posts/friendship quizzes) get folded in opportunistically
-  // whenever that tab happens to already be loaded.
-  const surprisePool = useMemo(() => {
-    const pool = [
-      ...allQuizzes.map((q) => ({ url: `/quiz/${q.slug}` })),
-      ...allPuzzles.map((p) => ({ url: `/puzzle/${p._id}` })),
-      ...GAMES.map((g) => ({ url: `/games/${g.slug}` })),
-    ]
-    if (content.tab === 'stories' && content.items) {
-      pool.push(...content.items.map((s) => ({ url: `/story/${s.slug}` })))
-    } else if (content.tab === 'posts' && content.items) {
-      pool.push(...content.items.map((p) => ({ url: `/post/${p._id}` })))
-    } else if (content.tab === 'friendship' && content.items) {
-      pool.push(...content.items.map((f) => ({ url: `/friendship/${f.slug}` })))
-    }
-    return pool
-  }, [allQuizzes, allPuzzles, content.tab, content.items])
 
   useEffect(() => {
     let cancelled = false
@@ -417,10 +396,6 @@ export default function Home() {
             <span>🌐 English &amp; हिंदी</span>
           </div>
         </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto px-4 pt-3 sm:pt-4 flex justify-center sm:justify-end">
-        <SurpriseMeButton pool={surprisePool} />
       </div>
 
       <RecentlyViewedRow />

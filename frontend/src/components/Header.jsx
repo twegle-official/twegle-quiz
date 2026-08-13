@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { LogoWithWordmark } from './Logo'
 import ThemeToggle from './ThemeToggle'
+import SurpriseMeButton from './SurpriseMeButton'
 import { useUserAuth } from '../UserAuthContext'
 
 export default function Header() {
@@ -49,6 +50,7 @@ export default function Header() {
           </div>
         </form>
         <div className="flex items-center gap-2">
+          <SurpriseMeButton />
           <ThemeToggle />
           <Link
             to="/badges"
