@@ -19,6 +19,7 @@ import BackButton from '../components/BackButton'
 import GameLeaderboard from '../components/GameLeaderboard'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordGamePlayed } from '../utils/badges'
+import { recordRecentlyViewed } from '../utils/recentlyViewed'
 import { isSoundEnabled, setSoundEnabled, playSound } from '../utils/sound'
 
 // Only games with a natural numeric result get a leaderboard — Tic-Tac-Toe
@@ -102,6 +103,7 @@ export default function Game() {
     if (!game || viewedRef.current) return
     viewedRef.current = true
     recordEngagement('game', game.slug, 'view')
+    recordRecentlyViewed({ type: 'game', url: `/games/${game.slug}`, title: game.title, emoji: game.emoji, gradient: game.gradient })
   }, [game])
 
   if (!game) {

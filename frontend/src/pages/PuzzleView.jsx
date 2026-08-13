@@ -12,6 +12,7 @@ import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { pickPuzzleOfTheDay, recordPuzzleStreakCompletion } from '../utils/dailyQuiz'
 import { recordPuzzleRevealed } from '../utils/badges'
+import { recordRecentlyViewed } from '../utils/recentlyViewed'
 
 const SUGGESTION_COUNT = 4
 const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
@@ -39,6 +40,7 @@ export default function PuzzleView() {
     if (!puzzle || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordEngagement('puzzle', puzzle._id, 'view')
+    recordRecentlyViewed({ type: 'puzzle', url: `/puzzle/${puzzle._id}`, title: puzzle.question, emoji: puzzle.emoji || '🧩', gradient: puzzle.gradient })
   }, [puzzle, previewToken])
 
   useEffect(() => {

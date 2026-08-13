@@ -5,6 +5,7 @@ import ProgressBar from '../components/ProgressBar'
 import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { recordRecentlyViewed } from '../utils/recentlyViewed'
 
 function pickWinningResult(scores) {
   let bestKey = null
@@ -59,6 +60,7 @@ export default function Quiz() {
     if (!quiz || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordEngagement('quiz', quiz._id, 'view')
+    recordRecentlyViewed({ type: 'quiz', url: `/quiz/${quiz.slug}`, title: quiz.title, emoji: quiz.emoji, gradient: quiz.gradient })
   }, [quiz, previewToken])
 
   useDocumentMeta(quiz?.title, quiz?.description)

@@ -11,6 +11,7 @@ import PreviewBanner from '../components/PreviewBanner'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { recordRecentlyViewed } from '../utils/recentlyViewed'
 
 const SUGGESTION_COUNT = 4
 
@@ -86,6 +87,8 @@ export default function StoryView() {
     if (!story || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordEngagement('story', story._id, 'view')
+    const style = STORY_CATEGORY_STYLE[story.category]
+    recordRecentlyViewed({ type: 'story', url: `/story/${story.slug}`, title: story.title, emoji: style?.emoji, gradient: style?.gradient })
   }, [story, previewToken])
 
   useEffect(() => {

@@ -13,6 +13,7 @@ import { POST_CATEGORY_STYLE } from '../postStyles'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { recordRecentlyViewed } from '../utils/recentlyViewed'
 
 const SUGGESTION_COUNT = 4
 
@@ -37,6 +38,14 @@ export default function PostView() {
     if (!post || viewedRef.current || previewToken) return
     viewedRef.current = true
     recordPostEngagement(post._id, 'view')
+    const style = POST_CATEGORY_STYLE[post.category]
+    recordRecentlyViewed({
+      type: 'post',
+      url: `/post/${post._id}`,
+      title: post.text?.length > 60 ? `${post.text.slice(0, 60)}…` : post.text,
+      emoji: style?.emoji,
+      gradient: style?.gradient,
+    })
   }, [post, previewToken])
 
   useEffect(() => {
