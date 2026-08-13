@@ -7,7 +7,7 @@
 // client-submitted number. Deliberately not tied to any single activity
 // type, so no level name below implies "quiz only" or "games only."
 export const POINTS_PER_QUIZ = 5
-export const POINTS_PER_PUZZLE = 5
+export const POINTS_PER_PUZZLE = 3
 export const POINTS_PER_GAME_PLAY = 2
 export const POINTS_PER_SHARE = 10
 export const POINTS_PER_REACTION = 1

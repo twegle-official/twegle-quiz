@@ -6,6 +6,7 @@
 import { getQuizStreak, getPuzzleStreak } from './dailyQuiz'
 import { pushLocalStatsToServer } from './statsSync'
 import { calculatePoints, getLevelInfo } from './levels'
+import { GAMES } from '../games/registry'
 
 export const STATS_KEY = 'twegleStats'
 export const SEEN_KEY = 'twegleBadgesSeen'
@@ -37,10 +38,21 @@ function saveStats(stats) {
 
 export const BADGES = [
   { id: 'beat-house-3', emoji: '🏆', label: 'Beat the House 3x', description: 'Win any 3 games.', check: (s) => s.gameWins >= 3, progress: (s) => `${Math.min(s.gameWins, 3)}/3` },
-  { id: 'tried-every-game', emoji: '🎮', label: 'Tried Every Game', description: 'Play all 7 games at least once.', check: (s) => Object.keys(s.gamesPlayed).length >= 7, progress: (s) => `${Object.keys(s.gamesPlayed).length}/7` },
+  // Threshold is the live game count, not a hardcoded number — the site
+  // keeps adding new games (7 at launch, 10 as of Connect Four's single-
+  // player mode), so a fixed "7" would stop meaning "every game" the
+  // moment an 8th shipped and just quietly get easier over time.
+  { id: 'tried-every-game', emoji: '🎮', label: 'Tried Every Game', description: 'Play every game on Twegle at least once.', check: (s) => Object.keys(s.gamesPlayed).length >= GAMES.length, progress: (s) => `${Object.keys(s.gamesPlayed).length}/${GAMES.length}` },
   { id: 'quiz-explorer', emoji: '🧭', label: 'Quiz Explorer', description: 'Complete 5 different quizzes.', check: (s) => s.quizzesCompleted.length >= 5, progress: (s) => `${Math.min(s.quizzesCompleted.length, 5)}/5` },
-  { id: 'perfect-score', emoji: '💯', label: 'Perfect Score', description: 'Get every question right on a trivia quiz.', check: (s) => s.perfectTrivia, progress: (s) => (s.perfectTrivia ? '1/1' : '0/1') },
-  { id: 'week-streak', emoji: '🔥', label: '7-Day Streak', description: 'Complete the Quiz of the Day 7 days in a row.', check: () => getQuizStreak().count >= 7, progress: () => `${Math.min(getQuizStreak().count, 7)}/7` },
+  // "trivia" is internal terminology (an admin-only quiz-type toggle, see
+  // QuizForm.jsx) that never appears as a label on any public quiz tile —
+  // described here in plain terms instead so it doesn't read as an unknown
+  // quiz category a visitor needs to go find.
+  { id: 'perfect-score', emoji: '💯', label: 'Perfect Score', description: 'Get every answer right on a right-or-wrong quiz.', check: (s) => s.perfectTrivia, progress: (s) => (s.perfectTrivia ? '1/1' : '0/1') },
+  // Counts either streak, not just Quiz of the Day — Puzzle of the Day
+  // earns points identically (see levels.js's streakWeeks calculation), so
+  // this badge treats them the same way rather than favoring one.
+  { id: 'week-streak', emoji: '🔥', label: '7-Day Streak', description: 'Complete Quiz of the Day or Puzzle of the Day 7 days in a row.', check: () => Math.max(getQuizStreak().count, getPuzzleStreak().count) >= 7, progress: () => `${Math.min(Math.max(getQuizStreak().count, getPuzzleStreak().count), 7)}/7` },
   { id: 'reaction-fan', emoji: '😍', label: 'Reaction Fan', description: 'React to 10 posts.', check: (s) => s.reactionsGiven >= 10, progress: (s) => `${Math.min(s.reactionsGiven, 10)}/10` },
   { id: 'super-sharer', emoji: '📣', label: 'Super Sharer', description: 'Share 5 things from Twegle.', check: (s) => s.sharesGiven >= 5, progress: (s) => `${Math.min(s.sharesGiven, 5)}/5` },
 ]
