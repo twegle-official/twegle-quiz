@@ -242,12 +242,14 @@ export default function ConnectFour({ onGameEnd, onReset }) {
         </div>
       </div>
       {gameOver && (
-        <button
-          onClick={handleReset}
-          className="px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
-        >
-          Play again
-        </button>
+        <div>
+          <button
+            onClick={handleReset}
+            className="px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
+          >
+            Play again
+          </button>
+        </div>
       )}
     </div>
   )
