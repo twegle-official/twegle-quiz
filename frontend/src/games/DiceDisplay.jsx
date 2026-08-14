@@ -19,7 +19,7 @@ export default function DiceDisplay({ roll, rolling }) {
 
   return (
     <div
-      className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white dark:bg-gray-800 border-2 border-violet-300 dark:border-violet-600 shadow text-4xl leading-none ${rolling ? 'animate-bounce' : ''}`}
+      className={`inline-flex items-center justify-center w-16 h-16 sm:w-14 sm:h-14 rounded-2xl bg-white dark:bg-gray-800 border-2 border-violet-300 dark:border-violet-600 shadow text-5xl sm:text-4xl leading-none ${rolling ? 'animate-bounce' : ''}`}
     >
       {FACES[face - 1]}
     </div>

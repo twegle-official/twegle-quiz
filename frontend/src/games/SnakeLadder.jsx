@@ -81,7 +81,7 @@ export default function SnakeLadder({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
       <div className="flex items-center justify-center gap-3 mb-4">
         <PlayerChip emoji="🔵" color="blue" name="You" position={myPosition} active={turn === 'me' && !gameOver} />
@@ -89,12 +89,19 @@ export default function SnakeLadder({ onGameEnd, onReset }) {
         <PlayerChip emoji="🤖" color="red" name="House" position={housePosition} active={turn === 'house' && !gameOver} />
       </div>
 
-      <SnakeLadderBoard
-        tokens={[
-          { id: 'me', position: myPosition, color: 'blue', emoji: '🔵' },
-          { id: 'house', position: housePosition, color: 'red', emoji: '🤖' },
-        ]}
-      />
+      {/* Reclaims Game.jsx's own px-4 page padding on mobile only, so the
+          bigger board (see SnakeLadderBoard.jsx) actually has room to grow
+          into instead of being squeezed by padding meant for page text —
+          reported directly as looking too small on a phone. Unchanged at
+          `sm`+, where there's already enough width to spare. */}
+      <div className="-mx-4 sm:mx-0 flex justify-center">
+        <SnakeLadderBoard
+          tokens={[
+            { id: 'me', position: myPosition, color: 'blue', emoji: '🔵' },
+            { id: 'house', position: housePosition, color: 'red', emoji: '🤖' },
+          ]}
+        />
+      </div>
 
       <div className="flex flex-col items-center gap-4">
         <DiceDisplay roll={lastRoll} rolling={rolling} />
@@ -109,7 +116,7 @@ export default function SnakeLadder({ onGameEnd, onReset }) {
           <button
             onClick={handleRoll}
             disabled={turn !== 'me' || rolling}
-            className="px-6 py-3 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white font-semibold hover:opacity-90 disabled:opacity-40"
+            className="px-8 py-4 sm:px-6 sm:py-3 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-lg sm:text-base font-semibold hover:opacity-90 disabled:opacity-40"
           >
             {rolling ? 'Rolling...' : '🎲 Roll the dice'}
           </button>

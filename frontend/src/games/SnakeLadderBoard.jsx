@@ -18,6 +18,12 @@ const TOKEN_STYLES = {
 // (SnakeLadder.jsx) and live 2-player (SnakeLadderMultiplayer.jsx) so a
 // visual pass here upgrades both at once instead of drifting apart.
 // `tokens`: [{ id, position, color: 'blue'|'orange'|'red', emoji }]
+//
+// Mobile-first sizing here is deliberately *larger* than sm+ (the reverse
+// of the usual pattern) — reported directly as looking too small on a
+// phone screen. The page around this component also reclaims its own
+// horizontal padding on mobile (see SnakeLadder.jsx/SnakeLadderMultiplayer.jsx)
+// so the bigger board actually has room to grow into.
 export default function SnakeLadderBoard({ tokens }) {
   return (
     <div className="inline-block p-1.5 rounded-2xl bg-gradient-to-br from-violet-400 via-fuchsia-400 to-orange-300 dark:from-violet-800 dark:via-fuchsia-900 dark:to-orange-900 shadow-lg mb-6">
@@ -29,19 +35,19 @@ export default function SnakeLadderBoard({ tokens }) {
           return (
             <div
               key={num}
-              className={`relative w-7 h-7 sm:w-9 sm:h-9 flex items-center justify-center border border-black/5 dark:border-white/5 ${cellBg(isLadder, isSnake, i % 2 === 0)}`}
+              className={`relative w-9 h-9 sm:w-9 sm:h-9 flex items-center justify-center border border-black/5 dark:border-white/5 ${cellBg(isLadder, isSnake, i % 2 === 0)}`}
             >
-              <span className="absolute top-0 left-0.5 text-[7px] sm:text-[9px] font-semibold text-gray-500 dark:text-gray-400 leading-none">
+              <span className="absolute top-0 left-0.5 text-[9px] sm:text-[9px] font-semibold text-gray-500 dark:text-gray-400 leading-none">
                 {num}
               </span>
-              {isLadder && <span className="text-sm sm:text-base">🪜</span>}
-              {isSnake && <span className="text-sm sm:text-base">🐍</span>}
+              {isLadder && <span className="text-base sm:text-base">🪜</span>}
+              {isSnake && <span className="text-base sm:text-base">🐍</span>}
               {cellTokens.length > 0 && (
                 <span className="absolute -bottom-0.5 -right-0.5 flex">
                   {cellTokens.map((t) => (
                     <span
                       key={t.id}
-                      className={`w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full ring-2 ring-white dark:ring-gray-900 shadow-md flex items-center justify-center text-[8px] sm:text-[10px] ${TOKEN_STYLES[t.color]}`}
+                      className={`w-[18px] h-[18px] sm:w-5 sm:h-5 rounded-full ring-2 ring-white dark:ring-gray-900 shadow-md flex items-center justify-center text-[9px] sm:text-[10px] ${TOKEN_STYLES[t.color]}`}
                     >
                       {t.emoji}
                     </span>
