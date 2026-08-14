@@ -52,7 +52,7 @@ export default function ChessBoard({
                   type="button"
                   disabled={disabled}
                   onClick={() => onSquareClick?.(square)}
-                  className={`relative w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center transition-colors ${
+                  className={`relative w-11 h-11 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center transition-colors ${
                     isLight ? 'bg-amber-100 dark:bg-amber-800' : 'bg-amber-700 dark:bg-amber-950'
                   } ${isSelected ? 'ring-4 ring-inset ring-violet-500' : ''} ${
                     isLastMove ? 'after:absolute after:inset-0 after:bg-yellow-300/30 dark:after:bg-yellow-400/20' : ''
@@ -62,7 +62,7 @@ export default function ChessBoard({
                 >
                   {piece && (
                     <span
-                      className="relative text-2xl sm:text-3xl md:text-4xl leading-none select-none"
+                      className="relative text-3xl sm:text-3xl md:text-4xl leading-none select-none"
                       style={{
                         textShadow:
                           piece.color === 'w'
@@ -94,7 +94,7 @@ export default function ChessBoard({
         {colOrder.map((col) => (
           <span
             key={col}
-            className="w-9 sm:w-11 md:w-12 text-center text-[10px] sm:text-xs text-amber-200/80 font-semibold"
+            className="w-11 sm:w-11 md:w-12 text-center text-[10px] sm:text-xs text-amber-200/80 font-semibold"
           >
             {FILES[col]}
           </span>

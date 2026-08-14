@@ -44,7 +44,7 @@ export default function GuessTheNumber({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
         {isWon
           ? `You got it in ${attemptsUsed} ${attemptsUsed === 1 ? 'try' : 'tries'}! 🎉`
           : isLost
@@ -61,12 +61,12 @@ export default function GuessTheNumber({ onGameEnd, onReset }) {
             value={guess}
             onChange={(e) => setGuess(e.target.value)}
             autoFocus
-            className="w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-center"
+            className="w-28 sm:w-24 px-3 py-3 sm:py-2 text-lg sm:text-base border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl text-center"
           />
           <button
             type="submit"
             disabled={!guess}
-            className="px-5 py-2 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40"
+            className="px-6 py-3 sm:px-5 sm:py-2 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-base sm:text-sm font-semibold hover:opacity-90 disabled:opacity-40"
           >
             Guess
           </button>

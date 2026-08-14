@@ -70,7 +70,7 @@ export default function WhackAMole({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">
         {gameOver
           ? score >= WIN_SCORE
             ? `Whack-a-Mole champion — ${score} hits! 🎉`
@@ -89,13 +89,13 @@ export default function WhackAMole({ onGameEnd, onReset }) {
           Start
         </button>
       ) : (
-        <div className="grid grid-cols-3 gap-3 w-64 mx-auto mb-6">
+        <div className="grid grid-cols-3 gap-3 w-80 sm:w-64 mx-auto mb-6">
           {Array.from({ length: HOLE_COUNT }).map((_, i) => (
             <button
               key={i}
               disabled={gameOver}
               onClick={() => handleWhack(i)}
-              className="h-20 rounded-full bg-amber-800/20 dark:bg-amber-900/40 flex items-center justify-center text-3xl disabled:cursor-not-allowed"
+              className="h-24 sm:h-20 rounded-full bg-amber-800/20 dark:bg-amber-900/40 flex items-center justify-center text-4xl sm:text-3xl disabled:cursor-not-allowed"
             >
               {activeHole === i ? '🐹' : ''}
             </button>

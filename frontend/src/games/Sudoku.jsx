@@ -168,7 +168,7 @@ export default function Sudoku({ onGameEnd, onReset }) {
               <button
                 key={`${r}-${c}`}
                 onClick={() => selectCell(r, c)}
-                className={`w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-sm sm:text-base font-semibold
+                className={`w-9 h-9 sm:w-9 sm:h-9 flex items-center justify-center text-base sm:text-base font-semibold
                   ${isGiven ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200' : 'bg-white dark:bg-gray-900 text-violet-700 dark:text-violet-400 hover:bg-violet-50 dark:hover:bg-gray-800'}
                   ${isSelected ? 'ring-2 ring-inset ring-violet-500' : ''}
                   ${conflict ? 'text-red-500' : ''}
@@ -190,7 +190,7 @@ export default function Sudoku({ onGameEnd, onReset }) {
               key={d}
               onClick={() => selected && fillCell(selected[0], selected[1], d)}
               disabled={!selected}
-              className="w-9 h-9 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 font-bold hover:bg-violet-200 dark:hover:bg-violet-900/40 disabled:opacity-40"
+              className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 font-bold hover:bg-violet-200 dark:hover:bg-violet-900/40 disabled:opacity-40"
             >
               {d}
             </button>
@@ -198,7 +198,7 @@ export default function Sudoku({ onGameEnd, onReset }) {
           <button
             onClick={() => selected && fillCell(selected[0], selected[1], 0)}
             disabled={!selected}
-            className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40"
+            className="w-10 h-10 sm:w-9 sm:h-9 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 font-bold hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40"
           >
             ⌫
           </button>

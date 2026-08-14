@@ -43,18 +43,18 @@ export default function RockPaperScissors({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
       {round ? (
         <div className="flex items-center justify-center gap-8 mb-6">
           <div>
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">You</p>
-            <div className="text-6xl">{emojiFor(round.human)}</div>
+            <div className="text-7xl sm:text-6xl">{emojiFor(round.human)}</div>
           </div>
           <p className="text-2xl text-gray-300 dark:text-gray-600">vs</p>
           <div>
             <p className="text-xs text-gray-400 dark:text-gray-500 mb-1">House</p>
-            <div className="text-6xl">{emojiFor(round.ai)}</div>
+            <div className="text-7xl sm:text-6xl">{emojiFor(round.ai)}</div>
           </div>
         </div>
       ) : (
@@ -64,7 +64,7 @@ export default function RockPaperScissors({ onGameEnd, onReset }) {
               key={c.key}
               onClick={() => handlePick(c.key)}
               aria-label={c.label}
-              className="w-20 h-20 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-4xl flex items-center justify-center hover:border-violet-300 dark:hover:border-violet-500 transition-colors"
+              className="w-24 h-24 sm:w-20 sm:h-20 rounded-2xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-5xl sm:text-4xl flex items-center justify-center hover:border-violet-300 dark:hover:border-violet-500 transition-colors"
             >
               {c.emoji}
             </button>

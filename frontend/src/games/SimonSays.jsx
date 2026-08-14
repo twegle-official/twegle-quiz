@@ -88,7 +88,7 @@ export default function SimonSays({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">
         {gameOver
           ? round >= WIN_ROUND
             ? `You mastered Simon Says at round ${round}! 🎉`
@@ -99,13 +99,13 @@ export default function SimonSays({ onGameEnd, onReset }) {
       </p>
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Round {round}</p>
 
-      <div className="grid grid-cols-2 gap-3 w-56 mx-auto mb-6">
+      <div className="grid grid-cols-2 gap-3 w-72 sm:w-56 mx-auto mb-6">
         {PADS.map((pad) => (
           <button
             key={pad.id}
             disabled={isPlayingBack || gameOver}
             onClick={() => handlePadClick(pad.id)}
-            className={`h-24 rounded-2xl transition-colors disabled:cursor-not-allowed ${
+            className={`h-32 sm:h-24 rounded-2xl transition-colors disabled:cursor-not-allowed ${
               flashingPad === pad.id ? pad.active : pad.color
             }`}
             aria-label={`Pad ${pad.id + 1}`}

@@ -194,15 +194,15 @@ export default function TicTacToeMultiplayer() {
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">
         You are {role} · {myName} vs {opponentName || '...'}
       </p>
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
-      <div className="grid grid-cols-3 gap-2 w-64 mx-auto mb-6">
+      <div className="grid grid-cols-3 gap-2 w-80 sm:w-64 mx-auto mb-6">
         {game.board.map((cell, i) => (
           <button
             key={i}
             onClick={() => handleCellClick(i)}
             disabled={Boolean(cell) || !isMyTurn}
-            className="h-20 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-4xl font-bold flex items-center justify-center hover:border-violet-300 dark:hover:border-violet-500 disabled:cursor-not-allowed transition-colors"
+            className="h-24 sm:h-20 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-5xl sm:text-4xl font-bold flex items-center justify-center hover:border-violet-300 dark:hover:border-violet-500 disabled:cursor-not-allowed transition-colors"
           >
             {cell === 'X' && <span className="text-violet-600 dark:text-violet-400">X</span>}
             {cell === 'O' && <span className="text-pink-500">O</span>}

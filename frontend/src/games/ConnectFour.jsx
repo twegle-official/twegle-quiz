@@ -216,29 +216,34 @@ export default function ConnectFour({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
-      <div className="inline-block bg-blue-500 dark:bg-blue-700 rounded-2xl p-2 mb-6">
-        <div className="grid grid-cols-7 gap-1">
-          {Array.from({ length: COLS }).map((_, col) => (
-            <button
-              key={col}
-              onClick={() => handleColumnClick(col)}
-              disabled={gameOver || turn !== HUMAN || Boolean(board[0][col])}
-              className="flex flex-col gap-1 disabled:cursor-not-allowed"
-            >
-              {board.map((row, r) => {
-                const cell = row[col]
-                return (
-                  <span
-                    key={r}
-                    className={`block h-9 w-9 rounded-full ${
-                      cell === 'red' ? 'bg-red-500' : cell === 'yellow' ? 'bg-yellow-400' : 'bg-white dark:bg-gray-800'
-                    }`}
-                  />
-                )
-              })}
-            </button>
-          ))}
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
+      {/* Reclaims Game.jsx's own px-4 page padding on mobile only, so the
+          bigger discs below have room to fit — same fix as
+          SnakeLadderBoard.jsx. Unchanged at `sm`+. */}
+      <div className="-mx-4 sm:mx-0 flex justify-center mb-6">
+        <div className="inline-block bg-blue-500 dark:bg-blue-700 rounded-2xl p-2 sm:p-2">
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-1">
+            {Array.from({ length: COLS }).map((_, col) => (
+              <button
+                key={col}
+                onClick={() => handleColumnClick(col)}
+                disabled={gameOver || turn !== HUMAN || Boolean(board[0][col])}
+                className="flex flex-col gap-1.5 sm:gap-1 disabled:cursor-not-allowed"
+              >
+                {board.map((row, r) => {
+                  const cell = row[col]
+                  return (
+                    <span
+                      key={r}
+                      className={`block h-11 w-11 sm:h-9 sm:w-9 rounded-full ${
+                        cell === 'red' ? 'bg-red-500' : cell === 'yellow' ? 'bg-yellow-400' : 'bg-white dark:bg-gray-800'
+                      }`}
+                    />
+                  )
+                })}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       {gameOver && (

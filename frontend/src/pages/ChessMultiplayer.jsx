@@ -261,12 +261,14 @@ export default function ChessMultiplayer() {
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">
         You are {role === 'white' ? 'White' : 'Black'} · {myName} vs {opponentName || '...'}
       </p>
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
       {error && (
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
-      <div className="flex justify-center mb-4">
+      {/* Reclaims this page's own px-4 padding on mobile only, same fix as
+          Chess.jsx's single-player board. Unchanged at `sm`+. */}
+      <div className="-mx-4 sm:mx-0 flex justify-center mb-4">
         <ChessBoard
           fen={game.fen}
           orientation={role === 'black' ? 'black' : 'white'}

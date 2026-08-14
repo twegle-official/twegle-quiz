@@ -194,37 +194,41 @@ export default function ConnectFourMultiplayer() {
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">
         You are {role === 'red' ? 'Red' : 'Yellow'} · {myName} vs {opponentName || '...'}
       </p>
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
       {error && (
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
-      <div className="inline-block bg-blue-500 dark:bg-blue-700 rounded-2xl p-2 mb-6">
-        <div className="grid grid-cols-7 gap-1">
-          {Array.from({ length: 7 }).map((_, col) => (
-            <button
-              key={col}
-              onClick={() => handleColumnClick(col)}
-              disabled={!isMyTurn || Boolean(game.board[0][col])}
-              className="flex flex-col gap-1 disabled:cursor-not-allowed"
-            >
-              {game.board.map((row, r) => {
-                const cell = row[col]
-                return (
-                  <span
-                    key={r}
-                    className={`block h-9 w-9 rounded-full ${
-                      cell === 'red'
-                        ? 'bg-red-500'
-                        : cell === 'yellow'
-                        ? 'bg-yellow-400'
-                        : 'bg-white dark:bg-gray-800'
-                    }`}
-                  />
-                )
-              })}
-            </button>
-          ))}
+      {/* Reclaims this page's own px-4 padding on mobile only, same fix as
+          ConnectFour.jsx's single-player board. Unchanged at `sm`+. */}
+      <div className="-mx-4 sm:mx-0 flex justify-center mb-6">
+        <div className="inline-block bg-blue-500 dark:bg-blue-700 rounded-2xl p-2 sm:p-2">
+          <div className="grid grid-cols-7 gap-1.5 sm:gap-1">
+            {Array.from({ length: 7 }).map((_, col) => (
+              <button
+                key={col}
+                onClick={() => handleColumnClick(col)}
+                disabled={!isMyTurn || Boolean(game.board[0][col])}
+                className="flex flex-col gap-1.5 sm:gap-1 disabled:cursor-not-allowed"
+              >
+                {game.board.map((row, r) => {
+                  const cell = row[col]
+                  return (
+                    <span
+                      key={r}
+                      className={`block h-11 w-11 sm:h-9 sm:w-9 rounded-full ${
+                        cell === 'red'
+                          ? 'bg-red-500'
+                          : cell === 'yellow'
+                          ? 'bg-yellow-400'
+                          : 'bg-white dark:bg-gray-800'
+                      }`}
+                    />
+                  )
+                })}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

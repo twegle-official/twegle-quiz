@@ -41,21 +41,21 @@ export default function WordGuess({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
         {isWon
           ? 'You guessed it! 🎉'
           : isLost
           ? `Out of lives! It was "${word}".`
           : '❤️'.repeat(Math.max(livesLeft, 0)) + '🖤'.repeat(MAX_LIVES - Math.max(livesLeft, 0))}
       </p>
-      <p className="text-3xl font-bold tracking-widest text-gray-900 dark:text-gray-100 mb-6">
+      <p className="text-4xl sm:text-3xl font-bold tracking-widest text-gray-900 dark:text-gray-100 mb-6">
         {word.split('').map((letter, i) => (
-          <span key={i} className="inline-block w-8">
+          <span key={i} className="inline-block w-9 sm:w-8">
             {guessed.includes(letter) || isLost ? letter : '_'}
           </span>
         ))}
       </p>
-      <div className="grid grid-cols-7 gap-1.5 max-w-sm mx-auto mb-6">
+      <div className="grid grid-cols-7 gap-2 sm:gap-1.5 max-w-sm mx-auto mb-6">
         {ALPHABET.map((letter) => {
           const used = guessed.includes(letter)
           const correct = used && word.includes(letter)
@@ -64,7 +64,7 @@ export default function WordGuess({ onGameEnd, onReset }) {
               key={letter}
               onClick={() => handleGuess(letter)}
               disabled={used || isOver}
-              className={`h-8 rounded-md text-xs font-bold flex items-center justify-center transition-colors ${
+              className={`h-10 sm:h-8 rounded-md text-sm sm:text-xs font-bold flex items-center justify-center transition-colors ${
                 used
                   ? correct
                     ? 'bg-green-100 dark:bg-green-950/40 text-green-700 dark:text-green-400'

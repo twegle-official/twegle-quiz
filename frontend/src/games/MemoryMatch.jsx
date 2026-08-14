@@ -57,10 +57,10 @@ export default function MemoryMatch({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
         {isWon ? `Solved in ${moves} moves! 🎉` : `Moves: ${moves}`}
       </p>
-      <div className="grid grid-cols-4 gap-2 w-72 mx-auto mb-6">
+      <div className="grid grid-cols-4 gap-2 w-80 sm:w-72 mx-auto mb-6">
         {deck.map((card, i) => {
           const isFaceUp = flipped.includes(i) || matched.includes(i)
           return (
@@ -68,7 +68,7 @@ export default function MemoryMatch({ onGameEnd, onReset }) {
               key={card.id}
               onClick={() => handleCardClick(i)}
               disabled={isFaceUp}
-              className={`h-14 rounded-xl border-2 text-2xl flex items-center justify-center transition-colors ${
+              className={`h-16 sm:h-14 rounded-xl border-2 text-3xl sm:text-2xl flex items-center justify-center transition-colors ${
                 matched.includes(i)
                   ? 'border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-950/40'
                   : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-violet-300 dark:hover:border-violet-500'

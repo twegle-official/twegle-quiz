@@ -149,18 +149,18 @@ export default function Game2048({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">
         {status === 'won'
           ? 'You reached 2048! 🎉'
           : status === 'lost'
           ? 'No more moves — game over.'
           : `Score: ${score}`}
       </p>
-      <div className="grid grid-cols-4 gap-2 w-72 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 p-2 rounded-xl">
+      <div className="grid grid-cols-4 gap-2 w-80 sm:w-72 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 p-2 rounded-xl">
         {board.flat().map((value, i) => (
           <div
             key={i}
-            className={`h-14 rounded-lg flex items-center justify-center font-bold text-lg ${
+            className={`h-16 sm:h-14 rounded-lg flex items-center justify-center font-bold text-xl sm:text-lg ${
               value ? TILE_STYLES[value] || 'bg-violet-700 text-white' : 'bg-gray-100 dark:bg-gray-800'
             }`}
           >
@@ -168,13 +168,13 @@ export default function Game2048({ onGameEnd, onReset }) {
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-2 w-40 mx-auto mb-6">
+      <div className="grid grid-cols-3 gap-2 w-48 sm:w-40 mx-auto mb-6">
         <div />
-        <button onClick={() => handleMove('up')} className="h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold">↑</button>
+        <button onClick={() => handleMove('up')} className="h-12 sm:h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold text-lg sm:text-base">↑</button>
         <div />
-        <button onClick={() => handleMove('left')} className="h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold">←</button>
-        <button onClick={() => handleMove('down')} className="h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold">↓</button>
-        <button onClick={() => handleMove('right')} className="h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold">→</button>
+        <button onClick={() => handleMove('left')} className="h-12 sm:h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold text-lg sm:text-base">←</button>
+        <button onClick={() => handleMove('down')} className="h-12 sm:h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold text-lg sm:text-base">↓</button>
+        <button onClick={() => handleMove('right')} className="h-12 sm:h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold text-lg sm:text-base">→</button>
       </div>
       {status !== 'playing' && (
         <button

@@ -143,9 +143,12 @@ export default function Chess({ onGameEnd, onReset }) {
 
   return (
     <div className="text-center">
-      <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
+      <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
-      <div className="flex justify-center mb-4">
+      {/* Reclaims Game.jsx's own px-4 page padding on mobile only, so the
+          bigger board (see ChessBoard.jsx) has room to fit — same fix as
+          SnakeLadderBoard.jsx/ConnectFour.jsx. Unchanged at `sm`+. */}
+      <div className="-mx-4 sm:mx-0 flex justify-center mb-4">
         <ChessBoard
           fen={fen}
           orientation="white"
