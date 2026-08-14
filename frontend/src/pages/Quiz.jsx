@@ -102,7 +102,13 @@ export default function Quiz() {
       if (compareCode && compareName) {
         try {
           await joinQuizCompare(slug, compareCode, compareName, winningResult)
-          navigate(`/quiz/${slug}/vs/${compareCode}/result`)
+          // `replace: true` — the quiz's own question-by-question steps
+          // never push their own history entries (questionIndex is plain
+          // component state), so without this the quiz page itself is still
+          // the previous history entry. Replacing it means Back from the
+          // result page goes straight to wherever the player was before
+          // starting the quiz, instead of back into the finished quiz.
+          navigate(`/quiz/${slug}/vs/${compareCode}/result`, { replace: true })
           return
         } catch {
           // Link expired/invalid — fall through to the normal result page
@@ -120,7 +126,8 @@ export default function Quiz() {
         ? { score: nextScores.correct || 0, total: quiz.questions.length, finished: true }
         : { finished: true }
       const previewQs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
-      navigate(`/result/${slug}/${winningResult}${previewQs}`, { state })
+      // `replace: true` — see comment above; same reasoning applies here.
+      navigate(`/result/${slug}/${winningResult}${previewQs}`, { state, replace: true })
       return
     }
 
