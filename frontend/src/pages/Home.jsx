@@ -144,9 +144,9 @@ export default function Home() {
     )
   }
 
-  const activeTab = getParam('tab', TABS.map((t) => t.key), 'quizzes')
+  const activeTab = getParam('tab', TABS.map((t) => t.key), 'games')
   function setActiveTab(tab) {
-    setParam('tab', tab, 'quizzes', { push: true })
+    setParam('tab', tab, 'games', { push: true })
   }
   const language = getParam('lang', ['en', 'hi'], 'en')
   function setLanguage(lang) {
@@ -181,7 +181,7 @@ export default function Home() {
   // is in flight — this is what previously caused a crash and a "duplicate
   // key" warning when switching tabs quickly (old items briefly rendered
   // under the new tab).
-  const [content, setContent] = useState({ tab: 'quizzes', language: 'en', category: 'all', items: null })
+  const [content, setContent] = useState({ tab: 'games', language: 'en', category: 'all', items: null })
   const [error, setError] = useState(false)
   // Real counts for the hero band, across both languages — replaces a
   // hardcoded number that had to be manually edited every time content was
