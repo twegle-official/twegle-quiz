@@ -29,9 +29,9 @@ import AdSlot from '../components/AdSlot'
 // tabs) after Puzzles. Stories and Horoscope last — longer-dwell, less
 // share-driven formats.
 const TABS = [
+  { key: 'games', label: 'Games', emoji: '🎮' },
   { key: 'quizzes', label: 'Quizzes', emoji: '🎯' },
   { key: 'friendship', label: 'Friendship Quiz', emoji: '🤝' },
-  { key: 'games', label: 'Games', emoji: '🎮' },
   { key: 'puzzles', label: 'Puzzles', emoji: '🧩' },
   { key: 'posts', label: 'Posts', emoji: '💬' },
   { key: 'stories', label: 'Stories', emoji: '📖' },
