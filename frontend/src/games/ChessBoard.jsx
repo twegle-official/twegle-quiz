@@ -62,12 +62,24 @@ export default function ChessBoard({
                 >
                   {piece && (
                     <span
-                      className="relative text-3xl sm:text-3xl md:text-4xl leading-none select-none"
+                      // The glyphs alone aren't enough to read as "white" vs
+                      // "black" pieces — most fonts render both Unicode sets
+                      // as solid dark glyphs, so the actual fill color has to
+                      // be set explicitly. White pieces stay pure white with
+                      // a dark outline in both themes (always reads clearly
+                      // against these warm amber squares); black pieces stay
+                      // dark in light mode but lighten to a mid-gray in dark
+                      // mode so they don't disappear against the near-black
+                      // dark-mode squares, while still reading as visibly
+                      // "the other side" from the white pieces.
+                      className={`relative text-3xl sm:text-3xl md:text-4xl leading-none select-none ${
+                        piece.color === 'w' ? 'text-white' : 'text-gray-900 dark:text-gray-300'
+                      }`}
                       style={{
                         textShadow:
                           piece.color === 'w'
-                            ? '0 0 2px rgba(0,0,0,0.85), 0 0 4px rgba(0,0,0,0.5), 0 1px 1px rgba(0,0,0,0.6)'
-                            : '0 0 2px rgba(255,255,255,0.75), 0 1px 1px rgba(0,0,0,0.4)',
+                            ? '0 0 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6), 0 1px 1px rgba(0,0,0,0.7)'
+                            : '0 0 2px rgba(255,255,255,0.7), 0 1px 1px rgba(255,255,255,0.4)',
                       }}
                     >
                       {piece.color === 'w' ? WHITE_GLYPHS[piece.type] : BLACK_GLYPHS[piece.type]}
