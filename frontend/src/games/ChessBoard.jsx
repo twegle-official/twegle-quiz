@@ -65,16 +65,14 @@ export default function ChessBoard({
                       // The glyphs alone aren't enough to read as "white" vs
                       // "black" pieces — most fonts render both Unicode sets
                       // as solid dark glyphs, so the fill color has to be set
-                      // explicitly. White pieces stay pure white with a dark
-                      // glow in both themes. Black pieces stay near-black in
-                      // light mode; in dark mode they use a genuine mid-gray
-                      // (gray-500, not the near-white gray-300 tried earlier
-                      // — that read as basically the same color as the white
-                      // pieces) so they're unmistakably the *other* side,
-                      // with a light glow behind them so they don't blend
-                      // into the near-black dark-mode squares.
+                      // explicitly. Both colors stay exactly the same in
+                      // light and dark theme — white pieces pure white with
+                      // a dark glow, black pieces near-black with a light
+                      // glow (the glow is what keeps black pieces visible
+                      // against the near-black dark-mode squares, not a
+                      // theme-swapped fill color).
                       className={`relative text-3xl sm:text-3xl md:text-4xl leading-none select-none ${
-                        piece.color === 'w' ? 'text-white' : 'text-gray-900 dark:text-gray-500'
+                        piece.color === 'w' ? 'text-white' : 'text-gray-900'
                       }`}
                       style={{
                         textShadow:
