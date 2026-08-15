@@ -64,22 +64,27 @@ export default function ChessBoard({
                     <span
                       // The glyphs alone aren't enough to read as "white" vs
                       // "black" pieces — most fonts render both Unicode sets
-                      // as solid dark glyphs, so the actual fill color has to
-                      // be set explicitly. White pieces stay pure white with
-                      // a dark outline in both themes (always reads clearly
-                      // against these warm amber squares); black pieces stay
-                      // dark in light mode but lighten to a mid-gray in dark
-                      // mode so they don't disappear against the near-black
-                      // dark-mode squares, while still reading as visibly
-                      // "the other side" from the white pieces.
+                      // as solid dark glyphs, so the fill color has to be set
+                      // explicitly. Fill stays the same in both themes (pure
+                      // white for white pieces, near-black for black pieces)
+                      // — an earlier version lightened black pieces in dark
+                      // mode to stay visible against the near-black squares,
+                      // but that made both sides read as the same off-white
+                      // color. A real outline (`-webkit-text-stroke`, not
+                      // just a soft text-shadow blur) is what actually keeps
+                      // each side visible against a same-tone square in
+                      // either theme, the same trick printed chess diagrams
+                      // use — a thin dark stroke around white pieces, a thin
+                      // light stroke around black pieces.
                       className={`relative text-3xl sm:text-3xl md:text-4xl leading-none select-none ${
-                        piece.color === 'w' ? 'text-white' : 'text-gray-900 dark:text-gray-300'
+                        piece.color === 'w' ? 'text-white' : 'text-gray-900'
                       }`}
                       style={{
+                        WebkitTextStroke: piece.color === 'w' ? '1.5px #1f2937' : '1.5px #f9fafb',
                         textShadow:
                           piece.color === 'w'
-                            ? '0 0 2px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6), 0 1px 1px rgba(0,0,0,0.7)'
-                            : '0 0 2px rgba(255,255,255,0.7), 0 1px 1px rgba(255,255,255,0.4)',
+                            ? '0 1px 2px rgba(0,0,0,0.6)'
+                            : '0 1px 2px rgba(255,255,255,0.35)',
                       }}
                     >
                       {piece.color === 'w' ? WHITE_GLYPHS[piece.type] : BLACK_GLYPHS[piece.type]}
