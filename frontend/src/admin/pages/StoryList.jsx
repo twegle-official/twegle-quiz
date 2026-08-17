@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
-import { listStoriesAdmin, deleteStory, createStory, getStoryAdmin } from '../adminApi'
+import { listStoriesAdmin, deleteStory, createStory, updateStory, getStoryAdmin } from '../adminApi'
 import StatusLabel from '../components/StatusLabel'
 import Pager from '../components/Pager'
 import AdminPreviewButton from '../components/AdminPreviewButton'
+import BulkActionsBar from '../components/BulkActionsBar'
+import { useBulkSelection } from '../useBulkSelection'
 
 const PAGE_SIZE = 20
 
@@ -27,7 +29,9 @@ export default function StoryList() {
   const [language, setLanguage] = useState('')
   const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
+  const [bulkBusy, setBulkBusy] = useState(false)
   const canWrite = hasRole('superadmin', 'editor')
+  const { selected, toggle, toggleAll, clear } = useBulkSelection()
 
   const isFirstRender = useRef(true)
 
@@ -55,6 +59,41 @@ export default function StoryList() {
   // See QuizList.jsx — resets to page 1 whenever a filter changes.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setPage(1), [search, category, language, status])
+
+  // Selection is page-local — clear it whenever the visible page/filters change.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => clear(), [search, category, language, status, page])
+
+  async function handleBulkPublish() {
+    setBulkBusy(true)
+    for (const id of selected) {
+      await updateStory(session.token, id, { status: 'published' }).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
+
+  async function handleBulkUnpublish() {
+    setBulkBusy(true)
+    for (const id of selected) {
+      await updateStory(session.token, id, { status: 'draft' }).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
+
+  async function handleBulkDelete() {
+    if (!window.confirm(`Delete ${selected.size} selected story(ies)? This cannot be undone.`)) return
+    setBulkBusy(true)
+    for (const id of selected) {
+      await deleteStory(session.token, id).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
 
   async function handleDelete(id, title) {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return
@@ -154,6 +193,17 @@ export default function StoryList() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!stories && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
+      {canWrite && (
+        <BulkActionsBar
+          count={selected.size}
+          busy={bulkBusy}
+          onPublish={handleBulkPublish}
+          onUnpublish={handleBulkUnpublish}
+          onDelete={handleBulkDelete}
+          onClear={clear}
+        />
+      )}
+
       {stories && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
           {stories.length === 0 && (
@@ -161,15 +211,34 @@ export default function StoryList() {
               {hasFilters ? 'No stories match these filters.' : 'No stories yet.'}
             </p>
           )}
+          {canWrite && stories.length > 0 && (
+            <div className="flex items-center gap-2 p-3 text-xs text-gray-500 dark:text-gray-400">
+              <input
+                type="checkbox"
+                checked={stories.every((s) => selected.has(s._id))}
+                onChange={() => toggleAll(stories.map((s) => s._id))}
+              />
+              Select all on this page
+            </div>
+          )}
           {stories.map((story) => (
             <div key={story._id} className="flex items-center justify-between p-4">
-              <div>
+              <div className="flex items-center gap-3">
+                {canWrite && (
+                  <input
+                    type="checkbox"
+                    checked={selected.has(story._id)}
+                    onChange={() => toggle(story._id)}
+                  />
+                )}
+                <div>
                 <p className="font-semibold text-gray-900 dark:text-gray-100">
                   {story.emoji} {story.title}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {CATEGORY_LABELS[story.category]} · {story.language.toUpperCase()} · <StatusLabel item={story} />
                 </p>
+                </div>
               </div>
               <div className="flex gap-2">
                 <AdminPreviewButton contentType="story" id={story._id} publicPath={`/story/${story.slug}`} />

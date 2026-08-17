@@ -1,6 +1,20 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../AuthContext'
 import { fetchAnalytics, fetchPostAnalytics, fetchEngagementSummary, fetchWeeklyDigest } from '../adminApi'
+import { exportToCSV } from '../csvExport'
+
+function ExportButton({ filename, rows, columns }) {
+  return (
+    <button
+      type="button"
+      onClick={() => exportToCSV(filename, rows, columns)}
+      disabled={!rows || rows.length === 0}
+      className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-xs font-semibold text-gray-600 dark:text-gray-300 disabled:opacity-40"
+    >
+      ⬇ Export CSV
+    </button>
+  )
+}
 
 const ENGAGEMENT_SECTIONS = [
   { contentType: 'quiz', title: 'Quiz Engagement', columnLabel: 'Quiz' },
@@ -18,7 +32,18 @@ const ENGAGEMENT_SECTIONS = [
 function EngagementTable({ title, columnLabel, summary, error }) {
   return (
     <>
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">{title}</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h2>
+        <ExportButton
+          filename={`${title.toLowerCase().replace(/\s+/g, '-')}.csv`}
+          rows={summary}
+          columns={[
+            { key: 'title', label: columnLabel },
+            { key: 'views', label: 'Views' },
+            { key: 'shares', label: 'Shares' },
+          ]}
+        />
+      </div>
       {!summary && !error && <p className="text-gray-400 dark:text-gray-500 mb-8">Loading...</p>}
       {summary && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-10 overflow-x-auto">
@@ -99,7 +124,18 @@ export default function Analytics() {
         </div>
       )}
 
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Quiz Plays</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Quiz Plays</h2>
+        <ExportButton
+          filename="quiz-plays.csv"
+          rows={summary}
+          columns={[
+            { key: 'title', label: 'Quiz' },
+            { key: 'totalPlays', label: 'Total Plays' },
+            { key: 'uniquePlayers', label: 'Unique Players' },
+          ]}
+        />
+      </div>
       {!summary && !error && <p className="text-gray-400 dark:text-gray-500 mb-8">Loading...</p>}
       {summary && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-10 overflow-x-auto">
@@ -131,7 +167,18 @@ export default function Analytics() {
         </div>
       )}
 
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Post Engagement</h2>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Post Engagement</h2>
+        <ExportButton
+          filename="post-engagement.csv"
+          rows={postSummary}
+          columns={[
+            { key: 'text', label: 'Post' },
+            { key: 'views', label: 'Views' },
+            { key: 'shares', label: 'Shares' },
+          ]}
+        />
+      </div>
       {!postSummary && !error && <p className="text-gray-400 dark:text-gray-500 mb-8">Loading...</p>}
       {postSummary && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-10 overflow-x-auto">

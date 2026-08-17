@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
-import { listQuizzesAdmin, deleteQuiz, createQuiz, fetchAnalytics } from '../adminApi'
+import { listQuizzesAdmin, deleteQuiz, createQuiz, updateQuiz, fetchAnalytics } from '../adminApi'
 import StatusLabel from '../components/StatusLabel'
 import Pager from '../components/Pager'
 import AdminPreviewButton from '../components/AdminPreviewButton'
+import BulkActionsBar from '../components/BulkActionsBar'
+import { useBulkSelection } from '../useBulkSelection'
 import { isStale } from '../freshness'
 
 const PAGE_SIZE = 20
@@ -31,7 +33,9 @@ export default function QuizList() {
   // Fetched once (not tied to the filtered/paginated list) since the
   // analytics endpoint returns totals for every quiz that has any plays.
   const [playCounts, setPlayCounts] = useState({})
+  const [bulkBusy, setBulkBusy] = useState(false)
   const canWrite = hasRole('superadmin', 'editor')
+  const { selected, toggle, toggleAll, clear } = useBulkSelection()
 
   const isFirstRender = useRef(true)
 
@@ -73,6 +77,41 @@ export default function QuizList() {
   // itself changes, which would infinite-loop).
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setPage(1), [search, category, language, status])
+
+  // Selection is page-local — clear it whenever the visible page/filters change.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => clear(), [search, category, language, status, page])
+
+  async function handleBulkPublish() {
+    setBulkBusy(true)
+    for (const id of selected) {
+      await updateQuiz(session.token, id, { status: 'published' }).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
+
+  async function handleBulkUnpublish() {
+    setBulkBusy(true)
+    for (const id of selected) {
+      await updateQuiz(session.token, id, { status: 'draft' }).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
+
+  async function handleBulkDelete() {
+    if (!window.confirm(`Delete ${selected.size} selected quiz(zes)? This cannot be undone.`)) return
+    setBulkBusy(true)
+    for (const id of selected) {
+      await deleteQuiz(session.token, id).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
 
   async function handleDelete(id, title) {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return
@@ -173,6 +212,17 @@ export default function QuizList() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!quizzes && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
+      {canWrite && (
+        <BulkActionsBar
+          count={selected.size}
+          busy={bulkBusy}
+          onPublish={handleBulkPublish}
+          onUnpublish={handleBulkUnpublish}
+          onDelete={handleBulkDelete}
+          onClear={clear}
+        />
+      )}
+
       {quizzes && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
           {quizzes.length === 0 && (
@@ -180,9 +230,27 @@ export default function QuizList() {
               {hasFilters ? 'No quizzes match these filters.' : 'No quizzes yet.'}
             </p>
           )}
+          {canWrite && quizzes.length > 0 && (
+            <div className="flex items-center gap-2 p-3 text-xs text-gray-500 dark:text-gray-400">
+              <input
+                type="checkbox"
+                checked={quizzes.every((q) => selected.has(q._id))}
+                onChange={() => toggleAll(quizzes.map((q) => q._id))}
+              />
+              Select all on this page
+            </div>
+          )}
           {quizzes.map((quiz) => (
             <div key={quiz._id} className="flex items-center justify-between p-4">
-              <div>
+              <div className="flex items-center gap-3">
+                {canWrite && (
+                  <input
+                    type="checkbox"
+                    checked={selected.has(quiz._id)}
+                    onChange={() => toggle(quiz._id)}
+                  />
+                )}
+                <div>
                 <p className="font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                   {quiz.emoji} {quiz.title}
                   {quiz.status === 'published' && isStale(quiz.createdAt, playCounts[quiz._id] || 0) && (
@@ -197,6 +265,7 @@ export default function QuizList() {
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   /{quiz.slug} · <StatusLabel item={quiz} /> · {playCounts[quiz._id] || 0} plays
                 </p>
+                </div>
               </div>
               <div className="flex gap-2">
                 <AdminPreviewButton contentType="quiz" id={quiz._id} publicPath={`/quiz/${quiz.slug}`} />

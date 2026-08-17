@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
-import { listPuzzlesAdmin, deletePuzzle, createPuzzle, getPuzzleAdmin } from '../adminApi'
+import { listPuzzlesAdmin, deletePuzzle, createPuzzle, updatePuzzle, getPuzzleAdmin } from '../adminApi'
 import StatusLabel from '../components/StatusLabel'
 import Pager from '../components/Pager'
 import AdminPreviewButton from '../components/AdminPreviewButton'
+import BulkActionsBar from '../components/BulkActionsBar'
+import { useBulkSelection } from '../useBulkSelection'
 
 const PAGE_SIZE = 20
 
@@ -24,7 +26,9 @@ export default function PuzzleList() {
   const [language, setLanguage] = useState('')
   const [status, setStatus] = useState('')
   const [page, setPage] = useState(1)
+  const [bulkBusy, setBulkBusy] = useState(false)
   const canWrite = hasRole('superadmin', 'editor')
+  const { selected, toggle, toggleAll, clear } = useBulkSelection()
 
   const isFirstRender = useRef(true)
 
@@ -52,6 +56,41 @@ export default function PuzzleList() {
   // See QuizList.jsx — resets to page 1 whenever a filter changes.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setPage(1), [search, difficulty, language, status])
+
+  // Selection is page-local — clear it whenever the visible page/filters change.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => clear(), [search, difficulty, language, status, page])
+
+  async function handleBulkPublish() {
+    setBulkBusy(true)
+    for (const id of selected) {
+      await updatePuzzle(session.token, id, { status: 'published' }).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
+
+  async function handleBulkUnpublish() {
+    setBulkBusy(true)
+    for (const id of selected) {
+      await updatePuzzle(session.token, id, { status: 'draft' }).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
+
+  async function handleBulkDelete() {
+    if (!window.confirm(`Delete ${selected.size} selected puzzle(s)? This cannot be undone.`)) return
+    setBulkBusy(true)
+    for (const id of selected) {
+      await deletePuzzle(session.token, id).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
 
   async function handleDelete(id, question) {
     if (!window.confirm(`Delete this puzzle? This cannot be undone.\n\n"${question}"`)) return
@@ -151,6 +190,17 @@ export default function PuzzleList() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!puzzles && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
+      {canWrite && (
+        <BulkActionsBar
+          count={selected.size}
+          busy={bulkBusy}
+          onPublish={handleBulkPublish}
+          onUnpublish={handleBulkUnpublish}
+          onDelete={handleBulkDelete}
+          onClear={clear}
+        />
+      )}
+
       {puzzles && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
           {puzzles.length === 0 && (
@@ -158,9 +208,27 @@ export default function PuzzleList() {
               {hasFilters ? 'No puzzles match these filters.' : 'No puzzles yet.'}
             </p>
           )}
+          {canWrite && puzzles.length > 0 && (
+            <div className="flex items-center gap-2 p-3 text-xs text-gray-500 dark:text-gray-400">
+              <input
+                type="checkbox"
+                checked={puzzles.every((p) => selected.has(p._id))}
+                onChange={() => toggleAll(puzzles.map((p) => p._id))}
+              />
+              Select all on this page
+            </div>
+          )}
           {puzzles.map((puzzle) => (
             <div key={puzzle._id} className="flex items-center justify-between p-4">
-              <div>
+              <div className="flex items-center gap-3">
+                {canWrite && (
+                  <input
+                    type="checkbox"
+                    checked={selected.has(puzzle._id)}
+                    onChange={() => toggle(puzzle._id)}
+                  />
+                )}
+                <div>
                 <p className="font-semibold text-gray-900 dark:text-gray-100">
                   {puzzle.emoji} {puzzle.question}
                 </p>
@@ -168,6 +236,7 @@ export default function PuzzleList() {
                   {DIFFICULTY_LABELS[puzzle.difficulty]} · {puzzle.language.toUpperCase()}
                   {puzzle.imageUrl ? ' · 🖼️ Picture' : ''} · <StatusLabel item={puzzle} />
                 </p>
+                </div>
               </div>
               <div className="flex gap-2">
                 <AdminPreviewButton contentType="puzzle" id={puzzle._id} publicPath={`/puzzle/${puzzle._id}`} />

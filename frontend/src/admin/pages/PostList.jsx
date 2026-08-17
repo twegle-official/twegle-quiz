@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
-import { listPostsAdmin, deletePost, createPost, fetchPostAnalytics } from '../adminApi'
+import { listPostsAdmin, deletePost, createPost, updatePost, fetchPostAnalytics } from '../adminApi'
 import StatusLabel from '../components/StatusLabel'
 import Pager from '../components/Pager'
 import AdminPreviewButton from '../components/AdminPreviewButton'
+import BulkActionsBar from '../components/BulkActionsBar'
+import { useBulkSelection } from '../useBulkSelection'
 import { isStale } from '../freshness'
 
 const PAGE_SIZE = 20
@@ -29,7 +31,9 @@ export default function PostList() {
   // views+shares, keyed by post id — see QuizList.jsx's playCounts for the
   // same pattern applied to quizzes.
   const [engagementCounts, setEngagementCounts] = useState({})
+  const [bulkBusy, setBulkBusy] = useState(false)
   const canWrite = hasRole('superadmin', 'editor')
+  const { selected, toggle, toggleAll, clear } = useBulkSelection()
 
   const isFirstRender = useRef(true)
 
@@ -66,6 +70,41 @@ export default function PostList() {
   // See QuizList.jsx — resets to page 1 whenever a filter changes.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setPage(1), [search, category, language, status])
+
+  // Selection is page-local — clear it whenever the visible page/filters change.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => clear(), [search, category, language, status, page])
+
+  async function handleBulkPublish() {
+    setBulkBusy(true)
+    for (const id of selected) {
+      await updatePost(session.token, id, { status: 'published' }).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
+
+  async function handleBulkUnpublish() {
+    setBulkBusy(true)
+    for (const id of selected) {
+      await updatePost(session.token, id, { status: 'draft' }).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
+
+  async function handleBulkDelete() {
+    if (!window.confirm(`Delete ${selected.size} selected post(s)? This cannot be undone.`)) return
+    setBulkBusy(true)
+    for (const id of selected) {
+      await deletePost(session.token, id).catch(() => {})
+    }
+    setBulkBusy(false)
+    clear()
+    load()
+  }
 
   async function handleDelete(id) {
     if (!window.confirm('Delete this post? This cannot be undone.')) return
@@ -158,6 +197,17 @@ export default function PostList() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!posts && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
+      {canWrite && (
+        <BulkActionsBar
+          count={selected.size}
+          busy={bulkBusy}
+          onPublish={handleBulkPublish}
+          onUnpublish={handleBulkUnpublish}
+          onDelete={handleBulkDelete}
+          onClear={clear}
+        />
+      )}
+
       {posts && (
         <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
           {posts.length === 0 && (
@@ -165,9 +215,26 @@ export default function PostList() {
               {hasFilters ? 'No posts match these filters.' : 'No posts yet.'}
             </p>
           )}
+          {canWrite && posts.length > 0 && (
+            <div className="flex items-center gap-2 p-3 text-xs text-gray-500 dark:text-gray-400">
+              <input
+                type="checkbox"
+                checked={posts.every((p) => selected.has(p._id))}
+                onChange={() => toggleAll(posts.map((p) => p._id))}
+              />
+              Select all on this page
+            </div>
+          )}
           {posts.map((post) => (
             <div key={post._id} className="flex items-center justify-between gap-4 p-4">
               <div className="min-w-0 flex items-center gap-3">
+                {canWrite && (
+                  <input
+                    type="checkbox"
+                    checked={selected.has(post._id)}
+                    onChange={() => toggle(post._id)}
+                  />
+                )}
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wide flex items-center gap-2">
                     {CATEGORY_LABELS[post.category]} · {post.language.toUpperCase()}
