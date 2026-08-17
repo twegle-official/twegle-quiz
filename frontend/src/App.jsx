@@ -26,6 +26,7 @@ import TicTacToeMultiplayer from './pages/TicTacToeMultiplayer'
 import ConnectFourMultiplayer from './pages/ConnectFourMultiplayer'
 import SnakeLadderMultiplayer from './pages/SnakeLadderMultiplayer'
 import ChessMultiplayer from './pages/ChessMultiplayer'
+import LudoMultiplayer from './pages/LudoMultiplayer'
 import Feedback from './pages/Feedback'
 import Badges from './pages/Badges'
 import Leaderboard from './pages/Leaderboard'
@@ -132,6 +133,7 @@ function PublicSite() {
           <Route path="/games/connect-four/:code" element={<ConnectFourMultiplayer />} />
           <Route path="/games/snake-ladder/:code" element={<SnakeLadderMultiplayer />} />
           <Route path="/games/chess/:code" element={<ChessMultiplayer />} />
+          <Route path="/games/ludo/:code" element={<LudoMultiplayer />} />
           <Route path="/post/:id" element={<PostView />} />
           <Route path="/story/:slug" element={<StoryView />} />
           <Route path="/puzzle/:id" element={<PuzzleView />} />

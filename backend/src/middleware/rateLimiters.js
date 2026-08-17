@@ -108,6 +108,18 @@ export const chessLimiter = rateLimit({
   message: { error: 'Too many requests. Please slow down.' },
 })
 
+// Same reasoning as chessLimiter — rolls/moves/starting the match all
+// happen over the socket, not REST, so this only covers creating/joining
+// a Ludo match (up to 4 joins per match instead of 1, hence the same
+// 120/15min ceiling as every other live game rather than a tighter one).
+export const ludoLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})
+
 // Applied to submitting feedback — tighter than the analytics-style limiters
 // since this writes free-text content an admin will actually read, not just
 // an anonymous counter.

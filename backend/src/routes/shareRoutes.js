@@ -14,6 +14,7 @@ import {
   shareConnectFour,
   shareSnakeLadder,
   shareChess,
+  shareLudo,
   shareHoroscope,
 } from '../controllers/shareController.js'
 
@@ -37,6 +38,7 @@ router.get('/tictactoe/:code', shareTicTacToe)
 router.get('/connect-four/:code', shareConnectFour)
 router.get('/snake-ladder/:code', shareSnakeLadder)
 router.get('/chess/:code', shareChess)
+router.get('/ludo/:code', shareLudo)
 router.get('/horoscope/:sign', shareHoroscope)
 
 export default router

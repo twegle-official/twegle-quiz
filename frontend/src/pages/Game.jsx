@@ -13,7 +13,7 @@ import GuessTheNumber from '../games/GuessTheNumber'
 import Sudoku from '../games/Sudoku'
 import SimonSays from '../games/SimonSays'
 import WhackAMole from '../games/WhackAMole'
-import { recordGamePlay, createTicTacToeGame, createConnectFourGame, createSnakeLadderGame, createChessGame, recordEngagement } from '../api'
+import { recordGamePlay, createTicTacToeGame, createConnectFourGame, createSnakeLadderGame, createChessGame, createLudoGame, recordEngagement } from '../api'
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
@@ -91,8 +91,11 @@ export default function Game() {
   // appends ?mode=friend for games that also have a single-player mode —
   // see GameCard.jsx) means the visitor already chose that mode, so open
   // straight to the challenge form instead of the default single-player board.
-  const [showChallengeForm, setShowChallengeForm] = useState(searchParams.get('mode') === 'friend')
+  // Ludo has no single-player mode to fall back to, so its challenge form is
+  // always open rather than needing the "Challenge a friend" link first.
+  const [showChallengeForm, setShowChallengeForm] = useState(searchParams.get('mode') === 'friend' || game?.slug === 'ludo')
   const [challengeName, setChallengeName] = useState('')
+  const [challengeMaxPlayers, setChallengeMaxPlayers] = useState(4)
   const [challengeSubmitting, setChallengeSubmitting] = useState(false)
   const [challengeError, setChallengeError] = useState('')
   const [soundOn, setSoundOn] = useState(isSoundEnabled)
@@ -164,6 +167,10 @@ export default function Game() {
         const data = await createChessGame(challengeName.trim())
         localStorage.setItem(`chess-role-${data.code}`, 'white')
         navigate(`/games/chess/${data.code}`)
+      } else if (game.slug === 'ludo') {
+        const data = await createLudoGame(challengeName.trim(), challengeMaxPlayers)
+        localStorage.setItem(`ludo-role-${data.code}`, 'red')
+        navigate(`/games/ludo/${data.code}`)
       } else {
         const data = await createTicTacToeGame(challengeName.trim())
         localStorage.setItem(`tictactoe-role-${data.code}`, 'X')
@@ -193,11 +200,11 @@ export default function Game() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{game.title}</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">{game.description}</p>
 
-      {(game.slug === 'tic-tac-toe' || game.slug === 'connect-four' || game.slug === 'snake-ladder' || game.slug === 'chess') && (
+      {(game.slug === 'tic-tac-toe' || game.slug === 'connect-four' || game.slug === 'snake-ladder' || game.slug === 'chess' || game.slug === 'ludo') && (
         <div className="mb-8 max-w-xs mx-auto">
           {showChallengeForm ? (
             <form onSubmit={handleChallengeSubmit} className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
-              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">🆚 Challenge a friend</p>
+              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">🆚 Challenge friends</p>
               {challengeError && (
                 <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-3">{challengeError}</p>
               )}
@@ -209,6 +216,27 @@ export default function Game() {
                 placeholder="Your name"
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl mb-3 text-sm"
               />
+              {game.slug === 'ludo' && (
+                <div className="mb-3 text-left">
+                  <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Max players</label>
+                  <div className="flex gap-2">
+                    {[2, 3, 4].map((n) => (
+                      <button
+                        type="button"
+                        key={n}
+                        onClick={() => setChallengeMaxPlayers(n)}
+                        className={`flex-1 px-3 py-2 rounded-lg text-sm font-semibold border ${
+                          challengeMaxPlayers === n
+                            ? 'bg-violet-500 text-white border-violet-500'
+                            : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                        }`}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               <button
                 type="submit"
                 disabled={!challengeName.trim() || challengeSubmitting}

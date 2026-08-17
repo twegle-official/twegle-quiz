@@ -13,3 +13,4 @@ export const connectFourSocket = io(`${SERVER_URL}/connect-four`, { autoConnect:
 export const ticTacToeSocket = io(`${SERVER_URL}/tic-tac-toe`, { autoConnect: false })
 export const snakeLadderSocket = io(`${SERVER_URL}/snake-ladder`, { autoConnect: false })
 export const chessSocket = io(`${SERVER_URL}/chess`, { autoConnect: false })
+export const ludoSocket = io(`${SERVER_URL}/ludo`, { autoConnect: false })

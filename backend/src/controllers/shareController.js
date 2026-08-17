@@ -9,6 +9,7 @@ import TicTacToeGame from '../models/TicTacToeGame.js'
 import ConnectFourGame from '../models/ConnectFourGame.js'
 import SnakeLadderGame from '../models/SnakeLadderGame.js'
 import ChessGame from '../models/ChessGame.js'
+import LudoGame from '../models/LudoGame.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
 import { findZodiacSign } from '../data/zodiacSigns.js'
@@ -233,6 +234,26 @@ export async function shareChess(req, res) {
       title: `♟️ ${game.playerWhiteName} wants to play Chess with you — live!`,
       description: 'Real-time match, no waiting for your turn — join now on Twegle!',
       redirectUrl: `${frontendUrl()}/games/chess/${code}`,
+    })
+  )
+}
+
+export async function shareLudo(req, res) {
+  const { code } = req.params
+  const game = await LudoGame.findOne({ code })
+  if (!game) {
+    return res.status(404).send('Not found')
+  }
+
+  // No single "opponent" to name the way 2-player games do — Ludo is an
+  // open invite for up to 4, so the preview text frames it that way
+  // instead of "X challenged you."
+  res.set('Content-Type', 'text/html')
+  res.send(
+    renderSharePage({
+      title: `🎲 ${game.players[0]?.name} started a game of Ludo — join in!`,
+      description: 'Roll, race, and capture your way home — join now on Twegle!',
+      redirectUrl: `${frontendUrl()}/games/ludo/${code}`,
     })
   )
 }

@@ -42,6 +42,14 @@ export const GAMES = [
     players: ['single', 'friend'],
   },
   {
+    slug: 'ludo',
+    title: 'Ludo',
+    emoji: '🎲',
+    gradient: 'from-fuchsia-500 to-cyan-400',
+    description: 'Race your tokens home — roll, capture, and get all 4 home first. 2-4 players, live.',
+    players: ['friend'],
+  },
+  {
     slug: 'rock-paper-scissors',
     title: 'Rock Paper Scissors',
     emoji: '✂️',

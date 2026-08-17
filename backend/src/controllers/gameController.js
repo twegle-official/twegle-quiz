@@ -7,6 +7,7 @@ export const GAME_SLUGS = [
   'connect-four',
   'snake-ladder',
   'chess',
+  'ludo',
   'rock-paper-scissors',
   'memory-match',
   '2048',

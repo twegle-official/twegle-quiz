@@ -2,18 +2,25 @@ const RING = {
   blue: 'ring-blue-400',
   orange: 'ring-orange-400',
   red: 'ring-red-400',
+  green: 'ring-green-400',
+  yellow: 'ring-yellow-400',
 }
 
 const BG = {
   blue: 'bg-blue-500',
   orange: 'bg-orange-500',
   red: 'bg-red-500',
+  green: 'bg-green-500',
+  yellow: 'bg-yellow-500',
 }
 
 // A small "player card" for the status header — shared by single-player and
 // live 2-player so both show the same win-condition-forward, at-a-glance
 // state (whose turn, where each token is) instead of a plain text line.
-export default function PlayerChip({ emoji, color, name, position, active }) {
+// `subtitle` overrides the default "Square {position}" line — Ludo has no
+// single board position per player (4 tokens each), so it passes its own
+// "X home" text instead.
+export default function PlayerChip({ emoji, color, name, position, active, subtitle }) {
   return (
     <div
       className={`flex items-center gap-2 px-4 py-2.5 sm:px-3 sm:py-2 rounded-xl border transition-all ${
@@ -27,7 +34,7 @@ export default function PlayerChip({ emoji, color, name, position, active }) {
       </span>
       <div className="text-left">
         <p className="text-sm sm:text-xs font-semibold text-gray-800 dark:text-gray-100 leading-tight max-w-[100px] sm:max-w-[80px] truncate">{name}</p>
-        <p className="text-xs sm:text-[11px] text-gray-500 dark:text-gray-400 leading-tight">Square {position}</p>
+        <p className="text-xs sm:text-[11px] text-gray-500 dark:text-gray-400 leading-tight">{subtitle ?? `Square ${position}`}</p>
       </div>
     </div>
   )

@@ -46,10 +46,12 @@ import ticTacToeRoutes from './routes/ticTacToeRoutes.js'
 import connectFourRoutes from './routes/connectFourRoutes.js'
 import snakeLadderRoutes from './routes/snakeLadderRoutes.js'
 import chessRoutes from './routes/chessRoutes.js'
+import ludoRoutes from './routes/ludoRoutes.js'
 import { registerConnectFourSocket } from './realtime/connectFourSocket.js'
 import { registerTicTacToeSocket } from './realtime/ticTacToeSocket.js'
 import { registerSnakeLadderSocket } from './realtime/snakeLadderSocket.js'
 import { registerChessSocket } from './realtime/chessSocket.js'
+import { registerLudoSocket } from './realtime/ludoSocket.js'
 import engagementRoutes from './routes/engagementRoutes.js'
 import adminEngagementRoutes from './routes/adminEngagementRoutes.js'
 import horoscopeRoutes from './routes/horoscopeRoutes.js'
@@ -109,6 +111,7 @@ app.use('/api/tictactoe', ticTacToeRoutes)
 app.use('/api/connect-four', connectFourRoutes)
 app.use('/api/snake-ladder', snakeLadderRoutes)
 app.use('/api/chess', chessRoutes)
+app.use('/api/ludo', ludoRoutes)
 app.use('/api/engagement', engagementRoutes)
 app.use('/api/admin/engagement', adminEngagementRoutes)
 app.use('/api/horoscope', horoscopeRoutes)
@@ -137,6 +140,7 @@ registerConnectFourSocket(io)
 registerTicTacToeSocket(io)
 registerSnakeLadderSocket(io)
 registerChessSocket(io)
+registerLudoSocket(io)
 // Joining a game happens over REST (connectFourController.js), not the
 // socket — but the creator's tab is already connected and needs to know the
 // instant a friend joins, so the join controller reaches back into the same
