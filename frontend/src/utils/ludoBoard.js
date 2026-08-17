@@ -19,15 +19,15 @@
 // winds red → green → yellow → blue before this module is used at all.
 
 export const BOARD_SIZE = 15
-export const PLAYER_COLORS = ['red', 'blue', 'yellow', 'green']
+export const PLAYER_COLORS = ['blue', 'red', 'green', 'yellow']
 
-// Standard visual layout: red top-left, blue top-right, yellow
-// bottom-right, green bottom-left.
+// Standard visual layout: blue top-left, red top-right, green
+// bottom-right, yellow bottom-left.
 export const YARD_BOUNDS = {
-  red: { rowStart: 0, rowEnd: 5, colStart: 0, colEnd: 5 },
-  blue: { rowStart: 0, rowEnd: 5, colStart: 9, colEnd: 14 },
-  yellow: { rowStart: 9, rowEnd: 14, colStart: 9, colEnd: 14 },
-  green: { rowStart: 9, rowEnd: 14, colStart: 0, colEnd: 5 },
+  blue: { rowStart: 0, rowEnd: 5, colStart: 0, colEnd: 5 },
+  red: { rowStart: 0, rowEnd: 5, colStart: 9, colEnd: 14 },
+  green: { rowStart: 9, rowEnd: 14, colStart: 9, colEnd: 14 },
+  yellow: { rowStart: 9, rowEnd: 14, colStart: 0, colEnd: 5 },
 }
 
 // Yard token "parking slots" — a small 2x2 arrangement inset from the
@@ -51,16 +51,16 @@ function inBand(row, col) {
   return (row >= 6 && row <= 8) || (col >= 6 && col <= 8)
 }
 
-// Home stretch cells: row 7 for red (cols 1-6) / yellow (cols 8-13), col 7
-// for blue (rows 1-6) / green (rows 8-13) — each color's stretch runs
-// along the arm nearest its own (now-swapped) yard corner. `index` 0 =
-// first entered (farthest from center), 5 = adjacent to center — matching
-// the backend's local positions 51-56.
+// Home stretch cells: row 7 for blue (cols 1-6) / green (cols 8-13), col 7
+// for red (rows 1-6) / yellow (rows 8-13) — each color's stretch runs
+// along the arm nearest its own yard corner. `index` 0 = first entered
+// (farthest from center), 5 = adjacent to center — matching the backend's
+// local positions 51-56.
 function homeStretchInfo(row, col) {
-  if (row === 7 && col >= 1 && col <= 6) return { color: 'red', index: col - 1 }
-  if (row === 7 && col >= 8 && col <= 13) return { color: 'yellow', index: 13 - col }
-  if (col === 7 && row >= 1 && row <= 6) return { color: 'blue', index: row - 1 }
-  if (col === 7 && row >= 8 && row <= 13) return { color: 'green', index: 13 - row }
+  if (row === 7 && col >= 1 && col <= 6) return { color: 'blue', index: col - 1 }
+  if (row === 7 && col >= 8 && col <= 13) return { color: 'green', index: 13 - col }
+  if (col === 7 && row >= 1 && row <= 6) return { color: 'red', index: row - 1 }
+  if (col === 7 && row >= 8 && row <= 13) return { color: 'yellow', index: 13 - row }
   return null
 }
 
@@ -96,11 +96,11 @@ function key(row, col) {
 // Rather than fight the geometry to remove exactly 4 cells symmetrically
 // (impossible without leaving dead-end spurs — verified by hand), this
 // walks the ring and simply stops at 52 cells. The walk starts at the cell
-// beside red's yard and self-corrects direction so index 13 lands near
-// green's yard — both checked, along with the resulting indices for green
-// (13)/yellow (26)/blue (39) landing exactly where PATH_OFFSET expects,
-// via a runtime assertion below (this board has no automated test suite,
-// so the check needs to live where it can't be silently skipped).
+// beside the top-left yard and self-corrects direction so index 13 lands
+// near the top-right yard — both checked, along with the resulting indices
+// landing exactly where PATH_OFFSET expects for each color, via a runtime
+// assertion below (this board has no automated test suite, so the check
+// needs to live where it can't be silently skipped).
 function buildRingOrder() {
   const ringCells = collectRingCells()
   const ringSet = new Set(ringCells.map(([r, c]) => key(r, c)))
@@ -124,15 +124,15 @@ function buildRingOrder() {
   }
 
   const [, colAt13] = order[13]
-  const wentTowardBlue = colAt13 >= 8
-  const result = wentTowardBlue ? order : [order[0], ...order.slice(1).reverse()]
+  const wentTowardRed = colAt13 >= 8
+  const result = wentTowardRed ? order : [order[0], ...order.slice(1).reverse()]
 
   if (result.length !== 52) throw new Error(`Ludo ring walk produced ${result.length} cells, expected 52`)
   const nearYard = (color, [row, col]) => {
     const b = YARD_BOUNDS[color]
     return row >= b.rowStart - 1 && row <= b.rowEnd + 1 && col >= b.colStart - 1 && col <= b.colEnd + 1
   }
-  if (!nearYard('blue', result[13]) || !nearYard('yellow', result[26]) || !nearYard('green', result[39])) {
+  if (!nearYard('red', result[13]) || !nearYard('green', result[26]) || !nearYard('yellow', result[39])) {
     throw new Error('Ludo ring walk did not land on the expected color start squares')
   }
   return result
@@ -150,10 +150,10 @@ export function ringSquareCoords(globalIndex) {
 }
 
 export function homeStretchCoords(color, index) {
-  if (color === 'red') return [7, 1 + index]
-  if (color === 'yellow') return [7, 13 - index]
-  if (color === 'blue') return [1 + index, 7]
-  return [13 - index, 7] // green
+  if (color === 'blue') return [7, 1 + index]
+  if (color === 'green') return [7, 13 - index]
+  if (color === 'red') return [1 + index, 7]
+  return [13 - index, 7] // yellow
 }
 
 export function yardSlotCoords(color, slotIndex) {
@@ -166,7 +166,7 @@ export function yardSlotCoords(color, slotIndex) {
 // plain numbers, duplicated by hand the same way Connect Four/Snake and
 // Ladder's client-only single-player copies were — except here it's for
 // rendering, not running the game, since Ludo has no single-player mode).
-export const PATH_OFFSET = { red: 0, blue: 13, yellow: 26, green: 39 }
+export const PATH_OFFSET = { blue: 0, red: 13, green: 26, yellow: 39 }
 export const SAFE_SQUARES = [0, 8, 13, 21, 26, 34, 39, 47]
 
 // Where a given token (local position -1..57) should render.

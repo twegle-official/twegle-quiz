@@ -103,7 +103,7 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
         style={{ gridTemplateColumns: `repeat(${BOARD_SIZE}, 1fr)`, gridTemplateRows: `repeat(${BOARD_SIZE}, 1fr)` }}
       >
         {/* The center "home" pinwheel — 4 solid triangles meeting at a
-            point (top=blue, right=yellow, bottom=green, left=red, matching
+            point (top=red, right=green, bottom=yellow, left=blue, matching
             each color's own approach direction). A conic-gradient with 4
             90°-wide, direction-centered stops draws this exactly; it's a
             separate overlay spanning the whole 3x3 center block (rows/cols
@@ -116,7 +116,7 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
             top: `${(6 / BOARD_SIZE) * 100}%`,
             width: `${(3 / BOARD_SIZE) * 100}%`,
             height: `${(3 / BOARD_SIZE) * 100}%`,
-            background: `conic-gradient(from -45deg, ${PINWHEEL_HEX.blue} 0deg 90deg, ${PINWHEEL_HEX.yellow} 90deg 180deg, ${PINWHEEL_HEX.green} 180deg 270deg, ${PINWHEEL_HEX.red} 270deg 360deg)`,
+            background: `conic-gradient(from -45deg, ${PINWHEEL_HEX.red} 0deg 90deg, ${PINWHEEL_HEX.green} 90deg 180deg, ${PINWHEEL_HEX.yellow} 180deg 270deg, ${PINWHEEL_HEX.blue} 270deg 360deg)`,
           }}
         />
         {LAYOUT.flat().map((cell, i) => {
@@ -125,10 +125,11 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
           const isSafe = cell.type === 'ring' && SAFE_CELL_KEYS.has(`${row},${col}`)
           const tokens = cellTokens.get(`${row},${col}`) || []
           if (cell.type === 'blank') return <div key={i} className="bg-transparent" />
-          // Grid lines only make sense on the path/home cells — a yard is
-          // one solid corner block in real Ludo, not a grid of tiny cells.
-          const borderClass = cell.type === 'yard' ? '' : 'border border-black/5 dark:border-white/5'
           const isTray = cell.type === 'yard' && isYardTray(row, col, cell.color)
+          // A real Ludo board draws a visible grid line on every cell,
+          // including the colored yard corners — only the white tray box
+          // itself is a clean, borderless panel sitting on top of that grid.
+          const borderClass = isTray ? '' : 'border border-black/20 dark:border-white/15'
           const roundedClass = isTray ? trayCornerClass(row, col, cell.color) : ''
           // Tray tokens (still in the yard) render bigger, like a real
           // board's fat starting pieces — path tokens stay small to fit.
