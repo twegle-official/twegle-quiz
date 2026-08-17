@@ -10,19 +10,22 @@ const YARD_BG = {
   blue: 'bg-blue-300 dark:bg-blue-900/80',
 }
 
+// Fully saturated, matching the yard corners and the token dots — the
+// reference board's home stretches are the same bold color as everything
+// else of that color, not a paler tint.
 const HOME_BG = {
-  red: 'bg-red-300 dark:bg-red-800/80',
-  green: 'bg-green-300 dark:bg-green-800/80',
-  yellow: 'bg-yellow-300 dark:bg-yellow-800/80',
-  blue: 'bg-blue-300 dark:bg-blue-800/80',
-}
-
-const TOKEN_BG = {
   red: 'bg-red-500',
   green: 'bg-green-500',
   yellow: 'bg-yellow-500',
   blue: 'bg-blue-500',
 }
+
+const TOKEN_BG = HOME_BG
+
+// Hex twins of TOKEN_BG/HOME_BG's Tailwind red/blue/yellow/green-500, used
+// for the center pinwheel's conic-gradient (which can't take a Tailwind
+// class — it needs real color values in inline CSS).
+const PINWHEEL_HEX = { red: '#ef4444', blue: '#3b82f6', yellow: '#eab308', green: '#22c55e' }
 
 const TOKEN_EMOJI = { red: '🔴', green: '🟢', yellow: '🟡', blue: '🔵' }
 
@@ -62,7 +65,12 @@ function cellClass(cell, row, col) {
     return isYardTray(row, col, cell.color) ? 'bg-white/90 dark:bg-gray-900/70' : YARD_BG[cell.color]
   }
   if (cell.type === 'home') return HOME_BG[cell.color]
-  if (cell.type === 'center') return 'bg-gradient-to-br from-red-300 via-yellow-300 to-blue-300 dark:from-red-800 dark:via-yellow-800 dark:to-blue-800'
+  // The true 4-triangle pinwheel is drawn as a separate absolutely-
+  // positioned overlay (see the conic-gradient div below) since a single
+  // grid cell's background can't render 4 diagonal color wedges — this
+  // cell (and the 4 ring-corner cells the overlay also covers) just need
+  // a plain fallback in case rounding ever leaves a sliver uncovered.
+  if (cell.type === 'center') return 'bg-white dark:bg-gray-800'
   if (cell.type === 'ring') return isSafe ? 'bg-amber-100 dark:bg-amber-900/60' : 'bg-white dark:bg-gray-800'
   return 'bg-transparent'
 }
@@ -91,9 +99,26 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
   return (
     <div className="inline-block p-1.5 rounded-2xl bg-gradient-to-br from-violet-400 via-fuchsia-400 to-orange-300 dark:from-violet-800 dark:via-fuchsia-900 dark:to-orange-900 shadow-lg mb-6">
       <div
-        className="grid rounded-xl overflow-hidden border-2 border-white/70 dark:border-black/40 w-[360px] h-[360px] sm:w-[330px] sm:h-[330px]"
+        className="relative grid rounded-xl overflow-hidden border-2 border-white/70 dark:border-black/40 w-[360px] h-[360px] sm:w-[330px] sm:h-[330px]"
         style={{ gridTemplateColumns: `repeat(${BOARD_SIZE}, 1fr)`, gridTemplateRows: `repeat(${BOARD_SIZE}, 1fr)` }}
       >
+        {/* The center "home" pinwheel — 4 solid triangles meeting at a
+            point (top=blue, right=yellow, bottom=green, left=red, matching
+            each color's own approach direction). A conic-gradient with 4
+            90°-wide, direction-centered stops draws this exactly; it's a
+            separate overlay spanning the whole 3x3 center block (rows/cols
+            6-8) rather than per-cell backgrounds, since no single grid
+            cell can render a diagonal wedge. */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            left: `${(6 / BOARD_SIZE) * 100}%`,
+            top: `${(6 / BOARD_SIZE) * 100}%`,
+            width: `${(3 / BOARD_SIZE) * 100}%`,
+            height: `${(3 / BOARD_SIZE) * 100}%`,
+            background: `conic-gradient(from -45deg, ${PINWHEEL_HEX.blue} 0deg 90deg, ${PINWHEEL_HEX.yellow} 90deg 180deg, ${PINWHEEL_HEX.green} 180deg 270deg, ${PINWHEEL_HEX.red} 270deg 360deg)`,
+          }}
+        />
         {LAYOUT.flat().map((cell, i) => {
           const row = Math.floor(i / BOARD_SIZE)
           const col = i % BOARD_SIZE
