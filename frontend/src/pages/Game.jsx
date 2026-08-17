@@ -91,11 +91,12 @@ export default function Game() {
   // appends ?mode=friend for games that also have a single-player mode —
   // see GameCard.jsx) means the visitor already chose that mode, so open
   // straight to the challenge form instead of the default single-player board.
-  // Ludo has no single-player mode to fall back to, so its challenge form is
-  // always open rather than needing the "Challenge a friend" link first.
-  const [showChallengeForm, setShowChallengeForm] = useState(searchParams.get('mode') === 'friend' || game?.slug === 'ludo')
+  const [showChallengeForm, setShowChallengeForm] = useState(searchParams.get('mode') === 'friend')
   const [challengeName, setChallengeName] = useState('')
-  const [challengeMaxPlayers, setChallengeMaxPlayers] = useState(4)
+  // Ludo's own challenge form defaults to 2 (its vs-House flow — see
+  // handlePlayVsHouse — is also always exactly 2, so 2 is the common case
+  // for this field even when a friend is actually being challenged).
+  const [challengeMaxPlayers, setChallengeMaxPlayers] = useState(2)
   const [challengeSubmitting, setChallengeSubmitting] = useState(false)
   const [challengeError, setChallengeError] = useState('')
   const [soundOn, setSoundOn] = useState(isSoundEnabled)
@@ -186,19 +187,21 @@ export default function Game() {
   // Ludo's own "vs the house" — unlike Tic-Tac-Toe/Connect Four/Chess/Snake
   // and Ladder, there's no separate single-player component; this reuses
   // the live match infrastructure with the second seat auto-filled by an
-  // AI opponent (see LudoMultiplayer.jsx's vsHouse effect).
+  // AI opponent (see LudoMultiplayer.jsx's vsHouse effect). No name prompt,
+  // same as every other game's single-player mode — "You" is a fine label
+  // for a solo match nobody else will ever see the lobby for.
+  const [vsHouseSubmitting, setVsHouseSubmitting] = useState(false)
   async function handlePlayVsHouse() {
-    if (!challengeName.trim()) return
-    setChallengeSubmitting(true)
+    setVsHouseSubmitting(true)
     setChallengeError('')
     try {
-      const data = await createLudoGame(challengeName.trim(), 2, true)
+      const data = await createLudoGame('You', 2, true)
       localStorage.setItem(`ludo-role-${data.code}`, 'red')
       navigate(`/games/ludo/${data.code}`)
     } catch (err) {
       setChallengeError(err.message)
     } finally {
-      setChallengeSubmitting(false)
+      setVsHouseSubmitting(false)
     }
   }
 
@@ -263,17 +266,26 @@ export default function Game() {
               >
                 {challengeSubmitting ? 'Creating your match...' : 'Get My Challenge Link'}
               </button>
-              {game.slug === 'ludo' && (
-                <button
-                  type="button"
-                  onClick={handlePlayVsHouse}
-                  disabled={!challengeName.trim() || challengeSubmitting}
-                  className="w-full mt-2 px-4 py-2 rounded-xl border border-violet-300 dark:border-violet-700 text-violet-600 dark:text-violet-400 text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-950/40 disabled:opacity-40"
-                >
-                  🏠 Play vs House instead (2 players)
-                </button>
-              )}
             </form>
+          ) : game.slug === 'ludo' ? (
+            <div>
+              <button
+                onClick={handlePlayVsHouse}
+                disabled={vsHouseSubmitting}
+                className="w-full px-5 py-3 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white font-semibold hover:opacity-90 disabled:opacity-40"
+              >
+                {vsHouseSubmitting ? 'Setting up your match...' : '🏠 Play vs House'}
+              </button>
+              {challengeError && (
+                <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mt-3">{challengeError}</p>
+              )}
+              <button
+                onClick={() => setShowChallengeForm(true)}
+                className="mt-3 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+              >
+                🆚 Challenge friends to a real match instead
+              </button>
+            </div>
           ) : (
             <button
               onClick={() => setShowChallengeForm(true)}

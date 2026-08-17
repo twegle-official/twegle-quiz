@@ -1,10 +1,13 @@
 import { LAYOUT, BOARD_SIZE, SAFE_SQUARES, ringSquareCoords, tokenCoords } from '../utils/ludoBoard'
 
+// Bumped from a pale bg-*-200/70 after it read as washed-out/gray on a real
+// phone screenshot — real Ludo boards use bold, fully-saturated corners,
+// not pastels, and each color needs to be unmistakable at a glance.
 const YARD_BG = {
-  red: 'bg-red-200/70 dark:bg-red-950/60',
-  green: 'bg-green-200/70 dark:bg-green-950/60',
-  yellow: 'bg-yellow-200/70 dark:bg-yellow-950/60',
-  blue: 'bg-blue-200/70 dark:bg-blue-950/60',
+  red: 'bg-red-300 dark:bg-red-900/80',
+  green: 'bg-green-300 dark:bg-green-900/80',
+  yellow: 'bg-yellow-300 dark:bg-yellow-900/80',
+  blue: 'bg-blue-300 dark:bg-blue-900/80',
 }
 
 const HOME_BG = {
