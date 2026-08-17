@@ -21,7 +21,7 @@
 export const BOARD_SIZE = 15
 export const PLAYER_COLORS = ['red', 'green', 'yellow', 'blue']
 
-const YARD_BOUNDS = {
+export const YARD_BOUNDS = {
   red: { rowStart: 0, rowEnd: 5, colStart: 0, colEnd: 5 },
   green: { rowStart: 0, rowEnd: 5, colStart: 9, colEnd: 14 },
   yellow: { rowStart: 9, rowEnd: 14, colStart: 9, colEnd: 14 },

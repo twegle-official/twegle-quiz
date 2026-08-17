@@ -19,6 +19,15 @@ async function generateUniqueCode() {
   throw new Error('Could not generate a unique code')
 }
 
+// A 2-player match seats opponents diagonally opposite (red vs yellow),
+// matching how a real Ludo board is actually played 2-handed — the two
+// players sit across the board from each other, not in adjacent corners
+// the way red/green would put them. 3- and 4-player matches keep the
+// standard clockwise red→green→yellow→blue join order.
+function colorSequenceFor(maxPlayers) {
+  return maxPlayers === 2 ? ['red', 'yellow'] : LUDO_PLAYER_COLORS
+}
+
 function validateName(name) {
   if (typeof name !== 'string' || !name.trim()) return 'Your name is required'
   if (name.length > LIMITS.MAX_NAME_LENGTH) {
@@ -50,16 +59,18 @@ export async function createGame(req, res) {
   // vsHouse is always a 2-player match (a human plus the auto-joined
   // House seat) — maxPlayers is ignored rather than validated in that case,
   // since the frontend's "Play vs House" button never sends it.
-  const players = [{ role: LUDO_PLAYER_COLORS[0], name: name.trim(), tokens: [-1, -1, -1, -1] }]
+  const effectiveMaxPlayers = vsHouse ? 2 : maxPlayers
+  if (!vsHouse && ![2, 3, 4].includes(maxPlayers)) {
+    return res.status(400).json({ error: 'maxPlayers must be 2, 3, or 4' })
+  }
+
+  const colorSeq = colorSequenceFor(effectiveMaxPlayers)
+  const players = [{ role: colorSeq[0], name: name.trim(), tokens: [-1, -1, -1, -1] }]
   let status = 'waiting'
-  let effectiveMaxPlayers = maxPlayers
 
   if (vsHouse) {
-    effectiveMaxPlayers = 2
-    players.push({ role: LUDO_PLAYER_COLORS[1], name: 'House', tokens: [-1, -1, -1, -1] })
+    players.push({ role: colorSeq[1], name: 'House', tokens: [-1, -1, -1, -1] })
     status = 'in_progress'
-  } else if (![2, 3, 4].includes(maxPlayers)) {
-    return res.status(400).json({ error: 'maxPlayers must be 2, 3, or 4' })
   }
 
   const code = await generateUniqueCode()
@@ -100,7 +111,7 @@ export async function joinGame(req, res) {
   const nameError = validateName(name)
   if (nameError) return res.status(400).json({ error: nameError })
 
-  const nextRole = LUDO_PLAYER_COLORS[game.players.length]
+  const nextRole = colorSequenceFor(game.maxPlayers)[game.players.length]
   game.players.push({ role: nextRole, name: name.trim(), tokens: [-1, -1, -1, -1] })
   await game.save()
 

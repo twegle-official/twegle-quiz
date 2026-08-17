@@ -1,4 +1,4 @@
-import { LAYOUT, BOARD_SIZE, SAFE_SQUARES, ringSquareCoords, tokenCoords } from '../utils/ludoBoard'
+import { LAYOUT, BOARD_SIZE, SAFE_SQUARES, YARD_BOUNDS, ringSquareCoords, tokenCoords } from '../utils/ludoBoard'
 
 // Bumped from a pale bg-*-200/70 after it read as washed-out/gray on a real
 // phone screenshot — real Ludo boards use bold, fully-saturated corners,
@@ -26,13 +26,25 @@ const TOKEN_BG = {
 
 const TOKEN_EMOJI = { red: '🔴', green: '🟢', yellow: '🟡', blue: '🔵' }
 
+// The "tray" — a real Ludo yard is one solid colored square with a single
+// light inner panel holding the 4 starting tokens, not a busy grid of
+// individually-bordered cells. This picks out that inner 4x4 region (the
+// yard's 6x6 minus a 1-cell colored margin all round) so it can render as
+// one seamless light block instead of yet more grid squares.
+function isYardTray(row, col, color) {
+  const b = YARD_BOUNDS[color]
+  return row >= b.rowStart + 1 && row <= b.rowStart + 4 && col >= b.colStart + 1 && col <= b.colStart + 4
+}
+
 // Precompute which (row,col) cells are the 8 standard safe squares, once —
 // same idea as SnakeLadderBoard.jsx precomputing LADDERS/SNAKES lookups.
 const SAFE_CELL_KEYS = new Set(SAFE_SQUARES.map((i) => ringSquareCoords(i).join(',')))
 
 function cellClass(cell, row, col) {
   const isSafe = SAFE_CELL_KEYS.has(`${row},${col}`)
-  if (cell.type === 'yard') return YARD_BG[cell.color]
+  if (cell.type === 'yard') {
+    return isYardTray(row, col, cell.color) ? 'bg-white/90 dark:bg-gray-900/70' : YARD_BG[cell.color]
+  }
   if (cell.type === 'home') return HOME_BG[cell.color]
   if (cell.type === 'center') return 'bg-gradient-to-br from-red-300 via-yellow-300 to-blue-300 dark:from-red-800 dark:via-yellow-800 dark:to-blue-800'
   if (cell.type === 'ring') return isSafe ? 'bg-amber-100 dark:bg-amber-900/60' : 'bg-white dark:bg-gray-800'
@@ -72,10 +84,13 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
           const isSafe = cell.type === 'ring' && SAFE_CELL_KEYS.has(`${row},${col}`)
           const tokens = cellTokens.get(`${row},${col}`) || []
           if (cell.type === 'blank') return <div key={i} className="bg-transparent" />
+          // Grid lines only make sense on the path/home cells — a yard is
+          // one solid corner block in real Ludo, not a grid of tiny cells.
+          const borderClass = cell.type === 'yard' ? '' : 'border border-black/5 dark:border-white/5'
           return (
             <div
               key={i}
-              className={`relative flex items-center justify-center border border-black/5 dark:border-white/5 ${cellClass(cell, row, col)}`}
+              className={`relative flex items-center justify-center ${borderClass} ${cellClass(cell, row, col)}`}
             >
               {isSafe && <span className="absolute text-[10px] opacity-60">⭐</span>}
               {tokens.length > 0 && (
