@@ -3,7 +3,7 @@
 // games/quizzes/reacts/shares; badges are just named thresholds over those
 // stats, checked fresh every time rather than stored as "unlocked" flags,
 // so raising a threshold later never leaves stale state to migrate.
-import { getQuizStreak, getPuzzleStreak } from './dailyQuiz'
+import { getQuizStreak, getPuzzleStreak, isStreakAtRisk, getTodayKey } from './dailyQuiz'
 import { pushLocalStatsToServer } from './statsSync'
 import { calculatePoints, getLevelInfo } from './levels'
 import { GAMES } from '../games/registry'
@@ -162,6 +162,32 @@ export function checkStreakBadges() {
   const stats = getStats()
   notifyNewBadges(new Set(), unlockedIds(stats))
   checkLevelUp()
+}
+
+// "Streak-reminder notifications" — scoped as an in-app toast (the same
+// mechanism as a badge unlock/level-up, see BadgeToast.jsx) rather than a
+// real push notification, since that needs browser push infrastructure
+// (service worker subscriptions, a backend to trigger them) this site
+// doesn't have. Checked once per page load; the localStorage guard below
+// caps it at once per calendar day regardless of how many times the site
+// is opened, so it reads as a gentle nudge, not nagging.
+const STREAK_REMINDER_SHOWN_KEY = 'twegleStreakReminderShown'
+
+export function checkStreakReminders() {
+  const today = getTodayKey()
+  if (localStorage.getItem(STREAK_REMINDER_SHOWN_KEY) === today) return
+
+  const reminders = []
+  const quiz = getQuizStreak()
+  const puzzle = getPuzzleStreak()
+  if (isStreakAtRisk(quiz)) reminders.push({ type: 'quiz', count: quiz.count })
+  if (isStreakAtRisk(puzzle)) reminders.push({ type: 'puzzle', count: puzzle.count })
+  if (reminders.length === 0) return
+
+  localStorage.setItem(STREAK_REMINDER_SHOWN_KEY, today)
+  reminders.forEach((detail) => {
+    window.dispatchEvent(new CustomEvent('twegle-streak-reminder', { detail }))
+  })
 }
 
 export function getBadgeStatus() {

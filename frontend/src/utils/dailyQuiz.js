@@ -96,3 +96,16 @@ export function recordQuizStreakCompletion(finishedSlug, todaysSlug) {
 export function recordPuzzleStreakCompletion(finishedId, todaysId) {
   return recordStreak(PUZZLE_STREAK_KEY, finishedId, todaysId)
 }
+
+// A streak is "at risk" when it's real (worth protecting — 1 day isn't much
+// to lose) and yesterday was the last day it was extended, meaning today is
+// the last chance before it resets to 0 tomorrow. Once today's already been
+// played (`lastDate === today`), it's no longer at risk — it's safe until
+// tomorrow. Used by badges.js's checkStreakReminders() to decide whether to
+// show a "don't lose it" toast.
+export function isStreakAtRisk(streak) {
+  if (!streak || streak.count < 2) return false
+  const today = getTodayKey()
+  if (streak.lastDate === today) return false
+  return streak.lastDate === previousDateKey(today)
+}

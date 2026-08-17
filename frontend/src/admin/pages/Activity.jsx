@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../AuthContext'
-import { fetchActivityLog } from '../adminApi'
+import { fetchActivityLog, listAdmins } from '../adminApi'
 import Pager from '../components/Pager'
 
 const PAGE_SIZE = 50
@@ -20,21 +20,52 @@ const ACTION_STYLE = {
   delete: 'text-red-600 dark:text-red-400',
 }
 
+const SELECT_CLASS =
+  'px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-300'
+
 export default function Activity() {
   const { session } = useAuth()
   const [entries, setEntries] = useState(null)
   const [pagination, setPagination] = useState(null)
   const [error, setError] = useState('')
   const [page, setPage] = useState(1)
+  const [admins, setAdmins] = useState([])
+  const [adminFilter, setAdminFilter] = useState('')
+  const [resourceTypeFilter, setResourceTypeFilter] = useState('')
+  const [actionFilter, setActionFilter] = useState('')
 
   useEffect(() => {
-    fetchActivityLog(session.token, { page, limit: PAGE_SIZE })
+    listAdmins(session.token)
+      .then((data) => setAdmins(data.admins))
+      .catch(() => {}) // filter dropdown just stays empty — not worth erroring the whole page over
+  }, [session.token])
+
+  useEffect(() => {
+    fetchActivityLog(session.token, {
+      page,
+      limit: PAGE_SIZE,
+      admin: adminFilter,
+      resourceType: resourceTypeFilter,
+      action: actionFilter,
+    })
       .then((data) => {
         setEntries(data.entries)
         setPagination(data.pagination)
       })
       .catch((err) => setError(err.message))
-  }, [session.token, page])
+  }, [session.token, page, adminFilter, resourceTypeFilter, actionFilter])
+
+  // Any filter change invalidates the current page number (a narrower
+  // result set may not even have that many pages) — same "reset to page 1
+  // on filter change" pattern as the Quiz/Post admin list filters.
+  function updateFilter(setter) {
+    return (e) => {
+      setter(e.target.value)
+      setPage(1)
+    }
+  }
+
+  const hasFilters = adminFilter || resourceTypeFilter || actionFilter
 
   return (
     <div>
@@ -43,12 +74,46 @@ export default function Activity() {
         Who created, edited, or deleted each quiz, post, or friendship quiz, and when.
       </p>
 
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <select value={adminFilter} onChange={updateFilter(setAdminFilter)} className={SELECT_CLASS}>
+          <option value="">All admins</option>
+          {admins.map((a) => (
+            <option key={a._id} value={a._id}>{a.name}</option>
+          ))}
+        </select>
+        <select value={resourceTypeFilter} onChange={updateFilter(setResourceTypeFilter)} className={SELECT_CLASS}>
+          <option value="">All types</option>
+          {Object.entries(RESOURCE_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>{label}</option>
+          ))}
+        </select>
+        <select value={actionFilter} onChange={updateFilter(setActionFilter)} className={SELECT_CLASS}>
+          <option value="">All actions</option>
+          <option value="create">Create</option>
+          <option value="update">Update</option>
+          <option value="delete">Delete</option>
+        </select>
+        {hasFilters && (
+          <button
+            onClick={() => {
+              setAdminFilter('')
+              setResourceTypeFilter('')
+              setActionFilter('')
+              setPage(1)
+            }}
+            className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!entries && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
       {entries && entries.length === 0 && (
         <p className="bg-white dark:bg-gray-900 rounded-xl shadow-sm px-4 py-6 text-center text-gray-400 dark:text-gray-500">
-          No activity recorded yet.
+          {hasFilters ? 'No activity matches these filters.' : 'No activity recorded yet.'}
         </p>
       )}
 

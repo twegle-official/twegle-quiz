@@ -31,6 +31,7 @@ import Feedback from './pages/Feedback'
 import Badges from './pages/Badges'
 import Leaderboard from './pages/Leaderboard'
 import BadgeToast from './components/BadgeToast'
+import { checkStreakReminders } from './utils/badges'
 import NotFound from './pages/NotFound'
 import Signup from './pages/Signup'
 import UserLogin from './pages/Login'
@@ -110,6 +111,15 @@ function CanonicalLink() {
 }
 
 function PublicSite() {
+  // Streak-reminder toast — checked once per page load (checkStreakReminders
+  // itself caps it to once per calendar day via localStorage, so opening
+  // the site repeatedly in one day doesn't nag). See BadgeToast.jsx for the
+  // actual toast rendering — this just triggers the check that dispatches
+  // its 'twegle-streak-reminder' event.
+  useEffect(() => {
+    checkStreakReminders()
+  }, [])
+
   return (
     <UserAuthProvider>
     <div className="min-h-screen flex flex-col bg-dot-pattern">
