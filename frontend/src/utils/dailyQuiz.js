@@ -49,11 +49,27 @@ export const QUIZ_STREAK_KEY = 'dailyQuizStreak'
 export const PUZZLE_STREAK_KEY = 'dailyPuzzleStreak'
 
 function readStreak(key) {
+  let streak
   try {
-    return JSON.parse(localStorage.getItem(key)) || { count: 0, lastDate: null }
+    streak = JSON.parse(localStorage.getItem(key)) || { count: 0, lastDate: null }
   } catch {
-    return { count: 0, lastDate: null }
+    streak = { count: 0, lastDate: null }
   }
+  return decayIfBroken(streak)
+}
+
+// A streak stored from before a missed day is stale — recordStreak() only
+// corrects it the *next time the user actually plays*, so without this,
+// every screen that reads the streak (banners, Account page, badge checks)
+// keeps showing the old count for however long the visitor waits before
+// their next attempt. Decaying it here, on every read, means a broken
+// streak shows as 0 (banner badge hidden) starting the day after it broke,
+// not just after the next completion re-earns Day 1.
+function decayIfBroken(streak) {
+  if (!streak.lastDate || streak.count === 0) return streak
+  const today = getTodayKey()
+  if (streak.lastDate === today || streak.lastDate === previousDateKey(today)) return streak
+  return { count: 0, lastDate: streak.lastDate }
 }
 
 export function getQuizStreak() {
