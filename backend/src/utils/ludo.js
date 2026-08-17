@@ -5,7 +5,10 @@
 // offset, then peeling off into a private 6-square home stretch, then
 // home. Plain numbers — not copyrighted, just how the real board works.
 
-export const PATH_OFFSET = { red: 0, green: 13, yellow: 26, blue: 39 }
+// Offsets match the standard visual layout: red top-left, blue top-right,
+// yellow bottom-right, green bottom-left (see frontend's YARD_BOUNDS) —
+// clockwise around the shared 52-square path, 13 squares per quadrant.
+export const PATH_OFFSET = { red: 0, blue: 13, yellow: 26, green: 39 }
 
 // The 4 starting squares plus the 4 "star" squares — the 8 standard
 // squares where a token can never be captured.

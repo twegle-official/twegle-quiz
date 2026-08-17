@@ -14,7 +14,10 @@ import mongoose from 'mongoose'
 // Ludo convention), 51-56 = this color's home stretch, 57 = home/finished.
 // utils/ludo.js converts a local position to the shared board's absolute
 // square for collision/capture checks.
-const PLAYER_COLORS = ['red', 'green', 'yellow', 'blue']
+// Clockwise join order matching the standard visual layout (red top-left,
+// blue top-right, yellow bottom-right, green bottom-left) — see
+// frontend/src/utils/ludoBoard.js's YARD_BOUNDS for the actual corners.
+const PLAYER_COLORS = ['red', 'blue', 'yellow', 'green']
 
 const ludoGameSchema = new mongoose.Schema(
   {

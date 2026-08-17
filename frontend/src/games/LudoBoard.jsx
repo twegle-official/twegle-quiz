@@ -36,6 +36,22 @@ function isYardTray(row, col, color) {
   return row >= b.rowStart + 1 && row <= b.rowStart + 4 && col >= b.colStart + 1 && col <= b.colStart + 4
 }
 
+// Rounds the tray's 4 outer corners (rather than every cell) so the 16
+// contiguous, borderless tray cells read as one rounded panel — matching
+// a real board's look — instead of a sharp-cornered rectangle.
+function trayCornerClass(row, col, color) {
+  const b = YARD_BOUNDS[color]
+  const top = row === b.rowStart + 1
+  const bottom = row === b.rowStart + 4
+  const left = col === b.colStart + 1
+  const right = col === b.colStart + 4
+  if (top && left) return 'rounded-tl-lg'
+  if (top && right) return 'rounded-tr-lg'
+  if (bottom && left) return 'rounded-bl-lg'
+  if (bottom && right) return 'rounded-br-lg'
+  return ''
+}
+
 // Precompute which (row,col) cells are the 8 standard safe squares, once —
 // same idea as SnakeLadderBoard.jsx precomputing LADDERS/SNAKES lookups.
 const SAFE_CELL_KEYS = new Set(SAFE_SQUARES.map((i) => ringSquareCoords(i).join(',')))
@@ -87,10 +103,15 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
           // Grid lines only make sense on the path/home cells — a yard is
           // one solid corner block in real Ludo, not a grid of tiny cells.
           const borderClass = cell.type === 'yard' ? '' : 'border border-black/5 dark:border-white/5'
+          const isTray = cell.type === 'yard' && isYardTray(row, col, cell.color)
+          const roundedClass = isTray ? trayCornerClass(row, col, cell.color) : ''
+          // Tray tokens (still in the yard) render bigger, like a real
+          // board's fat starting pieces — path tokens stay small to fit.
+          const tokenSizeClass = isTray ? 'w-5 h-5 sm:w-[18px] sm:h-[18px]' : 'w-[15px] h-[15px] sm:w-[13px] sm:h-[13px]'
           return (
             <div
               key={i}
-              className={`relative flex items-center justify-center ${borderClass} ${cellClass(cell, row, col)}`}
+              className={`relative flex items-center justify-center ${borderClass} ${roundedClass} ${cellClass(cell, row, col)}`}
             >
               {isSafe && <span className="absolute text-[10px] opacity-60">⭐</span>}
               {tokens.length > 0 && (
@@ -103,7 +124,7 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
                         type="button"
                         disabled={!tappable}
                         onClick={() => tappable && onTokenTap(t.role, t.tokenIndex)}
-                        className={`w-[15px] h-[15px] sm:w-[13px] sm:h-[13px] rounded-full ring-1 ring-white dark:ring-gray-900 shadow flex items-center justify-center text-[8px] leading-none ${TOKEN_BG[t.role]} ${
+                        className={`${tokenSizeClass} rounded-full ring-1 ring-white dark:ring-gray-900 shadow flex items-center justify-center text-[8px] leading-none ${TOKEN_BG[t.role]} ${
                           tappable ? 'animate-bounce cursor-pointer ring-2 ring-offset-1 ring-white' : ''
                         }`}
                         title={tappable ? 'Tap to move this token' : undefined}
