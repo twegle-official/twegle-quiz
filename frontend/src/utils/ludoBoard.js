@@ -88,54 +88,61 @@ function key(row, col) {
   return `${row},${col}`
 }
 
-// The band (every cell with row or col in 6-8) actually contains 56 cells
-// once yards/home-stretches/center are excluded, not the "52 squares" Ludo
-// is known for — the 4-cell difference lives in a little notch beside one
-// yard corner (col 0 at rows 6-8, in this walk's coordinate choice) that
-// doesn't affect gameplay at all, only the exact pixel shape of the ring.
-// Rather than fight the geometry to remove exactly 4 cells symmetrically
-// (impossible without leaving dead-end spurs — verified by hand), this
-// walks the ring and simply stops at 52 cells. The walk starts at the cell
-// beside the top-left yard and self-corrects direction so index 13 lands
-// near the top-right yard — both checked, along with the resulting indices
-// landing exactly where PATH_OFFSET expects for each color, via a runtime
-// assertion below (this board has no automated test suite, so the check
-// needs to live where it can't be silently skipped).
+// The band (every cell with row or col in 6-8) actually contains 56
+// connected cells once yards/home-stretches/center are excluded, not the
+// 52 squares a real Ludo ring has. The 4-cell difference is exactly the 4
+// diagonal corners of the center 3x3 block ((6,6),(6,8),(8,6),(8,8)) —
+// the single cells where the horizontal and vertical arms structurally
+// overlap. A real board has no separate square there; it's purely a
+// connectivity waypoint where one arm turns 90° into the next. Walking
+// straight through the ring and stopping once 52 cells are collected (an
+// earlier version of this function) chopped off whichever 4 cells
+// happened to be left over at the end of the walk, rather than these 4
+// specific corners — which kept blue (the walk's fixed starting anchor)
+// correct while silently shifting red/green/yellow's start squares (and
+// therefore every star position past blue's) off their true symmetric
+// spot. Fixed by walking through all 56 cells for connectivity but only
+// assigning a global index to the 52 that aren't one of these corners —
+// confirmed below, via a runtime assertion, to land every color's start
+// exactly where PATH_OFFSET expects (this board has no automated test
+// suite, so the check needs to live where it can't be silently skipped).
 function buildRingOrder() {
   const ringCells = collectRingCells()
   const ringSet = new Set(ringCells.map(([r, c]) => key(r, c)))
   const start = ringCells.find(([r, c]) => r === 6 && c === 1)
+  const isArmCorner = (r, c) => r >= 6 && r <= 8 && c >= 6 && c <= 8
 
   const visited = new Set([key(...start)])
-  const order = [start]
+  const order = isArmCorner(...start) ? [] : [start]
   let current = start
   while (order.length < 52) {
     const [r, c] = current
+    // From the start, prefer moving toward increasing col first — the
+    // only cell with a genuine 2-way choice (every other ring cell has
+    // exactly one unvisited neighbor once its "came from" side is
+    // excluded), so this single preference is what fixes the walk's
+    // direction to blue -> red -> green -> yellow, matching PATH_OFFSET.
     const next = [
+      [r, c + 1],
+      [r, c - 1],
       [r - 1, c],
       [r + 1, c],
-      [r, c - 1],
-      [r, c + 1],
     ].find(([nr, nc]) => ringSet.has(key(nr, nc)) && !visited.has(key(nr, nc)))
     if (!next) break
-    order.push(next)
     visited.add(key(...next))
+    if (!isArmCorner(...next)) order.push(next)
     current = next
   }
 
-  const [, colAt13] = order[13]
-  const wentTowardRed = colAt13 >= 8
-  const result = wentTowardRed ? order : [order[0], ...order.slice(1).reverse()]
-
-  if (result.length !== 52) throw new Error(`Ludo ring walk produced ${result.length} cells, expected 52`)
+  if (order.length !== 52) throw new Error(`Ludo ring walk produced ${order.length} cells, expected 52`)
   const nearYard = (color, [row, col]) => {
     const b = YARD_BOUNDS[color]
     return row >= b.rowStart - 1 && row <= b.rowEnd + 1 && col >= b.colStart - 1 && col <= b.colEnd + 1
   }
-  if (!nearYard('red', result[13]) || !nearYard('green', result[26]) || !nearYard('yellow', result[39])) {
+  if (!nearYard('red', order[13]) || !nearYard('green', order[26]) || !nearYard('yellow', order[39])) {
     throw new Error('Ludo ring walk did not land on the expected color start squares')
   }
-  return result
+  return order
 }
 
 const RING_ORDER = buildRingOrder()
