@@ -39,6 +39,15 @@ const ludoGameSchema = new mongoose.Schema(
     movableTokenIndices: { type: [Number], default: [] },
     status: { type: String, enum: ['waiting', 'in_progress', 'finished'], default: 'waiting' },
     winnerRole: { type: String, default: null },
+    // "Play vs House" — a 2-player-only match created with the second seat
+    // already filled by an AI opponent, so it skips the lobby entirely
+    // (status starts 'in_progress', not 'waiting'). The AI has no server
+    // process of its own: the human's own connected browser tab drives the
+    // house's rollDice/moveToken events on a short delay (see
+    // frontend/src/games/ludoHouseAI.js) — same trust model as every other
+    // live game here, since roles are just strings with no per-connection
+    // auth binding them to a specific socket.
+    vsHouse: { type: Boolean, default: false },
     // Who opened the current/most recent round — alternated on rematch,
     // same fairness purpose as every other live game's roundStarter.
     roundStarterIndex: { type: Number, default: 0 },

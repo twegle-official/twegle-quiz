@@ -183,6 +183,25 @@ export default function Game() {
     }
   }
 
+  // Ludo's own "vs the house" — unlike Tic-Tac-Toe/Connect Four/Chess/Snake
+  // and Ladder, there's no separate single-player component; this reuses
+  // the live match infrastructure with the second seat auto-filled by an
+  // AI opponent (see LudoMultiplayer.jsx's vsHouse effect).
+  async function handlePlayVsHouse() {
+    if (!challengeName.trim()) return
+    setChallengeSubmitting(true)
+    setChallengeError('')
+    try {
+      const data = await createLudoGame(challengeName.trim(), 2, true)
+      localStorage.setItem(`ludo-role-${data.code}`, 'red')
+      navigate(`/games/ludo/${data.code}`)
+    } catch (err) {
+      setChallengeError(err.message)
+    } finally {
+      setChallengeSubmitting(false)
+    }
+  }
+
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       <div className="flex items-center justify-between mb-4">
@@ -244,6 +263,16 @@ export default function Game() {
               >
                 {challengeSubmitting ? 'Creating your match...' : 'Get My Challenge Link'}
               </button>
+              {game.slug === 'ludo' && (
+                <button
+                  type="button"
+                  onClick={handlePlayVsHouse}
+                  disabled={!challengeName.trim() || challengeSubmitting}
+                  className="w-full mt-2 px-4 py-2 rounded-xl border border-violet-300 dark:border-violet-700 text-violet-600 dark:text-violet-400 text-sm font-semibold hover:bg-violet-50 dark:hover:bg-violet-950/40 disabled:opacity-40"
+                >
+                  🏠 Play vs House instead (2 players)
+                </button>
+              )}
             </form>
           ) : (
             <button

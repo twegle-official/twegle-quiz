@@ -338,8 +338,8 @@ export function getChessShareUrl(code) {
   return `${API_URL}/share/chess/${code}`
 }
 
-export async function createLudoGame(name, maxPlayers) {
-  return postJson('/ludo', { name, maxPlayers })
+export async function createLudoGame(name, maxPlayers, vsHouse = false) {
+  return postJson('/ludo', { name, maxPlayers, vsHouse })
 }
 
 export async function fetchLudoGame(code) {

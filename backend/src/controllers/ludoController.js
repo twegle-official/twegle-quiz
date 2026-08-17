@@ -38,22 +38,37 @@ export function gamePayload(game) {
     movableTokenIndices: game.movableTokenIndices,
     status: game.status,
     winnerRole: game.winnerRole,
+    vsHouse: game.vsHouse,
   }
 }
 
 export async function createGame(req, res) {
-  const { name, maxPlayers } = req.body
+  const { name, maxPlayers, vsHouse } = req.body
   const nameError = validateName(name)
   if (nameError) return res.status(400).json({ error: nameError })
-  if (![2, 3, 4].includes(maxPlayers)) {
+
+  // vsHouse is always a 2-player match (a human plus the auto-joined
+  // House seat) — maxPlayers is ignored rather than validated in that case,
+  // since the frontend's "Play vs House" button never sends it.
+  const players = [{ role: LUDO_PLAYER_COLORS[0], name: name.trim(), tokens: [-1, -1, -1, -1] }]
+  let status = 'waiting'
+  let effectiveMaxPlayers = maxPlayers
+
+  if (vsHouse) {
+    effectiveMaxPlayers = 2
+    players.push({ role: LUDO_PLAYER_COLORS[1], name: 'House', tokens: [-1, -1, -1, -1] })
+    status = 'in_progress'
+  } else if (![2, 3, 4].includes(maxPlayers)) {
     return res.status(400).json({ error: 'maxPlayers must be 2, 3, or 4' })
   }
 
   const code = await generateUniqueCode()
   const game = await LudoGame.create({
     code,
-    maxPlayers,
-    players: [{ role: LUDO_PLAYER_COLORS[0], name: name.trim(), tokens: [-1, -1, -1, -1] }],
+    maxPlayers: effectiveMaxPlayers,
+    players,
+    status,
+    vsHouse: Boolean(vsHouse),
   })
 
   res.status(201).json(gamePayload(game))

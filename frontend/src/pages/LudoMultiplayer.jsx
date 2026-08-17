@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { fetchLudoGame, joinLudoGame, getLudoShareUrl } from '../api'
 import { ludoSocket } from '../utils/socket'
 import LudoBoard, { TOKEN_EMOJI } from '../games/LudoBoard'
+import { pickHouseMove } from '../games/ludoHouseAI'
 import DiceDisplay from '../games/DiceDisplay'
 import PlayerChip from '../games/PlayerChip'
 import ShareButtons from '../components/ShareButtons'
@@ -73,6 +74,26 @@ export default function LudoMultiplayer() {
     game ? `${game.players[0]?.name}'s Ludo match` : 'Ludo',
     'A real-time 2-4 player Ludo match on Twegle.'
   )
+
+  // "Play vs House" — the house has no server process of its own, so
+  // whichever browser tab is actually connected (the human's) drives its
+  // turns too, on a short delay so it doesn't feel instant. The house is
+  // always players[1] by construction (see ludoController.js's createGame).
+  useEffect(() => {
+    if (!game?.vsHouse || game.status !== 'in_progress') return
+    const houseRole = game.players[1]?.role
+    if (!houseRole || game.players[game.currentTurnIndex]?.role !== houseRole) return
+
+    const timer = setTimeout(() => {
+      if (game.pendingRoll === null) {
+        ludoSocket.emit('rollDice', { code, role: houseRole })
+      } else {
+        const tokenIndex = pickHouseMove(game, houseRole)
+        ludoSocket.emit('moveToken', { code, role: houseRole, tokenIndex })
+      }
+    }, 900)
+    return () => clearTimeout(timer)
+  }, [game, code])
 
   async function handleJoin(e) {
     e.preventDefault()
