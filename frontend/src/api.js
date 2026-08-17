@@ -149,6 +149,20 @@ export async function setPostReaction(id, emoji) {
   return data.counts
 }
 
+// Generic versions of the two functions above, for content types other
+// than Post (Quiz/Story/Game) — see backend/src/routes/reactionRoutes.js.
+export async function fetchContentReactions(contentType, id) {
+  const res = await fetch(`${API_URL}/reactions/${contentType}/${id}`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.counts
+}
+
+export async function setContentReaction(contentType, id, emoji) {
+  const data = await postJson(`/reactions/${contentType}/${id}`, { emoji, anonymousId: getAnonymousId() })
+  return data.counts
+}
+
 export async function recordPostEngagement(id, action) {
   await fetch(`${API_URL}/posts/${id}/engagement`, {
     method: 'POST',

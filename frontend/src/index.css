@@ -56,6 +56,30 @@ h1, h2, h3 {
   animation: pop-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+/* DiceDisplay.jsx: a continuous tumble while a roll is in flight, and one
+   quick bounce-in the instant it settles on the real result. */
+@keyframes dice-tumble {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(100deg) scale(0.9); }
+  50% { transform: rotate(200deg) scale(1.05); }
+  75% { transform: rotate(300deg) scale(0.9); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+@keyframes dice-settle {
+  0% { transform: scale(0.6) rotate(-15deg); }
+  60% { transform: scale(1.15) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-dice-tumble {
+  animation: dice-tumble 0.5s linear infinite;
+}
+
+.animate-dice-settle {
+  animation: dice-settle 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 /* Subtle dot texture for the public site background — replaces flat gray
    with a bit of depth without hurting readability. */
 .bg-dot-pattern {

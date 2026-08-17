@@ -7,6 +7,7 @@ import ChessBoard from '../games/ChessBoard'
 import ShareButtons from '../components/ShareButtons'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { playSound } from '../utils/sound'
 
 const PROMOTION_PIECES = [
   { code: 'q', label: 'Queen', glyph: '♕' },
@@ -101,6 +102,14 @@ export default function ChessMultiplayer() {
     'A real-time two-player match against a friend on Twegle.'
   )
 
+  // Same win/lose tones Game.jsx's single-player games already use — fires
+  // once per match, the instant the server marks it finished.
+  useEffect(() => {
+    if (game?.status === 'finished' && role && game.winner !== 'draw') {
+      playSound(game.winner === role ? 'win' : 'lose')
+    }
+  }, [game?.status, game?.winner, role])
+
   async function handleJoin(e) {
     e.preventDefault()
     if (!joinName.trim()) return
@@ -159,6 +168,7 @@ export default function ChessMultiplayer() {
   function sendMove(from, to, promotion) {
     movingRef.current = true
     setLastMove({ from, to })
+    playSound('move')
     chessSocket.emit('makeMove', { code, role, from, to, promotion })
     setPromotionPending(null)
     setTimeout(() => {

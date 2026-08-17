@@ -59,6 +59,7 @@ import adminDigestRoutes from './routes/adminDigestRoutes.js'
 import adminDashboardRoutes from './routes/adminDashboardRoutes.js'
 import adminEndUserRoutes from './routes/adminEndUserRoutes.js'
 import leaderboardRoutes from './routes/leaderboardRoutes.js'
+import reactionRoutes from './routes/reactionRoutes.js'
 
 const app = express()
 
@@ -83,6 +84,7 @@ app.use('/api/quizzes/:slug/compare', quizCompareLimiter)
 app.use('/api/games/:slug/plays', gamePlaysLimiter)
 app.use('/api/games/:slug/leaderboard', gameScoreLimiter)
 app.use('/api/posts/:id/reactions', reactionLimiter)
+app.use('/api/reactions/:contentType/:id', reactionLimiter)
 app.use('/api/feedback', feedbackLimiter)
 app.use('/api/engagement', engagementLimiter)
 
@@ -105,6 +107,7 @@ app.use('/api/admin/activity', activityRoutes)
 app.use('/api/search', searchRoutes)
 app.use('/api/games', gameRoutes)
 app.use('/api/leaderboard', leaderboardRoutes)
+app.use('/api/reactions', reactionRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/admin/feedback', adminFeedbackRoutes)
 app.use('/api/tictactoe', ticTacToeRoutes)

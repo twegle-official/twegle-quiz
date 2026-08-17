@@ -5,6 +5,7 @@ import { connectFourSocket } from '../utils/socket'
 import ShareButtons from '../components/ShareButtons'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { playSound } from '../utils/sound'
 
 // No accounts, so each browser remembers its own role for a given game code
 // in localStorage — set to 'red' the moment the creator's own "Challenge a
@@ -74,6 +75,14 @@ export default function ConnectFourMultiplayer() {
     'A real-time two-player match against a friend on Twegle.'
   )
 
+  // Same win/lose tones Game.jsx's single-player games already use — fires
+  // once per match, the instant the server marks it finished.
+  useEffect(() => {
+    if (game?.status === 'finished' && role && game.winner !== 'draw') {
+      playSound(game.winner === role ? 'win' : 'lose')
+    }
+  }, [game?.status, game?.winner, role])
+
   async function handleJoin(e) {
     e.preventDefault()
     if (!joinName.trim()) return
@@ -96,6 +105,7 @@ export default function ConnectFourMultiplayer() {
     if (!role || !game || game.status !== 'in_progress' || game.currentTurn !== role) return
     if (game.board[0][column]) return // top cell filled = column full
     droppingRef.current = true
+    playSound('move')
     connectFourSocket.emit('dropDisc', { code, role, column })
     setTimeout(() => {
       droppingRef.current = false

@@ -9,6 +9,7 @@ import PlayerChip from '../games/PlayerChip'
 import ShareButtons from '../components/ShareButtons'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { playSound } from '../utils/sound'
 
 // Same per-browser-per-game role memory as every other live game — see
 // SnakeLadderMultiplayer.jsx's roleStorageKey. Ludo's value is one of
@@ -75,6 +76,12 @@ export default function LudoMultiplayer() {
     'A real-time 2-4 player Ludo match on Twegle.'
   )
 
+  // Same win/lose tones Game.jsx's single-player games already use — fires
+  // once per match, the instant the server marks it finished.
+  useEffect(() => {
+    if (game?.status === 'finished' && role) playSound(game.winnerRole === role ? 'win' : 'lose')
+  }, [game?.status, game?.winnerRole, role])
+
   // "Play vs House" — the house has no server process of its own, so
   // whichever browser tab is actually connected (the human's) drives its
   // turns too, on a short delay so it doesn't feel instant. The house is
@@ -119,10 +126,12 @@ export default function LudoMultiplayer() {
   function handleRoll() {
     if (rolling || !isMyTurn || game.pendingRoll !== null) return
     setRolling(true)
+    playSound('roll')
     ludoSocket.emit('rollDice', { code, role })
   }
 
   function handleTokenTap(tokenRole, tokenIndex) {
+    playSound('move')
     ludoSocket.emit('moveToken', { code, role: tokenRole, tokenIndex })
   }
 

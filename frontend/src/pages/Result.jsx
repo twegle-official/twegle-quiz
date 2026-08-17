@@ -6,6 +6,7 @@ import AdSlot from '../components/AdSlot'
 import QuizCard from '../components/QuizCard'
 import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
+import ContentReactions from '../components/ContentReactions'
 import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
 import { shareOrDownloadImage } from '../utils/shareImage'
@@ -13,6 +14,7 @@ import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { pickQuizOfTheDay, recordQuizStreakCompletion } from '../utils/dailyQuiz'
 import { recordQuizCompleted, recordPerfectTrivia, checkStreakBadges } from '../utils/badges'
+import { fireConfetti } from '../utils/confetti'
 
 const SUGGESTION_COUNT = 4
 
@@ -64,7 +66,10 @@ export default function Result() {
   useEffect(() => {
     if (!finished || !quiz || previewToken) return
     recordQuizCompleted(slug)
-    if (quiz.type === 'trivia' && score != null && total != null && score === total) recordPerfectTrivia()
+    if (quiz.type === 'trivia' && score != null && total != null && score === total) {
+      recordPerfectTrivia()
+      fireConfetti()
+    }
   }, [slug, finished, score, total, quiz, previewToken])
 
   useEffect(() => {
@@ -177,6 +182,10 @@ export default function Result() {
           🔥 {dailyStreak.count}-day streak — that was today's Quiz of the Day!
         </p>
       )}
+
+      <div className="mb-5">
+        <ContentReactions contentType="quiz" contentId={quiz._id} />
+      </div>
 
       <button
         onClick={handleShareImage}

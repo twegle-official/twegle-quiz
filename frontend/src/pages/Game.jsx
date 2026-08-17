@@ -18,6 +18,7 @@ import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
 import GameLeaderboard from '../components/GameLeaderboard'
+import ContentReactions from '../components/ContentReactions'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordGamePlayed } from '../utils/badges'
 import { recordRecentlyViewed } from '../utils/recentlyViewed'
@@ -335,6 +336,12 @@ export default function Game() {
           <WhackAMole onGameEnd={handleGameEnd} onReset={handleGameReset} />
         )}
       </div>
+
+      {outcome && (
+        <div className="mt-6">
+          <ContentReactions contentType="game" contentId={game.slug} />
+        </div>
+      )}
 
       {outcome && (
         <div className="mt-8">

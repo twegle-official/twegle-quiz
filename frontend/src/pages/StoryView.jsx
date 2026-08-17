@@ -6,6 +6,7 @@ import AdSlot from '../components/AdSlot'
 import StoryCard from '../components/StoryCard'
 import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
+import ContentReactions from '../components/ContentReactions'
 import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
@@ -139,6 +140,10 @@ export default function StoryView() {
         <div className="text-6xl mb-4">{story.emoji || style.emoji}</div>
         <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">{style.label}</p>
         <h1 className="text-2xl font-bold leading-snug">{story.title}</h1>
+      </div>
+
+      <div className="mt-5">
+        <ContentReactions contentType="story" contentId={story._id} />
       </div>
 
       <div className="mt-6 flex justify-center">

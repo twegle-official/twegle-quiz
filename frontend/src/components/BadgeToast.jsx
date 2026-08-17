@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { shareOrDownloadImage } from '../utils/shareImage'
+import { fireConfetti } from '../utils/confetti'
 
 // Mounted once in App.jsx (public site only) — listens for
 // 'twegle-badge-unlocked' (the 7 one-off Bonus Badges, see badges.js),
@@ -49,6 +50,12 @@ export default function BadgeToast() {
     if (!current) return
     const timer = setTimeout(() => setCurrent(null), 6000)
     return () => clearTimeout(timer)
+  }, [current])
+
+  // A real celebration only for the two "you achieved something" toasts —
+  // a streak reminder is a nudge, not an accomplishment, so it stays plain.
+  useEffect(() => {
+    if (current?.type === 'badge' || current?.type === 'level') fireConfetti()
   }, [current])
 
   if (!current) return null

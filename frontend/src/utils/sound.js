@@ -52,6 +52,17 @@ const SOUNDS = {
     const t = ctx.currentTime
     ;[320, 220].forEach((freq, i) => tone(ctx, freq, t + i * 0.12, 0.22))
   },
+  // A quick, higher-pitched rattle of 4 short ticks — read as "something's
+  // tumbling" rather than a single flat blip, for the moment a dice roll
+  // (Ludo/Snake and Ladder) actually starts.
+  roll: (ctx) => {
+    const t = ctx.currentTime
+    ;[520, 580, 500, 640].forEach((freq, i) => tone(ctx, freq, t + i * 0.06, 0.06, 0.045))
+  },
+  // A move landing on the board (a token tap, a square click) — distinct
+  // from the generic UI `click` by pitch alone, so a board move feels
+  // different from just tapping a menu button.
+  move: (ctx) => tone(ctx, 460, ctx.currentTime, 0.07, 0.06),
 }
 
 export function playSound(type) {

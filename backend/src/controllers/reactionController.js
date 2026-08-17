@@ -1,4 +1,4 @@
-import Reaction, { REACTION_EMOJIS } from '../models/Reaction.js'
+import Reaction, { REACTION_EMOJIS, REACTION_CONTENT_TYPES } from '../models/Reaction.js'
 
 async function countsForPost(postId) {
   const rows = await Reaction.aggregate([
@@ -41,10 +41,18 @@ export async function getReactionsBatch(req, res) {
   res.json({ counts })
 }
 
+// contentType arrives via req.params only on the generic /api/reactions/:contentType/:id
+// routes (see reactionRoutes.js) — the older Post-specific routes under
+// /api/posts/:id/reactions have no contentType param, so this defaults to
+// 'post' and behaves exactly as it always has for them.
 export async function setReaction(req, res) {
   const { id } = req.params
+  const contentType = req.params.contentType || 'post'
   const { emoji, anonymousId } = req.body
 
+  if (!REACTION_CONTENT_TYPES.includes(contentType)) {
+    return res.status(400).json({ error: `contentType must be one of: ${REACTION_CONTENT_TYPES.join(', ')}` })
+  }
   if (!REACTION_EMOJIS.includes(emoji)) {
     return res.status(400).json({ error: 'Invalid emoji' })
   }
@@ -54,7 +62,7 @@ export async function setReaction(req, res) {
 
   await Reaction.findOneAndUpdate(
     { postId: id, anonymousId },
-    { emoji },
+    { emoji, contentType },
     { upsert: true }
   )
 
