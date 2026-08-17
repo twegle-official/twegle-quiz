@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPuzzles, fetchPostReactionsBatch, setPostReaction } from '../api'
+import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPuzzles, fetchPostReactionsBatch, setPostReaction, fetchTodayStats } from '../api'
 import { GAMES } from '../games/registry'
 import QuizCard from '../components/QuizCard'
 import FriendshipQuizCard from '../components/FriendshipQuizCard'
@@ -187,6 +187,11 @@ export default function Home() {
   // hardcoded number that had to be manually edited every time content was
   // added and quietly went stale.
   const [stats, setStats] = useState({ quizzes: null, posts: null })
+  // Real-time-ish social proof for first-time visitors — an aggregate,
+  // never-per-user count of today's plays across quizzes/games/friendship
+  // quizzes (see statsController.js). Fetched once on mount; not worth
+  // polling live, a stale-by-a-few-minutes count is still an honest signal.
+  const [playsToday, setPlaysToday] = useState(null)
   // Reaction counts for the currently displayed post tiles, keyed by post id.
   const [reactionCounts, setReactionCounts] = useState({})
   // Full, unfiltered quiz list — reused for the Quiz of the Day banner below
@@ -225,6 +230,12 @@ export default function Home() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, gameCategory, sortMode])
+
+  useEffect(() => {
+    fetchTodayStats()
+      .then((data) => data && setPlaysToday(data.playsToday))
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     Promise.all([fetchQuizzes(), fetchPosts()])
@@ -398,6 +409,7 @@ export default function Home() {
             <span>🎯 {stats.quizzes ?? '24'} quizzes</span>
             <span>💬 {stats.posts ?? '85'}+ jokes &amp; quotes</span>
             <span>🌐 English &amp; हिंदी</span>
+            {playsToday > 0 && <span>🔥 {playsToday} played today</span>}
           </div>
         </div>
       </div>

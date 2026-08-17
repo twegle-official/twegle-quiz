@@ -16,6 +16,7 @@ import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { useUserAuth } from '../UserAuthContext'
 import { shareOrDownloadImage } from '../utils/shareImage'
+import { getWeekSummary } from '../utils/weeklyRecap'
 
 export default function Badges() {
   useDocumentMeta('My Achievements', 'Level up on Twegle by playing games, taking quizzes, solving puzzles, and sharing.')
@@ -24,6 +25,9 @@ export default function Badges() {
   const unlockedCount = badges.filter((b) => b.unlocked).length
   const { index: currentIndex, points, pointsToNext, next } = getCurrentLevelInfo()
   const [sharing, setSharing] = useState(false)
+  const [wrappedSharing, setWrappedSharing] = useState(false)
+  const weekSummary = getWeekSummary()
+  const weekTotal = Object.values(weekSummary).reduce((sum, n) => sum + n, 0)
 
   async function handleShareLevel() {
     const level = LEVELS[currentIndex]
@@ -45,6 +49,40 @@ export default function Badges() {
       )
     } finally {
       setSharing(false)
+    }
+  }
+
+  // "Your Twegle Wrapped" — a Spotify-Wrapped-style recap of the last 7
+  // calendar days (see weeklyRecap.js), reusing the exact same share-card
+  // pipeline as "Share my level" below rather than a new drawing routine.
+  // The card's one `text` field takes the whole tally as wrapped lines
+  // (drawShareCard already wraps paragraphs), so no new canvas code needed.
+  async function handleShareWrapped() {
+    setWrappedSharing(true)
+    try {
+      const lines = [
+        weekSummary.games > 0 && `🎮 ${weekSummary.games} game${weekSummary.games === 1 ? '' : 's'} played`,
+        weekSummary.quizzes > 0 && `🎯 ${weekSummary.quizzes} quiz${weekSummary.quizzes === 1 ? '' : 'zes'} taken`,
+        weekSummary.puzzles > 0 && `🧩 ${weekSummary.puzzles} puzzle${weekSummary.puzzles === 1 ? '' : 's'} solved`,
+        weekSummary.reactions > 0 && `😍 ${weekSummary.reactions} reaction${weekSummary.reactions === 1 ? '' : 's'} given`,
+        weekSummary.shares > 0 && `📣 ${weekSummary.shares} thing${weekSummary.shares === 1 ? '' : 's'} shared`,
+      ].filter(Boolean)
+      await shareOrDownloadImage(
+        {
+          gradient: 'from-fuchsia-400 to-pink-500',
+          emoji: '🎁',
+          title: 'Your Twegle Wrapped',
+          text: lines.join('\n'),
+          tag: 'This week',
+        },
+        {
+          filename: 'twegle-wrapped.png',
+          title: 'Your Twegle Wrapped',
+          text: `Here's my Twegle Wrapped for this week! ${window.location.origin}`,
+        }
+      )
+    } finally {
+      setWrappedSharing(false)
     }
   }
 
@@ -85,6 +123,30 @@ export default function Badges() {
           {sharing ? 'Preparing…' : '📸 Share my level'}
         </button>
       </div>
+
+      {/* Only shown once there's actually something to recap — a "0 of
+          everything" share card would be a weird first impression rather
+          than a delight. */}
+      {weekTotal > 0 && (
+        <div className="mb-4 rounded-2xl border border-fuchsia-300 dark:border-fuchsia-700 bg-fuchsia-50 dark:bg-fuchsia-950/30 p-4">
+          <p className="text-xs font-bold uppercase tracking-wide text-fuchsia-600 dark:text-fuchsia-400 mb-1">This week</p>
+          <p className="font-bold text-gray-900 dark:text-gray-100 mb-2">🎁 Your Twegle Wrapped</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600 dark:text-gray-400 mb-3">
+            {weekSummary.games > 0 && <span>🎮 {weekSummary.games} games</span>}
+            {weekSummary.quizzes > 0 && <span>🎯 {weekSummary.quizzes} quizzes</span>}
+            {weekSummary.puzzles > 0 && <span>🧩 {weekSummary.puzzles} puzzles</span>}
+            {weekSummary.reactions > 0 && <span>😍 {weekSummary.reactions} reactions</span>}
+            {weekSummary.shares > 0 && <span>📣 {weekSummary.shares} shares</span>}
+          </div>
+          <button
+            onClick={handleShareWrapped}
+            disabled={wrappedSharing}
+            className="px-4 py-2 rounded-xl bg-gradient-to-br from-fuchsia-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+          >
+            {wrappedSharing ? 'Preparing…' : '📸 Share my Wrapped'}
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-10">
         {LEVELS.map((level, i) => {

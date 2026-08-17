@@ -435,6 +435,18 @@ Publish/Unpublish loop sequentially over the selected ids calling each content t
 
 Verified locally: selected 2 quizzes on `/admin/quizzes`, bulk-Unpublished (both flipped to `draft`, selection cleared, list reloaded), then bulk-Published the same 2 back to `published` to restore state — confirmed via the rendered status text both times. On `/admin/analytics`, confirmed all 8 Export CSV buttons render (7 enabled, the empty Horoscope table's button correctly disabled) and that clicking one produces a real blob download with the expected filename (`quiz-plays.csv`).
 
+## "Your Twegle Wrapped" + homepage "played today" counter + Quiz schema.org
+
+Three features requested together (2026-08-17), pulled off the "Site Polish & Growth" list.
+
+**Your Twegle Wrapped** — `utils/weeklyRecap.js` keeps a lightweight date-keyed local activity log (`localStorage`, pruned past 14 days) tallying `games`/`quizzes`/`puzzles`/`reactions`/`shares` per calendar day. It exists because `badges.js`'s own stats object is all-time cumulative and has no way to answer "what did you do *this week*." `badges.js`'s 5 existing `record*` functions (`recordGamePlayed`, `recordQuizCompleted`, `recordPuzzleRevealed`, `recordReaction`, `recordShare`) each gained one `recordDailyActivity(kind)` call at the end. `Badges.jsx` computes `getWeekSummary()` (last 7 days) and shows a "🎁 Your Twegle Wrapped" card — only once the week has any activity — with a "📸 Share my Wrapped" button that reuses the *existing* Canvas share-image pipeline (`shareOrDownloadImage` from `shareImage.js`, already built for quiz/post/compare results) rather than writing a new drawing routine.
+
+**Homepage "played today" counter** — `Home.jsx`'s hero stats row now shows "🔥 X played today" (hidden when 0) from a new `fetchTodayStats()` call in `api.js` hitting a new backend endpoint (see `BACKEND.md`).
+
+**Quiz schema.org** — `Quiz.jsx` renders a `<script type="application/ld+json">` `Quiz` schema (name/description/url) right before the return, following the exact JSON-LD pattern `Home.jsx` (WebSite) and `Faq.jsx` (FAQPage) already established. Zero visible UI change — purely for richer Google search-result previews.
+
+Verified locally: played a quiz to completion with no console errors and confirmed the JSON-LD tag parses correctly via direct DOM inspection; confirmed the homepage counter rendered "🔥 1 played today" from a real fetched value; confirmed the Wrapped card appeared on `/badges` with the correct weekly tallies after that playthrough, and clicking "Share my Wrapped" completed without error.
+
 ## FAQ / Help page
 
 `/faq` (`Faq.jsx`) — a static, hand-written click-to-expand accordion of 10 common questions (accounts, cost, privacy, streaks, badges, languages, reporting content, kid-appropriateness), linked from the footer's "Explore" column. No backend involved — the Q&A content lives directly in the component, same reasoning as the legal pages (Privacy/Terms), since it changes rarely and doesn't need admin editing. Renders a `FAQPage` JSON-LD block (`<script type="application/ld+json">`, same pattern `Home.jsx` already uses for its `WebSite` schema) so Google can show the FAQ rich-snippet treatment directly in search results. Added to the sitemap (`sitemapController.js`) alongside About/Privacy/Terms.

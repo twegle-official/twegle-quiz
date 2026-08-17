@@ -135,8 +135,21 @@ export default function Quiz() {
     setQuestionIndex((i) => i + 1)
   }
 
+  // Schema.org Quiz structured data — same JSON-LD pattern Home.jsx
+  // (WebSite) and Faq.jsx (FAQPage) already use. Doesn't change anything
+  // visible; it's purely for how a quiz link can be described in Google's
+  // search results.
+  const quizSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Quiz',
+    name: quiz.title,
+    description: quiz.description,
+    url: `${window.location.origin}/quiz/${quiz.slug}`,
+  }
+
   return (
     <div className="max-w-xl mx-auto px-4 py-10">
+      <script type="application/ld+json">{JSON.stringify(quizSchema)}</script>
       {previewToken && <PreviewBanner />}
       <BackButton className="mb-4" />
       <ProgressBar current={questionIndex} total={quiz.questions.length} />

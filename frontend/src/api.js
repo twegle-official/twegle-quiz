@@ -163,6 +163,13 @@ export async function setContentReaction(contentType, id, emoji) {
   return data.counts
 }
 
+// Public "X played today" homepage counter — see statsController.js.
+export async function fetchTodayStats() {
+  const res = await fetch(`${API_URL}/stats/today`)
+  if (!res.ok) return null
+  return res.json()
+}
+
 export async function recordPostEngagement(id, action) {
   await fetch(`${API_URL}/posts/${id}/engagement`, {
     method: 'POST',

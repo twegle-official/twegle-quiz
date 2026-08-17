@@ -60,6 +60,7 @@ import adminDashboardRoutes from './routes/adminDashboardRoutes.js'
 import adminEndUserRoutes from './routes/adminEndUserRoutes.js'
 import leaderboardRoutes from './routes/leaderboardRoutes.js'
 import reactionRoutes from './routes/reactionRoutes.js'
+import statsRoutes from './routes/statsRoutes.js'
 
 const app = express()
 
@@ -108,6 +109,7 @@ app.use('/api/search', searchRoutes)
 app.use('/api/games', gameRoutes)
 app.use('/api/leaderboard', leaderboardRoutes)
 app.use('/api/reactions', reactionRoutes)
+app.use('/api/stats', statsRoutes)
 app.use('/api/feedback', feedbackRoutes)
 app.use('/api/admin/feedback', adminFeedbackRoutes)
 app.use('/api/tictactoe', ticTacToeRoutes)

@@ -7,6 +7,7 @@ import { getQuizStreak, getPuzzleStreak, isStreakAtRisk, getTodayKey } from './d
 import { pushLocalStatsToServer } from './statsSync'
 import { calculatePoints, getLevelInfo } from './levels'
 import { GAMES } from '../games/registry'
+import { recordDailyActivity } from './weeklyRecap'
 
 export const STATS_KEY = 'twegleStats'
 export const SEEN_KEY = 'twegleBadgesSeen'
@@ -109,12 +110,14 @@ export function recordGamePlayed(slug, outcome) {
     s.gamesPlayed[slug] = (s.gamesPlayed[slug] || 0) + 1
     if (outcome === 'win') s.gameWins += 1
   })
+  recordDailyActivity('games')
 }
 
 export function recordQuizCompleted(slug) {
   update((s) => {
     if (!s.quizzesCompleted.includes(slug)) s.quizzesCompleted.push(slug)
   })
+  recordDailyActivity('quizzes')
 }
 
 // Tracks every puzzle a visitor has revealed the answer to (not just the
@@ -124,6 +127,7 @@ export function recordPuzzleRevealed(puzzleId) {
   update((s) => {
     if (!s.puzzlesRevealed.includes(puzzleId)) s.puzzlesRevealed.push(puzzleId)
   })
+  recordDailyActivity('puzzles')
 }
 
 // Cheap lookups for tile components — reads the same underlying stats a
@@ -147,12 +151,14 @@ export function recordReaction() {
   update((s) => {
     s.reactionsGiven += 1
   })
+  recordDailyActivity('reactions')
 }
 
 export function recordShare() {
   update((s) => {
     s.sharesGiven += 1
   })
+  recordDailyActivity('shares')
 }
 
 // Streak-based badges (and level points, since streak weeks count toward
