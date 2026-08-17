@@ -234,7 +234,7 @@ export default function LudoMultiplayer() {
             color={p.role}
             name={p.name}
             active={game.status === 'in_progress' && currentPlayer?.role === p.role}
-            subtitle={`${p.tokens.filter((t) => t === 57).length}/4 home`}
+            subtitle={`${p.tokens.filter((t) => t === 61).length}/4 home`}
           />
         ))}
       </div>

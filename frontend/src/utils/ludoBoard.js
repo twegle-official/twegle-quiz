@@ -1,7 +1,7 @@
 // Board-rendering geometry for live Ludo. The board isn't a uniform grid
 // like Chess/Connect Four — it's a "+"-shaped path inside a 15x15
 // bounding box, so this builds real layout data once (a classification
-// for every cell, plus an ordered 52-cell ring) rather than just mapping
+// for every cell, plus an ordered 56-cell ring) rather than just mapping
 // a flat array over `grid-cols-N`. The *game* logic (legal moves,
 // capturing, local/global position math) lives in the backend's
 // utils/ludo.js and only needs abstract offsets/indices — this file is
@@ -11,12 +11,28 @@
 // 6x6 yard corners, a 3-wide cross band connecting them, a single center
 // cell, and — within the band — each color's private 6-cell home stretch
 // running along the band's middle row/column. Everything else in the band
-// is shared ring path. The ring's exact cell *order* (which one is global
-// square 0, which direction it winds) is derived by an actual boundary
-// walk rather than hand-picked coordinates, since a "+"-shaped ring is
-// easy to get subtly wrong by inspection — the walk is correct by
-// construction, and a runtime check (see buildRingOrder) confirms it
-// winds red → green → yellow → blue before this module is used at all.
+// is shared ring path — 56 physically distinct cells (not the traditional
+// 52), since this board's arms are 2 real path lanes wide (the 3rd, middle
+// lane is the home stretch) rather than a single-file track. The ring's
+// exact cell *order* (which one is global square 0, which direction it
+// winds) is derived by an actual boundary walk rather than hand-picked
+// coordinates, since a "+"-shaped ring is easy to get subtly wrong by
+// inspection — the walk is correct by construction, and a runtime check
+// (see buildRingOrder) confirms it winds red → green → yellow → blue
+// before this module is used at all.
+//
+// All 56 walked cells get an index — none are excluded. An earlier version
+// tried to force this down to a "standard" 52 by treating the 4 diagonal
+// corner cells (where an arm turns 90° into the next) as mere connectivity
+// waypoints and leaving them unindexed. That was a real bug: those 4 cells
+// are genuine, physically distinct board squares (confirmed by an
+// adjacency check — every one of the 56 has exactly 2 ring-neighbors,
+// forming one clean loop with no dead ends), so skipping them in the index
+// made the *rendered* board silently jump 2 physical squares for a single
+// index step whenever a token's move crossed one — reported directly as
+// "the dice said 4 but the pawn visibly walked 5." Indexing every walked
+// cell makes each index-to-index step physically adjacent by construction,
+// which is the only way to rule this class of bug out entirely.
 
 export const BOARD_SIZE = 15
 export const PLAYER_COLORS = ['blue', 'red', 'green', 'yellow']
@@ -55,7 +71,7 @@ function inBand(row, col) {
 // for red (rows 1-6) / yellow (rows 8-13) — each color's stretch runs
 // along the arm nearest its own yard corner. `index` 0 = first entered
 // (farthest from center), 5 = adjacent to center — matching the backend's
-// local positions 51-56.
+// local positions 55-60.
 function homeStretchInfo(row, col) {
   if (row === 7 && col >= 1 && col <= 6) return { color: 'blue', index: col - 1 }
   if (row === 7 && col >= 8 && col <= 13) return { color: 'green', index: 13 - col }
@@ -88,34 +104,20 @@ function key(row, col) {
   return `${row},${col}`
 }
 
-// The band (every cell with row or col in 6-8) actually contains 56
-// connected cells once yards/home-stretches/center are excluded, not the
-// 52 squares a real Ludo ring has. The 4-cell difference is exactly the 4
-// diagonal corners of the center 3x3 block ((6,6),(6,8),(8,6),(8,8)) —
-// the single cells where the horizontal and vertical arms structurally
-// overlap. A real board has no separate square there; it's purely a
-// connectivity waypoint where one arm turns 90° into the next. Walking
-// straight through the ring and stopping once 52 cells are collected (an
-// earlier version of this function) chopped off whichever 4 cells
-// happened to be left over at the end of the walk, rather than these 4
-// specific corners — which kept blue (the walk's fixed starting anchor)
-// correct while silently shifting red/green/yellow's start squares (and
-// therefore every star position past blue's) off their true symmetric
-// spot. Fixed by walking through all 56 cells for connectivity but only
-// assigning a global index to the 52 that aren't one of these corners —
-// confirmed below, via a runtime assertion, to land every color's start
-// exactly where PATH_OFFSET expects (this board has no automated test
-// suite, so the check needs to live where it can't be silently skipped).
+// Walks every one of the 56 ring cells and indexes all of them (see the
+// module comment above for why 56, and why none get excluded) — confirmed
+// below, via a runtime assertion, to land every color's start exactly
+// where PATH_OFFSET expects (this board has no automated test suite, so
+// the check needs to live where it can't be silently skipped).
 function buildRingOrder() {
   const ringCells = collectRingCells()
   const ringSet = new Set(ringCells.map(([r, c]) => key(r, c)))
   const start = ringCells.find(([r, c]) => r === 6 && c === 1)
-  const isArmCorner = (r, c) => r >= 6 && r <= 8 && c >= 6 && c <= 8
 
   const visited = new Set([key(...start)])
-  const order = isArmCorner(...start) ? [] : [start]
+  const order = [start]
   let current = start
-  while (order.length < 52) {
+  while (order.length < ringCells.length) {
     const [r, c] = current
     // From the start, prefer moving toward increasing col first — the
     // only cell with a genuine 2-way choice (every other ring cell has
@@ -130,16 +132,16 @@ function buildRingOrder() {
     ].find(([nr, nc]) => ringSet.has(key(nr, nc)) && !visited.has(key(nr, nc)))
     if (!next) break
     visited.add(key(...next))
-    if (!isArmCorner(...next)) order.push(next)
+    order.push(next)
     current = next
   }
 
-  if (order.length !== 52) throw new Error(`Ludo ring walk produced ${order.length} cells, expected 52`)
+  if (order.length !== 56) throw new Error(`Ludo ring walk produced ${order.length} cells, expected 56`)
   const nearYard = (color, [row, col]) => {
     const b = YARD_BOUNDS[color]
     return row >= b.rowStart - 1 && row <= b.rowEnd + 1 && col >= b.colStart - 1 && col <= b.colEnd + 1
   }
-  if (!nearYard('red', order[13]) || !nearYard('green', order[26]) || !nearYard('yellow', order[39])) {
+  if (!nearYard('red', order[14]) || !nearYard('green', order[28]) || !nearYard('yellow', order[42])) {
     throw new Error('Ludo ring walk did not land on the expected color start squares')
   }
   return order
@@ -173,13 +175,13 @@ export function yardSlotCoords(color, slotIndex) {
 // plain numbers, duplicated by hand the same way Connect Four/Snake and
 // Ladder's client-only single-player copies were — except here it's for
 // rendering, not running the game, since Ludo has no single-player mode).
-export const PATH_OFFSET = { blue: 0, red: 13, green: 26, yellow: 39 }
-export const SAFE_SQUARES = [0, 8, 13, 21, 26, 34, 39, 47]
+export const PATH_OFFSET = { blue: 0, red: 14, green: 28, yellow: 42 }
+export const SAFE_SQUARES = [0, 9, 14, 23, 28, 37, 42, 51]
 
-// Where a given token (local position -1..57) should render.
+// Where a given token (local position -1..61) should render.
 export function tokenCoords(color, localPosition, slotIndex) {
   if (localPosition === -1) return yardSlotCoords(color, slotIndex)
-  if (localPosition >= 51) return homeStretchCoords(color, localPosition - 51)
-  const globalIndex = (PATH_OFFSET[color] + localPosition) % 52
+  if (localPosition >= 55) return homeStretchCoords(color, localPosition - 55)
+  const globalIndex = (PATH_OFFSET[color] + localPosition) % 56
   return ringSquareCoords(globalIndex)
 }

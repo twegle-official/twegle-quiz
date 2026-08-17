@@ -129,7 +129,7 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
       const [row, col] = tokenCoords(player.role, position, 0)
       const key = `${row},${col}`
       const list = cellTokens.get(key) || []
-      list.push({ role: player.role, tokenIndex, finished: position === 57 })
+      list.push({ role: player.role, tokenIndex, finished: position === 61 })
       cellTokens.set(key, list)
     })
   })

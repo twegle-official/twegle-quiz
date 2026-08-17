@@ -1,7 +1,7 @@
 import { PATH_OFFSET, SAFE_SQUARES } from '../utils/ludoBoard'
 
 function globalSquare(role, local) {
-  return (PATH_OFFSET[role] + local) % 52
+  return (PATH_OFFSET[role] + local) % 56
 }
 
 // "The house" for Ludo's 2-player vs-AI mode — no server process of its
@@ -22,11 +22,11 @@ export function pickHouseMove(game, houseRole) {
   for (const tokenIndex of movableTokenIndices) {
     const current = housePlayer.tokens[tokenIndex]
     const next = current === -1 ? 0 : current + pendingRoll
-    if (next >= 51) continue // entering the home stretch — nothing to capture there
+    if (next >= 55) continue // entering the home stretch — nothing to capture there
     const square = globalSquare(houseRole, next)
     if (SAFE_SQUARES.includes(square)) continue
     const captures = opponents.some((o) =>
-      o.tokens.some((pos) => pos >= 0 && pos < 51 && globalSquare(o.role, pos) === square)
+      o.tokens.some((pos) => pos >= 0 && pos < 55 && globalSquare(o.role, pos) === square)
     )
     if (captures) return tokenIndex
   }

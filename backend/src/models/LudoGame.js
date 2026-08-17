@@ -9,11 +9,12 @@ import mongoose from 'mongoose'
 // (see realtime/ludoSocket.js) — a dropped connection never loses the
 // match, only the "instant" delivery.
 //
-// Token position: -1 = still in the yard, 0-50 = this color's own local
-// track position (every color's start square is local 0 — the standard
-// Ludo convention), 51-56 = this color's home stretch, 57 = home/finished.
-// utils/ludo.js converts a local position to the shared board's absolute
-// square for collision/capture checks.
+// Token position: -1 = still in the yard, 0-54 = this color's own local
+// track position (every color's start square is local 0), 55-60 = this
+// color's home stretch, 61 = home/finished. utils/ludo.js converts a local
+// position to the shared board's absolute square for collision/capture
+// checks — see that file for why the shared path is 56 squares, not the
+// traditional 52.
 // Clockwise join order matching the standard visual layout (blue top-left,
 // red top-right, green bottom-right, yellow bottom-left) — see
 // frontend/src/utils/ludoBoard.js's YARD_BOUNDS for the actual corners.
