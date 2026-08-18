@@ -222,3 +222,19 @@ export function getCurrentLevelInfo() {
   const points = calculatePoints(getStats(), getQuizStreak().count, getPuzzleStreak().count)
   return { points, ...getLevelInfo(points) }
 }
+
+// Wipes this browser's local badge/stats progress — called on logout (see
+// UserAuthContext.jsx) so the next login (a different account, or the same
+// one on a shared device) doesn't inherit whatever was left behind here via
+// statsSync.js's merge-on-login. Leaving these keys in place after logout
+// was the actual bug: this browser kept looking like the just-logged-out
+// account to every localStorage read (Badges.jsx, Account.jsx, the
+// "already attempted" tile marks) until something new happened to overwrite
+// them, and would even get merged into a completely different account that
+// logged in next. Deliberately doesn't touch dailyQuiz.js's streak keys —
+// see clearLocalStreaks() there, called alongside this one.
+export function clearLocalStats() {
+  localStorage.removeItem(STATS_KEY)
+  localStorage.removeItem(SEEN_KEY)
+  localStorage.removeItem(LEVEL_SEEN_KEY)
+}

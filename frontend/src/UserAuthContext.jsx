@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { signupUser, loginUser, fetchCurrentUser } from './userApi'
 import { syncStatsOnLogin } from './utils/statsSync'
+import { clearLocalStats } from './utils/badges'
+import { clearLocalStreaks } from './utils/dailyQuiz'
 
 // Separate, parallel context from admin/AuthContext.jsx — different name,
 // different localStorage key (`userSession` vs `adminSession`), wraps only
@@ -90,10 +92,20 @@ export function UserAuthProvider({ children }) {
     syncStatsOnLogin(data.token)
   }
 
-  // Logs the visitor out on this device.
+  // Logs the visitor out on this device. Also wipes this browser's local
+  // badge/streak progress — without this, it kept looking like the
+  // just-logged-out account to every localStorage-driven read (Badges.jsx,
+  // Account.jsx, "already attempted" tile marks), and could even get
+  // merged into a completely different account that logged in next on the
+  // same device (see statsSync.js's merge-on-login). Dispatches the same
+  // event Home.jsx already listens for so anything still mounted picks up
+  // the reset immediately rather than waiting for a full page reload.
   function logout() {
     localStorage.removeItem('userSession')
+    clearLocalStats()
+    clearLocalStreaks()
     setSession(null)
+    window.dispatchEvent(new CustomEvent('twegle-stats-synced'))
   }
 
   // Replaces the cached session (e.g. after a profile change) and saves it.

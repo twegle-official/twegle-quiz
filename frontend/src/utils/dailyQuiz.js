@@ -140,3 +140,12 @@ export function isStreakAtRisk(streak) {
   if (streak.lastDate === today) return false
   return streak.lastDate === previousDateKey(today)
 }
+
+// Wipes this browser's local streak progress — called on logout alongside
+// badges.js's clearLocalStats(), for the same reason: without this, a
+// logged-out account's streaks kept showing (and could get merged into
+// whichever account logged in next) until something overwrote them.
+export function clearLocalStreaks() {
+  localStorage.removeItem(QUIZ_STREAK_KEY)
+  localStorage.removeItem(PUZZLE_STREAK_KEY)
+}
