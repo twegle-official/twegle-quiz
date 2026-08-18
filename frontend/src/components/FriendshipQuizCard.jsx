@@ -3,8 +3,10 @@ import { getFriendshipQuizIntroShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 import { engagementLabel } from '../utils/engagementLabel'
 
+// A single clickable tile for one Friendship Quiz — shown in the friendship
+// quiz grid on the homepage/browse pages.
 export default function FriendshipQuizCard({ quiz }) {
-  const badge = engagementLabel(quiz.totalAttempts)
+  const badge = engagementLabel(quiz.totalAttempts) // e.g. "Popular" style badge, if it qualifies
   const engagementText = badge || `${quiz.totalAttempts} ${quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed`
 
   return (
@@ -12,6 +14,7 @@ export default function FriendshipQuizCard({ quiz }) {
       to={`/friendship/${quiz.slug}`}
       className={`relative flex h-full flex-col rounded-2xl p-6 text-white shadow-md hover:scale-[1.02] transition-transform bg-gradient-to-br ${quiz.gradient}`}
     >
+      {/* Share icon button in the corner of the tile */}
       <TileShareButton
         title={quiz.title}
         shareUrl={getFriendshipQuizIntroShareUrl(quiz.slug)}

@@ -3,11 +3,14 @@ import { getPuzzleShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 import { hasRevealedPuzzle } from '../utils/badges'
 
+// The friendly display name shown for each difficulty level.
 const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
 
+// A single colorful card for one puzzle — used in the puzzle grids/lists.
 export default function PuzzleCard({ puzzle, index = 0 }) {
+  // Staggers each card's fade-in animation slightly based on its position.
   const animationStyle = { animationDelay: `${index * 60}ms`, animationFillMode: 'backwards' }
-  const attempted = hasRevealedPuzzle(puzzle._id)
+  const attempted = hasRevealedPuzzle(puzzle._id) // has this visitor already seen the answer?
 
   // Same absolute-overlay "already attempted" mark as QuizCard — never a
   // flex sibling, so it can't add height to the tile.
@@ -32,6 +35,7 @@ export default function PuzzleCard({ puzzle, index = 0 }) {
         shareText={`${puzzle.question} — try it on Twegle!`}
       />
 
+      {/* Show the puzzle's image if it has one, otherwise fall back to an emoji */}
       {puzzle.imageUrl ? (
         <div className="relative mb-3">
           <img
@@ -49,6 +53,7 @@ export default function PuzzleCard({ puzzle, index = 0 }) {
       )}
       <h2 className="text-lg font-bold mb-1 pr-8 line-clamp-3">{puzzle.question}</h2>
 
+      {/* Bottom row: call-to-action button and difficulty label */}
       <div className="mt-auto flex items-center justify-between pt-4">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           Solve it →

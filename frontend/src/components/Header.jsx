@@ -9,10 +9,11 @@ import { useUserAuth } from '../UserAuthContext'
 // anything — see the render site below.
 const SHOW_SURPRISE_ME = false
 
+// The top bar shown on every page: logo, search box, and account/theme icons.
 export default function Header() {
-  const { session } = useUserAuth()
+  const { session } = useUserAuth() // is anyone logged in right now?
   const [searchParams] = useSearchParams()
-  const [query, setQuery] = useState(searchParams.get('q') || '')
+  const [query, setQuery] = useState(searchParams.get('q') || '') // text typed into the search box
   const navigate = useNavigate()
 
   // Keeps the box showing the active search term on the results page (and
@@ -22,6 +23,7 @@ export default function Header() {
     setQuery(searchParams.get('q') || '')
   }, [searchParams])
 
+  // Runs when the search form is submitted — sends the user to the search results page.
   function handleSubmit(e) {
     e.preventDefault()
     if (!query.trim()) return

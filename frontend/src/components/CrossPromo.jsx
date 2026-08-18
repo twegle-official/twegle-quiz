@@ -15,9 +15,10 @@ const QUICK_FUN_CATEGORIES = ['joke', 'funny-line', 'quote', 'motivational-quote
 // 'post' (default, used on Result/Story pages) or 'quiz' (used on Post pages,
 // since a post page's own suggestions are already other posts).
 export default function CrossPromo({ language, secondary = 'post' }) {
-  const [game] = useState(() => shuffleArray(GAMES)[0])
-  const [secondaryItem, setSecondaryItem] = useState(null)
+  const [game] = useState(() => shuffleArray(GAMES)[0]) // a random game to suggest
+  const [secondaryItem, setSecondaryItem] = useState(null) // the second suggestion (a post or quiz)
 
+  // Fetches the second suggestion — a random quiz or a random quick-fun post.
   useEffect(() => {
     if (secondary === 'quiz') {
       fetchQuizzes(language)
@@ -36,6 +37,7 @@ export default function CrossPromo({ language, secondary = 'post' }) {
   }, [language, secondary])
 
   return (
+    // Row of pill buttons suggesting something else to do next
     <div className="mt-8 flex flex-wrap justify-center gap-3">
       <Link
         to={`/games/${game.slug}`}
@@ -43,6 +45,7 @@ export default function CrossPromo({ language, secondary = 'post' }) {
       >
         🎮 Play {game.title}
       </Link>
+      {/* Shown on Post pages — suggests a quiz */}
       {secondaryItem && secondary === 'quiz' && (
         <Link
           to={`/quiz/${secondaryItem.slug}`}
@@ -51,6 +54,7 @@ export default function CrossPromo({ language, secondary = 'post' }) {
           🧠 Take a quiz
         </Link>
       )}
+      {/* Shown on Result/Story pages — suggests a quick-fun post */}
       {secondaryItem && secondary === 'post' && (
         <Link
           to={`/post/${secondaryItem._id}`}

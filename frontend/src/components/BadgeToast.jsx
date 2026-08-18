@@ -14,10 +14,11 @@ import { fireConfetti } from '../utils/confetti'
 // thing worth bragging about. The streak reminder gets its own "Play now"
 // link instead, since the whole point is getting the visitor to act today.
 export default function BadgeToast() {
-  const [queue, setQueue] = useState([])
-  const [current, setCurrent] = useState(null)
-  const [sharing, setSharing] = useState(false)
+  const [queue, setQueue] = useState([]) // toasts waiting their turn
+  const [current, setCurrent] = useState(null) // the toast on screen right now
+  const [sharing, setSharing] = useState(false) // true while a share image is being made
 
+  // Listen for the site-wide events that mean "show a toast".
   useEffect(() => {
     function handleBadgeUnlock(e) {
       setQueue((q) => [...q, { type: 'badge', emoji: e.detail.emoji, label: e.detail.label }])
@@ -40,12 +41,14 @@ export default function BadgeToast() {
     }
   }, [])
 
+  // When nothing is showing, pull the next toast off the queue.
   useEffect(() => {
     if (current || queue.length === 0) return
     setCurrent(queue[0])
     setQueue((q) => q.slice(1))
   }, [current, queue])
 
+  // Auto-hide the current toast after 6 seconds.
   useEffect(() => {
     if (!current) return
     const timer = setTimeout(() => setCurrent(null), 6000)
@@ -60,6 +63,7 @@ export default function BadgeToast() {
 
   if (!current) return null
 
+  // Builds and shares/downloads a shareable image for a level-up toast.
   async function handleShare() {
     setSharing(true)
     try {
@@ -85,12 +89,14 @@ export default function BadgeToast() {
   const TOAST_LABEL = { level: 'Level Up!', streak: 'Streak Reminder', badge: 'Badge Unlocked' }
 
   return (
+    // Small popup box in the bottom-right corner of the screen
     <div className="fixed bottom-5 right-5 z-50 animate-fade-slide-in">
       <div className="flex items-center gap-3 bg-gray-900 dark:bg-gray-800 text-white rounded-2xl shadow-xl px-4 py-3 max-w-xs">
         <span className="text-3xl">{current.emoji}</span>
         <div className="min-w-0">
           <p className="text-xs font-bold uppercase tracking-wide text-amber-400">{TOAST_LABEL[current.type]}</p>
           <p className="font-semibold">{current.label}</p>
+          {/* Only a level-up gets a "Share this" button */}
           {current.type === 'level' && (
             <button
               onClick={handleShare}
@@ -100,6 +106,7 @@ export default function BadgeToast() {
               {sharing ? 'Preparing…' : '📸 Share this'}
             </button>
           )}
+          {/* Streak reminders link to the homepage to play instead */}
           {current.type === 'streak' && (
             <a href="/" className="mt-1 inline-block text-xs font-semibold text-violet-300 hover:text-violet-200">
               ▶️ Play now

@@ -2,16 +2,20 @@ import { useEffect, useState } from 'react'
 import { fetchPostReactions, setPostReaction } from '../api'
 import { recordReaction } from '../utils/badges'
 
+// The set of emoji buttons a visitor can react with.
 const EMOJIS = ['😂', '🔥', '😭', '👍']
 
+// The row of emoji reaction buttons shown under a post, with live counts.
 export default function PostReactions({ postId }) {
-  const [counts, setCounts] = useState(null)
-  const [myReaction, setMyReaction] = useState(() => localStorage.getItem(`reaction-${postId}`) || null)
+  const [counts, setCounts] = useState(null) // how many times each emoji was clicked
+  const [myReaction, setMyReaction] = useState(() => localStorage.getItem(`reaction-${postId}`) || null) // which emoji (if any) this visitor already picked, remembered on this device
 
+  // Loads the current reaction counts for this post when it first appears.
   useEffect(() => {
     fetchPostReactions(postId).then(setCounts)
   }, [postId])
 
+  // Runs when the visitor taps an emoji — updates the count and remembers their pick.
   async function handleClick(emoji) {
     const previous = myReaction
     if (!previous) recordReaction()

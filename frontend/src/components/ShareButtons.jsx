@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import { recordShare } from '../utils/badges'
 
+// Row of share buttons (native share / WhatsApp / copy link) used at the
+// end of a quiz or similar page, so people can share what they just did.
 export default function ShareButtons({ title, url, onShare, shareText: shareTextProp, align = 'center' }) {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false) // true briefly after "Copy link" is clicked, to show "Copied!"
 
   const shareText = shareTextProp || `${title} — take the quiz!`
 
+  // Opens the phone/browser's built-in share sheet, if available.
   async function handleNativeShare() {
     if (navigator.share) {
       try {
@@ -18,6 +21,7 @@ export default function ShareButtons({ title, url, onShare, shareText: shareText
     }
   }
 
+  // Copies the page link to the clipboard and shows "Copied!" for 2 seconds.
   async function handleCopyLink() {
     try {
       await navigator.clipboard.writeText(url)
@@ -35,6 +39,7 @@ export default function ShareButtons({ title, url, onShare, shareText: shareText
 
   return (
     <div className={`flex flex-wrap gap-3 ${align === 'start' ? 'justify-start' : 'justify-center'}`}>
+      {/* Only shown on devices/browsers that support the native share sheet */}
       {typeof navigator !== 'undefined' && navigator.share && (
         <button
           onClick={handleNativeShare}

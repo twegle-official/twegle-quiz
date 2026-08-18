@@ -9,10 +9,11 @@ const EMOJIS = ['😂', '🔥', '😭', '👍']
 // tile fetching its own. Every button stops the click from bubbling to the
 // tile's own <Link>, same technique TileShareButton already uses.
 export default function TileReactions({ postId, counts, onReact, dark = false }) {
-  const [myReaction, setMyReaction] = useState(() => localStorage.getItem(`reaction-${postId}`) || null)
+  const [myReaction, setMyReaction] = useState(() => localStorage.getItem(`reaction-${postId}`) || null) // which emoji (if any) this visitor already picked
 
   if (!counts) return null
 
+  // Records which emoji the visitor picked and tells the parent to update the count.
   function handleClick(e, emoji) {
     e.preventDefault()
     e.stopPropagation()
@@ -24,6 +25,7 @@ export default function TileReactions({ postId, counts, onReact, dark = false })
 
   return (
     <div className="flex items-center gap-1 flex-wrap mt-2" onClick={(e) => e.preventDefault()}>
+      {/* One button per reaction emoji, highlighted if it's the one the visitor picked */}
       {EMOJIS.map((emoji) => (
         <button
           key={emoji}

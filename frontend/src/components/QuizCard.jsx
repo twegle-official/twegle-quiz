@@ -4,15 +4,17 @@ import TileShareButton from './TileShareButton'
 import { engagementLabel } from '../utils/engagementLabel'
 import { hasCompletedQuiz } from '../utils/badges'
 
+// Turns a raw play count into a short readable label, like "2.3k" or "1.5M".
 function formatPlays(n) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`
   return `${n}`
 }
 
+// A single colorful card for one quiz — used in the quiz grids/lists throughout the site.
 export default function QuizCard({ quiz }) {
-  const engagementText = engagementLabel(quiz.totalPlays) || `${formatPlays(quiz.totalPlays)} took this`
-  const attempted = hasCompletedQuiz(quiz.slug)
+  const engagementText = engagementLabel(quiz.totalPlays) || `${formatPlays(quiz.totalPlays)} took this` // e.g. "Popular!" or "2.3k took this"
+  const attempted = hasCompletedQuiz(quiz.slug) // has this visitor already taken this quiz?
 
   return (
     <Link
@@ -42,6 +44,7 @@ export default function QuizCard({ quiz }) {
       <h2 className="text-xl font-bold mb-1 pr-8">{quiz.title}</h2>
       <p className="text-white/90 text-sm mb-4">{quiz.description}</p>
 
+      {/* Bottom row: call-to-action button and play-count label */}
       <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           Take the quiz →

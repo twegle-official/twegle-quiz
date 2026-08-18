@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { pickQuizOfTheDay, getQuizStreak } from '../utils/dailyQuiz'
 
+// Homepage banner that highlights one quiz for today and shows the visitor's quiz streak.
 export default function DailyQuizBanner({ quizzes }) {
-  const quiz = pickQuizOfTheDay(quizzes)
+  const quiz = pickQuizOfTheDay(quizzes) // today's featured quiz
   if (!quiz) return null
 
-  const streak = getQuizStreak()
+  const streak = getQuizStreak() // how many days in a row this visitor has played
 
   // Eyebrow label leads with "🔥 Quiz Streak" (not "Quiz of the Day") so the
   // streak mechanic itself is always visible, even to a first-time visitor
@@ -30,6 +31,7 @@ export default function DailyQuizBanner({ quizzes }) {
         </p>
         <p className="text-sm sm:text-base font-bold truncate">{quiz.title}</p>
       </div>
+      {/* Streak count chip — only shown once the visitor has an actual streak */}
       {streak.count > 0 && (
         <span className="shrink-0 text-[10px] sm:text-xs font-bold bg-white/25 rounded-full px-1.5 py-0.5 sm:px-2 sm:py-1 whitespace-nowrap">
           Day {streak.count}

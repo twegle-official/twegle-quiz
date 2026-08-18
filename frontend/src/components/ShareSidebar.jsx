@@ -8,12 +8,13 @@ import { useState } from 'react'
 // Footer.jsx keeps an inline "Share Twegle" section for every width below
 // xl (mobile, tablet, and narrow desktop), so there's no gap in coverage.
 export default function ShareSidebar() {
-  const [copied, setCopied] = useState(false)
+  const [copied, setCopied] = useState(false) // true briefly after "Copy link" is clicked, to show a checkmark
 
   const url = window.location.origin
   const shareText = 'Check out Twegle — free quizzes, puzzles, games, jokes, quotes & more, no sign up needed!'
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${url}`)}`
 
+  // Opens the phone/browser's built-in share sheet, if available.
   async function handleNativeShare() {
     try {
       await navigator.share({ title: 'Twegle', text: shareText, url })
@@ -22,6 +23,7 @@ export default function ShareSidebar() {
     }
   }
 
+  // Copies the site link to the clipboard and briefly shows a checkmark.
   async function handleCopyLink() {
     try {
       await navigator.clipboard.writeText(url)
@@ -40,6 +42,7 @@ export default function ShareSidebar() {
           icon is wrapped in `group relative` so its label appears instantly
           on hover, positioned to the right so it never gets clipped by the
           viewport edge on the left. */}
+      {/* Native share icon — only shown if the browser supports the share sheet */}
       {typeof navigator !== 'undefined' && navigator.share && (
         <div className="group relative">
           <button
@@ -54,6 +57,7 @@ export default function ShareSidebar() {
           </span>
         </div>
       )}
+      {/* WhatsApp share icon */}
       <div className="group relative">
         <a
           href={whatsappUrl}
@@ -68,6 +72,7 @@ export default function ShareSidebar() {
           Share on WhatsApp
         </span>
       </div>
+      {/* Copy link icon */}
       <div className="group relative">
         <button
           onClick={handleCopyLink}

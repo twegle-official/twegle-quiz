@@ -1,5 +1,7 @@
 import { useId } from 'react'
 
+// The small square Twegle icon (gradient background with the smiley shapes).
+// Used on its own or combined with the wordmark below.
 export default function LogoMark({ size = 36 }) {
   // A unique id per instance (React's useId) — AdminLayout mounts this
   // component up to 3 times at once (mobile top bar, mobile drawer, desktop
@@ -31,10 +33,13 @@ export default function LogoMark({ size = 36 }) {
   )
 }
 
+// The icon plus the "Twegle" text next to it — used in the header and
+// anywhere else the full logo (not just the icon) is needed.
 export function LogoWithWordmark({ size = 36, className = '' }) {
   return (
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <LogoMark size={size} />
+      {/* The "Twegle" wordmark text, styled with the gradient colors */}
       <span
         className="font-extrabold bg-gradient-to-br from-violet-500 to-pink-500 bg-clip-text text-transparent"
         style={{ fontFamily: "'Baloo 2', sans-serif", fontSize: size * 0.6 }}

@@ -13,13 +13,14 @@ const REASONS = [
 // "Feedback" section), just with contentType/contentId/reason attached so
 // an admin can tell a report apart from general feedback.
 export default function ReportButton({ contentType, contentId, contentLabel }) {
-  const [open, setOpen] = useState(false)
-  const [reason, setReason] = useState('')
-  const [message, setMessage] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [sent, setSent] = useState(false)
+  const [open, setOpen] = useState(false) // whether the report form is expanded
+  const [reason, setReason] = useState('') // which radio button the user picked
+  const [message, setMessage] = useState('') // optional extra details typed by the user
+  const [submitting, setSubmitting] = useState(false) // true while the report is being sent
+  const [sent, setSent] = useState(false) // true once the report was sent successfully
   const [error, setError] = useState('')
 
+  // Sends the report to the backend when the form is submitted.
   async function handleSubmit(e) {
     e.preventDefault()
     if (!reason) return
@@ -35,10 +36,12 @@ export default function ReportButton({ contentType, contentId, contentLabel }) {
     }
   }
 
+  {/* After a successful submit, just show a thank-you message instead of the form */}
   if (sent) {
     return <p className="text-sm text-gray-400 dark:text-gray-500">Thanks — we'll take a look. 🙏</p>
   }
 
+  {/* Before the user clicks in, just show the small "Report this" link */}
   if (!open) {
     return (
       <button
@@ -54,6 +57,7 @@ export default function ReportButton({ contentType, contentId, contentLabel }) {
     <form onSubmit={handleSubmit} className="max-w-sm mx-auto text-left bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
       <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">What's the issue?</p>
       {error && <p className="text-xs text-red-500 mb-2">{error}</p>}
+      {/* List of reason options the user can pick from */}
       <div className="flex flex-col gap-1.5 mb-3">
         {REASONS.map((r) => (
           <label key={r.value} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">

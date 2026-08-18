@@ -9,15 +9,17 @@ const EMOJIS = ['😂', '🔥', '😭', '👍']
 // behavior, just parameterized by `contentType` so it hits
 // /api/reactions/:contentType/:id instead of the Post-specific route.
 export default function ContentReactions({ contentType, contentId }) {
-  const storageKey = `reaction-${contentType}-${contentId}`
-  const [counts, setCounts] = useState(null)
-  const [myReaction, setMyReaction] = useState(() => localStorage.getItem(storageKey) || null)
+  const storageKey = `reaction-${contentType}-${contentId}` // where we remember this visitor's pick
+  const [counts, setCounts] = useState(null) // how many times each emoji was picked
+  const [myReaction, setMyReaction] = useState(() => localStorage.getItem(storageKey) || null) // this visitor's own pick, if any
 
+  // Load the current reaction counts when the page loads.
   useEffect(() => {
     fetchContentReactions(contentType, contentId).then(setCounts)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contentType, contentId])
 
+  // Runs when the visitor taps an emoji — saves their pick and updates counts.
   async function handleClick(emoji) {
     const previous = myReaction
     if (!previous) recordReaction()
@@ -36,6 +38,7 @@ export default function ContentReactions({ contentType, contentId }) {
   if (!counts) return null
 
   return (
+    // Row of emoji buttons the visitor can react with
     <div className="flex items-center justify-center gap-2 flex-wrap">
       {EMOJIS.map((emoji) => (
         <button

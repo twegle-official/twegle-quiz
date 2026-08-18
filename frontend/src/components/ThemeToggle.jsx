@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'twegle-theme'
 
+// Checks whether dark mode is already turned on when this component first loads.
 function getInitialIsDark() {
   if (typeof document === 'undefined') return false
   return document.documentElement.classList.contains('dark')
@@ -12,8 +13,9 @@ function getInitialIsDark() {
 // same key on the very next load, before anything paints, so a returning
 // dark-mode visitor never sees a flash of light mode first.
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(getInitialIsDark)
+  const [isDark, setIsDark] = useState(getInitialIsDark) // whether dark mode is currently on
 
+  // Whenever isDark changes, apply/remove the dark class and remember the choice for next visit.
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark)
     localStorage.setItem(STORAGE_KEY, isDark ? 'dark' : 'light')
