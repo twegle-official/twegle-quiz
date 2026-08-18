@@ -19,6 +19,8 @@ const CATEGORY_LABELS = {
   motivational: 'Motivational',
 }
 
+// The admin page listing all stories, with search/filter, bulk actions, and
+// links to edit/clone/delete each one.
 export default function StoryList() {
   const { session, hasRole } = useAuth()
   const [stories, setStories] = useState(null)
@@ -35,6 +37,7 @@ export default function StoryList() {
 
   const isFirstRender = useRef(true)
 
+  // Fetches the current page of stories using whatever search/filter values are set.
   function load() {
     listStoriesAdmin(session.token, { search, category, language, status, page, limit: PAGE_SIZE })
       .then((data) => {
@@ -64,6 +67,7 @@ export default function StoryList() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => clear(), [search, category, language, status, page])
 
+  // Publishes every currently checked story.
   async function handleBulkPublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -74,6 +78,7 @@ export default function StoryList() {
     load()
   }
 
+  // Sets every currently checked story back to draft.
   async function handleBulkUnpublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -84,6 +89,7 @@ export default function StoryList() {
     load()
   }
 
+  // Deletes every currently checked story, after confirming with the admin.
   async function handleBulkDelete() {
     if (!window.confirm(`Delete ${selected.size} selected story(ies)? This cannot be undone.`)) return
     setBulkBusy(true)
@@ -95,12 +101,14 @@ export default function StoryList() {
     load()
   }
 
+  // Deletes a single story, after confirming with the admin.
   async function handleDelete(id, title) {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return
     await deleteStory(session.token, id)
     load()
   }
 
+  // Creates a copy of an existing story (with a unique title tag) as a new draft.
   async function handleClone(story) {
     try {
       // The list endpoint omits `body` (it's excluded from listStoriesAdmin's
@@ -193,6 +201,7 @@ export default function StoryList() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!stories && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
+      {/* Shows publish/unpublish/delete buttons once at least one story is checked */}
       {canWrite && (
         <BulkActionsBar
           count={selected.size}
@@ -211,6 +220,7 @@ export default function StoryList() {
               {hasFilters ? 'No stories match these filters.' : 'No stories yet.'}
             </p>
           )}
+          {/* Checkbox to select/deselect every story shown on this page */}
           {canWrite && stories.length > 0 && (
             <div className="flex items-center gap-2 p-3 text-xs text-gray-500 dark:text-gray-400">
               <input

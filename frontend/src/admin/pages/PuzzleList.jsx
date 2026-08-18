@@ -16,6 +16,8 @@ const DIFFICULTY_LABELS = {
   hard: 'Brain Buster',
 }
 
+// The admin page listing all puzzles, with search/filter, bulk actions, and
+// links to edit/clone/delete each one.
 export default function PuzzleList() {
   const { session, hasRole } = useAuth()
   const [puzzles, setPuzzles] = useState(null)
@@ -32,6 +34,7 @@ export default function PuzzleList() {
 
   const isFirstRender = useRef(true)
 
+  // Fetches the current page of puzzles using whatever search/filter values are set.
   function load() {
     listPuzzlesAdmin(session.token, { search, difficulty, language, status, page, limit: PAGE_SIZE })
       .then((data) => {
@@ -61,6 +64,7 @@ export default function PuzzleList() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => clear(), [search, difficulty, language, status, page])
 
+  // Publishes every currently checked puzzle.
   async function handleBulkPublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -71,6 +75,7 @@ export default function PuzzleList() {
     load()
   }
 
+  // Sets every currently checked puzzle back to draft.
   async function handleBulkUnpublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -81,6 +86,7 @@ export default function PuzzleList() {
     load()
   }
 
+  // Deletes every currently checked puzzle, after confirming with the admin.
   async function handleBulkDelete() {
     if (!window.confirm(`Delete ${selected.size} selected puzzle(s)? This cannot be undone.`)) return
     setBulkBusy(true)
@@ -92,12 +98,14 @@ export default function PuzzleList() {
     load()
   }
 
+  // Deletes a single puzzle, after confirming with the admin.
   async function handleDelete(id, question) {
     if (!window.confirm(`Delete this puzzle? This cannot be undone.\n\n"${question}"`)) return
     await deletePuzzle(session.token, id)
     load()
   }
 
+  // Creates a copy of an existing puzzle as a new draft.
   async function handleClone(puzzle) {
     try {
       // The list endpoint omits `answer` (excluded from listPuzzlesAdmin's
@@ -190,6 +198,7 @@ export default function PuzzleList() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!puzzles && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
+      {/* Shows publish/unpublish/delete buttons once at least one puzzle is checked */}
       {canWrite && (
         <BulkActionsBar
           count={selected.size}
@@ -208,6 +217,7 @@ export default function PuzzleList() {
               {hasFilters ? 'No puzzles match these filters.' : 'No puzzles yet.'}
             </p>
           )}
+          {/* Checkbox to select/deselect every puzzle shown on this page */}
           {canWrite && puzzles.length > 0 && (
             <div className="flex items-center gap-2 p-3 text-xs text-gray-500 dark:text-gray-400">
               <input

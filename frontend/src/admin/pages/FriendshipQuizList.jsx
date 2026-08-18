@@ -10,6 +10,8 @@ import { useBulkSelection } from '../useBulkSelection'
 
 const PAGE_SIZE = 20
 
+// This page lists all the friendship quizzes — lets you create, edit,
+// publish/unpublish, clone, or delete them, including in bulk.
 export default function FriendshipQuizList() {
   const { session, hasRole } = useAuth()
   const [quizzes, setQuizzes] = useState(null)
@@ -20,6 +22,7 @@ export default function FriendshipQuizList() {
   const canWrite = hasRole('superadmin', 'editor')
   const { selected, toggle, toggleAll, clear } = useBulkSelection()
 
+  // Fetches the current page of friendship quizzes.
   function load() {
     listFriendshipQuizzesAdmin(session.token, { page, limit: PAGE_SIZE })
       .then((data) => {
@@ -35,6 +38,7 @@ export default function FriendshipQuizList() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => clear(), [page])
 
+  // Publishes every currently-selected quiz at once.
   async function handleBulkPublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -45,6 +49,7 @@ export default function FriendshipQuizList() {
     load()
   }
 
+  // Moves every currently-selected quiz back to draft (unpublished) at once.
   async function handleBulkUnpublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -55,6 +60,7 @@ export default function FriendshipQuizList() {
     load()
   }
 
+  // Deletes every currently-selected quiz at once, after confirming.
   async function handleBulkDelete() {
     if (!window.confirm(`Delete ${selected.size} selected friendship quiz(zes)? This cannot be undone.`)) return
     setBulkBusy(true)
@@ -66,12 +72,14 @@ export default function FriendshipQuizList() {
     load()
   }
 
+  // Deletes a single quiz after confirming.
   async function handleDelete(id, title) {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return
     await deleteFriendshipQuiz(session.token, id)
     load()
   }
 
+  // Makes a copy of a quiz as a new draft, so you can tweak it without touching the original.
   async function handleClone(quiz) {
     try {
       // See QuizList.jsx's handleClone for why this needs a unique tag, not

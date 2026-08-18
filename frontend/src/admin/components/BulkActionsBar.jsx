@@ -6,6 +6,7 @@
 // client-side over the selected ids, the same sequential-await pattern
 // BulkImport.jsx already uses for creation.
 export default function BulkActionsBar({ count, busy, onPublish, onUnpublish, onDelete, onClear }) {
+  // Hidden entirely until the admin has checked at least one row
   if (count === 0) return null
 
   return (

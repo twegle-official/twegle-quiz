@@ -11,6 +11,7 @@ const DIFFICULTIES = [
   { value: 'hard', label: 'Brain Buster' },
 ]
 
+// Default values for a brand-new puzzle.
 const emptyPuzzle = {
   question: '',
   answer: '',
@@ -23,18 +24,22 @@ const emptyPuzzle = {
   publishAt: null,
 }
 
+// The admin page for creating or editing a single puzzle. Same form is used
+// for both — it checks the URL for an id to decide whether it's editing an
+// existing puzzle.
 export default function PuzzleForm() {
   const { session } = useAuth()
   const { id } = useParams()
   const navigate = useNavigate()
   const isEdit = !!id
 
-  const [puzzle, setPuzzle] = useState(emptyPuzzle)
-  const [publishAtLocal, setPublishAtLocal] = useState('')
-  const [loading, setLoading] = useState(isEdit)
-  const [saving, setSaving] = useState(false)
+  const [puzzle, setPuzzle] = useState(emptyPuzzle) // the puzzle fields currently in the form
+  const [publishAtLocal, setPublishAtLocal] = useState('') // the "publish at" date/time, in the admin's own timezone
+  const [loading, setLoading] = useState(isEdit) // true while an existing puzzle is being fetched
+  const [saving, setSaving] = useState(false) // true while the save request is in flight
   const [error, setError] = useState('')
 
+  // When editing an existing puzzle, fetch its current data and fill the form.
   useEffect(() => {
     if (!isEdit) return
     getPuzzleAdmin(session.token, id)
@@ -46,6 +51,7 @@ export default function PuzzleForm() {
       .finally(() => setLoading(false))
   }, [id])
 
+  // Runs when the form is submitted — creates a new puzzle or saves changes to an existing one.
   async function handleSubmit(e) {
     e.preventDefault()
     setSaving(true)

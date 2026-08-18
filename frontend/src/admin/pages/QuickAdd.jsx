@@ -15,16 +15,18 @@ const CATEGORIES = [
   { value: 'motivational-quote', label: '💪 Motivational' },
 ]
 
+// The "Quick Add" admin page — a fast way to type a joke/quote/line and publish it instantly.
 export default function QuickAdd() {
   const { session } = useAuth()
-  const [category, setCategory] = useState('joke')
+  const [category, setCategory] = useState('joke') // which type of post is being added
   const [language, setLanguage] = useState('en')
   const [text, setText] = useState('')
   const [author, setAuthor] = useState('')
-  const [submitting, setSubmitting] = useState(false)
+  const [submitting, setSubmitting] = useState(false) // true while the publish request is in flight
   const [error, setError] = useState('')
-  const [justAdded, setJustAdded] = useState([])
+  const [justAdded, setJustAdded] = useState([]) // short history of the last few posts published, shown below the form
 
+  // Publishes the typed text as a new post, then resets the form for the next entry.
   async function handleSubmit(e) {
     e.preventDefault()
     if (!text.trim()) return
@@ -57,6 +59,7 @@ export default function QuickAdd() {
       </p>
 
       <form onSubmit={handleSubmit}>
+        {/* Buttons to pick which category this post belongs to */}
         <div className="grid grid-cols-2 gap-2 mb-4">
           {CATEGORIES.map((c) => (
             <button
@@ -74,6 +77,7 @@ export default function QuickAdd() {
           ))}
         </div>
 
+        {/* English/Hindi toggle */}
         <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5 mb-4">
           <button
             type="button"
@@ -125,6 +129,7 @@ export default function QuickAdd() {
         </button>
       </form>
 
+      {/* Shows the last few posts published in this session, as quick confirmation */}
       {justAdded.length > 0 && (
         <div className="mt-8">
           <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-2">Just added</p>

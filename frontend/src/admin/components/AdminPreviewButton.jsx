@@ -12,8 +12,10 @@ const SITE_URL = import.meta.env.VITE_SITE_URL || 'http://localhost:5173'
 // public route for this item, e.g. `/quiz/my-slug` or `/post/64f...`.
 export default function AdminPreviewButton({ contentType, id, publicPath }) {
   const { session } = useAuth()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false) // true while the preview link is being fetched
 
+  // Runs when the Preview button is clicked — gets a temporary preview link
+  // from the backend and opens it in a new tab
   async function handlePreview() {
     setLoading(true)
     try {

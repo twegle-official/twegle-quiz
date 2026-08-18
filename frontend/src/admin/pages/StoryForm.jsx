@@ -14,6 +14,7 @@ const STORY_CATEGORIES = [
   { value: 'motivational', label: 'Motivational' },
 ]
 
+// Default values for a brand-new story.
 const emptyStory = {
   title: '',
   category: STORY_CATEGORIES[0].value,
@@ -25,18 +26,22 @@ const emptyStory = {
   publishAt: null,
 }
 
+// The admin page for creating or editing a single story. Same form is used
+// for both — it checks the URL for an id to decide whether it's editing an
+// existing story.
 export default function StoryForm() {
   const { session } = useAuth()
   const { id } = useParams()
   const navigate = useNavigate()
   const isEdit = !!id
 
-  const [story, setStory] = useState(emptyStory)
-  const [publishAtLocal, setPublishAtLocal] = useState('')
-  const [loading, setLoading] = useState(isEdit)
-  const [saving, setSaving] = useState(false)
+  const [story, setStory] = useState(emptyStory) // the story fields currently in the form
+  const [publishAtLocal, setPublishAtLocal] = useState('') // the "publish at" date/time, in the admin's own timezone
+  const [loading, setLoading] = useState(isEdit) // true while an existing story is being fetched
+  const [saving, setSaving] = useState(false) // true while the save request is in flight
   const [error, setError] = useState('')
 
+  // When editing an existing story, fetch its current data and fill the form.
   useEffect(() => {
     if (!isEdit) return
     getStoryAdmin(session.token, id)
@@ -48,6 +53,7 @@ export default function StoryForm() {
       .finally(() => setLoading(false))
   }, [id])
 
+  // Runs when the form is submitted — creates a new story or saves changes to an existing one.
   async function handleSubmit(e) {
     e.preventDefault()
     setSaving(true)

@@ -45,6 +45,8 @@ const ACTION_STYLE = {
 
 const GAME_BY_SLUG = Object.fromEntries(GAMES.map((g) => [g.slug, g]))
 
+// Shows a small "top 5" style list — used for the Top Content section below
+// (top quizzes, top games, etc.)
 // Top-N list widget reused for quizzes/friendship quizzes/games/posts —
 // `unit` is just the label after the number ("plays", "attempts") since
 // each content type tracks a different action.
@@ -86,12 +88,15 @@ function TopList({ title, emoji, items, unit, getHref, getLabel }) {
   )
 }
 
+// This is the homepage of the admin panel — a quick overview of how the
+// site is doing: recent stats, top-performing content, and recent activity.
 export default function Dashboard() {
   const { session } = useAuth()
-  const [range, setRange] = useState('week')
+  const [range, setRange] = useState('week') // which time period is selected (day/week/month/year/all)
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
 
+  // Loads all the dashboard numbers whenever the selected time period changes.
   useEffect(() => {
     fetchDashboard(session.token, range)
       .then(setData)

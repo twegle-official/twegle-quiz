@@ -13,6 +13,7 @@ const QUIZ_CATEGORIES = [
   { value: 'fun', label: 'Fun & Random' },
 ]
 
+// Default values for a brand-new quiz, starting with one blank question and one blank result.
 const emptyQuiz = {
   title: '',
   description: '',
@@ -27,18 +28,23 @@ const emptyQuiz = {
   results: [{ key: '', emoji: '', title: '', description: '' }],
 }
 
+// The admin page for creating or editing a single quiz — title/settings,
+// the list of possible results, and the list of questions with their answer
+// options. Same form is used for both new and existing quizzes — it checks
+// the URL for an id to decide which.
 export default function QuizForm() {
   const { session } = useAuth()
   const { id } = useParams()
   const navigate = useNavigate()
   const isEdit = !!id
 
-  const [quiz, setQuiz] = useState(emptyQuiz)
-  const [publishAtLocal, setPublishAtLocal] = useState('')
-  const [loading, setLoading] = useState(isEdit)
-  const [saving, setSaving] = useState(false)
+  const [quiz, setQuiz] = useState(emptyQuiz) // the whole quiz currently in the form
+  const [publishAtLocal, setPublishAtLocal] = useState('') // the "publish at" date/time, in the admin's own timezone
+  const [loading, setLoading] = useState(isEdit) // true while an existing quiz is being fetched
+  const [saving, setSaving] = useState(false) // true while the save request is in flight
   const [error, setError] = useState('')
 
+  // When editing an existing quiz, fetch its current data and fill the form.
   useEffect(() => {
     if (!isEdit) return
     getQuizAdmin(session.token, id)
@@ -50,11 +56,13 @@ export default function QuizForm() {
       .finally(() => setLoading(false))
   }, [id])
 
+  // Updates one top-level field of the quiz (title, status, category, etc).
   function updateField(field, value) {
     setQuiz((q) => ({ ...q, [field]: value }))
   }
 
   // --- Results ---
+  // Edits one field of one possible result (e.g. its title or description).
   function updateResult(index, field, value) {
     setQuiz((q) => {
       const results = [...q.results]
@@ -62,17 +70,20 @@ export default function QuizForm() {
       return { ...q, results }
     })
   }
+  // Adds a new blank result to the list.
   function addResult() {
     setQuiz((q) => ({
       ...q,
       results: [...q.results, { key: '', emoji: '', title: '', description: '' }],
     }))
   }
+  // Removes a result from the list.
   function removeResult(index) {
     setQuiz((q) => ({ ...q, results: q.results.filter((_, i) => i !== index) }))
   }
 
   // --- Questions ---
+  // Edits the wording of one question.
   function updateQuestionText(qIndex, value) {
     setQuiz((q) => {
       const questions = [...q.questions]
@@ -80,16 +91,19 @@ export default function QuizForm() {
       return { ...q, questions }
     })
   }
+  // Adds a new blank question to the end of the quiz.
   function addQuestion() {
     setQuiz((q) => ({
       ...q,
       questions: [...q.questions, { text: '', options: [{ text: '', result: '' }] }],
     }))
   }
+  // Removes a question from the quiz.
   function removeQuestion(qIndex) {
     setQuiz((q) => ({ ...q, questions: q.questions.filter((_, i) => i !== qIndex) }))
   }
 
+  // Edits one field of one answer option (its text, or which result/correctness it maps to).
   function updateOption(qIndex, oIndex, field, value) {
     setQuiz((q) => {
       const questions = [...q.questions]
@@ -99,6 +113,7 @@ export default function QuizForm() {
       return { ...q, questions }
     })
   }
+  // Adds a new blank answer option to a question.
   function addOption(qIndex) {
     setQuiz((q) => {
       const questions = [...q.questions]
@@ -109,6 +124,7 @@ export default function QuizForm() {
       return { ...q, questions }
     })
   }
+  // Removes an answer option from a question.
   function removeOption(qIndex, oIndex) {
     setQuiz((q) => {
       const questions = [...q.questions]
@@ -120,6 +136,7 @@ export default function QuizForm() {
     })
   }
 
+  // Runs when the form is submitted — creates a new quiz or saves changes to an existing one.
   async function handleSubmit(e) {
     e.preventDefault()
     setSaving(true)

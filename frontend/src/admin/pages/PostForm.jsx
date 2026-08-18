@@ -4,6 +4,7 @@ import { useAuth } from '../AuthContext'
 import { getPostAdmin, createPost, updatePost } from '../adminApi'
 import { toDatetimeLocalValue, fromDatetimeLocalValue } from '../utils/datetimeLocal'
 
+// Default values for a brand-new post (joke/funny line/quote/motivational quote).
 const emptyPost = {
   category: 'joke',
   text: '',
@@ -13,18 +14,22 @@ const emptyPost = {
   publishAt: null,
 }
 
+// The admin page for creating or editing a single post (joke, funny line,
+// quote, or motivational quote). Same form is used for both — it checks the
+// URL for an id to decide whether it's editing an existing post.
 export default function PostForm() {
   const { session } = useAuth()
   const { id } = useParams()
   const navigate = useNavigate()
   const isEdit = !!id
 
-  const [post, setPost] = useState(emptyPost)
-  const [publishAtLocal, setPublishAtLocal] = useState('')
-  const [loading, setLoading] = useState(isEdit)
-  const [saving, setSaving] = useState(false)
+  const [post, setPost] = useState(emptyPost) // the post fields currently in the form
+  const [publishAtLocal, setPublishAtLocal] = useState('') // the "publish at" date/time, in the admin's own timezone
+  const [loading, setLoading] = useState(isEdit) // true while an existing post is being fetched
+  const [saving, setSaving] = useState(false) // true while the save request is in flight
   const [error, setError] = useState('')
 
+  // When editing an existing post, fetch its current data and fill the form.
   useEffect(() => {
     if (!isEdit) return
     getPostAdmin(session.token, id)
@@ -36,6 +41,7 @@ export default function PostForm() {
       .finally(() => setLoading(false))
   }, [id])
 
+  // Runs when the form is submitted — creates a new post or saves changes to an existing one.
   async function handleSubmit(e) {
     e.preventDefault()
     setSaving(true)

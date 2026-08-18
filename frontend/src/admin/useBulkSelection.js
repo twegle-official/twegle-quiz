@@ -5,8 +5,9 @@ import { useState } from 'react'
 // page-local by design — `clear()` is meant to be called from a filter/page
 // change effect, same as those pages already reset `page` on filter change.
 export function useBulkSelection() {
-  const [selected, setSelected] = useState(new Set())
+  const [selected, setSelected] = useState(new Set()) // the set of currently checked item ids
 
+  // Checks or unchecks a single item.
   function toggle(id) {
     setSelected((prev) => {
       const next = new Set(prev)
@@ -16,10 +17,12 @@ export function useBulkSelection() {
     })
   }
 
+  // Checks every given id, or unchecks them all if they're all already checked.
   function toggleAll(ids) {
     setSelected((prev) => (ids.length > 0 && ids.every((id) => prev.has(id)) ? new Set() : new Set(ids)))
   }
 
+  // Unchecks everything.
   function clear() {
     setSelected(new Set())
   }
