@@ -378,8 +378,15 @@ export default function Home() {
           people come to browse quickly, and one extra row of real content
           visible without scrolling matters more than a taller hero. */}
       <div className="bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500">
-        <div className="max-w-6xl mx-auto px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-2 text-center sm:text-left">
-          <div>
+        {/* Two-column split (title left, stats right) only kicks in at `lg`,
+            not `sm` — at in-between widths (roughly 640-1000px), the stats
+            block's `shrink-0` refused to give up any space while the title
+            had no width floor, squeezing the heading down to a sliver and
+            wrapping it one word per line (reported directly, worsened once
+            a 5th stat item was added). Below `lg` the title now gets a full
+            row to itself and the stats wrap normally on their own row underneath. */}
+        <div className="max-w-6xl mx-auto px-4 py-2 sm:py-3 flex flex-col lg:flex-row items-center justify-between gap-1 lg:gap-2 text-center lg:text-left">
+          <div className="min-w-0">
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/80">
               Where Fun Goes Viral
             </p>
