@@ -110,6 +110,8 @@ function CanonicalLink() {
   return null
 }
 
+// The whole public-facing site (every page except /admin/*), with its own
+// header, footer, and floating share sidebar wrapped around all the routes.
 function PublicSite() {
   // Streak-reminder toast — checked once per page load (checkStreakReminders
   // itself caps it to once per calendar day via localStorage, so opening
@@ -168,6 +170,9 @@ function PublicSite() {
   )
 }
 
+// The app's top-level component — decides whether a URL is an admin route
+// (behind login, wrapped in AdminLayout's sidebar) or a public-site route
+// (handled entirely by PublicSite below via the catch-all "/*").
 export default function App() {
   return (
     <AuthProvider>
@@ -175,6 +180,7 @@ export default function App() {
       <CanonicalLink />
       <Routes>
         <Route path="/admin/login" element={<Login />} />
+        {/* Every other /admin/* route requires a logged-in admin — see ProtectedRoute.jsx */}
         <Route
           path="/admin"
           element={
@@ -299,6 +305,7 @@ export default function App() {
             }
           />
         </Route>
+        {/* Anything not matched above (i.e. everything that isn't /admin/*) goes to the public site */}
         <Route path="/*" element={<PublicSite />} />
       </Routes>
     </AuthProvider>

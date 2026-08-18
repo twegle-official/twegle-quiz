@@ -10,7 +10,11 @@ import { syncStatsOnLogin } from './utils/statsSync'
 // visitor ever creates an account — this context is purely additive.
 const UserAuthContext = createContext(null)
 
+// Wraps the public site and makes the logged-in user's session (or null, for
+// a guest) available to every page via useUserAuth() below.
 export function UserAuthProvider({ children }) {
+  // The current session — starts from whatever was saved in localStorage
+  // last time, so a returning visitor stays logged in across page loads.
   const [session, setSession] = useState(() => {
     const raw = localStorage.getItem('userSession')
     return raw ? JSON.parse(raw) : null
@@ -68,6 +72,8 @@ export function UserAuthProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session?.token])
 
+  // Creates a new account, logs it in, and returns the recovery code to show
+  // the visitor once (see Signup.jsx).
   async function signup(username, password, displayName) {
     const data = await signupUser(username, password, displayName)
     localStorage.setItem('userSession', JSON.stringify({ token: data.token, user: data.user }))
@@ -76,6 +82,7 @@ export function UserAuthProvider({ children }) {
     return data.recoveryCode
   }
 
+  // Logs an existing account in.
   async function login(username, password) {
     const data = await loginUser(username, password)
     localStorage.setItem('userSession', JSON.stringify(data))
@@ -83,11 +90,13 @@ export function UserAuthProvider({ children }) {
     syncStatsOnLogin(data.token)
   }
 
+  // Logs the visitor out on this device.
   function logout() {
     localStorage.removeItem('userSession')
     setSession(null)
   }
 
+  // Replaces the cached session (e.g. after a profile change) and saves it.
   function updateSession(next) {
     localStorage.setItem('userSession', JSON.stringify(next))
     setSession(next)
@@ -100,6 +109,7 @@ export function UserAuthProvider({ children }) {
   )
 }
 
+// Hook pages call to read the current session and the login/signup/logout functions above.
 export function useUserAuth() {
   const ctx = useContext(UserAuthContext)
   if (!ctx) throw new Error('useUserAuth must be used within UserAuthProvider')

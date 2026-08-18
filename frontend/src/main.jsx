@@ -5,6 +5,10 @@ import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App.jsx'
 
+// This is the file that actually starts the app — it mounts <App /> into
+// the page's #root element and sets up the PWA service worker (the thing
+// that lets the site be "installed" and work offline).
+
 // Registered explicitly (rather than relying on vite-plugin-pwa's
 // auto-injected script — see vite.config.js's injectRegister: false) because
 // the default registration only ever registers the worker once; it never
@@ -38,6 +42,7 @@ if ('serviceWorker' in navigator) {
   })
 }
 
+// Renders the whole app, wrapped in the browser router so pages can use URLs.
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>

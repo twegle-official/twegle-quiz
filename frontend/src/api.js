@@ -1,5 +1,11 @@
+// Every API call the public (non-admin) site makes — fetching content,
+// recording plays/views/shares, reactions, search, and every live
+// multiplayer game's create/join/share-link calls. Each function just
+// wraps one backend endpoint; see the matching controller on the backend
+// for what it actually does server-side.
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
 
+// Loads the published quizzes, optionally filtered by language/category.
 export async function fetchQuizzes(language, category) {
   const params = new URLSearchParams()
   if (language) params.set('language', language)
@@ -11,6 +17,7 @@ export async function fetchQuizzes(language, category) {
   return data.quizzes
 }
 
+// How many times each game has been played — shown on the games list.
 export async function fetchGameCounts() {
   const res = await fetch(`${API_URL}/games/counts`)
   if (!res.ok) throw new Error('Failed to load game counts')
@@ -18,6 +25,7 @@ export async function fetchGameCounts() {
   return data.counts
 }
 
+// Logs one game session finishing, for the play-count stat above.
 export async function recordGamePlay(slug, outcome) {
   await fetch(`${API_URL}/games/${slug}/plays`, {
     method: 'POST',
@@ -26,6 +34,7 @@ export async function recordGamePlay(slug, outcome) {
   })
 }
 
+// Loads a game's high-score leaderboard.
 export async function fetchGameLeaderboard(slug) {
   const res = await fetch(`${API_URL}/games/${slug}/leaderboard`)
   if (!res.ok) return null
@@ -33,10 +42,12 @@ export async function fetchGameLeaderboard(slug) {
   return data.entries
 }
 
+// Submits a score to a game's leaderboard.
 export async function submitGameScore(slug, nickname, value) {
   return postJson(`/games/${slug}/leaderboard`, { nickname, value })
 }
 
+// Loads the site-wide "who has the most points" leaderboard.
 export async function fetchLevelLeaderboard() {
   const res = await fetch(`${API_URL}/leaderboard/levels`)
   if (!res.ok) return null
@@ -44,6 +55,7 @@ export async function fetchLevelLeaderboard() {
   return data.leaderboard
 }
 
+// Searches across quizzes/posts/stories/etc for the site's search bar.
 export async function searchContent(q, language) {
   const params = new URLSearchParams({ q })
   if (language) params.set('language', language)
@@ -64,6 +76,7 @@ export async function fetchQuizBySlug(slug, previewToken) {
   return data.quiz
 }
 
+// Logs one quiz play finishing (for play-count stats and streaks).
 export async function recordPlay(slug, resultKey) {
   await fetch(`${API_URL}/quizzes/${slug}/plays`, {
     method: 'POST',
@@ -72,6 +85,7 @@ export async function recordPlay(slug, resultKey) {
   })
 }
 
+// Loads published Posts (jokes/funny lines/quotes/motivational quotes).
 export async function fetchPosts(category, language) {
   const params = new URLSearchParams()
   if (category) params.set('category', category)
@@ -83,6 +97,7 @@ export async function fetchPosts(category, language) {
   return data.posts
 }
 
+// Loads published Stories.
 export async function fetchStories(language, category) {
   const params = new URLSearchParams()
   if (language) params.set('language', language)
@@ -102,6 +117,7 @@ export async function fetchStoryBySlug(slug, previewToken) {
   return data.story
 }
 
+// Loads published Puzzles.
 export async function fetchPuzzles(language, difficulty) {
   const params = new URLSearchParams()
   if (language) params.set('language', language)
@@ -129,6 +145,7 @@ export async function fetchPostById(id, previewToken) {
   return data.post
 }
 
+// Loads reaction (emoji) counts for many posts at once, e.g. for a list page.
 export async function fetchPostReactionsBatch(ids) {
   if (!ids || ids.length === 0) return {}
   const res = await fetch(`${API_URL}/posts/reactions?ids=${ids.join(',')}`)
@@ -137,6 +154,7 @@ export async function fetchPostReactionsBatch(ids) {
   return data.counts
 }
 
+// Loads reaction counts for a single post.
 export async function fetchPostReactions(id) {
   const res = await fetch(`${API_URL}/posts/${id}/reactions`)
   if (!res.ok) return null
@@ -144,6 +162,7 @@ export async function fetchPostReactions(id) {
   return data.counts
 }
 
+// Records the visitor's emoji reaction on a post.
 export async function setPostReaction(id, emoji) {
   const data = await postJson(`/posts/${id}/reactions`, { emoji, anonymousId: getAnonymousId() })
   return data.counts
@@ -170,6 +189,7 @@ export async function fetchTodayStats() {
   return res.json()
 }
 
+// Logs a post being viewed or shared, for its own engagement stats.
 export async function recordPostEngagement(id, action) {
   await fetch(`${API_URL}/posts/${id}/engagement`, {
     method: 'POST',
@@ -190,6 +210,8 @@ export async function recordEngagement(contentType, contentId, action) {
   })
 }
 
+// Shared helper for every POST call below — sends JSON, parses the JSON
+// response, and throws an Error with the server's message if it failed.
 async function postJson(path, body) {
   const res = await fetch(`${API_URL}${path}`, {
     method: 'POST',
@@ -201,6 +223,7 @@ async function postJson(path, body) {
   return data
 }
 
+// Sends a message from the public Feedback page.
 export async function submitFeedback(message, email) {
   return postJson('/feedback', { message, email: email || undefined })
 }
@@ -217,6 +240,7 @@ export async function submitReport({ contentType, contentId, contentLabel, reaso
   })
 }
 
+// Loads the published friendship-quiz templates.
 export async function fetchFriendshipQuizzes(language) {
   const params = new URLSearchParams()
   if (language) params.set('language', language)
@@ -235,6 +259,7 @@ export async function fetchFriendshipQuizBySlug(slug, previewToken) {
   return data.quiz
 }
 
+// Creates a new friendship-quiz "instance" once person A finishes answering, returning the invite code for person B.
 export async function createFriendshipInstance(slug, subjectName, answers) {
   const data = await postJson(`/friendship/quizzes/${slug}/instances`, { subjectName, answers })
   return data.code
@@ -246,6 +271,7 @@ export async function fetchFriendshipInstance(code) {
   return res.json()
 }
 
+// Submits person B's guesses at how person A answered.
 export async function submitFriendshipAttempt(code, guesserName, guesses) {
   return postJson(`/friendship/instances/${code}/attempts`, {
     guesserName,
@@ -268,6 +294,7 @@ export function getFriendshipResultShareUrl(attemptId) {
   return `${API_URL}/share/friendship-result/${attemptId}`
 }
 
+// Starts a "compare your result with a friend" invite for a quiz result.
 export async function createQuizCompare(slug, name, resultKey) {
   const data = await postJson(`/quizzes/${slug}/compare`, { name, resultKey })
   return data.code
@@ -279,6 +306,7 @@ export async function fetchQuizCompare(slug, code) {
   return res.json()
 }
 
+// Joins an existing compare invite with the friend's own result.
 export async function joinQuizCompare(slug, code, name, resultKey) {
   return postJson(`/quizzes/${slug}/compare/${code}/join`, { name, resultKey })
 }
@@ -287,6 +315,7 @@ export function getQuizCompareShareUrl(code) {
   return `${API_URL}/share/quiz-compare/${code}`
 }
 
+// Live multiplayer games below: each has the same create/fetch/join/share-link shape.
 export async function createTicTacToeGame(name) {
   return postJson('/tictactoe', { name })
 }
@@ -409,6 +438,7 @@ export function getFriendshipQuizIntroShareUrl(slug) {
   return `${API_URL}/share/friendship-quiz/${slug}`
 }
 
+// Loads the list of zodiac signs for the Horoscope tab.
 export async function fetchZodiacSigns(language) {
   const params = new URLSearchParams()
   if (language) params.set('language', language)
@@ -419,6 +449,7 @@ export async function fetchZodiacSigns(language) {
   return data.signs
 }
 
+// Loads one sign's horoscope for the given period (daily/weekly/etc).
 export async function fetchHoroscope(sign, period, language) {
   const params = new URLSearchParams({ period })
   if (language) params.set('language', language)
