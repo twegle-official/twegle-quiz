@@ -378,49 +378,49 @@ export default function Home() {
           people come to browse quickly, and one extra row of real content
           visible without scrolling matters more than a taller hero. */}
       <div className="bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500">
-        {/* Always stacked (title, then stats below), at every width — a
-            side-by-side two-column version was tried first, but the stats
-            block never had a stable width to share with the title (however
-            the breakpoint/alignment was tuned, the title's line count and
-            the stats' width fought each other, reported directly twice with
-            screenshots). Explicitly requested instead: title on its own
-            full-width line however many lines it needs, stats always below
-            in exactly two fixed rows so both rows read as complete
-            thoughts (what content exists, then how big/active it is) rather
-            than one long wrapped strip. */}
-        <div className="max-w-6xl mx-auto px-4 py-2 sm:py-3 text-center sm:text-left">
-          <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/80">
-            Where Fun Goes Viral
-          </p>
-          {/* Leads with the benefit ("why stay"), not an inventory of
-              content types — the previous heading just listed what Twegle
-              has. Content types still get their own mention in the
-              subtext and in every meta description (index.html,
-              useDocumentMeta.js) for SEO/link-preview purposes, so this
-              change doesn't cost anything there. */}
-          <h1 className="text-base sm:text-lg font-extrabold text-white">
-            Your Daily Dose of Fun — Play, Laugh &amp; Discover Something New
-          </h1>
-          {/* Hidden below `sm` per direct feedback — on a phone this line
-              just added height under an already-descriptive heading;
-              content types still get their own mention in meta
-              descriptions for SEO, so nothing is lost by dropping it here. */}
-          <p className="hidden sm:block text-white/90 text-[11px] sm:text-sm">
-            Quizzes, puzzles, games, jokes &amp; more — no sign up, just pick something and go.
-          </p>
+        {/* Side-by-side again (title left, stats right at `sm`+) — the
+            earlier squeeze/overlap bugs came from the *stats* side wanting
+            an unpredictable width (either one long wrapped strip, or a
+            `shrink-0` block that refused to give the title any room). Fixed
+            at the source this time: the stats side is now exactly 2
+            explicit rows (`whitespace-nowrap` each) instead of one
+            flex-wrap strip, so its own max-content width is small and
+            stable — "🎮 N games 🎯 N quizzes 💬 N+ jokes & quotes" is one
+            fixed-width line, "🌐 English & हिंदी 🔥 N played today" is
+            another — leaving the title (`min-w-0`, genuinely allowed to
+            shrink/wrap) plenty of room at any width `sm` and up. */}
+        <div className="max-w-6xl mx-auto px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-1 sm:gap-4 text-center sm:text-left">
+          <div className="min-w-0">
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/80">
+              Where Fun Goes Viral
+            </p>
+            {/* Leads with the benefit ("why stay"), not an inventory of
+                content types — the previous heading just listed what Twegle
+                has. Content types still get their own mention in the
+                subtext and in every meta description (index.html,
+                useDocumentMeta.js) for SEO/link-preview purposes, so this
+                change doesn't cost anything there. */}
+            <h1 className="text-base sm:text-lg font-extrabold text-white">
+              Your Daily Dose of Fun — Play, Laugh &amp; Discover Something New
+            </h1>
+            {/* Hidden below `sm` per direct feedback — on a phone this line
+                just added height under an already-descriptive heading;
+                content types still get their own mention in meta
+                descriptions for SEO, so nothing is lost by dropping it here. */}
+            <p className="hidden sm:block text-white/90 text-[11px] sm:text-sm">
+              Quizzes, puzzles, games, jokes &amp; more — no sign up, just pick something and go.
+            </p>
+          </div>
           {/* Hidden below `sm` — on a phone this was extra stacked lines
               below an already-longer heading, pushing real content further
               down before it's visible at all. Decorative/secondary info,
               not something a mobile visitor needs before scrolling. */}
-          <div className="hidden sm:flex flex-col gap-y-1 mt-1 text-white/80 text-xs sm:text-sm font-medium">
-            <div className="flex flex-wrap justify-center sm:justify-start gap-x-5">
-              <span>🎮 {GAMES.length} games</span>
-              <span>🎯 {stats.quizzes ?? '24'} quizzes</span>
-              <span>💬 {stats.posts ?? '85'}+ jokes &amp; quotes</span>
+          <div className="hidden sm:flex flex-col gap-y-1 text-white/80 text-xs sm:text-sm font-medium shrink-0">
+            <div className="whitespace-nowrap">
+              🎮 {GAMES.length} games &nbsp; 🎯 {stats.quizzes ?? '24'} quizzes &nbsp; 💬 {stats.posts ?? '85'}+ jokes &amp; quotes
             </div>
-            <div className="flex flex-wrap justify-center sm:justify-start gap-x-5">
-              <span>🌐 English &amp; हिंदी</span>
-              {playsToday > 0 && <span>🔥 {playsToday} played today</span>}
+            <div className="whitespace-nowrap">
+              🌐 English &amp; हिंदी{playsToday > 0 && <> &nbsp; 🔥 {playsToday} played today</>}
             </div>
           </div>
         </div>
