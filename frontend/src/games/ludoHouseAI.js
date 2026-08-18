@@ -1,5 +1,6 @@
 import { PATH_OFFSET, SAFE_SQUARES } from '../utils/ludoBoard'
 
+// Converts a color's own local path position into the shared board position (for comparing tokens of different colors).
 function globalSquare(role, local) {
   return (PATH_OFFSET[role] + local) % 56
 }
@@ -14,6 +15,7 @@ function globalSquare(role, local) {
 // Priority: capture an opponent if any movable token lands on one, else
 // leave the yard if that's an option, else advance whichever token is
 // furthest along (closest to getting home).
+// Decides which token the computer player should move on its turn.
 export function pickHouseMove(game, houseRole) {
   const { movableTokenIndices, pendingRoll, players } = game
   const housePlayer = players.find((p) => p.role === houseRole)

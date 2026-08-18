@@ -6,20 +6,25 @@ const CHOICES = [
   { key: 'scissors', emoji: '✂️', label: 'Scissors' },
 ]
 
+// Which choice beats which — e.g. rock beats scissors.
 const BEATS = { rock: 'scissors', paper: 'rock', scissors: 'paper' }
 
+// Compares the player's pick to the house's pick and returns who won.
 function getOutcome(human, ai) {
   if (human === ai) return 'draw'
   return BEATS[human] === ai ? 'win' : 'loss'
 }
 
+// Looks up the emoji for a given choice (rock/paper/scissors).
 function emojiFor(key) {
   return CHOICES.find((c) => c.key === key)?.emoji
 }
 
+// The classic Rock-Paper-Scissors game against the house.
 export default function RockPaperScissors({ onGameEnd, onReset }) {
-  const [round, setRound] = useState(null) // { human, ai, outcome }
+  const [round, setRound] = useState(null) // the current round's result: { human, ai, outcome }
 
+  // Runs when the player picks rock, paper, or scissors — the house picks randomly, then the round is scored.
   function handlePick(human) {
     // No history-based AI here on purpose — a single round of RPS has no
     // information to exploit, so a uniform random pick is the fair baseline
@@ -30,6 +35,7 @@ export default function RockPaperScissors({ onGameEnd, onReset }) {
     onGameEnd?.(outcome)
   }
 
+  // Clears the round so the player can play again.
   function handleReset() {
     setRound(null)
     onReset?.()

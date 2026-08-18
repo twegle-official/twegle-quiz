@@ -1,3 +1,4 @@
+// Highlight ring color shown around the active player's chip
 const RING = {
   blue: 'ring-blue-400',
   orange: 'ring-orange-400',
@@ -6,6 +7,7 @@ const RING = {
   yellow: 'ring-yellow-400',
 }
 
+// Background color for the player's avatar circle
 const BG = {
   blue: 'bg-blue-500',
   orange: 'bg-orange-500',

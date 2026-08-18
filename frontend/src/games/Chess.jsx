@@ -12,6 +12,8 @@ const PROMOTION_PIECES = [
   { code: 'n', label: 'Knight', glyph: '♘' },
 ]
 
+// Finds which square a given color's king is standing on (used to glow the
+// square red when that king is in check).
 function findKingSquare(chess, color) {
   const board = chess.board()
   for (let row = 0; row < 8; row++) {
@@ -25,21 +27,24 @@ function findKingSquare(chess, color) {
   return null
 }
 
+// The single-player Chess game screen: you play white, the computer plays
+// black. Handles the board, move selection, pawn promotion, and game-over state.
 export default function Chess({ onGameEnd, onReset }) {
-  const engineRef = useRef(new ChessEngine())
-  const [fen, setFen] = useState(engineRef.current.fen())
-  const [turn, setTurn] = useState(HUMAN)
+  const engineRef = useRef(new ChessEngine()) // the chess.js engine that knows the actual rules
+  const [fen, setFen] = useState(engineRef.current.fen()) // text snapshot of the current board position
+  const [turn, setTurn] = useState(HUMAN) // whose turn it is right now
   const [winner, setWinner] = useState(null)
-  const [notified, setNotified] = useState(false)
-  const [selectedSquare, setSelectedSquare] = useState(null)
-  const [legalTargets, setLegalTargets] = useState([])
-  const [lastMove, setLastMove] = useState(null)
-  const [promotionPending, setPromotionPending] = useState(null)
+  const [notified, setNotified] = useState(false) // has the parent already been told the game ended?
+  const [selectedSquare, setSelectedSquare] = useState(null) // the square the player has clicked to move from
+  const [legalTargets, setLegalTargets] = useState([]) // squares the selected piece can legally move to
+  const [lastMove, setLastMove] = useState(null) // used to highlight the most recent move
+  const [promotionPending, setPromotionPending] = useState(null) // waiting on the player to pick a piece for pawn promotion
 
   const gameOver = Boolean(winner)
   const engine = engineRef.current
   const inCheckSquare = engine.inCheck() ? findKingSquare(engine, engine.turn()) : null
 
+  // Updates the board after a move is made and checks whether the game just ended.
   function afterMove(moverColor) {
     setFen(engine.fen())
     if (engine.isCheckmate()) {
@@ -51,6 +56,7 @@ export default function Chess({ onGameEnd, onReset }) {
     }
   }
 
+  // Attempts to play the human's move on the board; does nothing if it's not legal.
   function makeMove(from, to, promotion) {
     let move
     try {
@@ -81,12 +87,15 @@ export default function Chess({ onGameEnd, onReset }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fen, turn, gameOver])
 
+  // Reports the final result (win/loss/draw) to the parent once, when the game ends.
   useEffect(() => {
     if (!gameOver || notified) return
     setNotified(true)
     onGameEnd?.(winner === HUMAN ? 'win' : winner === AI ? 'loss' : 'draw')
   }, [gameOver, winner, notified, onGameEnd])
 
+  // Handles the player tapping a square — either selects a piece to move, or
+  // moves the already-selected piece there if it's a legal target.
   function handleSquareClick(square) {
     if (gameOver || turn !== HUMAN || promotionPending) return
 
@@ -119,6 +128,7 @@ export default function Chess({ onGameEnd, onReset }) {
     }
   }
 
+  // Starts a brand new game.
   function handleReset() {
     engineRef.current = new ChessEngine()
     setFen(engineRef.current.fen())
@@ -161,6 +171,7 @@ export default function Chess({ onGameEnd, onReset }) {
         />
       </div>
 
+      {/* Scrollable list of moves played so far, in standard chess notation */}
       {history.length > 0 && (
         <div className="max-w-xs mx-auto mb-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 px-3 py-2 max-h-24 overflow-y-auto text-left">
           <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 mb-1">Moves</p>
@@ -178,6 +189,7 @@ export default function Chess({ onGameEnd, onReset }) {
         </div>
       )}
 
+      {/* Popup asking which piece to promote a pawn into, shown only when a pawn reaches the far row */}
       {promotionPending && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/40 px-4" onClick={() => setPromotionPending(null)}>
           <div

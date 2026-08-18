@@ -11,7 +11,7 @@ const FACES = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅']
 // `key` prop so React remounts (and therefore replays) the settle
 // animation every time a fresh roll value arrives, not just on first mount.
 export default function DiceDisplay({ roll, rolling }) {
-  const [face, setFace] = useState(roll || 1)
+  const [face, setFace] = useState(roll || 1) // which die face (1-6) is currently shown
 
   useEffect(() => {
     if (!rolling) {

@@ -77,6 +77,7 @@ const PST = {
   ],
 }
 
+// Looks up how good a square is for a given piece type/color.
 function pstValue(type, color, row, col) {
   const index = color === 'w' ? row * 8 + col : (7 - row) * 8 + col
   return PST[type][index]
@@ -84,6 +85,7 @@ function pstValue(type, color, row, col) {
 
 // Positive = good for white, negative = good for black — flipped by the
 // caller depending on which side the AI is playing.
+// Scores the current board position — how good it looks for white overall.
 function evaluateBoard(chess) {
   const board = chess.board()
   let score = 0
@@ -104,6 +106,7 @@ function evaluateBoard(chess) {
 // A checkmate ends the game before material changes, so the plain
 // material+PST eval above wouldn't otherwise notice it — score it directly
 // instead. The `depth` bonus rewards finding the fastest mate available.
+// Scores a finished game (checkmate, stalemate, draw) directly.
 function evaluateTerminal(chess, depth) {
   if (chess.isCheckmate()) {
     return chess.turn() === 'w' ? -100_000 - depth : 100_000 + depth
@@ -111,6 +114,8 @@ function evaluateTerminal(chess, depth) {
   return 0 // stalemate, insufficient material, repetition, 50-move rule
 }
 
+// Returns a randomly shuffled copy of a list — used so the AI doesn't always
+// pick the same move among equally good options.
 function shuffled(array) {
   const copy = [...array]
   for (let i = copy.length - 1; i > 0; i--) {
@@ -120,6 +125,8 @@ function shuffled(array) {
   return copy
 }
 
+// Looks ahead several moves (assuming both sides play their best) to figure
+// out how good the current position will turn out to be.
 function minimax(chess, depth, alpha, beta, maximizingWhite) {
   if (chess.isGameOver()) {
     return evaluateTerminal(chess, depth)
@@ -154,6 +161,7 @@ function minimax(chess, depth, alpha, beta, maximizingWhite) {
 
 // Mutates `chess` during search but always leaves it exactly as it found
 // it (every push is undone) — the caller applies the returned move itself.
+// Picks the best move for whoever's turn it is by looking a few moves ahead.
 export function getBestMove(chess) {
   const aiIsWhite = chess.turn() === 'w'
   const legalMoves = chess.moves({ verbose: true })

@@ -6,14 +6,17 @@ const HUMAN = 'red'
 const AI = 'yellow'
 const AI_DEPTH = 5 // deep enough to play well, shallow enough to stay fast in-browser
 
+// Creates a fresh, empty game board.
 function emptyBoard() {
   return Array.from({ length: ROWS }, () => Array(COLS).fill(''))
 }
 
+// Makes a copy of the board so it can be changed without affecting the original.
 function cloneBoard(board) {
   return board.map((row) => [...row])
 }
 
+// Finds which columns still have room for another disc.
 function validColumns(board) {
   const cols = []
   for (let c = 0; c < COLS; c++) {
@@ -22,6 +25,7 @@ function validColumns(board) {
   return cols
 }
 
+// Finds the lowest empty row in a column — where a dropped disc would land.
 function nextOpenRow(board, col) {
   for (let r = ROWS - 1; r >= 0; r--) {
     if (board[r][col] === '') return r
@@ -61,6 +65,7 @@ function checkWinner(board, row, col) {
   return null
 }
 
+// Checks whether the board is completely full (no more moves possible).
 function isBoardFull(board) {
   return board[0].every((cell) => cell !== '')
 }
@@ -71,6 +76,7 @@ function isBoardFull(board) {
 // winning windows than edge discs). Used only at the AI's search depth
 // limit, where the game isn't decided yet — actual wins/losses are scored
 // directly in minimax.
+// Scores a group of 4 cells by how promising it looks for the given player.
 function evaluateWindow(window, piece) {
   const opponent = piece === AI ? HUMAN : AI
   const pieceCount = window.filter((c) => c === piece).length
@@ -84,6 +90,7 @@ function evaluateWindow(window, piece) {
   return 0
 }
 
+// Adds up scores across the whole board to rate how good the position is for a player.
 function scorePosition(board, piece) {
   let score = 0
 
@@ -115,6 +122,7 @@ function scorePosition(board, piece) {
   return score
 }
 
+// Picks the best column for the computer by looking several moves ahead.
 function minimax(board, depth, alpha, beta, maximizing) {
   const cols = validColumns(board)
 
@@ -151,12 +159,13 @@ function minimax(board, depth, alpha, beta, maximizing) {
   return best
 }
 
+// The single-player Connect Four game screen: you play red, the computer plays yellow.
 export default function ConnectFour({ onGameEnd, onReset }) {
   const [board, setBoard] = useState(emptyBoard)
   const [turn, setTurn] = useState(HUMAN) // human always goes first
   const [winner, setWinner] = useState(null)
-  const [notified, setNotified] = useState(false)
-  const [droppingCol, setDroppingCol] = useState(null)
+  const [notified, setNotified] = useState(false) // has the parent already been told the game ended?
+  const [droppingCol, setDroppingCol] = useState(null) // which column's disc is currently mid-drop animation
 
   const isDraw = !winner && isBoardFull(board)
   const gameOver = Boolean(winner) || isDraw
@@ -179,12 +188,14 @@ export default function ConnectFour({ onGameEnd, onReset }) {
     return () => clearTimeout(timer)
   }, [board, turn, gameOver])
 
+  // Reports the final result (win/loss/draw) to the parent once, when the game ends.
   useEffect(() => {
     if (!gameOver || notified) return
     setNotified(true)
     onGameEnd?.(winner === HUMAN ? 'win' : winner === AI ? 'loss' : 'draw')
   }, [gameOver, winner, notified, onGameEnd])
 
+  // Handles the player clicking a column to drop their disc in.
   function handleColumnClick(col) {
     if (gameOver || turn !== HUMAN || droppingCol !== null) return
     const row = nextOpenRow(board, col)
@@ -199,6 +210,7 @@ export default function ConnectFour({ onGameEnd, onReset }) {
     setTimeout(() => setDroppingCol(null), 200)
   }
 
+  // Starts a brand new game.
   function handleReset() {
     setBoard(emptyBoard())
     setTurn(HUMAN)

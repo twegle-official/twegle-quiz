@@ -17,10 +17,12 @@ const TILE_STYLES = {
   2048: 'bg-violet-500 text-white',
 }
 
+// Creates a fresh, empty 4x4 grid.
 function emptyBoard() {
   return Array.from({ length: SIZE }, () => Array(SIZE).fill(0))
 }
 
+// Drops a new tile (2, usually, sometimes 4) into a random empty spot.
 function addRandomTile(board) {
   const empty = []
   board.forEach((row, r) => row.forEach((cell, c) => { if (!cell) empty.push([r, c]) }))
@@ -31,10 +33,12 @@ function addRandomTile(board) {
   return next
 }
 
+// Sets up a new game board with the two starting tiles.
 function initialBoard() {
   return addRandomTile(addRandomTile(emptyBoard()))
 }
 
+// Slides and merges one row's tiles to the left, the way 2048 combines matching numbers.
 function slideRowLeft(row) {
   const filtered = row.filter((v) => v !== 0)
   const merged = []
@@ -53,6 +57,7 @@ function slideRowLeft(row) {
   return { row: merged, scoreGained }
 }
 
+// Slides the whole board left, one row at a time.
 function moveLeft(board) {
   let scoreGained = 0
   const next = board.map((row) => {
@@ -63,12 +68,14 @@ function moveLeft(board) {
   return { board: next, scoreGained }
 }
 
+// Flips the board so rows become columns (used to reuse the "slide left" logic for up/down moves).
 function transpose(board) {
   const next = emptyBoard()
   for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) next[c][r] = board[r][c]
   return next
 }
 
+// Reverses each row (used to reuse the "slide left" logic for rightward moves).
 function reverseRows(board) {
   return board.map((row) => [...row].reverse())
 }
@@ -76,6 +83,7 @@ function reverseRows(board) {
 // Every direction is reduced to "slide left" via transpose/reverse, then the
 // same transform is undone (in reverse order) on the result — the standard
 // trick for implementing 2048 without four separate merge algorithms.
+// Slides the board in whichever direction the player swiped or pressed.
 function moveInDirection(board, direction) {
   if (direction === 'left') return moveLeft(board)
   if (direction === 'right') {
@@ -90,24 +98,29 @@ function moveInDirection(board, direction) {
   return { board: transpose(reverseRows(moved)), scoreGained }
 }
 
+// Checks if two boards are identical (used to detect a move that changed nothing).
 function boardsEqual(a, b) {
   return a.every((row, r) => row.every((v, c) => v === b[r][c]))
 }
 
+// Checks whether any tile has reached the winning value (2048).
 function hasWon(board) {
   return board.some((row) => row.some((v) => v >= WIN_VALUE))
 }
 
+// Checks whether any move in any direction is still possible.
 function canMove(board) {
   return ['left', 'right', 'up', 'down'].some((dir) => !boardsEqual(moveInDirection(board, dir).board, board))
 }
 
+// The 2048 game screen: slide tiles with arrow keys to merge matching numbers.
 export default function Game2048({ onGameEnd, onReset }) {
   const [board, setBoard] = useState(initialBoard)
   const [score, setScore] = useState(0)
   const [status, setStatus] = useState('playing') // 'playing' | 'won' | 'lost'
-  const [notified, setNotified] = useState(false)
+  const [notified, setNotified] = useState(false) // has the parent already been told the game ended?
 
+  // Handles a swipe/arrow-key move: slides tiles, adds a new one, checks for win/loss.
   function handleMove(direction) {
     if (status !== 'playing') return
     const { board: moved, scoreGained } = moveInDirection(board, direction)
@@ -121,6 +134,7 @@ export default function Game2048({ onGameEnd, onReset }) {
 
   // Re-subscribes whenever board/status changes so handleMove always closes
   // over fresh state, without needing a ref.
+  // Listens for arrow-key presses and moves the tiles accordingly.
   useEffect(() => {
     function handleKey(e) {
       const map = { ArrowLeft: 'left', ArrowRight: 'right', ArrowUp: 'up', ArrowDown: 'down' }
@@ -133,12 +147,14 @@ export default function Game2048({ onGameEnd, onReset }) {
     return () => window.removeEventListener('keydown', handleKey)
   }, [board, status])
 
+  // Reports the final result (win/loss) and score to the parent once, when the game ends.
   useEffect(() => {
     if (status === 'playing' || notified) return
     setNotified(true)
     onGameEnd?.(status === 'won' ? 'win' : 'loss', score)
   }, [status, notified, onGameEnd, score])
 
+  // Starts a brand new game.
   function handleReset() {
     setBoard(initialBoard())
     setScore(0)
@@ -156,6 +172,7 @@ export default function Game2048({ onGameEnd, onReset }) {
           ? 'No more moves — game over.'
           : `Score: ${score}`}
       </p>
+      {/* The 4x4 tile grid */}
       <div className="grid grid-cols-4 gap-2 w-80 sm:w-72 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 p-2 rounded-xl">
         {board.flat().map((value, i) => (
           <div
@@ -168,6 +185,7 @@ export default function Game2048({ onGameEnd, onReset }) {
           </div>
         ))}
       </div>
+      {/* On-screen arrow buttons, for players without a keyboard */}
       <div className="grid grid-cols-3 gap-2 w-48 sm:w-40 mx-auto mb-6">
         <div />
         <button onClick={() => handleMove('up')} className="h-12 sm:h-10 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 font-bold text-lg sm:text-base">↑</button>

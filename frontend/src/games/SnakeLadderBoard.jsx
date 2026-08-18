@@ -1,7 +1,8 @@
 import { LADDERS, SNAKES, buildBoardGrid } from '../utils/snakeLadderBoard'
 
-const GRID = buildBoardGrid()
+const GRID = buildBoardGrid() // the 10x10 arrangement of square numbers, laid out boustrophedon-style like a real board
 
+// Picks the background color for one square: green for a ladder, red for a snake, or a checkerboard pattern otherwise.
 function cellBg(isLadder, isSnake, checker) {
   if (isLadder) return 'bg-emerald-200 dark:bg-emerald-800/70'
   if (isSnake) return 'bg-rose-200 dark:bg-rose-800/70'
@@ -42,6 +43,7 @@ export default function SnakeLadderBoard({ tokens }) {
               </span>
               {isLadder && <span className="text-base sm:text-base">🪜</span>}
               {isSnake && <span className="text-base sm:text-base">🐍</span>}
+              {/* Draws every player's token that currently sits on this square */}
               {cellTokens.length > 0 && (
                 <span className="absolute -bottom-0.5 -right-0.5 flex">
                   {cellTokens.map((t) => (

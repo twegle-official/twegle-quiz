@@ -10,14 +10,15 @@ const MOLE_UP_MS = 850
 const WIN_SCORE = 15
 
 export default function WhackAMole({ onGameEnd, onReset }) {
-  const [activeHole, setActiveHole] = useState(null)
+  const [activeHole, setActiveHole] = useState(null) // which hole (0-8) currently has a mole up
   const [score, setScore] = useState(0)
   const [timeLeft, setTimeLeft] = useState(GAME_SECONDS)
   const [started, setStarted] = useState(false)
   const [gameOver, setGameOver] = useState(false)
-  const notifiedRef = useRef(false)
-  const scoreRef = useRef(0)
+  const notifiedRef = useRef(false) // guards against reporting the result more than once
+  const scoreRef = useRef(0) // always-current score, so the timer can read it without waiting for a re-render
 
+  // While the game is running, pops a mole up at a random hole on a steady beat.
   useEffect(() => {
     if (!started || gameOver) return
     const moleTimer = setInterval(() => {
@@ -26,6 +27,7 @@ export default function WhackAMole({ onGameEnd, onReset }) {
     return () => clearInterval(moleTimer)
   }, [started, gameOver])
 
+  // Counts the clock down once per second and ends the game when time runs out.
   useEffect(() => {
     if (!started || gameOver) return
     if (timeLeft <= 0) {
@@ -36,6 +38,7 @@ export default function WhackAMole({ onGameEnd, onReset }) {
     return () => clearTimeout(clock)
   }, [started, gameOver, timeLeft])
 
+  // Ends the game and reports whether the score reached the win threshold, once.
   function endGame() {
     if (notifiedRef.current) return
     notifiedRef.current = true
@@ -44,10 +47,12 @@ export default function WhackAMole({ onGameEnd, onReset }) {
     onGameEnd?.(scoreRef.current >= WIN_SCORE ? 'win' : 'loss', scoreRef.current)
   }
 
+  // Begins the round and starts the countdown.
   function handleStart() {
     setStarted(true)
   }
 
+  // Runs when the player taps a hole — only scores if a mole was actually up there.
   function handleWhack(holeIndex) {
     if (holeIndex !== activeHole || gameOver) return
     setActiveHole(null)
@@ -57,6 +62,7 @@ export default function WhackAMole({ onGameEnd, onReset }) {
     })
   }
 
+  // Starts a brand new round from scratch.
   function handleReset() {
     setActiveHole(null)
     setScore(0)

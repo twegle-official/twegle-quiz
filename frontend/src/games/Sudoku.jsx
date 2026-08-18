@@ -4,10 +4,12 @@ import { shuffleArray } from '../utils/shuffle'
 // Medium difficulty — ~36 given clues (45 of the 81 cells blanked out).
 const BLANKS = 45
 
+// Creates a blank 9x9 grid, every cell starting at 0 (empty).
 function emptyGrid() {
   return Array.from({ length: 9 }, () => Array(9).fill(0))
 }
 
+// Builds one complete, correctly-solved Sudoku grid to start from.
 // A well-known closed-form formula that always produces one valid, fully
 // solved Sudoku grid. Every puzzle starts from this same base pattern, then
 // gets scrambled below — the pattern itself is never shown to the player.
@@ -21,6 +23,8 @@ function baseSolvedGrid() {
   return grid
 }
 
+// Swaps which digit means what (e.g. every 3 becomes a 7) so the same
+// underlying grid looks like a different, still-valid puzzle each time.
 // Relabeling which digit stands for which (a pure 1-9 permutation) turns one
 // valid solved grid into a different-looking valid solved grid.
 function shuffleDigits(grid) {
@@ -28,6 +32,8 @@ function shuffleDigits(grid) {
   return grid.map((row) => row.map((v) => digits[v - 1]))
 }
 
+// Shuffles the rows and columns around (within their group of 3) so the
+// puzzle layout looks different each time, while staying a valid solution.
 // Swapping rows within the same band of 3 (or columns within the same
 // stack of 3), and swapping whole bands/stacks with each other, both
 // preserve every row/column/box's "each digit exactly once" property —
@@ -49,6 +55,8 @@ function permuteRowsAndCols(grid) {
   return next
 }
 
+// Flips the grid diagonally (rows become columns) — another way to make the
+// layout look different while keeping it a valid solved grid.
 function transpose(grid) {
   const next = emptyGrid()
   for (let r = 0; r < 9; r++) {
@@ -59,6 +67,7 @@ function transpose(grid) {
   return next
 }
 
+// Builds one complete, valid, randomly-shuffled solved grid for a new puzzle.
 function generateSolution() {
   let grid = shuffleDigits(baseSolvedGrid())
   grid = permuteRowsAndCols(grid)
@@ -66,6 +75,7 @@ function generateSolution() {
   return grid
 }
 
+// Takes a fully solved grid and blanks out random cells to create the puzzle the player sees.
 function makePuzzle(solution) {
   const puzzle = solution.map((row) => [...row])
   const cells = []
@@ -77,6 +87,7 @@ function makePuzzle(solution) {
   return puzzle
 }
 
+// Checks whether the number in this cell is already used elsewhere in the same row, column, or 3x3 box.
 function hasConflict(grid, r, c) {
   const val = grid[r][c]
   if (!val) return false
@@ -96,6 +107,7 @@ function hasConflict(grid, r, c) {
   return false
 }
 
+// Checks whether every cell in the grid has a number filled in.
 function isFull(grid) {
   return grid.every((row) => row.every((v) => v !== 0))
 }
@@ -104,12 +116,13 @@ function isFull(grid) {
 // of lives or moves, you just take as long as you need. Only ever reports
 // onGameEnd('win'), once every cell is filled and matches the solution.
 export default function Sudoku({ onGameEnd, onReset }) {
-  const [solution, setSolution] = useState(null)
-  const [given, setGiven] = useState(null)
-  const [grid, setGrid] = useState(null)
-  const [selected, setSelected] = useState(null)
+  const [solution, setSolution] = useState(null) // the fully solved grid, used to check answers
+  const [given, setGiven] = useState(null) // the original puzzle — marks which cells were pre-filled and can't be edited
+  const [grid, setGrid] = useState(null) // the grid as currently filled in by the player
+  const [selected, setSelected] = useState(null) // the [row, col] of the cell currently selected
   const [won, setWon] = useState(false)
 
+  // Generates a brand new puzzle and resets the board to it.
   function newPuzzle() {
     const sol = generateSolution()
     const puz = makePuzzle(sol)
@@ -121,11 +134,13 @@ export default function Sudoku({ onGameEnd, onReset }) {
     onReset?.()
   }
 
+  // Generates the first puzzle when the game first loads.
   useEffect(() => {
     newPuzzle()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Writes a number (or clears it) into a cell, then checks if the puzzle is now completely solved.
   function fillCell(r, c, value) {
     if (won || given[r][c] !== 0) return
     const next = grid.map((row) => [...row])
@@ -137,11 +152,13 @@ export default function Sudoku({ onGameEnd, onReset }) {
     }
   }
 
+  // Marks a cell as the active one so number-pad taps or key presses fill it in.
   function selectCell(r, c) {
     if (won || given[r][c] !== 0) return
     setSelected([r, c])
   }
 
+  // Lets the player type numbers 1-9 (or Backspace/Delete) on a physical keyboard to fill the selected cell.
   useEffect(() => {
     function handleKey(e) {
       if (!selected || won) return
@@ -158,6 +175,7 @@ export default function Sudoku({ onGameEnd, onReset }) {
 
   return (
     <div className="flex flex-col items-center gap-4">
+      {/* The 9x9 puzzle grid itself */}
       <div className="grid grid-cols-9 bg-gray-800 dark:bg-gray-950 gap-px rounded-lg overflow-hidden">
         {grid.map((row, r) =>
           row.map((val, c) => {
@@ -183,6 +201,7 @@ export default function Sudoku({ onGameEnd, onReset }) {
         )}
       </div>
 
+      {/* Number pad for filling in the selected cell (plus an eraser button) */}
       {!won && (
         <div className="flex flex-wrap justify-center gap-2 max-w-xs">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((d) => (
