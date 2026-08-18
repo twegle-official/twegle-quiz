@@ -6,6 +6,7 @@
 const KEY = 'twegleRecentlyViewed'
 const MAX_ITEMS = 6
 
+// Returns the list of things this visitor recently viewed, most recent first.
 export function getRecentlyViewed() {
   try {
     return JSON.parse(localStorage.getItem(KEY)) || []
@@ -14,6 +15,7 @@ export function getRecentlyViewed() {
   }
 }
 
+// Adds something the visitor just viewed to the top of their recent list.
 // `item`: { url, title, emoji, gradient, type }. Re-viewing something
 // already in the list just moves it back to the front rather than creating
 // a duplicate entry.

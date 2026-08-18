@@ -9,6 +9,8 @@ const DEFAULT_TITLE = 'Twegle — Quizzes, Quotes & Chaos for Everyone'
 const DEFAULT_DESCRIPTION =
   'Twegle — quizzes, puzzles, jokes, quotes, games, stories, horoscope & chaos. No sign up, just share-worthy content for everyone.'
 
+// Sets the browser tab's title and the page's search-result description,
+// then puts them back to the site defaults when the page is left.
 export function useDocumentMeta(title, description) {
   useEffect(() => {
     document.title = title ? `${title} | Twegle` : DEFAULT_TITLE

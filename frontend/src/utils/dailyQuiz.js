@@ -9,19 +9,24 @@
 // server-side — see statsSync.js.
 import { pushLocalStatsToServer } from './statsSync'
 
+// Turns a Date into a "YYYY-MM-DD" string, so dates can be compared as text.
 function dateKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
+// Returns today's date as a "YYYY-MM-DD" string.
 export function getTodayKey() {
   return dateKey(new Date())
 }
 
+// Returns how many days into the year the given date is (Jan 1 = 1).
 function dayOfYear(date) {
   const start = new Date(date.getFullYear(), 0, 0)
   return Math.floor((date - start) / 86400000)
 }
 
+// Picks which quiz is "Quiz of the Day" today — same quiz for everyone,
+// changes once a day automatically.
 // Sorted by slug first so the pick is stable regardless of the array's
 // incoming order (which can vary — e.g. Trending vs Newest sort upstream).
 export function pickQuizOfTheDay(quizzes) {
@@ -31,6 +36,7 @@ export function pickQuizOfTheDay(quizzes) {
   return sorted[index]
 }
 
+// Picks which puzzle is "Puzzle of the Day" today.
 // Same deterministic pattern as pickQuizOfTheDay, sorted by _id instead of
 // slug since puzzles are addressed by id, not slug.
 export function pickPuzzleOfTheDay(puzzles) {
@@ -48,6 +54,8 @@ export function pickPuzzleOfTheDay(puzzles) {
 export const QUIZ_STREAK_KEY = 'dailyQuizStreak'
 export const PUZZLE_STREAK_KEY = 'dailyPuzzleStreak'
 
+// Loads a streak (count + last completed date) from storage and resets it
+// to 0 if it's already broken.
 function readStreak(key) {
   let streak
   try {
@@ -65,6 +73,8 @@ function readStreak(key) {
 // their next attempt. Decaying it here, on every read, means a broken
 // streak shows as 0 (banner badge hidden) starting the day after it broke,
 // not just after the next completion re-earns Day 1.
+// Checks if a streak was missed (more than a day since last played) and,
+// if so, resets its count back to 0.
 function decayIfBroken(streak) {
   if (!streak.lastDate || streak.count === 0) return streak
   const today = getTodayKey()
@@ -72,19 +82,24 @@ function decayIfBroken(streak) {
   return { count: 0, lastDate: streak.lastDate }
 }
 
+// Returns the visitor's current Quiz of the Day streak (days in a row).
 export function getQuizStreak() {
   return readStreak(QUIZ_STREAK_KEY)
 }
 
+// Returns the visitor's current Puzzle of the Day streak (days in a row).
 export function getPuzzleStreak() {
   return readStreak(PUZZLE_STREAK_KEY)
 }
 
+// Returns the day before the given "YYYY-MM-DD" date.
 function previousDateKey(todayKey) {
   const [y, m, d] = todayKey.split('-').map(Number)
   return dateKey(new Date(y, m - 1, d - 1))
 }
 
+// Updates a streak after finishing something — adds a day if it's today's
+// pick and continues yesterday's streak, or starts a fresh streak at 1.
 function recordStreak(key, finishedId, todaysId) {
   const current = readStreak(key)
   if (finishedId !== todaysId) return current

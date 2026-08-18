@@ -55,6 +55,7 @@ const YARD_SLOT_OFFSETS = [
   [3, 3],
 ]
 
+// Returns which color's yard this cell is in, or null if it isn't in a yard.
 function inYard(row, col) {
   for (const color of PLAYER_COLORS) {
     const b = YARD_BOUNDS[color]
@@ -63,6 +64,8 @@ function inYard(row, col) {
   return null
 }
 
+// True if this cell is in the cross-shaped band running through the board's
+// middle (where the path and home stretches live).
 function inBand(row, col) {
   return (row >= 6 && row <= 8) || (col >= 6 && col <= 8)
 }
@@ -80,6 +83,8 @@ function homeStretchInfo(row, col) {
   return null
 }
 
+// Figures out what kind of board cell this is (yard, home stretch, ring
+// path, center, or blank) and returns that classification.
 function classifyCell(row, col) {
   if (row === 7 && col === 7) return { type: 'center' }
   const yardColor = inYard(row, col)
@@ -90,6 +95,8 @@ function classifyCell(row, col) {
   return { type: 'blank' }
 }
 
+// Returns every cell that's part of the shared ring path (not yards, home
+// stretches, or the center).
 function collectRingCells() {
   const cells = []
   for (let row = 0; row < BOARD_SIZE; row++) {
@@ -100,6 +107,7 @@ function collectRingCells() {
   return cells
 }
 
+// Turns a row/col pair into a plain string, for use as a Set/Map key.
 function key(row, col) {
   return `${row},${col}`
 }
@@ -154,10 +162,13 @@ export const LAYOUT = Array.from({ length: BOARD_SIZE }, (_, row) =>
   Array.from({ length: BOARD_SIZE }, (_, col) => classifyCell(row, col))
 )
 
+// Returns the [row, col] on screen for a given position on the shared ring.
 export function ringSquareCoords(globalIndex) {
   return RING_ORDER[globalIndex]
 }
 
+// Returns the [row, col] on screen for a given spot in a color's home
+// stretch (the final stretch before reaching the center).
 export function homeStretchCoords(color, index) {
   if (color === 'blue') return [7, 1 + index]
   if (color === 'green') return [7, 13 - index]
@@ -165,6 +176,8 @@ export function homeStretchCoords(color, index) {
   return [13 - index, 7] // yellow
 }
 
+// Returns the [row, col] on screen for one of a color's 4 "parked" token
+// spots inside its yard.
 export function yardSlotCoords(color, slotIndex) {
   const b = YARD_BOUNDS[color]
   const [dr, dc] = YARD_SLOT_OFFSETS[slotIndex]

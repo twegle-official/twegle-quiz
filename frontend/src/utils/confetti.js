@@ -23,6 +23,8 @@ function makeParticles(width) {
   return particles
 }
 
+// Plays a short colorful confetti burst on screen (for celebrations like
+// unlocking a badge). Does nothing if the visitor prefers reduced motion.
 export function fireConfetti() {
   if (typeof document === 'undefined') return
   // Respect reduced-motion — a celebration animation is exactly the kind

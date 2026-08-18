@@ -9,6 +9,9 @@
 const NEW_MAX = 4
 const POPULAR_MAX = 14
 
+// Turns a view/play count into a friendly label like "New" or "Popular"
+// instead of showing a low number — returns null if the count is high
+// enough that showing the real number is better.
 export function engagementLabel(count) {
   if (!count || count <= 0) return '🆕 New'
   if (count <= NEW_MAX) return '🆕 New'

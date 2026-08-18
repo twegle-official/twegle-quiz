@@ -30,6 +30,7 @@ function pruneLog(log) {
   return log
 }
 
+// Logs one activity (a game played, a quiz done, etc.) against today's date.
 // Called from badges.js's action recorders (recordGamePlayed etc.) —
 // `kind` is one of KINDS above.
 export function recordDailyActivity(kind) {
@@ -40,6 +41,7 @@ export function recordDailyActivity(kind) {
   localStorage.setItem(DAILY_LOG_KEY, JSON.stringify(log))
 }
 
+// Adds up this past week's activity so it can be shown on the recap page.
 // Sums the last 7 calendar days (today inclusive) into one tally —
 // what "Your Twegle Wrapped" actually reports.
 export function getWeekSummary() {

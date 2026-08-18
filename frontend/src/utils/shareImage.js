@@ -20,6 +20,8 @@ const GRADIENT_COLORS = {
   'from-purple-400 to-fuchsia-500': ['#c084fc', '#d946ef'],
 }
 
+// Breaks a line of text into multiple shorter lines so it fits within a
+// given width, and returns the list of lines.
 function wrapLines(ctx, text, maxWidth) {
   const words = text.split(/\s+/).filter(Boolean)
   const lines = []
@@ -37,6 +39,8 @@ function wrapLines(ctx, text, maxWidth) {
   return lines
 }
 
+// Draws multi-line text (wrapping long lines, keeping paragraph breaks) onto
+// the image and returns the y-position just after the last line drawn.
 function drawWrappedParagraphs(ctx, rawText, centerX, startY, maxWidth, lineHeight) {
   let y = startY
   for (const paragraph of rawText.split('\n')) {
@@ -58,6 +62,7 @@ function drawWrappedParagraphs(ctx, rawText, centerX, startY, maxWidth, lineHeig
 // back to the site at all. Baking "twegle.in" into the picture itself,
 // right under the wordmark, means the link survives regardless of what a
 // given platform does with the share text.
+// Draws the Twegle logo badge and "twegle.in" website address onto the image.
 function drawLogo(ctx, centerX, y) {
   const badgeRadius = 36
   const badgeX = centerX - 90
@@ -85,6 +90,8 @@ function drawLogo(ctx, centerX, y) {
   ctx.fillText('twegle.in', centerX, y + 64)
 }
 
+// Draws a single shareable result/quote card (background, emoji, title,
+// text, and the Twegle logo) onto the given canvas.
 function drawShareCard(canvas, { gradient, emoji, title, text, author, tag }) {
   const { width, height } = canvas
   const ctx = canvas.getContext('2d')
@@ -135,6 +142,8 @@ function drawShareCard(canvas, { gradient, emoji, title, text, author, tag }) {
 // same 1080x1920 story format as drawShareCard, split into two vertical
 // halves (one per person) rather than one centered block of text, since
 // the whole point here is showing two results at once, not one.
+// Draws one person's name, emoji, and result onto their half of the compare
+// card.
 function drawPersonHalf(ctx, { name, emoji, resultTitle }, centerX, halfWidth, startY) {
   const maxTextWidth = halfWidth - 60
   ctx.textAlign = 'center'
@@ -158,6 +167,8 @@ function drawPersonHalf(ctx, { name, emoji, resultTitle }, centerX, halfWidth, s
   drawWrappedParagraphs(ctx, resultTitle, centerX, y, maxTextWidth, 60)
 }
 
+// Draws the full "did we match?" compare card (both people's results side
+// by side) onto the given canvas.
 function drawCompareCard(canvas, { gradient, quizTitle, match, personA, personB }) {
   const { width, height } = canvas
   const ctx = canvas.getContext('2d')
@@ -215,6 +226,7 @@ function drawCompareCard(canvas, { gradient, quizTitle, match, personA, personB 
   drawLogo(ctx, centerX, height - 130)
 }
 
+// Builds a single share card image and returns it as a PNG file (blob).
 async function generateShareCardBlob(cardOptions) {
   if (document.fonts?.ready) {
     await document.fonts.ready
@@ -226,6 +238,7 @@ async function generateShareCardBlob(cardOptions) {
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
 }
 
+// Builds a compare card image and returns it as a PNG file (blob).
 async function generateCompareCardBlob(cardOptions) {
   if (document.fonts?.ready) {
     await document.fonts.ready
@@ -237,6 +250,8 @@ async function generateCompareCardBlob(cardOptions) {
   return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'))
 }
 
+// Tries to open the phone/browser's native share sheet with the image;
+// falls back to just downloading the image file if sharing isn't available.
 async function shareOrDownloadBlob(blob, shareMeta) {
   if (navigator.share && navigator.canShare) {
     const file = new File([blob], shareMeta.filename, { type: 'image/png' })
@@ -260,6 +275,7 @@ async function shareOrDownloadBlob(blob, shareMeta) {
   return 'downloaded'
 }
 
+// Makes the "did we match?" compare image and shares or downloads it.
 // cardOptions: { gradient, quizTitle, match, personA: {name, emoji, resultTitle}, personB: {...} }
 // shareMeta: { filename, title, text } — used for the native share sheet
 export async function shareOrDownloadCompareImage(cardOptions, shareMeta) {
@@ -267,6 +283,7 @@ export async function shareOrDownloadCompareImage(cardOptions, shareMeta) {
   return shareOrDownloadBlob(blob, shareMeta)
 }
 
+// Makes a shareable result/quote image and shares or downloads it.
 // cardOptions: { gradient, emoji, title, text, author, tag }
 // shareMeta: { filename, title, text } — used for the native share sheet
 export async function shareOrDownloadImage(cardOptions, shareMeta) {
