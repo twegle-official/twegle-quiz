@@ -384,8 +384,15 @@ export default function Home() {
             had no width floor, squeezing the heading down to a sliver and
             wrapping it one word per line (reported directly, worsened once
             a 5th stat item was added). Below `lg` the title now gets a full
-            row to itself and the stats wrap normally on their own row underneath. */}
-        <div className="max-w-6xl mx-auto px-4 py-2 sm:py-3 flex flex-col lg:flex-row items-center justify-between gap-1 lg:gap-2 text-center lg:text-left">
+            row to itself and the stats wrap normally on their own row
+            underneath. `items-start` (not `-center`) on purpose — the title
+            legitimately wraps to 2 lines at most `lg`+ widths (it always
+            has), and centering vertically floated the stats row into the
+            middle of that wrapped title instead of level with its top,
+            reading as an overlapping mess (reported directly with a
+            screenshot). Top-aligning both columns reads as a normal
+            two-column header regardless of how many lines either side wraps to. */}
+        <div className="max-w-6xl mx-auto px-4 py-2 sm:py-3 flex flex-col lg:flex-row items-center lg:items-start justify-between gap-1 lg:gap-2 text-center lg:text-left">
           <div className="min-w-0">
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/80">
               Where Fun Goes Viral
