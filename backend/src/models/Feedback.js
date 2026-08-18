@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 
+// This is the database shape for a feedback message or a content report from a visitor.
 // Guest-first like everything else — email is optional (only given if the
 // visitor wants a reply), no account/identity required to submit feedback.
 //
@@ -10,15 +11,15 @@ import mongoose from 'mongoose'
 // none of them are required.
 const feedbackSchema = new mongoose.Schema(
   {
-    message: { type: String, required: true },
-    email: { type: String, default: '' },
-    read: { type: Boolean, default: false },
-    contentType: { type: String, enum: ['quiz', 'post', 'story', 'puzzle', null], default: null },
-    contentId: { type: mongoose.Schema.Types.ObjectId, default: null },
+    message: { type: String, required: true }, // the feedback text the visitor typed
+    email: { type: String, default: '' }, // optional contact email, only if the visitor wants a reply
+    read: { type: Boolean, default: false }, // whether an admin has already looked at this
+    contentType: { type: String, enum: ['quiz', 'post', 'story', 'puzzle', null], default: null }, // what kind of content this report is about, if it's a report
+    contentId: { type: mongoose.Schema.Types.ObjectId, default: null }, // which specific piece of content this report is about
     // Denormalized title/slug so the admin list can show what was reported
     // without a join — same reasoning as ActivityLog's resourceLabel.
-    contentLabel: { type: String, default: '' },
-    reason: { type: String, enum: ['offensive', 'incorrect', 'broken', 'other', null], default: null },
+    contentLabel: { type: String, default: '' }, // a readable label (title/slug) for the reported content
+    reason: { type: String, enum: ['offensive', 'incorrect', 'broken', 'other', null], default: null }, // why the content was reported
   },
   { timestamps: true }
 )

@@ -15,20 +15,21 @@ import { Chess } from 'chess.js'
 // invite link joins as 'black'. No accounts — each browser remembers its
 // own role for this code in localStorage (see ChessMultiplayer.jsx), same
 // pattern as ConnectFourGame.
+// This is the database shape for a two-player Chess match.
 const chessGameSchema = new mongoose.Schema(
   {
-    code: { type: String, required: true, unique: true },
-    fen: { type: String, default: () => new Chess().fen() },
-    pgn: { type: String, default: '' },
-    playerWhiteName: { type: String, required: true },
-    playerBlackName: { type: String, default: null },
-    currentTurn: { type: String, enum: ['white', 'black'], default: 'white' },
-    status: { type: String, enum: ['waiting', 'in_progress', 'finished'], default: 'waiting' },
-    winner: { type: String, enum: ['white', 'black', 'draw', null], default: null },
+    code: { type: String, required: true, unique: true }, // the short id used in the shareable invite link
+    fen: { type: String, default: () => new Chess().fen() }, // the current board position, in standard chess notation
+    pgn: { type: String, default: '' }, // the full move history, used to show the "Moves" list
+    playerWhiteName: { type: String, required: true }, // the display name of the player who created the match ('white')
+    playerBlackName: { type: String, default: null }, // the display name of the player who joined ('black')
+    currentTurn: { type: String, enum: ['white', 'black'], default: 'white' }, // whose turn it is right now
+    status: { type: String, enum: ['waiting', 'in_progress', 'finished'], default: 'waiting' }, // the match's current stage
+    winner: { type: String, enum: ['white', 'black', 'draw', null], default: null }, // who won, or 'draw', once finished
     // Who opened the current/most recent round — used to strictly alternate
     // who moves first on rematch (see chessSocket.js), independent of who
     // won. Same purpose as ConnectFourGame's roundStarter.
-    roundStarter: { type: String, enum: ['white', 'black'], default: 'white' },
+    roundStarter: { type: String, enum: ['white', 'black'], default: 'white' }, // who went first this round
   },
   { timestamps: true }
 )
