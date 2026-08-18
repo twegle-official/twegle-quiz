@@ -49,6 +49,10 @@ export const updateDisplayName = (token, displayName) =>
 export const updateAvatar = (token, avatar) =>
   request('/users/me', { token, method: 'PATCH', body: { avatar } })
 
+// Sets/clears the public-profile handle and whether the profile is visible.
+export const updatePublicProfile = (token, { handle, isProfilePublic }) =>
+  request('/users/me', { token, method: 'PATCH', body: { handle, isProfilePublic } })
+
 // Generates a fresh recovery code (invalidates the old one).
 export const regenerateRecoveryCode = (token) =>
   request('/users/me/regenerate-recovery-code', { token, method: 'POST' })

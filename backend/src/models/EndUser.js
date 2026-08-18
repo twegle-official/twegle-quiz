@@ -34,6 +34,16 @@ const endUserSchema = new mongoose.Schema(
     // (not deleted), so this is reversible. Default 'active' so nothing
     // changes for the accounts that already exist.
     status: { type: String, enum: ['active', 'disabled'], default: 'active' }, // whether this account is allowed to log in
+    // Opt-in only — null until the user picks one in Account.jsx. Separate
+    // from `username` on purpose (see the note above: username is private,
+    // login-only) so nobody's login name is ever exposed just by turning on
+    // profile sharing. `sparse: true` lets many accounts share the same
+    // `null` value without tripping the unique index — only actually-set
+    // handles need to be unique.
+    handle: { type: String, unique: true, sparse: true, lowercase: true, trim: true, default: null }, // public profile URL slug (twegle.in/u/<handle>), opt-in
+    // A handle can be set without the profile being visible yet — keeps
+    // "pick a handle" and "go public" as two separate, reversible steps.
+    isProfilePublic: { type: Boolean, default: false }, // whether /u/<handle> is currently visible to anyone
     // Mirrors the shape of the anonymous localStorage stats blob (daily
     // streak + badge-progress counters — see FRONTEND.md's "Cross-device
     // stats sync"). Mixed rather than a fixed sub-schema since the frontend

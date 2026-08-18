@@ -439,6 +439,22 @@ export function getFriendshipQuizIntroShareUrl(slug) {
 }
 
 // Loads the list of zodiac signs for the Horoscope tab.
+// Loads a public Twegle profile (avatar, level, badges, streaks, recent
+// quizzes) by its handle — no login required, works for any visitor. Not
+// wrapped in postJson's error-throwing style since a 404 here (profile
+// doesn't exist / isn't public) is an expected, normal outcome the page
+// needs to show, not an error to alert on.
+export async function fetchPublicProfile(handle) {
+  const res = await fetch(`${API_URL}/users/${handle}/public-profile`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.profile
+}
+
+export function getUserProfileShareUrl(handle) {
+  return `${API_URL}/share/profile/${handle}`
+}
+
 export async function fetchZodiacSigns(language) {
   const params = new URLSearchParams()
   if (language) params.set('language', language)

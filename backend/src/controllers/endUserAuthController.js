@@ -4,6 +4,12 @@ import jwt from 'jsonwebtoken'
 import EndUser from '../models/EndUser.js'
 import { isValidUsername, isValidPassword, isValidDisplayName, isValidAvatar } from '../utils/validators.js'
 
+// Handles reuse the same charset/length rules as login usernames (see
+// validators.js's isValidUsername) — they're a different field with a
+// different purpose (public profile URL vs private login), but there's no
+// reason for the format itself to differ.
+const isValidHandle = isValidUsername
+
 // No ambiguous characters (0/O, 1/I/L) — this gets hand-copied/written down,
 // so every character needs to be unambiguous when read back.
 const RECOVERY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -40,7 +46,14 @@ function signUserToken(user) {
 
 // Picks out only the safe-to-share fields for a user, hiding password/recovery data.
 function publicUser(user) {
-  return { id: user._id, username: user.username, displayName: user.displayName, avatar: user.avatar || null }
+  return {
+    id: user._id,
+    username: user.username,
+    displayName: user.displayName,
+    avatar: user.avatar || null,
+    handle: user.handle || null,
+    isProfilePublic: !!user.isProfilePublic,
+  }
 }
 
 // Handles a new visitor creating an account — checks the details, saves the
@@ -170,11 +183,13 @@ export async function me(req, res) {
   res.json({ user: publicUser(user) })
 }
 
-// Lets a logged-in user change their display name and/or avatar.
+// Lets a logged-in user change their display name, avatar, and/or public
+// profile settings (handle + whether it's currently visible — see
+// EndUser.js's `handle`/`isProfilePublic` fields).
 export async function updateProfile(req, res) {
-  const { displayName, avatar } = req.body
+  const { displayName, avatar, handle, isProfilePublic } = req.body
 
-  if (displayName === undefined && avatar === undefined) {
+  if (displayName === undefined && avatar === undefined && handle === undefined && isProfilePublic === undefined) {
     return res.status(400).json({ error: 'Nothing to update' })
   }
   if (displayName !== undefined && !isValidDisplayName(displayName)) {
@@ -182,6 +197,11 @@ export async function updateProfile(req, res) {
   }
   if (avatar !== undefined && !isValidAvatar(avatar)) {
     return res.status(400).json({ error: 'Invalid avatar selection' })
+  }
+  // null clears the handle (and therefore turns the public profile off too,
+  // below) — anything else must pass the same format check as a username.
+  if (handle !== undefined && handle !== null && !isValidHandle(handle)) {
+    return res.status(400).json({ error: 'Handle must be 3-20 letters, numbers, or underscores' })
   }
 
   const user = await EndUser.findById(req.user.id)
@@ -191,7 +211,22 @@ export async function updateProfile(req, res) {
 
   if (displayName !== undefined) user.displayName = displayName.trim()
   if (avatar !== undefined) user.avatar = avatar
-  await user.save()
+  if (handle !== undefined) user.handle = handle === null ? null : handle.toLowerCase()
+  if (isProfilePublic !== undefined) user.isProfilePublic = !!isProfilePublic
+  // A profile can't be public without a handle to be public *at* — covers
+  // both "never set one" and "just cleared it in this same request."
+  if (user.isProfilePublic && !user.handle) {
+    return res.status(400).json({ error: 'Set a handle before making your profile public' })
+  }
+
+  try {
+    await user.save()
+  } catch (err) {
+    if (err.code === 11000 && err.keyPattern?.handle) {
+      return res.status(409).json({ error: 'That handle is already taken' })
+    }
+    throw err
+  }
   res.json({ user: publicUser(user) })
 }
 

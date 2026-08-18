@@ -37,6 +37,7 @@ import Signup from './pages/Signup'
 import UserLogin from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
 import Account from './pages/Account'
+import Profile from './pages/Profile'
 import { UserAuthProvider } from './UserAuthContext'
 
 import { AuthProvider } from './admin/AuthContext'
@@ -134,6 +135,7 @@ function PublicSite() {
           <Route path="/login" element={<UserLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/u/:handle" element={<Profile />} />
           <Route path="/quiz/:quizId" element={<Quiz />} />
           <Route path="/quiz/:quizId/vs/:code" element={<CompareInvite />} />
           <Route path="/quiz/:quizId/vs/:code/result" element={<CompareResult />} />

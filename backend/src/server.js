@@ -23,6 +23,7 @@ import {
 } from './middleware/rateLimiters.js'
 import authRoutes from './routes/authRoutes.js'
 import endUserAuthRoutes from './routes/endUserAuthRoutes.js'
+import endUserRoutes from './routes/endUserRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import quizRoutes from './routes/quizRoutes.js'
 import adminQuizRoutes from './routes/adminQuizRoutes.js'
@@ -99,6 +100,7 @@ app.use('/api/engagement', engagementLimiter)
 // prefix, handed off to that feature's own route file (see routes/).
 app.use('/api/auth', authRoutes)
 app.use('/api/users', endUserAuthRoutes)
+app.use('/api/users', endUserRoutes)
 app.use('/api/admins', adminRoutes)
 app.use('/api/quizzes', quizRoutes)
 app.use('/api/admin/quizzes', adminQuizRoutes)

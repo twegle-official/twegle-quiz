@@ -12,8 +12,10 @@ import ChessGame from '../models/ChessGame.js'
 import LudoGame from '../models/LudoGame.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
+import EndUser from '../models/EndUser.js'
 import { findZodiacSign } from '../data/zodiacSigns.js'
 import { computeHoroscope } from '../utils/horoscope.js'
+import { calculatePoints, getLevelInfo } from '../utils/levels.js'
 
 // These endpoints exist ONLY for link-preview crawlers (WhatsApp, Instagram,
 // Facebook, Twitter/X, etc.) — they fetch a URL and read whatever plain HTML
@@ -191,6 +193,32 @@ export async function shareFriendshipQuizIntro(req, res) {
       title: `${quiz.emoji || ''} ${quiz.title}`.trim(),
       description: `${quiz.description} — see how well your friends know you, on Twegle!`,
       redirectUrl: `${frontendUrl()}/friendship/${quiz.slug}`,
+    })
+  )
+}
+
+// Serves a share-preview page for a public Twegle profile.
+export async function shareUserProfile(req, res) {
+  const { handle } = req.params
+  const user = await EndUser.findOne(
+    { handle: handle?.toLowerCase(), isProfilePublic: true, status: 'active' },
+    'displayName avatar stats'
+  )
+  if (!user) {
+    return res.status(404).send('Not found')
+  }
+
+  const quizStreakCount = (user.stats?.quizStreak || user.stats?.streak)?.count || 0
+  const puzzleStreakCount = user.stats?.puzzleStreak?.count || 0
+  const points = calculatePoints(user.stats?.stats, quizStreakCount, puzzleStreakCount)
+  const { level } = getLevelInfo(points)
+
+  res.set('Content-Type', 'text/html')
+  res.send(
+    renderSharePage({
+      title: `${user.avatar || '👤'} ${user.displayName}`.trim(),
+      description: `${level.emoji} ${level.name} on Twegle — check out their profile!`,
+      redirectUrl: `${frontendUrl()}/u/${handle}`,
     })
   )
 }

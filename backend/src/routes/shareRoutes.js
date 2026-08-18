@@ -16,6 +16,7 @@ import {
   shareChess,
   shareLudo,
   shareHoroscope,
+  shareUserProfile,
 } from '../controllers/shareController.js'
 
 const router = Router()
@@ -40,5 +41,6 @@ router.get('/snake-ladder/:code', shareSnakeLadder) // build the shareable previ
 router.get('/chess/:code', shareChess) // build the shareable preview page for a Chess match
 router.get('/ludo/:code', shareLudo) // build the shareable preview page for a Ludo match
 router.get('/horoscope/:sign', shareHoroscope) // build the shareable preview page for a horoscope sign
+router.get('/profile/:handle', shareUserProfile) // build the shareable preview page for a public Twegle profile
 
 export default router

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
-import { updateDisplayName, updateAvatar, regenerateRecoveryCode } from '../userApi'
+import { updateDisplayName, updateAvatar, updatePublicProfile, regenerateRecoveryCode } from '../userApi'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { getStats } from '../utils/badges'
 import { getQuizStreak, getPuzzleStreak } from '../utils/dailyQuiz'
@@ -31,6 +31,11 @@ export default function Account() {
   const [newRecoveryCode, setNewRecoveryCode] = useState(null) // holds a freshly generated Recovery Code, if any
   const [regenerating, setRegenerating] = useState(false) // true while a new Recovery Code is being generated
   const [savingAvatar, setSavingAvatar] = useState(null) // which avatar is currently being saved
+  const [handleInput, setHandleInput] = useState(session?.user?.handle || '') // the public-profile handle text box
+  const [savingHandle, setSavingHandle] = useState(false) // true while the handle/public-toggle is being saved
+  const [profileError, setProfileError] = useState('') // holds any error message specific to the public-profile section
+  const [handleCopied, setHandleCopied] = useState(false) // shows "Copied!" briefly after the profile link is copied
+  const [isPublicChecked, setIsPublicChecked] = useState(!!session?.user?.isProfilePublic) // the "Make my profile public" checkbox
   const [quizzes, setQuizzes] = useState(null) // full list of quizzes, used to look up titles for "Quizzes you've taken"
   const [puzzles, setPuzzles] = useState(null) // full list of puzzles, used to look up titles for "Puzzles you've solved"
 
@@ -115,6 +120,37 @@ export default function Account() {
     } finally {
       setRegenerating(false)
     }
+  }
+
+  // Saves the public-profile handle and/or the "make it public" toggle
+  // together — a public profile isn't allowed without a handle (see
+  // endUserAuthController.js), so these two settings are saved as one step
+  // rather than risking a confusing partial save.
+  async function handleSavePublicProfile(e) {
+    e.preventDefault()
+    setProfileError('')
+    setSavingHandle(true)
+    try {
+      const trimmed = handleInput.trim()
+      const data = await updatePublicProfile(session.token, {
+        handle: trimmed ? trimmed.toLowerCase() : null,
+        isProfilePublic: isPublicChecked,
+      })
+      updateSession({ ...session, user: data.user })
+      setHandleInput(data.user.handle || '')
+      setIsPublicChecked(data.user.isProfilePublic)
+    } catch (err) {
+      setProfileError(err.message)
+    } finally {
+      setSavingHandle(false)
+    }
+  }
+
+  function handleCopyProfileLink() {
+    navigator.clipboard.writeText(`${window.location.origin}/u/${session.user.handle}`).then(() => {
+      setHandleCopied(true)
+      setTimeout(() => setHandleCopied(false), 2000)
+    })
   }
 
   function handleLogout() {
@@ -240,6 +276,62 @@ export default function Account() {
         >
           {regenerating ? 'Generating...' : newRecoveryCode ? 'Generate another' : 'Generate a new Recovery Code'}
         </button>
+      </div>
+
+      {/* Public Profile — opt-in only. A handle is required before the
+          profile can go public (enforced server-side too), so both are
+          saved together via one form. */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Public Profile</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+          Share your level, badges, and streaks with a public link — off by default, and only visible once you turn it on below.
+        </p>
+        {profileError && (
+          <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-3">{profileError}</p>
+        )}
+        <form onSubmit={handleSavePublicProfile}>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Handle</label>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-gray-400 dark:text-gray-500 text-sm shrink-0">twegle.in/u/</span>
+            <input
+              value={handleInput}
+              onChange={(e) => setHandleInput(e.target.value)}
+              maxLength={20}
+              placeholder="yourhandle"
+              className="flex-1 min-w-0 px-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl"
+            />
+          </div>
+          <label className="flex items-center gap-2 mb-4 text-sm text-gray-700 dark:text-gray-300">
+            <input
+              type="checkbox"
+              checked={isPublicChecked}
+              onChange={(e) => setIsPublicChecked(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300 dark:border-gray-600"
+            />
+            Make my profile public
+          </label>
+          <button
+            type="submit"
+            disabled={savingHandle}
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40"
+          >
+            {savingHandle ? 'Saving...' : 'Save'}
+          </button>
+        </form>
+        {session.user.isProfilePublic && session.user.handle && (
+          <div className="mt-4 flex items-center gap-2 text-sm">
+            <Link to={`/u/${session.user.handle}`} className="text-violet-600 dark:text-violet-400 font-semibold hover:underline truncate">
+              twegle.in/u/{session.user.handle}
+            </Link>
+            <button
+              type="button"
+              onClick={handleCopyProfileLink}
+              className="shrink-0 px-2.5 py-1 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-xs font-semibold hover:bg-gray-200 dark:hover:bg-gray-700"
+            >
+              {handleCopied ? 'Copied ✓' : 'Copy link'}
+            </button>
+          </div>
+        )}
       </div>
       </div>
 
