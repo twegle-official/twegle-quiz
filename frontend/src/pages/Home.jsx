@@ -446,7 +446,7 @@ export default function Home() {
           each banner is a single compact row now (see DailyQuizBanner /
           PuzzleOfTheDayBanner), so a 2-column grid halves the vertical space
           the pair takes versus stacking two full-width banners. */}
-      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-1 sm:mb-4">
+      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-5">
         <DailyQuizBanner quizzes={allQuizzes} />
         <PuzzleOfTheDayBanner puzzles={allPuzzles} />
       </div>
