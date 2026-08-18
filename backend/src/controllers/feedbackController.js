@@ -5,8 +5,9 @@ import { parsePagination, paginationMeta } from '../utils/pagination.js'
 
 // --- Public-facing (no auth) ---
 
-const REPORT_REASONS = ['offensive', 'incorrect', 'broken', 'other']
+const REPORT_REASONS = ['offensive', 'incorrect', 'broken', 'other'] // the only allowed reasons when reporting content
 
+// Handles a visitor sending feedback, or reporting a specific quiz/post/story/puzzle
 export async function submitFeedback(req, res) {
   const { message, email, contentType, contentId, contentLabel, reason } = req.body
 
@@ -46,6 +47,7 @@ export async function submitFeedback(req, res) {
 
 // --- Admin-facing (requires auth) ---
 
+// Lists all feedback/reports for the admin panel, newest first, one page at a time
 export async function listFeedbackAdmin(req, res) {
   const { page, limit, skip } = parsePagination(req.query)
   const [entries, total] = await Promise.all([
@@ -55,6 +57,7 @@ export async function listFeedbackAdmin(req, res) {
   res.json({ entries, pagination: paginationMeta(page, limit, total) })
 }
 
+// Lets an admin mark a feedback entry as read/unread
 export async function updateFeedback(req, res) {
   const feedback = await Feedback.findById(req.params.id)
   if (!feedback) return res.status(404).json({ error: 'Feedback not found' })
@@ -64,6 +67,7 @@ export async function updateFeedback(req, res) {
   res.json({ feedback })
 }
 
+// Lets an admin permanently remove a feedback entry
 export async function deleteFeedback(req, res) {
   const feedback = await Feedback.findByIdAndDelete(req.params.id)
   if (!feedback) return res.status(404).json({ error: 'Feedback not found' })

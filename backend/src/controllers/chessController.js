@@ -7,10 +7,12 @@ import { LIMITS } from '../utils/validators.js'
 // exactly — moves happen over the socket.io connection instead (see
 // realtime/chessSocket.js), same split as Connect Four.
 
+// Makes a random short code to identify a game/room.
 function generateCode() {
   return crypto.randomBytes(6).toString('base64url')
 }
 
+// Keeps generating a random code until it finds one nobody else is using yet.
 async function generateUniqueCode() {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateCode()
@@ -20,6 +22,7 @@ async function generateUniqueCode() {
   throw new Error('Could not generate a unique code')
 }
 
+// Checks a player's typed name is present and not too long.
 function validateName(name) {
   if (typeof name !== 'string' || !name.trim()) return 'Your name is required'
   if (name.length > LIMITS.MAX_NAME_LENGTH) {
@@ -31,6 +34,7 @@ function validateName(name) {
 // inCheck is derived on every read rather than stored, since it's fully
 // determined by fen — keeps ChessGame.js from needing to stay in sync with
 // a second source of truth for something chess.js can just tell us.
+// Picks out just the fields the frontend needs to show/update the game.
 export function gamePayload(game) {
   return {
     code: game.code,
@@ -45,6 +49,7 @@ export function gamePayload(game) {
   }
 }
 
+// Starts a brand new chess game and returns its room code — called when a player taps "create game".
 export async function createGame(req, res) {
   const { name } = req.body
   const nameError = validateName(name)
@@ -56,12 +61,14 @@ export async function createGame(req, res) {
   res.status(201).json(gamePayload(game))
 }
 
+// Looks up an existing game by its room code — used to load/refresh the game screen.
 export async function getGame(req, res) {
   const game = await ChessGame.findOne({ code: req.params.code })
   if (!game) return res.status(404).json({ error: 'Game not found' })
   res.json(gamePayload(game))
 }
 
+// Lets a second player join an existing game using its room code.
 export async function joinGame(req, res) {
   const { name } = req.body
   const game = await ChessGame.findOne({ code: req.params.code })
@@ -78,6 +85,7 @@ export async function joinGame(req, res) {
 
   game.playerBlackName = name.trim()
   game.status = 'in_progress'
+  // saves the joined player and updated status to the database
   await game.save()
 
   // The creator's tab is already connected to the socket room waiting for

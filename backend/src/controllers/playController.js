@@ -3,6 +3,7 @@ import PlaySession from '../models/PlaySession.js'
 
 // Anonymous by design — see PlaySession.js. anonymousId is a client-generated
 // id (e.g. stored in localStorage), never personal information.
+// Handles a visitor finishing a quiz — saves which quiz they played and which result they landed on.
 export async function recordPlay(req, res) {
   const { quizSlug, resultKey, anonymousId, referrer } = req.body
 
@@ -23,19 +24,20 @@ export async function recordPlay(req, res) {
   res.status(201).json({ ok: true })
 }
 
+// Builds the analytics numbers admins see — how many times each quiz was played and by how many different people.
 export async function getAnalyticsSummary(req, res) {
   const summary = await PlaySession.aggregate([
     {
       $group: {
-        _id: '$quiz',
-        totalPlays: { $sum: 1 },
-        uniquePlayers: { $addToSet: '$anonymousId' },
+        _id: '$quiz', // group all play records together by which quiz they belong to
+        totalPlays: { $sum: 1 }, // count how many times each quiz was played
+        uniquePlayers: { $addToSet: '$anonymousId' }, // collect the distinct visitor ids who played
       },
     },
     {
-      $lookup: { from: 'quizzes', localField: '_id', foreignField: '_id', as: 'quiz' },
+      $lookup: { from: 'quizzes', localField: '_id', foreignField: '_id', as: 'quiz' }, // pull in the matching quiz's details
     },
-    { $unwind: '$quiz' },
+    { $unwind: '$quiz' }, // turn the joined quiz array into a single quiz object
     {
       $project: {
         _id: 0,
@@ -43,10 +45,10 @@ export async function getAnalyticsSummary(req, res) {
         title: '$quiz.title',
         slug: '$quiz.slug',
         totalPlays: 1,
-        uniquePlayers: { $size: '$uniquePlayers' },
+        uniquePlayers: { $size: '$uniquePlayers' }, // turn the list of unique player ids into a count
       },
     },
-    { $sort: { totalPlays: -1 } },
+    { $sort: { totalPlays: -1 } }, // show the most-played quizzes first
   ])
 
   res.json({ summary })

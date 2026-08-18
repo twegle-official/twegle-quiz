@@ -7,14 +7,15 @@ import Puzzle from '../models/Puzzle.js'
 import { GAME_SLUGS } from './gameController.js'
 import { ZODIAC_KEYS } from '../data/zodiacSigns.js'
 
-const CONTENT_TYPES = ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope', 'puzzle']
-const MODEL_BY_TYPE = { quiz: Quiz, friendshipQuiz: FriendshipQuiz, story: Story, puzzle: Puzzle }
+const CONTENT_TYPES = ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope', 'puzzle'] // the kinds of content people can view or share
+const MODEL_BY_TYPE = { quiz: Quiz, friendshipQuiz: FriendshipQuiz, story: Story, puzzle: Puzzle } // which database table to check for each content type
 
 // Confirms the referenced content is real (and published, where that
 // applies) before recording an engagement against it — same reasoning as
 // postEngagementController.js looking up the Post first. Games and
 // horoscopes have no database row, so they're checked against a fixed
 // allowlist instead (slugs for games, zodiac sign keys for horoscopes).
+// Checks that the piece of content someone viewed/shared actually exists (and is published)
 async function contentExists(contentType, contentId) {
   if (contentType === 'game') return GAME_SLUGS.includes(contentId)
   if (contentType === 'horoscope') return ZODIAC_KEYS.includes(contentId)
@@ -25,6 +26,7 @@ async function contentExists(contentType, contentId) {
 
 // Anonymous by design — see Engagement.js. anonymousId is a client-generated
 // id (the same one used for quiz plays/game plays), never personal information.
+// Handles a visitor viewing or sharing a piece of content — logs it anonymously for stats
 export async function recordEngagement(req, res) {
   const { contentType, contentId, action, anonymousId } = req.body
 
@@ -50,17 +52,20 @@ export async function recordEngagement(req, res) {
 
 // --- Admin-facing ---
 
+// Builds the views/shares totals shown in the admin panel for one content type (e.g. all quizzes)
 export async function getEngagementSummary(req, res) {
   const { contentType } = req.params
   if (!CONTENT_TYPES.includes(contentType)) {
     return res.status(400).json({ error: `contentType must be one of: ${CONTENT_TYPES.join(', ')}` })
   }
 
+  // Counts how many views and how many shares each item got
   const counts = await Engagement.aggregate([
     { $match: { contentType } },
     { $group: { _id: { contentId: '$contentId', action: '$action' }, count: { $sum: 1 } } },
   ])
 
+  // Reshapes the raw counts into { views, shares } per content item
   const byContentId = {}
   counts.forEach(({ _id, count }) => {
     const key = _id.contentId
@@ -82,6 +87,7 @@ export async function getEngagementSummary(req, res) {
     items = docs.map((d) => ({ id: d._id.toString(), title: d[titleField] }))
   }
 
+  // Combines titles with their view/share counts, most-engaged first
   const summary = items
     .map((it) => ({
       id: it.id,

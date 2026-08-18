@@ -8,17 +8,19 @@ import { isValidPreviewToken } from '../utils/previewToken.js'
 // Same reasoning as quizController.js's slugify — a pure-Hindi (or any
 // non-Latin-script) title reduces to an empty string, which would collide
 // with every other empty slug since slug has a unique index.
+// Turns a quiz title into a URL-friendly id, e.g. "Best Friend Quiz!" -> "best-friend-quiz".
 function slugify(title) {
   const base = title
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-  return base || `friendship-quiz-${Date.now().toString(36)}`
+    .replace(/[^a-z0-9]+/g, '-') // swap any non-letter/number run for a single dash
+    .replace(/(^-|-$)/g, '') // trim leading/trailing dashes
+  return base || `friendship-quiz-${Date.now().toString(36)}` // fallback if nothing usable was left
 }
 
 // --- Admin-facing (requires auth) ---
 
+// Returns a page of friendship quizzes for the admin panel's list view.
 export async function listFriendshipQuizzesAdmin(req, res) {
   const { page, limit, skip } = parsePagination(req.query)
   const [quizzes, total] = await Promise.all([
@@ -28,12 +30,14 @@ export async function listFriendshipQuizzesAdmin(req, res) {
   res.json({ quizzes, pagination: paginationMeta(page, limit, total) })
 }
 
+// Returns one friendship quiz's full details for editing in the admin panel.
 export async function getFriendshipQuizAdmin(req, res) {
   const quiz = await FriendshipQuiz.findById(req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Friendship quiz not found' })
   res.json({ quiz })
 }
 
+// Handles an admin creating a new friendship quiz — validates it, then saves it to the database.
 export async function createFriendshipQuiz(req, res) {
   const { title, description, emoji, gradient, language, status, questions, publishAt, slug: customSlug } = req.body
 
@@ -81,6 +85,7 @@ export async function createFriendshipQuiz(req, res) {
   res.status(201).json({ quiz })
 }
 
+// Handles an admin editing an existing friendship quiz's details.
 export async function updateFriendshipQuiz(req, res) {
   const { title, description, emoji, gradient, language, status, questions, publishAt } = req.body
 
@@ -120,6 +125,7 @@ export async function updateFriendshipQuiz(req, res) {
   res.json({ quiz })
 }
 
+// Lets an admin permanently delete a friendship quiz.
 export async function deleteFriendshipQuiz(req, res) {
   const quiz = await FriendshipQuiz.findByIdAndDelete(req.params.id)
   if (quiz) {
@@ -136,10 +142,11 @@ export async function deleteFriendshipQuiz(req, res) {
 
 // --- Public-facing (no auth, published only) ---
 
+// Returns the list of published friendship quizzes for the public site to show visitors.
 export async function listPublishedFriendshipQuizzes(req, res) {
   const filter = {
     status: 'published',
-    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }],
+    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }], // only show if no schedule, or its time has passed
   }
   if (req.query.language === 'hi' || req.query.language === 'en') {
     filter.language = req.query.language
@@ -170,11 +177,12 @@ export async function listPublishedFriendshipQuizzes(req, res) {
   })
 }
 
+// Returns one published friendship quiz by its URL slug, for a visitor to play.
 export async function getPublishedFriendshipQuizBySlug(req, res) {
   const quiz = await FriendshipQuiz.findOne({ slug: req.params.slug })
   if (!quiz) return res.status(404).json({ error: 'Friendship quiz not found' })
-  const isLive = quiz.status === 'published' && (!quiz.publishAt || quiz.publishAt <= new Date())
-  if (!isLive && !isValidPreviewToken(req.query.preview, 'friendshipQuiz', quiz._id)) {
+  const isLive = quiz.status === 'published' && (!quiz.publishAt || quiz.publishAt <= new Date()) // is it visible to the public right now
+  if (!isLive && !isValidPreviewToken(req.query.preview, 'friendshipQuiz', quiz._id)) { // let an admin preview link bypass the above check
     return res.status(404).json({ error: 'Friendship quiz not found' })
   }
   res.json({ quiz })

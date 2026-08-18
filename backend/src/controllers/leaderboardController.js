@@ -10,7 +10,9 @@ import { calculatePoints, getLevelInfo } from '../utils/levels.js'
 // Only ever returns the public-safe fields (displayName/avatar) — never
 // username, and status:'disabled' accounts are excluded so a moderated
 // account can't still show up ranked.
+// Returns the top 100 ranked users by points, for the public leaderboard page.
 export async function getLevelLeaderboard(req, res) {
+  // Only active (non-disabled) accounts, and only the fields safe to show publicly
   const users = await EndUser.find({ status: 'active' }, 'displayName avatar stats').lean()
 
   const ranked = users
@@ -28,8 +30,11 @@ export async function getLevelLeaderboard(req, res) {
         levelEmoji: level.emoji,
       }
     })
+    // hide users with zero points
     .filter((u) => u.points > 0)
+    // highest points first
     .sort((a, b) => b.points - a.points)
+    // keep only the top 100
     .slice(0, 100)
 
   res.json({ leaderboard: ranked })

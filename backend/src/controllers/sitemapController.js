@@ -16,6 +16,7 @@ import Puzzle from '../models/Puzzle.js'
 // hosting-level rewrite is needed so https://<your-frontend-domain>/sitemap.xml
 // proxies to this endpoint — search engines expect the sitemap to live on the
 // same domain as the pages it lists, not on a separate API subdomain.
+// Escapes special XML characters so text values are safe to put inside the XML.
 function escapeXml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;',
@@ -26,12 +27,15 @@ function escapeXml(str) {
   })[c])
 }
 
+// Returns the public site's own web address, used to build page links.
 function frontendUrl() {
   return process.env.FRONTEND_URL || 'http://localhost:5173'
 }
 
+// Builds and returns sitemap.xml — the list of all public page links search engines use to crawl the site.
 export async function getSitemap(req, res) {
   const base = frontendUrl()
+  // The site's fixed pages that always belong in the sitemap
   const urls = [
     { loc: `${base}/`, changefreq: 'daily', priority: '1.0' },
     { loc: `${base}/about`, changefreq: 'monthly', priority: '0.3' },
@@ -44,6 +48,7 @@ export async function getSitemap(req, res) {
     { loc: `${base}/browse/motivational-quotes`, changefreq: 'weekly', priority: '0.6' },
   ]
 
+  // Fetches every published item of each content type, all at the same time
   const [quizzes, posts, friendshipQuizzes, stories, puzzles] = await Promise.all([
     Quiz.find({ status: 'published' }).select('slug updatedAt'),
     Post.find({ status: 'published' }).select('_id updatedAt'),
@@ -93,6 +98,7 @@ export async function getSitemap(req, res) {
     })
   })
 
+  // Turns the list of page links into the actual XML text for the sitemap
   const body = urls
     .map(
       (u) => `  <url>
@@ -103,6 +109,7 @@ export async function getSitemap(req, res) {
     )
     .join('\n')
 
+  // Sends the response as XML, not the usual JSON, since this is what search engines expect
   res.set('Content-Type', 'application/xml')
   res.send(
     `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>`

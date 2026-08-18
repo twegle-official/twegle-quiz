@@ -2,11 +2,13 @@ import bcrypt from 'bcryptjs'
 import Admin from '../models/Admin.js'
 import { isValidEmail, isValidPassword, LIMITS } from '../utils/validators.js'
 
+// Returns the list of all admin accounts, without their password hashes, for the admin management page.
 export async function listAdmins(req, res) {
   const admins = await Admin.find().select('-passwordHash')
   res.json({ admins })
 }
 
+// Handles a superadmin creating a new admin account, after checking all the entered details are valid.
 export async function createAdmin(req, res) {
   const { name, email, password, role } = req.body
 
@@ -31,7 +33,7 @@ export async function createAdmin(req, res) {
     return res.status(409).json({ error: 'An admin with that email already exists' })
   }
 
-  const passwordHash = await bcrypt.hash(password, 10)
+  const passwordHash = await bcrypt.hash(password, 10) // scrambles the password so it's never stored in plain text
   const admin = await Admin.create({ name, email: email.toLowerCase(), passwordHash, role })
 
   res.status(201).json({
@@ -39,6 +41,7 @@ export async function createAdmin(req, res) {
   })
 }
 
+// Handles removing an admin account, but blocks an admin from deleting themselves.
 export async function deleteAdmin(req, res) {
   if (req.params.id === req.admin.id) {
     return res.status(400).json({ error: 'You cannot delete your own account' })

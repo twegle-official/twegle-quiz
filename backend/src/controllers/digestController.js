@@ -15,6 +15,7 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 // each a straight count across every model that tracks that kind of
 // activity, over whatever window the caller asks for. `since: null` means
 // all-time (no date filter) — used by the dashboard's "All" range.
+// Counts up total plays, views/shares, and new content created within a time range.
 export async function computeDigestForRange(since) {
   const filter = since ? { createdAt: { $gte: since } } : {}
 
@@ -41,6 +42,7 @@ export async function computeDigestForRange(since) {
 // Analytics' fixed "this week" summary card — kept as its own endpoint/shape
 // since Analytics doesn't have a range selector (the Dashboard does; see
 // dashboardController.js, which calls computeDigestForRange directly).
+// Handles a request for the Analytics page's fixed "past 7 days" summary numbers.
 export async function getWeeklyDigest(req, res) {
   const digest = await computeDigestForRange(new Date(Date.now() - WEEK_MS))
   res.json({ digest })

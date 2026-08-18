@@ -11,17 +11,19 @@ export const QUIZ_CATEGORIES = ['beauty', 'entertainment', 'kpop', 'lifestyle', 
 // reduces to an empty string here — falls back to a short unique-enough tag
 // rather than ever saving an empty slug (which would collide with every
 // other empty-titled slug, since slug has a unique index).
+// Turns a quiz title into a URL-friendly id, e.g. "Best Friend Quiz!" -> "best-friend-quiz".
 function slugify(title) {
   const base = title
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-  return base || `quiz-${Date.now().toString(36)}`
+    .replace(/[^a-z0-9]+/g, '-') // swap any non-letter/number run for a single dash
+    .replace(/(^-|-$)/g, '') // trim leading/trailing dashes
+  return base || `quiz-${Date.now().toString(36)}` // fallback if nothing usable was left
 }
 
 // --- Admin-facing (requires auth) ---
 
+// Returns a page of quizzes for the admin panel's list view, with optional search/filters.
 export async function listQuizzesAdmin(req, res) {
   const { search, category, language, status } = req.query
   const filter = {}
@@ -40,12 +42,14 @@ export async function listQuizzesAdmin(req, res) {
   res.json({ quizzes, pagination: paginationMeta(page, limit, total) })
 }
 
+// Returns one quiz's full details for editing in the admin panel.
 export async function getQuizAdmin(req, res) {
   const quiz = await Quiz.findById(req.params.id)
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
   res.json({ quiz })
 }
 
+// Handles an admin creating a new quiz — validates it, then saves it to the database.
 export async function createQuiz(req, res) {
   const { title, description, emoji, gradient, category, language, type, status, questions, results, publishAt, slug: customSlug } = req.body
 
@@ -99,6 +103,7 @@ export async function createQuiz(req, res) {
   res.status(201).json({ quiz })
 }
 
+// Handles an admin editing an existing quiz's details.
 export async function updateQuiz(req, res) {
   const { title, description, emoji, gradient, category, language, type, status, questions, results, publishAt } = req.body
 
@@ -144,6 +149,7 @@ export async function updateQuiz(req, res) {
   res.json({ quiz })
 }
 
+// Lets an admin permanently delete a quiz.
 export async function deleteQuiz(req, res) {
   const quiz = await Quiz.findByIdAndDelete(req.params.id)
   if (quiz) {
@@ -160,10 +166,11 @@ export async function deleteQuiz(req, res) {
 
 // --- Public-facing (no auth, published only) ---
 
+// Returns the list of published quizzes for the public site's homepage/browse page.
 export async function listPublishedQuizzes(req, res) {
   const filter = {
     status: 'published',
-    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }],
+    $or: [{ publishAt: null }, { publishAt: { $lte: new Date() } }], // only show if no schedule, or its time has passed
   }
   if (req.query.language === 'hi' || req.query.language === 'en') {
     filter.language = req.query.language
@@ -192,11 +199,12 @@ export async function listPublishedQuizzes(req, res) {
   })
 }
 
+// Returns one published quiz by its URL slug, for a visitor to play.
 export async function getPublishedQuizBySlug(req, res) {
   const quiz = await Quiz.findOne({ slug: req.params.slug })
   if (!quiz) return res.status(404).json({ error: 'Quiz not found' })
-  const isLive = quiz.status === 'published' && (!quiz.publishAt || quiz.publishAt <= new Date())
-  if (!isLive && !isValidPreviewToken(req.query.preview, 'quiz', quiz._id)) {
+  const isLive = quiz.status === 'published' && (!quiz.publishAt || quiz.publishAt <= new Date()) // is it visible to the public right now
+  if (!isLive && !isValidPreviewToken(req.query.preview, 'quiz', quiz._id)) { // let an admin preview link bypass the above check
     return res.status(404).json({ error: 'Quiz not found' })
   }
   res.json({ quiz })

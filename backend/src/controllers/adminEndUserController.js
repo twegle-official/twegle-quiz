@@ -11,13 +11,14 @@ const RECOVERY_CODE_TTL_MS = 10 * 60 * 1000
 // listAdmins (`.select('-passwordHash')`), just for end users.
 const PUBLIC_FIELDS = 'username displayName avatar status createdAt'
 
+// Returns a page of end-user accounts for the admin panel, optionally filtered by search text.
 export async function listEndUsersAdmin(req, res) {
   const { search } = req.query
   const filter = {}
   if (search && typeof search === 'string' && search.trim()) {
-    const pattern = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    const regex = { $regex: pattern, $options: 'i' }
-    filter.$or = [{ username: regex }, { displayName: regex }]
+    const pattern = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // escape special search characters
+    const regex = { $regex: pattern, $options: 'i' } // case-insensitive partial match
+    filter.$or = [{ username: regex }, { displayName: regex }] // match on username OR display name
   }
 
   const { page, limit, skip } = parsePagination(req.query)
@@ -28,6 +29,7 @@ export async function listEndUsersAdmin(req, res) {
   res.json({ users, pagination: paginationMeta(page, limit, total) })
 }
 
+// Lets an admin activate or disable (ban) an end-user account.
 export async function updateEndUserStatus(req, res) {
   const { status } = req.body
   if (!['active', 'disabled'].includes(status)) {
@@ -58,13 +60,14 @@ export async function updateEndUserStatus(req, res) {
 // minutes since it's about to be pasted into WhatsApp/email, channels this
 // server has no control over. Overwrites (invalidates) any code the user
 // already had, admin- or self-issued.
+// Lets an admin issue a fresh, short-lived recovery code for a user who lost theirs.
 export async function generateRecoveryCode(req, res) {
   const user = await EndUser.findById(req.params.id)
   if (!user) return res.status(404).json({ error: 'Account not found' })
 
-  const recoveryCode = generateRecoveryCodeString()
-  const expiresAt = new Date(Date.now() + RECOVERY_CODE_TTL_MS)
-  user.recoveryCodeHash = await bcrypt.hash(recoveryCode, 10)
+  const recoveryCode = generateRecoveryCodeString() // make a new plaintext code to show the admin once
+  const expiresAt = new Date(Date.now() + RECOVERY_CODE_TTL_MS) // this code stops working after 10 minutes
+  user.recoveryCodeHash = await bcrypt.hash(recoveryCode, 10) // only the scrambled version is saved
   user.recoveryCodeExpiresAt = expiresAt
   await user.save()
 
@@ -79,6 +82,7 @@ export async function generateRecoveryCode(req, res) {
   res.json({ username: user.username, displayName: user.displayName, recoveryCode, expiresAt })
 }
 
+// Lets an admin permanently delete an end-user account.
 export async function deleteEndUser(req, res) {
   const user = await EndUser.findByIdAndDelete(req.params.id)
   if (user) {

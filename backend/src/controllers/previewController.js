@@ -6,6 +6,7 @@ import { signPreviewToken } from '../utils/previewToken.js'
 // controller already knows how to verify a token against itself.
 const CONTENT_TYPES = ['quiz', 'post', 'story', 'puzzle', 'friendshipQuiz']
 
+// Makes a secret preview link/token for unpublished content — called when an admin clicks "Preview" before publishing.
 export function createPreviewLink(req, res) {
   const { contentType, id } = req.query
   if (!CONTENT_TYPES.includes(contentType) || !id) {

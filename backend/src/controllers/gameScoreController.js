@@ -13,6 +13,7 @@ export const GAME_LEADERBOARDS = {
   'whack-a-mole': { order: 'desc' },
 }
 
+// Gets the top 10 scores for one game, best-first — called when the leaderboard screen loads.
 export async function getLeaderboard(req, res) {
   const { slug } = req.params
   const config = GAME_LEADERBOARDS[slug]
@@ -20,11 +21,12 @@ export async function getLeaderboard(req, res) {
     return res.status(404).json({ error: 'This game has no leaderboard' })
   }
 
-  const sort = config.order === 'asc' ? { value: 1 } : { value: -1 }
+  const sort = config.order === 'asc' ? { value: 1 } : { value: -1 } // picks lowest-first or highest-first depending on the game
   const entries = await GameScore.find({ gameSlug: slug }).sort(sort).limit(10)
   res.json({ entries })
 }
 
+// Saves a player's score after they finish a game — called when a game ends.
 export async function submitScore(req, res) {
   const { slug } = req.params
   const { nickname, value } = req.body

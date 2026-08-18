@@ -7,10 +7,12 @@ import { LIMITS } from '../utils/validators.js'
 // of a REST call (see realtime/connectFourSocket.js), since that's the
 // whole point of this being the live version rather than the async one.
 
+// Creates a random short code used as the game's invite link/id.
 function generateCode() {
   return crypto.randomBytes(6).toString('base64url')
 }
 
+// Keeps generating random codes until one isn't already in use.
 async function generateUniqueCode() {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateCode()
@@ -20,6 +22,7 @@ async function generateUniqueCode() {
   throw new Error('Could not generate a unique code')
 }
 
+// Checks that a player's entered name is present and not too long.
 function validateName(name) {
   if (typeof name !== 'string' || !name.trim()) return 'Your name is required'
   if (name.length > LIMITS.MAX_NAME_LENGTH) {
@@ -28,6 +31,7 @@ function validateName(name) {
   return null
 }
 
+// Picks out just the fields safe/useful to send back to the browser for a game.
 function gamePayload(game) {
   return {
     code: game.code,
@@ -40,6 +44,7 @@ function gamePayload(game) {
   }
 }
 
+// Starts a new Connect Four game and returns its invite code to the creator.
 export async function createGame(req, res) {
   const { name } = req.body
   const nameError = validateName(name)
@@ -51,12 +56,14 @@ export async function createGame(req, res) {
   res.status(201).json(gamePayload(game))
 }
 
+// Fetches the current state of a game by its invite code.
 export async function getGame(req, res) {
   const game = await ConnectFourGame.findOne({ code: req.params.code })
   if (!game) return res.status(404).json({ error: 'Game not found' })
   res.json(gamePayload(game))
 }
 
+// Lets a second player join a game using its invite code.
 export async function joinGame(req, res) {
   const { name } = req.body
   const game = await ConnectFourGame.findOne({ code: req.params.code })

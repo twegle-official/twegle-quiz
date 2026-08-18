@@ -6,10 +6,12 @@ import { LIMITS } from '../utils/validators.js'
 // rolling/moving/starting the match all happen over the socket.io
 // connection instead (see realtime/ludoSocket.js).
 
+// Makes a random short code to use as a match's join code
 function generateCode() {
   return crypto.randomBytes(6).toString('base64url')
 }
 
+// Keeps generating random codes until one isn't already in use
 async function generateUniqueCode() {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateCode()
@@ -24,10 +26,12 @@ async function generateUniqueCode() {
 // players sit across the board from each other, not in adjacent corners
 // the way red/green would put them. 3- and 4-player matches keep the
 // standard clockwise red→green→yellow→blue join order.
+// Decides which color each seat gets, in join order, based on how many players the match has
 function colorSequenceFor(maxPlayers) {
   return maxPlayers === 2 ? ['red', 'yellow'] : LUDO_PLAYER_COLORS
 }
 
+// Checks that a player's chosen name is present and not too long
 function validateName(name) {
   if (typeof name !== 'string' || !name.trim()) return 'Your name is required'
   if (name.length > LIMITS.MAX_NAME_LENGTH) {
@@ -36,6 +40,7 @@ function validateName(name) {
   return null
 }
 
+// Shapes a Ludo game document into the plain object sent to the frontend
 export function gamePayload(game) {
   return {
     code: game.code,
@@ -51,6 +56,8 @@ export function gamePayload(game) {
   }
 }
 
+// Creates a new Ludo match and seats the creator as its first player —
+// called when someone starts a new match from the Ludo lobby.
 export async function createGame(req, res) {
   const { name, maxPlayers, vsHouse } = req.body
   const nameError = validateName(name)
@@ -65,10 +72,12 @@ export async function createGame(req, res) {
   }
 
   const colorSeq = colorSequenceFor(effectiveMaxPlayers)
+  // The creator takes the first seat; tokens all start "off the board" as -1
   const players = [{ role: colorSeq[0], name: name.trim(), tokens: [-1, -1, -1, -1] }]
   let status = 'waiting'
 
   if (vsHouse) {
+    // Auto-add the computer-controlled "House" opponent and start the match right away
     players.push({ role: colorSeq[1], name: 'House', tokens: [-1, -1, -1, -1] })
     status = 'in_progress'
   }
@@ -90,12 +99,15 @@ export async function createGame(req, res) {
   res.status(201).json({ ...gamePayload(game), role: players[0].role })
 }
 
+// Looks up a Ludo match by its join code — used to load/refresh a match's state
 export async function getGame(req, res) {
   const game = await LudoGame.findOne({ code: req.params.code })
   if (!game) return res.status(404).json({ error: 'Game not found' })
   res.json(gamePayload(game))
 }
 
+// Adds a new player to an existing (not-yet-full) Ludo match — called
+// when someone enters a match code and their name to join.
 export async function joinGame(req, res) {
   const { name } = req.body
   const game = await LudoGame.findOne({ code: req.params.code })
