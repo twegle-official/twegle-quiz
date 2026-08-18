@@ -110,30 +110,41 @@ function update(mutate) {
 // Call this whenever a visitor finishes a game — logs the play (and the
 // win, if they won), then checks if that unlocked any new badges/levels.
 export function recordGamePlayed(slug, outcome) {
+  // Recorded before update() (not after) so this action's daily tally is
+  // already in place by the time update()'s pushLocalStatsToServer() reads
+  // the local blob — otherwise this action's entry was only ever pushed on
+  // the *next* action (if any), and lost for good if the visitor logged out
+  // before triggering one (logout wipes local-only, unpushed data).
+  recordDailyActivity('games')
   update((s) => {
     s.gamesPlayed[slug] = (s.gamesPlayed[slug] || 0) + 1
     if (outcome === 'win') s.gameWins += 1
   })
-  recordDailyActivity('games')
 }
 
 // Call this whenever a visitor finishes a quiz — adds it to their
 // completed list (only once) and checks for new badges/levels.
 export function recordQuizCompleted(slug) {
+  // See recordGamePlayed's comment — recorded before update() so this
+  // action's daily tally is included in the immediate push, not just the
+  // next one.
+  recordDailyActivity('quizzes')
   update((s) => {
     if (!s.quizzesCompleted.includes(slug)) s.quizzesCompleted.push(slug)
   })
-  recordDailyActivity('quizzes')
 }
 
 // Tracks every puzzle a visitor has revealed the answer to (not just the
 // daily one — see PuzzleView.jsx), so the homepage grid can show an
 // "already attempted" mark on any puzzle tile, not only today's pick.
 export function recordPuzzleRevealed(puzzleId) {
+  // See recordGamePlayed's comment — recorded before update() so this
+  // action's daily tally is included in the immediate push, not just the
+  // next one.
+  recordDailyActivity('puzzles')
   update((s) => {
     if (!s.puzzlesRevealed.includes(puzzleId)) s.puzzlesRevealed.push(puzzleId)
   })
-  recordDailyActivity('puzzles')
 }
 
 // Cheap lookups for tile components — reads the same underlying stats a
@@ -158,18 +169,24 @@ export function recordPerfectTrivia() {
 
 // Call this whenever a visitor reacts (emoji reaction) to something.
 export function recordReaction() {
+  // See recordGamePlayed's comment — recorded before update() so this
+  // action's daily tally is included in the immediate push, not just the
+  // next one.
+  recordDailyActivity('reactions')
   update((s) => {
     s.reactionsGiven += 1
   })
-  recordDailyActivity('reactions')
 }
 
 // Call this whenever a visitor shares something from Twegle.
 export function recordShare() {
+  // See recordGamePlayed's comment — recorded before update() so this
+  // action's daily tally is included in the immediate push, not just the
+  // next one.
+  recordDailyActivity('shares')
   update((s) => {
     s.sharesGiven += 1
   })
-  recordDailyActivity('shares')
 }
 
 // Streak-based badges (and level points, since streak weeks count toward
