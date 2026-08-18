@@ -406,6 +406,7 @@ export default function Home() {
               visible at all. It's decorative/secondary info, not something
               a mobile visitor needs before scrolling. */}
           <div className="hidden sm:flex flex-wrap justify-center gap-x-5 gap-y-1 text-white/80 text-xs sm:text-sm font-medium shrink-0">
+            <span>🎮 {GAMES.length} games</span>
             <span>🎯 {stats.quizzes ?? '24'} quizzes</span>
             <span>💬 {stats.posts ?? '85'}+ jokes &amp; quotes</span>
             <span>🌐 English &amp; हिंदी</span>

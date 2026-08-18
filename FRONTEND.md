@@ -465,6 +465,8 @@ Three features requested together (2026-08-17), pulled off the "Site Polish & Gr
 
 **Homepage "played today" counter** — `Home.jsx`'s hero stats row now shows "🔥 X played today" (hidden when 0) from a new `fetchTodayStats()` call in `api.js` hitting a new backend endpoint (see `BACKEND.md`).
 
+**Games count added to the hero stats row (2026-08-18, requested directly)** — "🎮 N games" now leads the row (before quizzes/jokes/EN-हिंदी), reflecting Games' status as the site's top-priority tab. Reads `GAMES.length` from the already-imported static `games/registry.js` array, no new fetch needed.
+
 **Quiz schema.org** — `Quiz.jsx` renders a `<script type="application/ld+json">` `Quiz` schema (name/description/url) right before the return, following the exact JSON-LD pattern `Home.jsx` (WebSite) and `Faq.jsx` (FAQPage) already established. Zero visible UI change — purely for richer Google search-result previews.
 
 Verified locally: played a quiz to completion with no console errors and confirmed the JSON-LD tag parses correctly via direct DOM inspection; confirmed the homepage counter rendered "🔥 1 played today" from a real fetched value; confirmed the Wrapped card appeared on `/badges` with the correct weekly tallies after that playthrough, and clicking "Share my Wrapped" completed without error.
