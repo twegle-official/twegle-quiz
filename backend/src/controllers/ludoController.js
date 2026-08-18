@@ -82,7 +82,12 @@ export async function createGame(req, res) {
     vsHouse: Boolean(vsHouse),
   })
 
-  res.status(201).json(gamePayload(game))
+  // Unlike every other live game, Ludo's creator role isn't a fixed
+  // constant (the 3-/4-player color sequence starts at 'blue', not 'red')
+  // — `role` here lets the frontend store the creator's *actual* assigned
+  // seat instead of guessing, the same way joinGame's response already
+  // does for everyone who joins after them.
+  res.status(201).json({ ...gamePayload(game), role: players[0].role })
 }
 
 export async function getGame(req, res) {

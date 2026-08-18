@@ -171,7 +171,12 @@ export default function Game() {
         navigate(`/games/chess/${data.code}`)
       } else if (game.slug === 'ludo') {
         const data = await createLudoGame(challengeName.trim(), challengeMaxPlayers)
-        localStorage.setItem(`ludo-role-${data.code}`, 'red')
+        // Unlike every other game's fixed creator role, Ludo's 3-/4-player
+        // color sequence starts at 'blue' rather than 'red' — storing the
+        // server's actual assigned role (not a hardcoded guess) is what
+        // fixes "Start match" never appearing for the real host in a
+        // 3-or-4-player match.
+        localStorage.setItem(`ludo-role-${data.code}`, data.role)
         navigate(`/games/ludo/${data.code}`)
       } else {
         const data = await createTicTacToeGame(challengeName.trim())
@@ -197,7 +202,7 @@ export default function Game() {
     setChallengeError('')
     try {
       const data = await createLudoGame('You', 2, true)
-      localStorage.setItem(`ludo-role-${data.code}`, 'red')
+      localStorage.setItem(`ludo-role-${data.code}`, data.role)
       navigate(`/games/ludo/${data.code}`)
     } catch (err) {
       setChallengeError(err.message)
