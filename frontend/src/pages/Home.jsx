@@ -446,7 +446,7 @@ export default function Home() {
           each banner is a single compact row now (see DailyQuizBanner /
           PuzzleOfTheDayBanner), so a 2-column grid halves the vertical space
           the pair takes versus stacking two full-width banners. */}
-      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-5">
+      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
         <DailyQuizBanner quizzes={allQuizzes} />
         <PuzzleOfTheDayBanner puzzles={allPuzzles} />
       </div>
@@ -515,7 +515,7 @@ export default function Home() {
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`shrink-0 whitespace-nowrap px-4 py-1.5 rounded-full lg:rounded-lg text-sm font-semibold transition-colors lg:text-left ${
+              className={`shrink-0 whitespace-nowrap px-5 py-2 lg:px-4 lg:py-1.5 rounded-full lg:rounded-lg text-sm font-semibold transition-colors lg:text-left ${
                 activeTab === tab.key
                   ? 'bg-violet-600 text-white'
                   : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-300 dark:hover:border-violet-500'
