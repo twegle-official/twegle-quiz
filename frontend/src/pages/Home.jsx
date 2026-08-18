@@ -446,12 +446,12 @@ export default function Home() {
           each banner is a single compact row now (see DailyQuizBanner /
           PuzzleOfTheDayBanner), so a 2-column grid halves the vertical space
           the pair takes versus stacking two full-width banners. */}
-      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
+      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 lg:pt-2 grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-2">
         <DailyQuizBanner quizzes={allQuizzes} />
         <PuzzleOfTheDayBanner puzzles={allPuzzles} />
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 pt-2 sm:pt-6 pb-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
+      <div className="max-w-6xl mx-auto px-4 pt-2 sm:pt-6 lg:pt-3 pb-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
       {/* The sidebar: language toggle, sort toggle, tab list, and the active tab's category chips */}
       <aside className="flex flex-col gap-1.5 mb-4 lg:mb-0 lg:gap-2 lg:sticky lg:top-6">
         {/* Language and Trending/Newest share one row below `lg` — both are
@@ -464,7 +464,7 @@ export default function Home() {
           <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-0.5 lg:w-full">
             <button
               onClick={() => setLanguage('en')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
+              className={`px-3 py-1 lg:px-2.5 lg:py-0.5 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
                 language === 'en' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
@@ -472,7 +472,7 @@ export default function Home() {
             </button>
             <button
               onClick={() => setLanguage('hi')}
-              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
+              className={`px-3 py-1 lg:px-2.5 lg:py-0.5 rounded-full text-xs font-semibold transition-colors lg:flex-1 ${
                 language === 'hi' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
