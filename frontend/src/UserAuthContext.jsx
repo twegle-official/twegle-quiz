@@ -3,6 +3,7 @@ import { signupUser, loginUser, fetchCurrentUser } from './userApi'
 import { syncStatsOnLogin } from './utils/statsSync'
 import { clearLocalStats } from './utils/badges'
 import { clearLocalStreaks } from './utils/dailyQuiz'
+import { clearDailyActivity } from './utils/weeklyRecap'
 
 // Separate, parallel context from admin/AuthContext.jsx — different name,
 // different localStorage key (`userSession` vs `adminSession`), wraps only
@@ -104,6 +105,7 @@ export function UserAuthProvider({ children }) {
     localStorage.removeItem('userSession')
     clearLocalStats()
     clearLocalStreaks()
+    clearDailyActivity()
     setSession(null)
     window.dispatchEvent(new CustomEvent('twegle-stats-synced'))
   }

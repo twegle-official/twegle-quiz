@@ -57,3 +57,12 @@ export function getWeekSummary() {
   }
   return totals
 }
+
+// Wipes this browser's local daily-activity log — called on logout
+// alongside badges.js's clearLocalStats() and dailyQuiz.js's
+// clearLocalStreaks(), for the same reason: "This week / Your Twegle
+// Wrapped" is per-account history and shouldn't keep showing (or leak into
+// a different account) after logging out.
+export function clearDailyActivity() {
+  localStorage.removeItem(DAILY_LOG_KEY)
+}
