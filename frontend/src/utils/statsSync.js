@@ -14,6 +14,7 @@
 import { fetchStats, pushStats } from '../userApi'
 import { QUIZ_STREAK_KEY, PUZZLE_STREAK_KEY } from './dailyQuiz'
 import { STATS_KEY, SEEN_KEY } from './badges'
+import { DAILY_LOG_KEY } from './weeklyRecap'
 
 function getToken() {
   try {
@@ -38,6 +39,7 @@ function readLocalBlob() {
     puzzleStreak: readJSON(PUZZLE_STREAK_KEY, { count: 0, lastDate: null }),
     stats: readJSON(STATS_KEY, {}),
     badgesSeen: readJSON(SEEN_KEY, []),
+    dailyActivity: readJSON(DAILY_LOG_KEY, {}),
   }
 }
 
@@ -46,6 +48,7 @@ function writeLocalBlob(blob) {
   if (blob.puzzleStreak) localStorage.setItem(PUZZLE_STREAK_KEY, JSON.stringify(blob.puzzleStreak))
   if (blob.stats) localStorage.setItem(STATS_KEY, JSON.stringify(blob.stats))
   if (blob.badgesSeen) localStorage.setItem(SEEN_KEY, JSON.stringify(blob.badgesSeen))
+  if (blob.dailyActivity) localStorage.setItem(DAILY_LOG_KEY, JSON.stringify(blob.dailyActivity))
 }
 
 // Combines two devices' streaks into one, keeping the most up-to-date one.
@@ -80,6 +83,25 @@ function mergeStats(a = {}, b = {}) {
   }
 }
 
+// Combines two devices' day-by-day activity logs (see weeklyRecap.js) into
+// one, keyed by date. Per date, per activity kind, keeps whichever side's
+// count is higher — same "take the further-along side" approach as
+// mergeStats' gamesPlayed, and for the same reason: it needs to be safe to
+// run this merge repeatedly (every login, every 20s poll) without counts
+// inflating each time, which a plain sum would do.
+function mergeDailyActivity(a = {}, b = {}) {
+  const merged = { ...a }
+  for (const [date, bTotals] of Object.entries(b)) {
+    const aTotals = merged[date] || {}
+    const dayMerged = { ...aTotals }
+    for (const [kind, count] of Object.entries(bTotals)) {
+      dayMerged[kind] = Math.max(dayMerged[kind] || 0, count || 0)
+    }
+    merged[date] = dayMerged
+  }
+  return merged
+}
+
 // Sends this device's local stats up to the server for a logged-in user.
 // Fire-and-forget — called after every local mutation (see dailyQuiz.js's
 // recordQuizStreakCompletion/recordPuzzleStreakCompletion and badges.js's
@@ -101,6 +123,7 @@ function normalizeServerBlob(serverBlob) {
     puzzleStreak: serverBlob.puzzleStreak,
     stats: serverBlob.stats,
     badgesSeen: serverBlob.badgesSeen,
+    dailyActivity: serverBlob.dailyActivity,
   }
 }
 
@@ -129,6 +152,7 @@ export async function syncStatsOnLogin(token) {
     puzzleStreak: mergeStreak(localBlob.puzzleStreak, serverBlob.puzzleStreak),
     stats: mergeStats(localBlob.stats, serverBlob.stats),
     badgesSeen: [...new Set([...(localBlob.badgesSeen || []), ...(serverBlob.badgesSeen || [])])],
+    dailyActivity: mergeDailyActivity(localBlob.dailyActivity, serverBlob.dailyActivity),
   }
 
   writeLocalBlob(merged)

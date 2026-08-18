@@ -5,7 +5,7 @@
 // just enough day-level granularity for that, without turning into a
 // second parallel stats system: one small tally object per calendar day,
 // pruned to the last 14 days so it never grows unbounded.
-const DAILY_LOG_KEY = 'twegleDailyActivity'
+export const DAILY_LOG_KEY = 'twegleDailyActivity'
 const RETENTION_DAYS = 14
 const KINDS = ['games', 'quizzes', 'puzzles', 'reactions', 'shares']
 
