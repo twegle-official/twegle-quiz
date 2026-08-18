@@ -13,13 +13,15 @@ const PERIODS = [
   { key: 'year', label: { en: 'Year', hi: 'साल' } },
 ]
 
+// Shows one zodiac sign's horoscope text, with language and time-period pickers.
 export default function HoroscopeView() {
   const { sign } = useParams()
-  const [language, setLanguage] = useState('en')
-  const [period, setPeriod] = useState('day')
-  const [horoscope, setHoroscope] = useState(null)
+  const [language, setLanguage] = useState('en') // English or Hindi
+  const [period, setPeriod] = useState('day') // day / week / month / year horoscope
+  const [horoscope, setHoroscope] = useState(null) // the fetched horoscope text
   const [notFound, setNotFound] = useState(false)
 
+  // Re-fetches the horoscope whenever the sign, period, or language changes.
   useEffect(() => {
     setHoroscope(null)
     setNotFound(false)
@@ -65,6 +67,7 @@ export default function HoroscopeView() {
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       <div className="text-left mb-4"><BackButton /></div>
+      {/* The sign's emoji, name, and date range in a colored banner */}
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${horoscope.gradient}`}
       >
@@ -73,6 +76,7 @@ export default function HoroscopeView() {
         <p className="text-xs font-bold uppercase tracking-wide text-white/80 mt-2">{horoscope.dateRange}</p>
       </div>
 
+      {/* English / Hindi language toggle */}
       <div className="mt-6 flex items-center justify-center gap-2">
         <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-full p-1">
           <button
@@ -94,6 +98,7 @@ export default function HoroscopeView() {
         </div>
       </div>
 
+      {/* Day / Week / Month / Year period picker */}
       <div className="mt-4 flex justify-center gap-2 flex-wrap">
         {PERIODS.map((p) => (
           <button
@@ -116,6 +121,7 @@ export default function HoroscopeView() {
 
       <p className="text-xs text-gray-400 dark:text-gray-600 mt-4">{horoscope.disclaimer}</p>
 
+      {/* The share buttons row */}
       <div className="mt-6">
         <ShareButtons
           title={`${horoscope.signName} Horoscope`}

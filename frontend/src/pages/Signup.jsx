@@ -4,19 +4,26 @@ import { useUserAuth } from '../UserAuthContext'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import BackButton from '../components/BackButton'
 
+// The sign-up page — lets a visitor create an account with just a
+// username and password, then shows their one-time recovery code.
 export default function Signup() {
   const { signup } = useUserAuth()
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
+  // Error message to show if signup fails
   const [error, setError] = useState('')
+  // True while the signup request is in progress
   const [submitting, setSubmitting] = useState(false)
+  // The one-time recovery code returned after a successful signup
   const [recoveryCode, setRecoveryCode] = useState(null)
+  // Whether the user has ticked "I've saved this code"
   const [confirmed, setConfirmed] = useState(false)
 
   useDocumentMeta('Create an Account', 'Save your streak, badges, and leaderboard name on Twegle — no email or phone required.')
 
+  // Submits the signup form
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
@@ -75,6 +82,7 @@ export default function Signup() {
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
+      {/* The signup form: username, gamer tag, and password */}
       <form onSubmit={handleSubmit}>
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Username</label>
         <input

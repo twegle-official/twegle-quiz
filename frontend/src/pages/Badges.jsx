@@ -18,17 +18,20 @@ import { useUserAuth } from '../UserAuthContext'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { getWeekSummary } from '../utils/weeklyRecap'
 
+// The "My Achievements" page — shows the user's level, weekly recap, the
+// full level ladder, how points are earned, and any bonus badges unlocked.
 export default function Badges() {
   useDocumentMeta('My Achievements', 'Level up on Twegle by playing games, taking quizzes, solving puzzles, and sharing.')
   const { session } = useUserAuth()
-  const badges = getBadgeStatus()
+  const badges = getBadgeStatus() // list of all bonus badges and whether each is unlocked
   const unlockedCount = badges.filter((b) => b.unlocked).length
   const { index: currentIndex, points, pointsToNext, next } = getCurrentLevelInfo()
-  const [sharing, setSharing] = useState(false)
-  const [wrappedSharing, setWrappedSharing] = useState(false)
-  const weekSummary = getWeekSummary()
+  const [sharing, setSharing] = useState(false) // true while the "share my level" image is being made
+  const [wrappedSharing, setWrappedSharing] = useState(false) // true while the "Wrapped" image is being made
+  const weekSummary = getWeekSummary() // tally of what the user did in the last 7 days
   const weekTotal = Object.values(weekSummary).reduce((sum, n) => sum + n, 0)
 
+  // Makes a shareable image showing the user's current level and starts the share/download flow.
   async function handleShareLevel() {
     const level = LEVELS[currentIndex]
     setSharing(true)

@@ -38,17 +38,28 @@ function roleStorageKey(code) {
   return `chess-role-${code}`
 }
 
+// The live two-player Chess page — shows the board, sends/receives moves
+// over a socket connection, and handles joining, check/checkmate, and rematch.
 export default function ChessMultiplayer() {
   const { code } = useParams()
+  // The current game state as last received from the server (board, turn, etc.)
   const [game, setGame] = useState(null)
+  // True if no game matches this invite code
   const [notFound, setNotFound] = useState(false)
+  // 'white' or 'black' — which side this browser is playing, remembered in localStorage
   const [role, setRole] = useState(() => localStorage.getItem(roleStorageKey(code)))
+  // The name typed into the "join as Black" form
   const [joinName, setJoinName] = useState('')
+  // True while the join request is in progress
   const [joining, setJoining] = useState(false)
   const [error, setError] = useState('')
+  // The square the player has clicked to move from, if any
   const [selectedSquare, setSelectedSquare] = useState(null)
+  // The squares the selected piece can legally move to (highlighted on the board)
   const [legalTargets, setLegalTargets] = useState([])
+  // The last move made, so the board can highlight it
   const [lastMove, setLastMove] = useState(null)
+  // Set when a pawn move needs the player to choose what piece to promote to
   const [promotionPending, setPromotionPending] = useState(null)
   const movingRef = useRef(false)
 
@@ -69,15 +80,19 @@ export default function ChessMultiplayer() {
   useEffect(() => {
     if (!role) return
 
+    // Runs whenever the server sends an updated game state (after a move,
+    // a player joining, a rematch, etc.) — replaces our local copy with it
     function handleGameState(data) {
       setGame(data)
       setSelectedSquare(null)
       setLegalTargets([])
       setPromotionPending(null)
     }
+    // Shows an error message sent by the server (e.g. an illegal move)
     function handleError(message) {
       setError(message)
     }
+    // Tells the server which game and role this browser belongs to
     function joinRoom() {
       chessSocket.emit('joinRoom', { code, role })
     }
@@ -110,6 +125,7 @@ export default function ChessMultiplayer() {
     }
   }, [game?.status, game?.winner, role])
 
+  // Submits the "join as Black" form
   async function handleJoin(e) {
     e.preventDefault()
     if (!joinName.trim()) return
@@ -130,6 +146,8 @@ export default function ChessMultiplayer() {
   const myColor = role === 'white' ? 'w' : 'b'
   const isMyTurn = game?.status === 'in_progress' && game.currentTurn === role
 
+  // Handles clicking a square on the board — selects a piece, or moves the
+  // already-selected piece if the clicked square is a legal destination
   function handleSquareClick(square) {
     if (movingRef.current) return
     if (!isMyTurn || promotionPending) return
@@ -165,6 +183,7 @@ export default function ChessMultiplayer() {
     }
   }
 
+  // Sends a move to the server over the socket
   function sendMove(from, to, promotion) {
     movingRef.current = true
     setLastMove({ from, to })
@@ -291,6 +310,7 @@ export default function ChessMultiplayer() {
         />
       </div>
 
+      {/* Popup asking which piece to promote a pawn to */}
       {promotionPending && (
         <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/40 px-4" onClick={() => setPromotionPending(null)}>
           <div
@@ -315,6 +335,7 @@ export default function ChessMultiplayer() {
         </div>
       )}
 
+      {/* Invite link to share while waiting for an opponent */}
       {game.status === 'waiting' && (
         <div className="mb-6">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Send this link to a friend:</p>
@@ -326,6 +347,7 @@ export default function ChessMultiplayer() {
         </div>
       )}
 
+      {/* Rematch button and result-sharing shown once the game ends */}
       {game.status === 'finished' && (
         <div className="mb-6">
           <button

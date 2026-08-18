@@ -32,6 +32,8 @@ function pickTriviaResult(quiz, scores) {
   return { key: match?.key || quiz.results[0]?.key, score }
 }
 
+// The page that shows one quiz question at a time and lets the player
+// click an answer, then moves on to the next question (or the result page).
 export default function Quiz() {
   const { quizId: slug } = useParams()
   const navigate = useNavigate()
@@ -40,12 +42,17 @@ export default function Quiz() {
   const previewToken = searchParams.get('preview')
   const { compareCode, compareName } = location.state || {}
 
+  // The quiz data loaded from the server (questions, options, etc.)
   const [quiz, setQuiz] = useState(null)
+  // True if no quiz matches this URL
   const [notFound, setNotFound] = useState(false)
+  // Which question the player is currently on
   const [questionIndex, setQuestionIndex] = useState(0)
+  // Running tally of points per result/answer key as the player answers
   const [scores, setScores] = useState({})
   const viewedRef = useRef(false)
 
+  // Loads the quiz for this URL when the page first opens
   useEffect(() => {
     fetchQuizBySlug(slug, previewToken)
       .then((data) => (data ? setQuiz(data) : setNotFound(true)))
@@ -154,6 +161,7 @@ export default function Quiz() {
       <BackButton className="mb-4" />
       <ProgressBar current={questionIndex} total={quiz.questions.length} />
 
+      {/* The current question and its clickable answer buttons */}
       <div key={questionIndex} className="animate-fade-slide-in">
         <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">
           Question {questionIndex + 1} of {quiz.questions.length}

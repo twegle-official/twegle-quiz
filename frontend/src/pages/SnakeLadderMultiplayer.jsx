@@ -19,14 +19,22 @@ function roleStorageKey(code) {
   return `snakeladder-role-${code}`
 }
 
+// The live two-player Snake and Ladder page — shows the board, sends/
+// receives dice rolls over a socket connection, and handles joining and rematch.
 export default function SnakeLadderMultiplayer() {
   const { code } = useParams()
+  // The current game state as last received from the server (positions, turn, etc.)
   const [game, setGame] = useState(null)
+  // True if no game matches this invite code
   const [notFound, setNotFound] = useState(false)
+  // 'one' or 'two' — which player this browser is, remembered in localStorage
   const [role, setRole] = useState(() => localStorage.getItem(roleStorageKey(code)))
+  // The name typed into the join form
   const [joinName, setJoinName] = useState('')
+  // True while the join request is in progress
   const [joining, setJoining] = useState(false)
   const [error, setError] = useState('')
+  // True while the dice-roll animation is playing
   const [rolling, setRolling] = useState(false)
 
   const load = useCallback(() => {
@@ -44,14 +52,18 @@ export default function SnakeLadderMultiplayer() {
   useEffect(() => {
     if (!role) return
 
+    // Runs whenever the server sends an updated game state (after a roll,
+    // a player joining, a rematch, etc.)
     function handleGameState(data) {
       setGame(data)
       setRolling(false)
     }
+    // Shows an error message sent by the server
     function handleError(message) {
       setError(message)
       setRolling(false)
     }
+    // Tells the server which game and role this browser belongs to
     function joinRoom() {
       snakeLadderSocket.emit('joinRoom', { code, role })
     }
@@ -82,6 +94,7 @@ export default function SnakeLadderMultiplayer() {
     if (game?.status === 'finished' && role) playSound(game.winner === role ? 'win' : 'lose')
   }, [game?.status, game?.winner, role])
 
+  // Submits the "join this match" form
   async function handleJoin(e) {
     e.preventDefault()
     if (!joinName.trim()) return
@@ -99,6 +112,7 @@ export default function SnakeLadderMultiplayer() {
     }
   }
 
+  // Rolls the dice on this player's turn
   function handleRoll() {
     if (rolling || !role || !game || game.status !== 'in_progress' || game.currentTurn !== role) return
     setRolling(true)
@@ -197,6 +211,7 @@ export default function SnakeLadderMultiplayer() {
       <div className="text-left mb-4"><BackButton /></div>
       <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
+      {/* Shows both players' names and board position once the match has started */}
       {game.status !== 'waiting' ? (
         <div className="flex items-center justify-center gap-3 mb-4">
           <PlayerChip emoji={myEmoji} color={myColor} name={myName} position={myPosition} active={isMyTurn} />
@@ -230,6 +245,7 @@ export default function SnakeLadderMultiplayer() {
         />
       </div>
 
+      {/* Dice and roll button */}
       {game.status === 'in_progress' && (
         <div className="flex flex-col items-center gap-4 mb-6">
           <DiceDisplay roll={game.lastRoll} rolling={rolling} />
@@ -243,6 +259,7 @@ export default function SnakeLadderMultiplayer() {
         </div>
       )}
 
+      {/* Invite link to share while waiting for an opponent */}
       {game.status === 'waiting' && (
         <div className="mb-6">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Send this link to a friend:</p>
@@ -254,6 +271,7 @@ export default function SnakeLadderMultiplayer() {
         </div>
       )}
 
+      {/* Rematch button and result-sharing shown once the game ends */}
       {game.status === 'finished' && (
         <div className="mb-6">
           <button

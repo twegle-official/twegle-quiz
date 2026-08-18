@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import BackButton from '../components/BackButton'
 
+// The list of frequently asked questions and their answers, shown on this page.
 const FAQS = [
   {
     q: 'Do I need to sign up to use Twegle?',
@@ -45,12 +46,14 @@ const FAQS = [
   },
 ]
 
+// The FAQ page — a list of common questions that expand/collapse when clicked.
 export default function Faq() {
   useDocumentMeta('FAQ & Help', 'Answers to common questions about using Twegle — accounts, streaks, badges, privacy, and more.')
-  const [openIndex, setOpenIndex] = useState(null)
+  const [openIndex, setOpenIndex] = useState(null) // which question is currently expanded, if any
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 text-gray-700 dark:text-gray-300">
+      {/* Hidden data that helps search engines show these questions directly in search results */}
       <script type="application/ld+json">
         {JSON.stringify({
           '@context': 'https://schema.org',
@@ -74,6 +77,7 @@ export default function Faq() {
         .
       </p>
 
+      {/* The list of expandable question/answer rows */}
       <div className="divide-y divide-gray-200 dark:divide-gray-800 border-y border-gray-200 dark:border-gray-800">
         {FAQS.map(({ q, a }, i) => {
           const isOpen = openIndex === i

@@ -17,16 +17,19 @@ import { recordRecentlyViewed } from '../utils/recentlyViewed'
 
 const SUGGESTION_COUNT = 4
 
+// Shows a single post (joke, funny line, quote, or motivational quote),
+// with share options and a "you might also like" list.
 export default function PostView() {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
   const previewToken = searchParams.get('preview')
-  const [post, setPost] = useState(null)
+  const [post, setPost] = useState(null) // the post's own text/author/etc, once loaded
   const [notFound, setNotFound] = useState(false)
-  const [generating, setGenerating] = useState(false)
-  const [suggestions, setSuggestions] = useState([])
+  const [generating, setGenerating] = useState(false) // true while the shareable image is being built
+  const [suggestions, setSuggestions] = useState([]) // other posts to show below, "you might also like"
   const viewedRef = useRef(false)
 
+  // Loads this post's data when the page first opens.
   useEffect(() => {
     fetchPostById(id, previewToken)
       .then((data) => (data ? setPost(data) : setNotFound(true)))
@@ -34,6 +37,7 @@ export default function PostView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
+  // Logs a "view" and adds this post to the recently-viewed list, once loaded.
   useEffect(() => {
     if (!post || viewedRef.current || previewToken) return
     viewedRef.current = true
@@ -48,6 +52,7 @@ export default function PostView() {
     })
   }, [post, previewToken])
 
+  // Picks a few other posts to suggest, favoring the same category first.
   useEffect(() => {
     if (!post) return
     fetchPosts(undefined, post.language)
@@ -69,6 +74,7 @@ export default function PostView() {
     post && 'Shared from Twegle — quizzes, quotes & chaos for everyone.'
   )
 
+  // Builds a shareable image of the post and opens the share/download prompt.
   async function handleShareImage() {
     setGenerating(true)
     try {
@@ -116,6 +122,7 @@ export default function PostView() {
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       {previewToken && <PreviewBanner />}
       <div className="text-left mb-4"><BackButton /></div>
+      {/* The post's text on a colored card */}
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}
       >
@@ -128,6 +135,7 @@ export default function PostView() {
         <PostReactions postId={post._id} />
       </div>
 
+      {/* Button that generates and shares/downloads an image of the post */}
       <button
         onClick={handleShareImage}
         disabled={generating}
@@ -146,6 +154,7 @@ export default function PostView() {
         <AdSlot />
       </div>
 
+      {/* "You might also like" — a few other suggested posts */}
       {suggestions.length > 0 && (
         <div className="mt-10 text-left">
           <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">You might also like</h2>

@@ -4,16 +4,19 @@ import { fetchFriendshipInstance, submitFriendshipAttempt } from '../api'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
+// The page where a friend guesses how someone else answered a set of
+// personal questions, as part of the "Friendship Quiz" feature.
 export default function FriendshipPlay() {
   const { code } = useParams()
   const navigate = useNavigate()
-  const [instance, setInstance] = useState(null)
-  const [notFound, setNotFound] = useState(false)
-  const [guesserName, setGuesserName] = useState('')
-  const [guesses, setGuesses] = useState([])
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
+  const [instance, setInstance] = useState(null) // the quiz details and questions to guess
+  const [notFound, setNotFound] = useState(false) // true if this friendship quiz link doesn't exist
+  const [guesserName, setGuesserName] = useState('') // the friend's own name, typed into the form
+  const [guesses, setGuesses] = useState([]) // the friend's picked answer for each question
+  const [submitting, setSubmitting] = useState(false) // true while the guesses are being scored
+  const [error, setError] = useState('') // holds any error message to show the user
 
+  // Loads the friendship quiz's questions using the code from the URL.
   useEffect(() => {
     fetchFriendshipInstance(code)
       .then((data) => {
@@ -51,6 +54,7 @@ export default function FriendshipPlay() {
 
   const allAnswered = guesses.every((g) => g !== null)
 
+  // Submits the friend's name and guesses, then goes to the results page.
   async function handleSubmit(e) {
     e.preventDefault()
     if (!guesserName.trim() || !allAnswered) return
@@ -92,6 +96,7 @@ export default function FriendshipPlay() {
           />
         </div>
 
+        {/* The list of questions, each with clickable answer options */}
         <div className="space-y-6">
           {instance.questions.map((question, qIndex) => (
             <div key={qIndex}>

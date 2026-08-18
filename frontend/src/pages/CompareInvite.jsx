@@ -4,19 +4,23 @@ import { fetchQuizCompare } from '../api'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
+// The page a friend lands on when someone invites them to compare quiz
+// results. Asks for their name, then sends them to take the quiz.
 export default function CompareInvite() {
   const { quizId: slug, code } = useParams()
   const navigate = useNavigate()
-  const [compare, setCompare] = useState(null)
-  const [notFound, setNotFound] = useState(false)
-  const [name, setName] = useState('')
+  const [compare, setCompare] = useState(null) // details about the compare invite (who sent it, which quiz)
+  const [notFound, setNotFound] = useState(false) // true if this compare link doesn't exist
+  const [name, setName] = useState('') // the invited friend's name, typed into the form
 
+  // Looks up the compare invite from the URL's quiz and code.
   useEffect(() => {
     fetchQuizCompare(slug, code)
       .then((data) => (data ? setCompare(data) : setNotFound(true)))
       .catch(() => setNotFound(true))
   }, [slug, code])
 
+  // If this friend has already joined the comparison, skip straight to the result page.
   useEffect(() => {
     if (compare?.joined) {
       navigate(`/quiz/${slug}/vs/${code}/result`, { replace: true })
@@ -46,6 +50,7 @@ export default function CompareInvite() {
     )
   }
 
+  // Sends the friend to take the quiz, carrying along the compare code and their name.
   function handleSubmit(e) {
     e.preventDefault()
     if (!name.trim()) return
@@ -63,6 +68,7 @@ export default function CompareInvite() {
         Take the quiz yourself — you'll both find out if you match right after.
       </p>
 
+      {/* The name entry form that leads into taking the quiz */}
       <form onSubmit={handleSubmit} className="max-w-sm mx-auto">
         <input
           required

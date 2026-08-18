@@ -1,11 +1,13 @@
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import BackButton from '../components/BackButton'
 
+// A simple static "About" page — just text, no data fetching or state.
 export default function About() {
-  useDocumentMeta('About', 'Who\'s behind Twegle, and how to get in touch.')
+  useDocumentMeta('About', 'Who\'s behind Twegle, and how to get in touch.') // sets the browser tab title + meta description for this page
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 text-gray-700 dark:text-gray-300">
+      {/* A reusable "← Back" link — see components/BackButton.jsx */}
       <BackButton className="mb-4" />
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">About Twegle</h1>
 

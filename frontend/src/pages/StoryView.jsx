@@ -67,16 +67,22 @@ function useReadAloud(text, language) {
   return { supported, status, play, pause, resume, stop }
 }
 
+// The page that shows one short story — title, body text, an optional
+// read-aloud button, sharing, and other stories to read next.
 export default function StoryView() {
   const { slug } = useParams()
   const [searchParams] = useSearchParams()
   const previewToken = searchParams.get('preview')
+  // The story data loaded from the server
   const [story, setStory] = useState(null)
+  // True if no story matches this URL
   const [notFound, setNotFound] = useState(false)
+  // Other stories to recommend at the bottom of the page
   const [suggestions, setSuggestions] = useState([])
   const speech = useReadAloud(story?.body || '', story?.language)
   const viewedRef = useRef(false)
 
+  // Loads the story for this URL when the page first opens
   useEffect(() => {
     fetchStoryBySlug(slug, previewToken)
       .then((data) => (data ? setStory(data) : setNotFound(true)))
@@ -84,6 +90,7 @@ export default function StoryView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
+  // Logs this view once and remembers it in "recently viewed"
   useEffect(() => {
     if (!story || viewedRef.current || previewToken) return
     viewedRef.current = true
@@ -92,6 +99,7 @@ export default function StoryView() {
     recordRecentlyViewed({ type: 'story', url: `/story/${story.slug}`, title: story.title, emoji: style?.emoji, gradient: style?.gradient })
   }, [story, previewToken])
 
+  // Builds the "you might also like" suggestions list
   useEffect(() => {
     if (!story) return
     fetchStories(story.language)
@@ -146,6 +154,8 @@ export default function StoryView() {
         <ContentReactions contentType="story" contentId={story._id} />
       </div>
 
+      {/* Read-aloud controls: a single "Listen" button, or pause/resume/stop
+          once narration has started */}
       <div className="mt-6 flex justify-center">
         {!speech.supported ? (
           <p className="text-sm text-gray-400 dark:text-gray-500">Read-aloud isn't supported in this browser — just read on below.</p>
@@ -183,6 +193,7 @@ export default function StoryView() {
         )}
       </div>
 
+      {/* The full story text */}
       <div className="mt-8 text-left bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
         <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-line">{story.body}</p>
       </div>

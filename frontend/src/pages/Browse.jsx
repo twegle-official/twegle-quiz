@@ -12,12 +12,15 @@ const CATEGORY_META = {
   'motivational-quotes': { category: 'motivational-quote', ...POST_CATEGORY_STYLE['motivational-quote'], title: 'Motivational Quotes' },
 }
 
+// Shows a grid of posts (jokes, funny lines, quotes, or motivational
+// quotes) for whichever category is in the URL, e.g. /browse/jokes.
 export default function Browse() {
   const { category: slug } = useParams()
-  const meta = CATEGORY_META[slug]
-  const [posts, setPosts] = useState(null)
-  const [error, setError] = useState(false)
+  const meta = CATEGORY_META[slug] // looks up the title/emoji/style for this category
+  const [posts, setPosts] = useState(null) // the list of posts once loaded
+  const [error, setError] = useState(false) // true if loading the posts failed
 
+  // Loads the posts for this category whenever the URL category changes.
   useEffect(() => {
     if (!meta) return
     setPosts(null)
@@ -51,6 +54,7 @@ export default function Browse() {
         <p className="text-center text-red-500">Couldn't load these right now. Please try again shortly.</p>
       )}
 
+      {/* Placeholder boxes shown while posts are still loading */}
       {!error && !posts && (
         <div className="space-y-3 animate-pulse">
           {[0, 1, 2].map((i) => (
@@ -63,6 +67,7 @@ export default function Browse() {
         <p className="text-center text-gray-400 dark:text-gray-500">Nothing here yet — check back soon.</p>
       )}
 
+      {/* The grid of post cards once they've loaded */}
       {posts && posts.length > 0 && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {posts.map((post, i) => (

@@ -5,6 +5,8 @@ import { resetUserPassword } from '../userApi'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import BackButton from '../components/BackButton'
 
+// The "Reset Password" page — lets a user set a new password using their
+// username and Recovery Code (since accounts have no email/phone on file).
 export default function ForgotPassword() {
   const { updateSession } = useUserAuth()
   const navigate = useNavigate()
@@ -13,14 +15,15 @@ export default function ForgotPassword() {
   // prefix (see generateRecoveryCode in endUserAuthController.js), so typing
   // it out each time is pure friction; the full code is composed on submit.
   const [codeSuffix, setCodeSuffix] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [error, setError] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [newRecoveryCode, setNewRecoveryCode] = useState(null)
-  const [confirmed, setConfirmed] = useState(false)
+  const [newPassword, setNewPassword] = useState('') // the password the user is choosing
+  const [error, setError] = useState('') // holds any error message to show the user
+  const [submitting, setSubmitting] = useState(false) // true while the reset request is in progress
+  const [newRecoveryCode, setNewRecoveryCode] = useState(null) // the brand new Recovery Code, once reset succeeds
+  const [confirmed, setConfirmed] = useState(false) // checkbox confirming the user saved the new code
 
   useDocumentMeta('Reset Password', 'Reset your Twegle account password using your Recovery Code.')
 
+  // Sends the username, recovery code, and new password to reset the account's password.
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
@@ -80,6 +83,7 @@ export default function ForgotPassword() {
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
+      {/* The username, recovery code, and new password form */}
       <form onSubmit={handleSubmit}>
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Username</label>
         <input
