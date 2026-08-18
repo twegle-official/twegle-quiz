@@ -15,6 +15,7 @@ export const JUMPS = { ...LADDERS, ...SNAKES }
 // A roll that would overshoot square 100 just doesn't move the token —
 // classic "exact roll to finish" house rule, avoids ever needing to define
 // what happens past the last square.
+// Works out where a token ends up after rolling the dice, including sliding down a snake or climbing a ladder
 export function computeLanding(position, roll) {
   const next = position + roll
   if (next > BOARD_SIZE) return position
@@ -25,6 +26,7 @@ export function computeLanding(position, roll) {
 // client-supplied roll value, same "server is sole authority" rule every
 // other live move in this codebase (Connect Four's disc drops, Tic-Tac-Toe's
 // moves) already follows. crypto.randomInt is unbiased, unlike Math.random.
+// Rolls a fair 6-sided die and returns the result
 export function rollDie() {
   return crypto.randomInt(1, 7)
 }

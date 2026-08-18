@@ -3,6 +3,7 @@ import { pathToFileURL } from 'node:url'
 import { connectDB, disconnectDB } from '../config/db.js'
 import Post from '../models/Post.js'
 
+// One-time script: inserts these starter jokes/quotes/funny lines into the database if they don't already exist.
 // Re-runnable: upserts by (text, language) so re-running never duplicates.
 // Run with: npm run seed:posts
 const posts = [
@@ -120,6 +121,7 @@ const posts = [
   { category: 'funny-line', language: 'hi', status: 'published', text: 'जितना मैं प्लान बनाता हूं, उतना ही भगवान हंसता है।' },
 ]
 
+// Saves each post above into the database — updates it if the same text/language already exists, otherwise adds it as new.
 export async function seedPosts() {
   for (const p of posts) {
     await Post.findOneAndUpdate(
@@ -131,12 +133,14 @@ export async function seedPosts() {
   console.log(`Seeded ${posts.length} posts.`)
 }
 
+// Connects to the database, runs the seeding, then disconnects.
 async function main() {
   await connectDB()
   await seedPosts()
   await disconnectDB()
 }
 
+// Only runs main() automatically when this file is executed directly (not when imported elsewhere).
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err) => {
     console.error(err)

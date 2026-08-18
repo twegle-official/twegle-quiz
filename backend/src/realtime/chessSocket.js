@@ -13,6 +13,7 @@ export function registerChessSocket(io) {
   const nsp = io.of('/chess')
 
   nsp.on('connection', (socket) => {
+    // A player opens or reconnects to the match, so they get seated in the room and sent the current position
     socket.on('joinRoom', async ({ code, role }) => {
       try {
         const game = await ChessGame.findOne({ code })
@@ -28,6 +29,7 @@ export function registerChessSocket(io) {
       }
     })
 
+    // A player drags/drops a piece to make their move
     socket.on('makeMove', async ({ code, role, from, to, promotion }) => {
       try {
         if (role !== 'white' && role !== 'black') return socket.emit('errorMsg', 'Invalid role')
@@ -80,6 +82,7 @@ export function registerChessSocket(io) {
     // trigger it once finished, no consent needed, reuses the same
     // code/room. Starter strictly alternates every round regardless of who
     // won, otherwise whoever sent the invite would always move first.
+    // A player asks to start a new round after the match has finished
     socket.on('rematch', async ({ code, role }) => {
       try {
         if (role !== 'white' && role !== 'black') return socket.emit('errorMsg', 'Invalid role')

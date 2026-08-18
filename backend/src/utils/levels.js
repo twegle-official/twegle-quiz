@@ -42,6 +42,7 @@ export const LEVELS = [
 // on direct request; previously one shared `stats.streak`), each
 // contributing its own weekly points. See statsSync.js for why the nesting
 // and for how legacy accounts' old single `streak` field migrates.
+// Adds up all of a user's activity into one total points score
 export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
   if (!stats) return 0
   const gamePlays = Object.values(stats.gamesPlayed || {}).reduce(

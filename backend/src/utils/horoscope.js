@@ -32,6 +32,7 @@ function combinedIndex(dateUnit, signIndex) {
   return Math.abs(dateUnit * 13 + signIndex * 7)
 }
 
+// Builds the horoscope text (sign info, trait, action, disclaimer) for one sign/period/language
 export function computeHoroscope(signKey, period, language, date = new Date()) {
   const sign = findZodiacSign(signKey)
   if (!sign) return null

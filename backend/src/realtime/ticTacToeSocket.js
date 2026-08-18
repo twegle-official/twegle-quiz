@@ -11,6 +11,7 @@ const WIN_LINES = [
   [0, 4, 8], [2, 4, 6],
 ]
 
+// Checks the board for 3 matching marks in a row, column, or diagonal
 function checkWinner(board) {
   for (const [a, b, c] of WIN_LINES) {
     if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a]
@@ -18,6 +19,7 @@ function checkWinner(board) {
   return null
 }
 
+// Shapes a Tic-Tac-Toe game document into the plain object sent to the frontend
 function gamePayload(game) {
   return {
     code: game.code,
@@ -34,6 +36,7 @@ export function registerTicTacToeSocket(io) {
   const nsp = io.of('/tic-tac-toe')
 
   nsp.on('connection', (socket) => {
+    // A player opens or reconnects to the match, so they get seated in the room and sent the current board
     socket.on('joinRoom', async ({ code, role }) => {
       try {
         const game = await TicTacToeGame.findOne({ code })
@@ -49,6 +52,7 @@ export function registerTicTacToeSocket(io) {
       }
     })
 
+    // A player taps a cell to place their mark
     socket.on('makeMove', async ({ code, role, cell }) => {
       try {
         if (role !== 'X' && role !== 'O') return socket.emit('errorMsg', 'Invalid role')
@@ -97,6 +101,7 @@ export function registerTicTacToeSocket(io) {
     // neither player needs a new link. Starter strictly alternates every
     // round (X, then O, then X, ...) regardless of who won — otherwise the
     // player who sent the invite would keep getting first move forever.
+    // A player asks to start a new round after the match has finished
     socket.on('rematch', async ({ code, role }) => {
       try {
         if (role !== 'X' && role !== 'O') return socket.emit('errorMsg', 'Invalid role')

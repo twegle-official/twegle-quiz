@@ -288,6 +288,7 @@ const quizzes = [
   },
 ]
 
+// Saves each quiz above into the database — updates it if a quiz with the same slug already exists, otherwise adds it as new.
 export async function seedFriendshipQuizzes() {
   for (const q of quizzes) {
     await FriendshipQuiz.findOneAndUpdate({ slug: q.slug }, q, { upsert: true, returnDocument: 'after' })
@@ -295,12 +296,14 @@ export async function seedFriendshipQuizzes() {
   }
 }
 
+// Connects to the database, runs the seeding, then disconnects.
 async function main() {
   await connectDB()
   await seedFriendshipQuizzes()
   await disconnectDB()
 }
 
+// Only runs main() automatically when this file is executed directly (not when imported elsewhere).
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err) => {
     console.error(err)

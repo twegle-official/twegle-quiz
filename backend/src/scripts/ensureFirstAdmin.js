@@ -6,6 +6,7 @@ import Admin from '../models/Admin.js'
 // so a freshly deployed server (or a local dev database) always has a way in
 // without needing shell access to run a one-off script.
 export async function ensureFirstAdmin() {
+  // If there's already at least one admin, there's nothing to do.
   const count = await Admin.countDocuments()
   if (count > 0) return
 
@@ -13,11 +14,13 @@ export async function ensureFirstAdmin() {
   const password = process.env.SEED_ADMIN_PASSWORD
   const name = process.env.SEED_ADMIN_NAME || 'Admin'
 
+  // Can't create an account without an email and password configured.
   if (!email || !password) {
     console.log('No admin accounts exist yet. Set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in .env to create one automatically, or use "npm run seed:admin".')
     return
   }
 
+  // Scramble the password before saving it, then create the admin account.
   const passwordHash = await bcrypt.hash(password, 10)
   await Admin.create({ name, email: email.toLowerCase(), passwordHash, role: 'superadmin' })
   console.log(`First superadmin created automatically: ${email}`)

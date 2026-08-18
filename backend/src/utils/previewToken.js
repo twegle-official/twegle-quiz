@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken'
 // session (or vice versa) even though it shares a signing key.
 const EXPIRES_IN = '30m'
 
+// Creates a temporary preview link token for one piece of unpublished content
 export function signPreviewToken(contentType, id) {
   return jwt.sign({ purpose: 'preview', contentType, id: String(id) }, process.env.JWT_SECRET, {
     expiresIn: EXPIRES_IN,
@@ -18,6 +19,7 @@ export function signPreviewToken(contentType, id) {
 // all" by every caller (falls back to the normal published-only check) --
 // a live site should just 404 an unpublished item to a guest, not error out
 // or hint that a draft exists.
+// Checks whether a preview token is real, unexpired, and matches this exact piece of content
 export function isValidPreviewToken(token, contentType, id) {
   if (!token) return false
   try {

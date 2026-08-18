@@ -4,6 +4,7 @@ import { computeLanding, rollDie, BOARD_SIZE } from '../utils/snakeLadder.js'
 // Same real-time pattern as connectFourSocket.js/ticTacToeSocket.js — the
 // server is sole authority on the die roll (never trust a client-supplied
 // value) and on where it lands, then broadcasts the result to both players.
+// Shapes a Snake and Ladder game document into the plain object sent to the frontend
 function gamePayload(game) {
   return {
     code: game.code,
@@ -21,6 +22,7 @@ export function registerSnakeLadderSocket(io) {
   const nsp = io.of('/snake-ladder')
 
   nsp.on('connection', (socket) => {
+    // A player opens or reconnects to the match, so they get seated in the room and sent the current state
     socket.on('joinRoom', async ({ code, role }) => {
       try {
         const game = await SnakeLadderGame.findOne({ code })
@@ -36,6 +38,7 @@ export function registerSnakeLadderSocket(io) {
       }
     })
 
+    // A player taps the dice to take their turn
     socket.on('rollDice', async ({ code, role }) => {
       try {
         if (role !== 'one' && role !== 'two') return socket.emit('errorMsg', 'Invalid role')
@@ -74,6 +77,7 @@ export function registerSnakeLadderSocket(io) {
     // trigger it once finished, no consent needed, reuses the same
     // code/room. Starter strictly alternates every round (one, then two,
     // then one, ...) regardless of who won.
+    // A player asks to start a new round after the match has finished
     socket.on('rematch', async ({ code, role }) => {
       try {
         if (role !== 'one' && role !== 'two') return socket.emit('errorMsg', 'Invalid role')

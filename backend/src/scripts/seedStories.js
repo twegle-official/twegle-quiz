@@ -195,6 +195,7 @@ Whatever impossible thing stands in front of you today, it was never asking you 
   },
 ]
 
+// Saves each story above into the database — updates it if a story with the same slug already exists, otherwise adds it as new.
 export async function seedStories() {
   for (const s of stories) {
     await Story.findOneAndUpdate({ slug: s.slug }, s, { upsert: true, returnDocument: 'after' })
@@ -202,12 +203,14 @@ export async function seedStories() {
   console.log(`Seeded ${stories.length} stories.`)
 }
 
+// Connects to the database, runs the seeding, then disconnects.
 async function main() {
   await connectDB()
   await seedStories()
   await disconnectDB()
 }
 
+// Only runs main() automatically when this file is executed directly (not when imported elsewhere).
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err) => {
     console.error(err)
