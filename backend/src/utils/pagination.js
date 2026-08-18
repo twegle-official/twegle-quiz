@@ -9,6 +9,7 @@ export function parsePagination(query) {
   return { page, limit, skip: (page - 1) * limit }
 }
 
+// Builds the "page 2 of 5" style summary object sent back to the frontend
 export function paginationMeta(page, limit, total) {
   return { page, limit, total, totalPages: Math.max(1, Math.ceil(total / limit)) }
 }

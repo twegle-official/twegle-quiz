@@ -1,6 +1,7 @@
 import ConnectFourGame, { CONNECT_FOUR_ROWS, CONNECT_FOUR_COLS } from '../models/ConnectFourGame.js'
 import { findLandingRow, checkWinner, isBoardFull } from '../utils/connectFour.js'
 
+// Builds a fresh, empty Connect Four board (used at game start and for rematches)
 function emptyBoard() {
   return Array.from({ length: CONNECT_FOUR_ROWS }, () => Array(CONNECT_FOUR_COLS).fill(''))
 }
@@ -14,6 +15,7 @@ function emptyBoard() {
 // client just re-joins the room and gets the real current state pulled from
 // the DB, the same way a fresh page load already would. Only the "instant"
 // delivery is at risk during a gap, never the game state.
+// Shapes a Connect Four game document into the plain object sent to the frontend
 function gamePayload(game) {
   return {
     code: game.code,
@@ -35,6 +37,7 @@ export function registerConnectFourSocket(io) {
     // is legitimate for this game, exactly the same "never trust the
     // client's claimed identity" rule the async Tic-Tac-Toe move validation
     // already follows.
+    // A player opens or reconnects to the match, so they get seated in the room and sent the current board
     socket.on('joinRoom', async ({ code, role }) => {
       try {
         const game = await ConnectFourGame.findOne({ code })
@@ -50,6 +53,7 @@ export function registerConnectFourSocket(io) {
       }
     })
 
+    // A player picks a column to drop their disc into
     socket.on('dropDisc', async ({ code, role, column }) => {
       try {
         if (role !== 'red' && role !== 'yellow') return socket.emit('errorMsg', 'Invalid role')
@@ -101,6 +105,7 @@ export function registerConnectFourSocket(io) {
     // code/room. Starter strictly alternates every round (red, then
     // yellow, then red, ...) regardless of who won — otherwise the player
     // who sent the invite would keep dropping first forever.
+    // A player asks to start a new round after the match has finished
     socket.on('rematch', async ({ code, role }) => {
       try {
         if (role !== 'red' && role !== 'yellow') return socket.emit('errorMsg', 'Invalid role')

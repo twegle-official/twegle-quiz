@@ -12,6 +12,7 @@ import EndUser from '../models/EndUser.js'
 // login) — tokens last 30 days, so without this an admin disabling an
 // account wouldn't actually stop it from acting until the token expired on
 // its own, which defeats the point of a moderation action.
+// Checks that a request has a valid, active end-user login token before letting it continue.
 export async function requireUserAuth(req, res, next) {
   const header = req.headers.authorization || ''
   const token = header.startsWith('Bearer ') ? header.slice(7) : null

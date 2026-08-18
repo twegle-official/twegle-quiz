@@ -16,12 +16,19 @@ function roleStorageKey(code) {
   return `connectfour-role-${code}`
 }
 
+// The live two-player Connect Four page — shows the board, sends/receives
+// disc drops over a socket connection, and handles joining and rematch.
 export default function ConnectFourMultiplayer() {
   const { code } = useParams()
+  // The current game state as last received from the server (board, turn, etc.)
   const [game, setGame] = useState(null)
+  // True if no game matches this invite code
   const [notFound, setNotFound] = useState(false)
+  // 'red' or 'yellow' — which side this browser is playing, remembered in localStorage
   const [role, setRole] = useState(() => localStorage.getItem(roleStorageKey(code)))
+  // The name typed into the "join as Yellow" form
   const [joinName, setJoinName] = useState('')
+  // True while the join request is in progress
   const [joining, setJoining] = useState(false)
   const [error, setError] = useState('')
   const droppingRef = useRef(false)
@@ -45,12 +52,16 @@ export default function ConnectFourMultiplayer() {
   useEffect(() => {
     if (!role) return
 
+    // Runs whenever the server sends an updated game state (after a move,
+    // a player joining, a rematch, etc.) — replaces our local copy with it
     function handleGameState(data) {
       setGame(data)
     }
+    // Shows an error message sent by the server
     function handleError(message) {
       setError(message)
     }
+    // Tells the server which game and role this browser belongs to
     function joinRoom() {
       connectFourSocket.emit('joinRoom', { code, role })
     }
@@ -83,6 +94,7 @@ export default function ConnectFourMultiplayer() {
     }
   }, [game?.status, game?.winner, role])
 
+  // Submits the "join as Yellow" form
   async function handleJoin(e) {
     e.preventDefault()
     if (!joinName.trim()) return
@@ -100,6 +112,8 @@ export default function ConnectFourMultiplayer() {
     }
   }
 
+  // Handles clicking a column to drop a disc into it, and sends the move
+  // to the server
   function handleColumnClick(column) {
     if (droppingRef.current) return
     if (!role || !game || game.status !== 'in_progress' || game.currentTurn !== role) return
@@ -211,6 +225,7 @@ export default function ConnectFourMultiplayer() {
 
       {/* Reclaims this page's own px-4 padding on mobile only, same fix as
           ConnectFour.jsx's single-player board. Unchanged at `sm`+. */}
+      {/* The game board itself — click a column to drop a disc in it */}
       <div className="-mx-4 sm:mx-0 flex justify-center mb-6">
         <div className="inline-block bg-blue-500 dark:bg-blue-700 rounded-2xl p-2 sm:p-2">
           <div className="grid grid-cols-7 gap-1.5 sm:gap-1">
@@ -242,6 +257,7 @@ export default function ConnectFourMultiplayer() {
         </div>
       </div>
 
+      {/* Invite link to share while waiting for an opponent */}
       {game.status === 'waiting' && (
         <div className="mb-6">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Send this link to a friend:</p>
@@ -253,6 +269,7 @@ export default function ConnectFourMultiplayer() {
         </div>
       )}
 
+      {/* Rematch button and result-sharing shown once the game ends */}
       {game.status === 'finished' && (
         <div className="mb-6">
           <button

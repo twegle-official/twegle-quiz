@@ -3,6 +3,7 @@ import { pathToFileURL } from 'node:url'
 import { connectDB, disconnectDB } from '../config/db.js'
 import Quiz from '../models/Quiz.js'
 
+// One-time script: inserts these starter quizzes into the database if they don't already exist, run via `npm run seed:quizzes`.
 // One-off / re-runnable command to load the starter quizzes into the real
 // database, published and ready to view. Run with: npm run seed:quizzes
 // Safe to re-run — upserts by slug instead of duplicating.
@@ -1918,6 +1919,7 @@ quizzes.push({
   ],
 })
 
+// Saves each quiz above into the database — updates it if a quiz with the same slug already exists, otherwise adds it as new.
 export async function seedQuizzes() {
   for (const q of quizzes) {
     await Quiz.findOneAndUpdate({ slug: q.slug }, q, { upsert: true, returnDocument: 'after' })
@@ -1925,12 +1927,14 @@ export async function seedQuizzes() {
   }
 }
 
+// Connects to the database, runs the seeding, then disconnects.
 async function main() {
   await connectDB()
   await seedQuizzes()
   await disconnectDB()
 }
 
+// Only runs main() automatically when this file is executed directly (not when imported elsewhere).
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err) => {
     console.error(err)

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 
+// The pool of emoji "cards" — each one appears twice in the deck, forming a pair to match.
 const EMOJIS = ['🎈', '🎁', '🎂', '🎉', '🍕', '🍔']
 
+// Builds a fresh deck (two of each emoji) and shuffles the order randomly.
 function shuffledDeck() {
   const deck = [...EMOJIS, ...EMOJIS].map((emoji, i) => ({ id: i, emoji }))
   for (let i = deck.length - 1; i > 0; i--) {
@@ -11,12 +13,13 @@ function shuffledDeck() {
   return deck
 }
 
+// The Memory Match card-flipping game — find every matching pair of emoji.
 export default function MemoryMatch({ onGameEnd, onReset }) {
-  const [deck, setDeck] = useState(shuffledDeck)
-  const [flipped, setFlipped] = useState([])
-  const [matched, setMatched] = useState([])
-  const [moves, setMoves] = useState(0)
-  const [notified, setNotified] = useState(false)
+  const [deck, setDeck] = useState(shuffledDeck) // the shuffled cards for this round
+  const [flipped, setFlipped] = useState([]) // indexes of the cards currently face-up (waiting to be compared)
+  const [matched, setMatched] = useState([]) // indexes of cards already matched and locked in
+  const [moves, setMoves] = useState(0) // how many pairs the player has tried
+  const [notified, setNotified] = useState(false) // guards against reporting the win more than once
 
   const isWon = matched.length === deck.length
 
@@ -35,17 +38,20 @@ export default function MemoryMatch({ onGameEnd, onReset }) {
     }
   }, [flipped, deck])
 
+  // Once every card is matched, report the win exactly once.
   useEffect(() => {
     if (!isWon || notified) return
     setNotified(true)
     onGameEnd?.('win', moves)
   }, [isWon, notified, onGameEnd, moves])
 
+  // Runs when a card is clicked — flips it face-up, unless two are already showing.
   function handleCardClick(i) {
     if (flipped.length === 2 || flipped.includes(i) || matched.includes(i)) return
     setFlipped((f) => [...f, i])
   }
 
+  // Starts a brand new game with a freshly shuffled deck.
   function handleReset() {
     setDeck(shuffledDeck())
     setFlipped([])

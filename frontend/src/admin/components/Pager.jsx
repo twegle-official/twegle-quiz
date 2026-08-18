@@ -1,4 +1,6 @@
+// Previous/Next page controls shown under admin list tables (quizzes, posts, etc.)
 export default function Pager({ page, totalPages, total, onPageChange }) {
+  // No need for paging controls if everything fits on one page
   if (totalPages <= 1) return null
 
   return (

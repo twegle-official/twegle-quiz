@@ -114,6 +114,8 @@ function sortItems(items, tab, mode) {
   return [...items].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
 }
 
+// The homepage — the tabbed browse view for Games, Quizzes, Friendship Quiz,
+// Puzzles, Posts, Stories, and Horoscope, with language/category/sort filters.
 export default function Home() {
   // Every filter (tab, language, sort, and each tab's own category/
   // difficulty chip) lives in the URL rather than local state, so all of
@@ -124,6 +126,8 @@ export default function Home() {
   // instead means Back simply restores the same URL, filters included.
   const [searchParams, setSearchParams] = useSearchParams()
 
+  // Reads one filter's value out of the URL, falling back to a default if
+  // it's missing or not one of the allowed values.
   function getParam(key, allowedKeys, fallback) {
     const value = searchParams.get(key)
     return allowedKeys.includes(value) ? value : fallback
@@ -144,10 +148,12 @@ export default function Home() {
     )
   }
 
+  // Which tab is currently open (Games, Quizzes, Puzzles, etc).
   const activeTab = getParam('tab', TABS.map((t) => t.key), 'games')
   function setActiveTab(tab) {
     setParam('tab', tab, 'games', { push: true })
   }
+  // English or Hindi — applies across every tab.
   const language = getParam('lang', ['en', 'hi'], 'en')
   function setLanguage(lang) {
     setParam('lang', lang, 'en')
@@ -172,6 +178,7 @@ export default function Home() {
   function setGameCategory(cat) {
     setParam('gcat', cat, 'all')
   }
+  // Whether the content grid is sorted by newest first or by popularity.
   const sortMode = getParam('sort', ['newest', 'trending'], 'newest')
   function setSortMode(mode) {
     setParam('sort', mode, 'newest')
@@ -208,6 +215,7 @@ export default function Home() {
   // its tiles. Found directly: revealing a puzzle on mobile didn't show the
   // mark on an already-open desktop tab even after the sync itself ran.
   const [, forceStatsRerender] = useState(0)
+  // Listens for the cross-device sync event and re-renders when it fires.
   useEffect(() => {
     function handleStatsSynced() {
       forceStatsRerender((n) => n + 1)
@@ -231,12 +239,14 @@ export default function Home() {
     window.scrollTo(0, 0)
   }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, gameCategory, sortMode])
 
+  // Fetches today's "N played today" count for the hero stats band.
   useEffect(() => {
     fetchTodayStats()
       .then((data) => data && setPlaysToday(data.playsToday))
       .catch(() => {})
   }, [])
 
+  // Fetches the total quiz/post counts for the hero stats band.
   useEffect(() => {
     Promise.all([fetchQuizzes(), fetchPosts()])
       .then(([quizzes, posts]) => {
@@ -266,7 +276,8 @@ export default function Home() {
       .catch(() => {})
   }, [language])
 
-
+  // The main content-loading effect — fetches whatever list of items belongs
+  // to the currently active tab/language/category, whenever any of those change.
   useEffect(() => {
     let cancelled = false
     setError(false)
@@ -356,12 +367,14 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPostTab, items])
 
+  // Sends a reaction (emoji click) on a post tile and updates its count.
   function handleReact(postId, emoji) {
     setPostReaction(postId, emoji).then((counts) => {
       setReactionCounts((prev) => ({ ...prev, [postId]: counts }))
     })
   }
 
+  // Structured data (for search engines) describing the site itself.
   const websiteSchema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
@@ -426,6 +439,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Row of recently-viewed content, shown just under the hero banner */}
       <RecentlyViewedRow />
 
       {/* Side by side (not stacked) on every screen size, including mobile —
@@ -438,6 +452,7 @@ export default function Home() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 pt-2 sm:pt-6 pb-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
+      {/* The sidebar: language toggle, sort toggle, tab list, and the active tab's category chips */}
       <aside className="flex flex-col gap-1.5 mb-4 lg:mb-0 lg:gap-2 lg:sticky lg:top-6">
         {/* Language and Trending/Newest share one row below `lg` — both are
             "global" filters (apply the same way regardless of active tab),
@@ -602,6 +617,7 @@ export default function Home() {
         )}
       </aside>
 
+      {/* The main content area: loading state, empty state, or the grid of items for the active tab */}
       <div>
       {error && (
         <p className="text-center text-red-500 dark:text-red-400">

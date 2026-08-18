@@ -3,10 +3,13 @@ import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { getStoryShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 
+// A clickable story tile shown in lists of short stories — links through to
+// the full story page.
 export default function StoryCard({ story, index = 0 }) {
   const style = STORY_CATEGORY_STYLE[story.category]
   if (!style) return null
 
+  // Staggers each card's fade-in animation slightly, based on its position in the list.
   const animationStyle = { animationDelay: `${index * 60}ms`, animationFillMode: 'backwards' }
 
   return (
@@ -15,6 +18,7 @@ export default function StoryCard({ story, index = 0 }) {
       className={`relative flex h-full flex-col rounded-2xl p-6 text-white shadow-md hover:scale-[1.02] transition-transform animate-fade-slide-in bg-gradient-to-br ${style.gradient}`}
       style={animationStyle}
     >
+      {/* Small share icon in the corner of the card */}
       <TileShareButton
         title={story.title}
         shareUrl={getStoryShareUrl(story.slug)}

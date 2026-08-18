@@ -40,6 +40,8 @@ export const LEVELS = [
 // getPuzzleStreak().count — two independent streaks (split apart on direct
 // request; previously one shared counter), each contributing its own weekly
 // points.
+// Adds up a visitor's total points from everything they've done (quizzes,
+// puzzles, games, shares, reactions, streaks) and returns the total.
 export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
   if (!stats) return 0
   const gamePlays = Object.values(stats.gamesPlayed || {}).reduce(

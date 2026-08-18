@@ -4,6 +4,8 @@ import { listAdmins, createAdmin, deleteAdmin } from '../adminApi'
 
 const emptyForm = { name: '', email: '', password: '', role: 'editor' }
 
+// This page manages who has an admin account — the people who can log into
+// this dashboard. You can add a new admin here or remove one.
 export default function Admins() {
   const { session } = useAuth()
   const [admins, setAdmins] = useState(null)
@@ -11,6 +13,7 @@ export default function Admins() {
   const [error, setError] = useState('')
   const [creating, setCreating] = useState(false)
 
+  // Fetches the current list of admins from the server.
   function load() {
     listAdmins(session.token)
       .then((data) => setAdmins(data.admins))
@@ -19,6 +22,7 @@ export default function Admins() {
 
   useEffect(load, [session.token])
 
+  // Runs when the "Add Admin" form is submitted.
   async function handleCreate(e) {
     e.preventDefault()
     setCreating(true)
@@ -34,6 +38,7 @@ export default function Admins() {
     }
   }
 
+  // Runs when the "Remove" button is clicked for an admin — asks for confirmation first.
   async function handleDelete(id, name) {
     if (!window.confirm(`Remove admin "${name}"?`)) return
     await deleteAdmin(session.token, id)

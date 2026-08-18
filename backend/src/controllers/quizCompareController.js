@@ -3,10 +3,12 @@ import Quiz from '../models/Quiz.js'
 import QuizCompare from '../models/QuizCompare.js'
 import { LIMITS } from '../utils/validators.js'
 
+// Makes a random short code to use in a shareable compare link.
 function generateCode() {
   return crypto.randomBytes(6).toString('base64url')
 }
 
+// Keeps making codes until it finds one that isn't already used.
 async function generateUniqueCode() {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateCode()
@@ -16,6 +18,7 @@ async function generateUniqueCode() {
   throw new Error('Could not generate a unique code')
 }
 
+// Checks that a submitted name isn't empty and isn't too long.
 function validateName(name) {
   if (typeof name !== 'string' || !name.trim()) return 'Your name is required'
   if (name.length > LIMITS.MAX_NAME_LENGTH) {
@@ -24,6 +27,7 @@ function validateName(name) {
   return null
 }
 
+// Builds the small chunk of data shown for one person's quiz result.
 function personPayload(quiz, name, resultKey) {
   const result = quiz.results.find((r) => r.key === resultKey)
   return {
@@ -38,6 +42,7 @@ function personPayload(quiz, name, resultKey) {
 // Before a friend has played, we deliberately withhold person A's result —
 // just their name — so seeing it can't bias the friend's own answers. Once
 // the friend has played too, both full results are revealed together.
+// Builds what gets sent back to the browser for a compare link's page.
 function comparePayload(quiz, compare) {
   const joined = Boolean(compare.personBResultKey)
   const base = {
@@ -60,6 +65,7 @@ function comparePayload(quiz, compare) {
 
 // --- Public-facing (no auth) ---
 
+// Handles person A starting a compare link — saves their name and result, then returns a shareable code.
 export async function createCompareSession(req, res) {
   const { name, resultKey } = req.body
 
@@ -84,6 +90,7 @@ export async function createCompareSession(req, res) {
   res.status(201).json({ code })
 }
 
+// Handles someone opening a compare link — shows the current status and results if both people have played.
 export async function getCompareSession(req, res) {
   const compare = await QuizCompare.findOne({ code: req.params.code })
   if (!compare) return res.status(404).json({ error: 'Link not found' })
@@ -94,6 +101,7 @@ export async function getCompareSession(req, res) {
   res.json(comparePayload(quiz, compare))
 }
 
+// Handles person B joining via the link and submitting their own result.
 export async function joinCompareSession(req, res) {
   const { name, resultKey } = req.body
 

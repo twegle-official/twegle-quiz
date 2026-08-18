@@ -48,6 +48,7 @@ function writeLocalBlob(blob) {
   if (blob.badgesSeen) localStorage.setItem(SEEN_KEY, JSON.stringify(blob.badgesSeen))
 }
 
+// Combines two devices' streaks into one, keeping the most up-to-date one.
 // Whichever streak kept itself alive most recently wins outright (it's the
 // one that actually reflects "today"); a tie on date falls back to the
 // higher count, though in practice a same-day tie means they're identical.
@@ -58,6 +59,8 @@ function mergeStreak(a, b) {
   return a.lastDate > b.lastDate ? a : b
 }
 
+// Combines two devices' stats into one, always keeping the higher/bigger
+// value for each stat so nothing gets lost when syncing.
 // Every other stat is a monotonically-increasing counter (or a set), so
 // merging is just "take whichever side got further" per field — no data
 // from either device is ever lost by syncing.
@@ -77,6 +80,7 @@ function mergeStats(a = {}, b = {}) {
   }
 }
 
+// Sends this device's local stats up to the server for a logged-in user.
 // Fire-and-forget — called after every local mutation (see dailyQuiz.js's
 // recordQuizStreakCompletion/recordPuzzleStreakCompletion and badges.js's
 // update()) so the server copy stays current. A logged-out visitor has no
@@ -100,6 +104,9 @@ function normalizeServerBlob(serverBlob) {
   }
 }
 
+// Runs when someone logs in — combines this device's stats with the
+// account's stats from the server (so progress from both is kept), saves
+// the combined result locally, and sends it back up to the server too.
 // Called once when a session is available (see UserAuthContext.jsx) —
 // pulls the account's server-side copy, merges it with whatever this
 // browser already has locally so neither side loses progress, writes the

@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react'
 // rather than triggered fresh per click. `preventDefault()` stops the
 // browser's own mini-infobar so nothing appears until the visitor actually
 // clicks our button; nothing here shows automatically or repeats itself.
+// Handles the "Add to Home Screen" install prompt — tracks whether the app
+// can be installed, whether it's already installed, and lets a button
+// trigger the install popup.
 export function useInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [installed, setInstalled] = useState(
@@ -28,6 +31,7 @@ export function useInstallPrompt() {
     }
   }, [])
 
+  // Shows the browser's install popup and waits to see if the user accepts.
   async function promptInstall() {
     if (!deferredPrompt) return
     deferredPrompt.prompt()

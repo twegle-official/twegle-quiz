@@ -5,6 +5,7 @@ import Pager from '../components/Pager'
 
 const PAGE_SIZE = 50
 
+// Turns the internal type names (used in the database) into readable labels.
 const RESOURCE_LABELS = {
   quiz: 'Quiz',
   post: 'Post',
@@ -23,6 +24,8 @@ const ACTION_STYLE = {
 const SELECT_CLASS =
   'px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-sm text-gray-700 dark:text-gray-300'
 
+// This page shows the activity log — a history of who created, edited, or
+// deleted content, so you can see what every admin has been doing.
 export default function Activity() {
   const { session } = useAuth()
   const [entries, setEntries] = useState(null)
@@ -34,12 +37,14 @@ export default function Activity() {
   const [resourceTypeFilter, setResourceTypeFilter] = useState('')
   const [actionFilter, setActionFilter] = useState('')
 
+  // Loads the list of admins, used to fill the "filter by admin" dropdown.
   useEffect(() => {
     listAdmins(session.token)
       .then((data) => setAdmins(data.admins))
       .catch(() => {}) // filter dropdown just stays empty — not worth erroring the whole page over
   }, [session.token])
 
+  // Loads the activity log entries whenever the page number or any filter changes.
   useEffect(() => {
     fetchActivityLog(session.token, {
       page,
@@ -119,7 +124,8 @@ export default function Activity() {
 
       {entries && entries.length > 0 && (
         <>
-          {/* Below sm: a wide 5-column table has no room to breathe and
+          {/* Mobile view: a list of cards instead of a table.
+              Below sm: a wide 5-column table has no room to breathe and
               mobile browsers hide the scrollbar that would hint it's
               scrollable at all, so it just reads as cut off. A stacked card
               per entry (same pattern as the Dashboard's Recent Activity
@@ -139,6 +145,7 @@ export default function Activity() {
             ))}
           </div>
 
+          {/* Desktop/tablet view: the same entries shown as a table. */}
           <div className="hidden sm:block bg-white dark:bg-gray-900 rounded-xl shadow-sm overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">
               <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-left">

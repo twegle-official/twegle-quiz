@@ -42,6 +42,7 @@ const QUIZ_EXAMPLE = `[
   }
 ]`
 
+// Shows a list of which items imported successfully and which failed, after a bulk import runs.
 function ResultLog({ results }) {
   if (results.length === 0) return null
   const succeeded = results.filter((r) => r.ok).length
@@ -64,6 +65,8 @@ function ResultLog({ results }) {
   )
 }
 
+// The "Posts" tab — lets you paste a list of jokes/quotes/etc. (one per
+// line) and publish them all at once instead of adding them one by one.
 function BulkPosts() {
   const { session } = useAuth()
   const [category, setCategory] = useState('joke')
@@ -74,6 +77,7 @@ function BulkPosts() {
 
   const lineCount = text.split('\n').map((l) => l.trim()).filter(Boolean).length
 
+  // Runs when "Import" is clicked — creates one post per line of text.
   async function handleSubmit(e) {
     e.preventDefault()
     const lines = text.split('\n').map((l) => l.trim()).filter(Boolean)
@@ -154,6 +158,9 @@ function BulkPosts() {
   )
 }
 
+// The "Quizzes" tab — lets you paste several quizzes at once as JSON text
+// (e.g. exported from a spreadsheet or written with ChatGPT) instead of
+// building each one by hand in the regular quiz form.
 function BulkQuizzes() {
   const { session } = useAuth()
   const [json, setJson] = useState('')
@@ -161,6 +168,7 @@ function BulkQuizzes() {
   const [parseError, setParseError] = useState('')
   const [results, setResults] = useState([])
 
+  // Runs when "Import Quizzes" is clicked — reads the pasted JSON and creates each quiz.
   async function handleSubmit(e) {
     e.preventDefault()
     setParseError('')
@@ -220,6 +228,9 @@ function BulkQuizzes() {
   )
 }
 
+// This page lets you add many pieces of content at once instead of
+// creating them one at a time in the normal forms. It has two tabs: one
+// for simple posts, one for full quizzes.
 export default function BulkImport() {
   const [tab, setTab] = useState('posts')
 

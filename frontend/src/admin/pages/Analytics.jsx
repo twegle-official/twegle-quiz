@@ -3,6 +3,7 @@ import { useAuth } from '../AuthContext'
 import { fetchAnalytics, fetchPostAnalytics, fetchEngagementSummary, fetchWeeklyDigest } from '../adminApi'
 import { exportToCSV } from '../csvExport'
 
+// A small button that downloads the table above it as a CSV file (opens in Excel/Sheets).
 function ExportButton({ filename, rows, columns }) {
   return (
     <button
@@ -78,6 +79,8 @@ function EngagementTable({ title, columnLabel, summary, error }) {
   )
 }
 
+// This page shows how well content is performing — views, shares, and plays
+// for quizzes, posts, games, and everything else on the site.
 export default function Analytics() {
   const { session } = useAuth()
   const [summary, setSummary] = useState(null)
@@ -86,6 +89,8 @@ export default function Analytics() {
   const [digest, setDigest] = useState(null)
   const [error, setError] = useState('')
 
+  // Loads all the numbers shown on this page — the weekly summary, quiz
+  // plays, post views/shares, and engagement for every other content type.
   useEffect(() => {
     fetchWeeklyDigest(session.token)
       .then((data) => setDigest(data.digest))
@@ -111,6 +116,7 @@ export default function Analytics() {
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
+      {/* Quick summary banner of this week's totals */}
       {digest && (
         <div className="bg-gradient-to-br from-violet-500 to-pink-500 rounded-xl shadow-sm p-5 mb-8 text-white">
           <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">This week</p>

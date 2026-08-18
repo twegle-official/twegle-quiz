@@ -16,6 +16,8 @@ export const SEEN_KEY = 'twegleBadgesSeen'
 // one-off badges are two different systems (see FRONTEND.md).
 export const LEVEL_SEEN_KEY = 'twegleLevelSeen'
 
+// Reads the visitor's saved stats (games played, quizzes done, etc.) from
+// this browser, filling in defaults for anything missing.
 export function getStats() {
   try {
     return {
@@ -105,6 +107,8 @@ function update(mutate) {
   pushLocalStatsToServer()
 }
 
+// Call this whenever a visitor finishes a game — logs the play (and the
+// win, if they won), then checks if that unlocked any new badges/levels.
 export function recordGamePlayed(slug, outcome) {
   update((s) => {
     s.gamesPlayed[slug] = (s.gamesPlayed[slug] || 0) + 1
@@ -113,6 +117,8 @@ export function recordGamePlayed(slug, outcome) {
   recordDailyActivity('games')
 }
 
+// Call this whenever a visitor finishes a quiz — adds it to their
+// completed list (only once) and checks for new badges/levels.
 export function recordQuizCompleted(slug) {
   update((s) => {
     if (!s.quizzesCompleted.includes(slug)) s.quizzesCompleted.push(slug)
@@ -137,16 +143,20 @@ export function hasCompletedQuiz(slug) {
   return getStats().quizzesCompleted.includes(slug)
 }
 
+// True/false — has this visitor already revealed this puzzle's answer?
 export function hasRevealedPuzzle(puzzleId) {
   return getStats().puzzlesRevealed.includes(puzzleId)
 }
 
+// Call this when a visitor gets every answer right on a right-or-wrong
+// quiz — unlocks the "Perfect Score" badge.
 export function recordPerfectTrivia() {
   update((s) => {
     s.perfectTrivia = true
   })
 }
 
+// Call this whenever a visitor reacts (emoji reaction) to something.
 export function recordReaction() {
   update((s) => {
     s.reactionsGiven += 1
@@ -154,6 +164,7 @@ export function recordReaction() {
   recordDailyActivity('reactions')
 }
 
+// Call this whenever a visitor shares something from Twegle.
 export function recordShare() {
   update((s) => {
     s.sharesGiven += 1
@@ -179,6 +190,8 @@ export function checkStreakBadges() {
 // is opened, so it reads as a gentle nudge, not nagging.
 const STREAK_REMINDER_SHOWN_KEY = 'twegleStreakReminderShown'
 
+// Checks if a streak is about to break and, if so, fires a "don't lose
+// it" toast — at most once per day.
 export function checkStreakReminders() {
   const today = getTodayKey()
   if (localStorage.getItem(STREAK_REMINDER_SHOWN_KEY) === today) return
@@ -196,6 +209,8 @@ export function checkStreakReminders() {
   })
 }
 
+// Returns every badge with whether it's unlocked and a progress label
+// (like "3/5") — used to render the Badges page.
 export function getBadgeStatus() {
   const stats = getStats()
   return BADGES.map((b) => ({ ...b, unlocked: b.check(stats), progressLabel: b.progress(stats) }))

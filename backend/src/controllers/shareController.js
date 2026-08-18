@@ -23,6 +23,7 @@ import { computeHoroscope } from '../utils/horoscope.js'
 // right og:title/og:description for the specific quiz result or post, then
 // immediately redirects a real visitor's browser to the real app page via a
 // meta-refresh + JS redirect (both included so it works either way).
+// Makes text safe to drop into HTML by swapping special characters like < and & for their escaped versions.
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, (c) => ({
     '&': '&amp;',
@@ -33,6 +34,7 @@ function escapeHtml(str) {
   })[c])
 }
 
+// Builds the small HTML page a link-preview crawler sees, with the title/description/image and a redirect to the real page.
 function renderSharePage({ title, description, redirectUrl, image }) {
   const safeTitle = escapeHtml(title)
   const safeDescription = escapeHtml(description)
@@ -62,6 +64,7 @@ ${safeImage ? `<meta name="twitter:image" content="${safeImage}">` : ''}
 </html>`
 }
 
+// Gets the website's real address to build links back to it, falling back to the local dev address.
 function frontendUrl() {
   return process.env.FRONTEND_URL || 'http://localhost:5173'
 }
@@ -70,6 +73,7 @@ function frontendUrl() {
 // GAME_SLUGS) — this mirrors frontend/src/games/registry.js so a share
 // preview has a title/description to show. Keep the two in sync by hand
 // whenever a game is added or renamed, same as GAME_SLUGS already is.
+// The title/emoji/description shown in a share preview for each game.
 const GAME_META = {
   'tic-tac-toe': {
     title: 'Tic-Tac-Toe',
@@ -118,6 +122,7 @@ const GAME_META = {
   },
 }
 
+// Serves a share-preview page for a quiz's intro link.
 export async function shareQuizIntro(req, res) {
   const { slug } = req.params
   const quiz = await Quiz.findOne({ slug, status: 'published' })
@@ -135,6 +140,7 @@ export async function shareQuizIntro(req, res) {
   )
 }
 
+// Serves a share-preview page for a specific quiz result someone got.
 export async function shareQuizResult(req, res) {
   const { slug, resultKey } = req.params
   const quiz = await Quiz.findOne({ slug, status: 'published' })
@@ -153,6 +159,7 @@ export async function shareQuizResult(req, res) {
   )
 }
 
+// Serves a share-preview page for a game's intro link.
 export async function shareGameIntro(req, res) {
   const { slug } = req.params
   const meta = GAME_META[slug]
@@ -170,6 +177,7 @@ export async function shareGameIntro(req, res) {
   )
 }
 
+// Serves a share-preview page for a friendship quiz's intro link.
 export async function shareFriendshipQuizIntro(req, res) {
   const { slug } = req.params
   const quiz = await FriendshipQuiz.findOne({ slug, status: 'published' })
@@ -187,6 +195,7 @@ export async function shareFriendshipQuizIntro(req, res) {
   )
 }
 
+// Serves a share-preview page for a Tic-Tac-Toe game invite link.
 export async function shareTicTacToe(req, res) {
   const { code } = req.params
   const game = await TicTacToeGame.findOne({ code })
@@ -204,6 +213,7 @@ export async function shareTicTacToe(req, res) {
   )
 }
 
+// Serves a share-preview page for a Connect Four game invite link.
 export async function shareConnectFour(req, res) {
   const { code } = req.params
   const game = await ConnectFourGame.findOne({ code })
@@ -221,6 +231,7 @@ export async function shareConnectFour(req, res) {
   )
 }
 
+// Serves a share-preview page for a chess game invite link.
 export async function shareChess(req, res) {
   const { code } = req.params
   const game = await ChessGame.findOne({ code })
@@ -238,6 +249,7 @@ export async function shareChess(req, res) {
   )
 }
 
+// Serves a share-preview page for a Ludo game invite link.
 export async function shareLudo(req, res) {
   const { code } = req.params
   const game = await LudoGame.findOne({ code })
@@ -258,6 +270,7 @@ export async function shareLudo(req, res) {
   )
 }
 
+// Serves a share-preview page for a Snake and Ladder game invite link.
 export async function shareSnakeLadder(req, res) {
   const { code } = req.params
   const game = await SnakeLadderGame.findOne({ code })
@@ -275,6 +288,7 @@ export async function shareSnakeLadder(req, res) {
   )
 }
 
+// Serves a share-preview page for a story link.
 export async function shareStory(req, res) {
   const { slug } = req.params
   const story = await Story.findOne({ slug, status: 'published' })
@@ -292,6 +306,7 @@ export async function shareStory(req, res) {
   )
 }
 
+// Serves a share-preview page for a puzzle link.
 export async function sharePuzzle(req, res) {
   const { id } = req.params
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -312,6 +327,7 @@ export async function sharePuzzle(req, res) {
   )
 }
 
+// Serves a share-preview page for a community post link.
 export async function sharePost(req, res) {
   const { id } = req.params
   if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -337,6 +353,7 @@ export async function sharePost(req, res) {
 // Like shareGameIntro — horoscopes are computed, not database rows, so this
 // just recomputes the same deterministic text a real visit would show
 // rather than looking anything up.
+// Serves a share-preview page for a horoscope link.
 export async function shareHoroscope(req, res) {
   const { sign } = req.params
   const period = ['day', 'week', 'month', 'year'].includes(req.query.period) ? req.query.period : 'day'
@@ -356,6 +373,7 @@ export async function shareHoroscope(req, res) {
   )
 }
 
+// Serves a share-preview page for one person's friendship-quiz invite link.
 export async function shareFriendshipInstance(req, res) {
   const { code } = req.params
   const instance = await FriendshipInstance.findOne({ code })
@@ -374,6 +392,7 @@ export async function shareFriendshipInstance(req, res) {
   )
 }
 
+// Serves a share-preview page for a "compare quiz results with a friend" link.
 export async function shareQuizCompare(req, res) {
   const { code } = req.params
   const compare = await QuizCompare.findOne({ code })
@@ -392,6 +411,7 @@ export async function shareQuizCompare(req, res) {
   )
 }
 
+// Serves a share-preview page for a completed friendship-quiz attempt/score.
 export async function shareFriendshipAttempt(req, res) {
   const { id } = req.params
   if (!mongoose.Types.ObjectId.isValid(id)) {

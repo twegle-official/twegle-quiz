@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getRecentlyViewed } from '../utils/recentlyViewed'
 
+// A horizontal row of small pills for "Continue where you left off".
 // "Continue where you left off" — a localStorage-only strip of the last few
 // things this browser actually opened, across every content type. No
 // account needed, same anonymous-tracking spirit as the streak/badges.
@@ -12,8 +13,9 @@ import { getRecentlyViewed } from '../utils/recentlyViewed'
 // this is a snapshot of history, not something that needs to react to a
 // view recorded on some *other* already-open tab mid-session.
 export default function RecentlyViewedRow() {
-  const [items] = useState(getRecentlyViewed)
+  const [items] = useState(getRecentlyViewed) // the list of recently viewed things, read once
 
+  // Nothing to show if this visitor hasn't viewed anything yet.
   if (items.length === 0) return null
 
   return (

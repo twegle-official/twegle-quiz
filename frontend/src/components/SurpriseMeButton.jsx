@@ -10,10 +10,13 @@ import { GAMES } from '../games/registry'
 // from any page, not just "/".
 const SOURCES = ['quiz', 'puzzle', 'game']
 
+// The 🎲 "Surprise Me" button in the header — sends the visitor to a random
+// quiz, puzzle, or game.
 export default function SurpriseMeButton() {
   const navigate = useNavigate()
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false) // true while picking/fetching, shows an hourglass icon
 
+  // Picks a random type (quiz/puzzle/game), then a random item of that type, and navigates to it.
   async function handleClick() {
     if (loading) return
     setLoading(true)

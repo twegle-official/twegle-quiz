@@ -4,6 +4,7 @@ const WORDS = ['TWEGLE', 'VIRAL', 'MEME', 'QUIZ', 'FRIEND', 'SHARE', 'TREND', 'G
 const MAX_LIVES = 6
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 
+// Picks a random word from the word list for a new round.
 function randomWord() {
   return WORDS[Math.floor(Math.random() * WORDS.length)]
 }
@@ -11,9 +12,9 @@ function randomWord() {
 // Deliberately called "Word Guess," not "Hangman" — no gallows imagery, just
 // a life counter, to stay consistent with the site's family-friendly tone.
 export default function WordGuess({ onGameEnd, onReset }) {
-  const [word, setWord] = useState(randomWord)
-  const [guessed, setGuessed] = useState([])
-  const [notified, setNotified] = useState(false)
+  const [word, setWord] = useState(randomWord) // the secret word to guess
+  const [guessed, setGuessed] = useState([]) // every letter the player has tried so far
+  const [notified, setNotified] = useState(false) // guards against reporting the result more than once
 
   const wrongGuesses = guessed.filter((l) => !word.includes(l))
   const livesLeft = MAX_LIVES - wrongGuesses.length
@@ -21,17 +22,20 @@ export default function WordGuess({ onGameEnd, onReset }) {
   const isLost = livesLeft <= 0
   const isOver = isWon || isLost
 
+  // Reports the final result to the parent once, when the round ends.
   useEffect(() => {
     if (!isOver || notified) return
     setNotified(true)
     onGameEnd?.(isWon ? 'win' : 'loss', isWon ? livesLeft : undefined)
   }, [isOver, isWon, notified, onGameEnd, livesLeft])
 
+  // Runs when the player taps a letter — adds it to the guessed list.
   function handleGuess(letter) {
     if (isOver || guessed.includes(letter)) return
     setGuessed((g) => [...g, letter])
   }
 
+  // Starts a brand new round with a fresh random word.
   function handleReset() {
     setWord(randomWord())
     setGuessed([])

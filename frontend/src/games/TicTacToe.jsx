@@ -6,6 +6,7 @@ const LINES = [
   [0, 4, 8], [2, 4, 6],
 ]
 
+// Checks the board for three-in-a-row and returns the winning mark ('X' or 'O'), or null if no one has won yet.
 function calculateWinner(board) {
   for (const [a, b, c] of LINES) {
     if (board[a] && board[a] === board[b] && board[a] === board[c]) return board[a]
@@ -13,6 +14,9 @@ function calculateWinner(board) {
   return null
 }
 
+// Works out the best possible move for the house by looking ahead through
+// every way the rest of the game could play out, so the house never makes a
+// losing mistake (at best you can only draw against it).
 // Full minimax over all 9 cells — small enough state space to brute-force,
 // no pruning needed. Plays perfectly (best a human can do is draw). Ties are
 // broken randomly so the AI doesn't always open with the same move.
@@ -36,10 +40,11 @@ function minimax(board, player) {
   return bestMoves[Math.floor(Math.random() * bestMoves.length)]
 }
 
+// The single-player Tic-Tac-Toe game — you play X against a house that never loses.
 export default function TicTacToe({ onGameEnd, onReset }) {
-  const [board, setBoard] = useState(Array(9).fill(null))
+  const [board, setBoard] = useState(Array(9).fill(null)) // 9 cells, each null, 'X', or 'O'
   const [turn, setTurn] = useState('X') // human is always X, always goes first
-  const [notified, setNotified] = useState(false)
+  const [notified, setNotified] = useState(false) // guards against reporting the result more than once
 
   const winner = calculateWinner(board)
   const isDraw = !winner && board.every(Boolean)
@@ -60,12 +65,14 @@ export default function TicTacToe({ onGameEnd, onReset }) {
     return () => clearTimeout(timer)
   }, [board, turn, gameOver])
 
+  // Reports the final result to the parent once, when the game ends.
   useEffect(() => {
     if (!gameOver || notified) return
     setNotified(true)
     onGameEnd?.(winner === 'X' ? 'win' : winner === 'O' ? 'loss' : 'draw')
   }, [gameOver, winner, notified, onGameEnd])
 
+  // Runs when the player taps an empty cell — places their X there and passes the turn to the house.
   function handleCellClick(i) {
     if (board[i] || gameOver || turn !== 'X') return
     const next = [...board]
@@ -74,6 +81,7 @@ export default function TicTacToe({ onGameEnd, onReset }) {
     setTurn('O')
   }
 
+  // Starts a brand new game with an empty board.
   function handleReset() {
     setBoard(Array(9).fill(null))
     setTurn('X')

@@ -1,6 +1,7 @@
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import BackButton from '../components/BackButton'
 
+// A simple static page — the legal terms text, no data fetching or state.
 export default function Terms() {
   useDocumentMeta('Terms of Service', 'The terms for using Twegle.')
 

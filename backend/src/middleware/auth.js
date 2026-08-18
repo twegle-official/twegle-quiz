@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken'
 
+// Checks that a request has a valid admin login token before letting it continue.
 export function requireAuth(req, res, next) {
   const header = req.headers.authorization || ''
   const token = header.startsWith('Bearer ') ? header.slice(7) : null
@@ -17,6 +18,7 @@ export function requireAuth(req, res, next) {
   }
 }
 
+// Checks that the logged-in admin has one of the allowed roles before letting the request continue.
 export function requireRole(...allowedRoles) {
   return (req, res, next) => {
     if (!req.admin || !allowedRoles.includes(req.admin.role)) {

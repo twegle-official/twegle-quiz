@@ -9,6 +9,8 @@ export function toDatetimeLocalValue(isoString) {
   return new Date(date.getTime() - offsetMs).toISOString().slice(0, 16)
 }
 
+// Converts a value from a <input type="datetime-local"> (local time, no
+// timezone info) back into a stored ISO date string.
 export function fromDatetimeLocalValue(localValue) {
   if (!localValue) return null
   return new Date(localValue).toISOString()

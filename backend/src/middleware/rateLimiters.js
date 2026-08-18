@@ -1,5 +1,9 @@
 import rateLimit from 'express-rate-limit'
 
+// Each limiter below caps how many times the same visitor can hit a route in
+// a 15-minute window, to stop spam and abuse. If they go over the limit they
+// get a "too many requests" error until the window resets.
+
 // Slows down brute-force password guessing against admin accounts.
 export const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -141,6 +145,7 @@ export const reactionLimiter = rateLimit({
   message: { error: 'Too many requests. Please slow down.' },
 })
 
+// Applied to submitting a game leaderboard score, same reasoning as gamePlaysLimiter.
 export const gameScoreLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 20,

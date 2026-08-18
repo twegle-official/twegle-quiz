@@ -3,15 +3,17 @@ import { useEffect, useState } from 'react'
 const MAX_NUMBER = 100
 const MAX_ATTEMPTS = 7 // enough for a binary search over 1-100
 
+// Picks a random secret number for the player to guess.
 function randomSecret() {
   return Math.floor(Math.random() * MAX_NUMBER) + 1
 }
 
+// The Guess the Number game screen: try to guess the secret number using higher/lower hints.
 export default function GuessTheNumber({ onGameEnd, onReset }) {
-  const [secret, setSecret] = useState(randomSecret)
-  const [guess, setGuess] = useState('')
-  const [history, setHistory] = useState([]) // [{ guess, hint }]
-  const [notified, setNotified] = useState(false)
+  const [secret, setSecret] = useState(randomSecret) // the number the player is trying to guess
+  const [guess, setGuess] = useState('') // the text currently typed into the input box
+  const [history, setHistory] = useState([]) // every guess made so far, with its hint: [{ guess, hint }]
+  const [notified, setNotified] = useState(false) // has the parent already been told the game ended?
 
   const attemptsUsed = history.length
   const attemptsLeft = MAX_ATTEMPTS - attemptsUsed
@@ -19,12 +21,14 @@ export default function GuessTheNumber({ onGameEnd, onReset }) {
   const isLost = !isWon && attemptsLeft <= 0
   const isOver = isWon || isLost
 
+  // Reports the final result (win/loss) to the parent once, when the game ends.
   useEffect(() => {
     if (!isOver || notified) return
     setNotified(true)
     onGameEnd?.(isWon ? 'win' : 'loss', isWon ? attemptsUsed : undefined)
   }, [isOver, isWon, notified, onGameEnd, attemptsUsed])
 
+  // Handles the player submitting a guess: checks it and adds a higher/lower/correct hint.
   function handleSubmit(e) {
     e.preventDefault()
     const value = Number(guess)
@@ -34,6 +38,7 @@ export default function GuessTheNumber({ onGameEnd, onReset }) {
     setGuess('')
   }
 
+  // Starts a brand new game with a new secret number.
   function handleReset() {
     setSecret(randomSecret())
     setGuess('')
@@ -73,6 +78,7 @@ export default function GuessTheNumber({ onGameEnd, onReset }) {
         </form>
       )}
 
+      {/* Past guesses, each tagged with an up/down arrow or a checkmark */}
       {history.length > 0 && (
         <div className="flex flex-wrap justify-center gap-2 mb-6 max-w-sm mx-auto">
           {history.map((h, i) => (

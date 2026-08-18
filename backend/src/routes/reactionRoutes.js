@@ -8,7 +8,7 @@ import { getReactions, setReaction } from '../controllers/reactionController.js'
 // field already holds a value unique across every content type.
 const router = Router()
 
-router.get('/:contentType/:id', getReactions)
-router.post('/:contentType/:id', setReaction)
+router.get('/:contentType/:id', getReactions) // fetch reaction counts for a piece of content
+router.post('/:contentType/:id', setReaction) // add or change a user's reaction on a piece of content
 
 export default router

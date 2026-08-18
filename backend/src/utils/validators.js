@@ -30,18 +30,22 @@ export const LIMITS = {
   MAX_DISPLAY_NAME_LENGTH: 30,
 }
 
+// Checks that an email address looks like a real, well-formed email
 export function isValidEmail(email) {
   return typeof email === 'string' && email.length <= 254 && EMAIL_RE.test(email)
 }
 
+// Checks that a password is long enough
 export function isValidPassword(password) {
   return typeof password === 'string' && password.length >= LIMITS.MIN_PASSWORD_LENGTH
 }
 
+// Checks that a username only uses allowed characters and length
 export function isValidUsername(username) {
   return typeof username === 'string' && USERNAME_RE.test(username)
 }
 
+// Checks that a display name is present and not too long
 export function isValidDisplayName(displayName) {
   return (
     typeof displayName === 'string' &&
@@ -50,6 +54,7 @@ export function isValidDisplayName(displayName) {
   )
 }
 
+// Checks that the chosen avatar is one of the allowed preset emoji
 export function isValidAvatar(avatar) {
   return AVATAR_OPTIONS.includes(avatar)
 }

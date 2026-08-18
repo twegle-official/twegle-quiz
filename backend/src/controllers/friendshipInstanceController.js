@@ -5,10 +5,12 @@ import FriendshipInstance from '../models/FriendshipInstance.js'
 import FriendshipAttempt from '../models/FriendshipAttempt.js'
 import { LIMITS } from '../utils/validators.js'
 
+// Makes a random short code to use in a shareable friendship quiz link.
 function generateCode() {
   return crypto.randomBytes(6).toString('base64url')
 }
 
+// Keeps making codes until it finds one that isn't already used.
 async function generateUniqueCode() {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = generateCode()
@@ -21,6 +23,7 @@ async function generateUniqueCode() {
 // answers/guesses must be one whole number per question, each a valid index
 // into that question's options array — this is what stands in for actual
 // user-submitted data here, so it's validated defensively before saving.
+// Checks that the submitted answers match up correctly with the quiz's questions.
 function validateAnswerIndices(answers, questions) {
   if (!Array.isArray(answers) || answers.length !== questions.length) return false
   return answers.every(
@@ -28,6 +31,7 @@ function validateAnswerIndices(answers, questions) {
   )
 }
 
+// Builds the full result data shown after a friend's guesses are scored.
 function buildAttemptResult({ attempt, instance, quiz }) {
   return {
     attemptId: attempt._id,
@@ -51,6 +55,7 @@ function buildAttemptResult({ attempt, instance, quiz }) {
 
 // --- Public-facing (no auth) ---
 
+// Handles someone creating a friendship quiz about themselves — saves their answers, returns a shareable code.
 export async function createInstance(req, res) {
   const { subjectName, answers } = req.body
 
@@ -78,6 +83,7 @@ export async function createInstance(req, res) {
   res.status(201).json({ code })
 }
 
+// Handles a friend opening the link to play — sends the questions but hides the real answers.
 export async function getInstanceForPlay(req, res) {
   const instance = await FriendshipInstance.findOne({ code: req.params.code })
   if (!instance) return res.status(404).json({ error: 'Link not found' })
@@ -96,6 +102,7 @@ export async function getInstanceForPlay(req, res) {
   })
 }
 
+// Handles a friend submitting their guesses — scores them against the real answers and saves the attempt.
 export async function submitAttempt(req, res) {
   const { guesserName, guesses, anonymousId } = req.body
 
@@ -132,8 +139,9 @@ export async function submitAttempt(req, res) {
   res.status(201).json(buildAttemptResult({ attempt, instance, quiz }))
 }
 
+// Handles loading one friend's past attempt/result by its id, e.g. for a results page.
 export async function getAttempt(req, res) {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) { // makes sure the id looks like a real database id before searching
     return res.status(404).json({ error: 'Result not found' })
   }
   const attempt = await FriendshipAttempt.findById(req.params.id)

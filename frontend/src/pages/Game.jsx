@@ -76,18 +76,22 @@ const SHARE_TEXT_OVERRIDES = {
   },
 }
 
+// Picks the right share caption for a game/outcome combo, falling back to
+// the generic "beat the house" wording if that game has no override.
 function getShareText(slug, outcome, title) {
   const builder = SHARE_TEXT_OVERRIDES[slug]?.[outcome] || DEFAULT_SHARE_TEXT[outcome]
   return builder(title)
 }
 
+// The page that renders whichever game the visitor picked — the game
+// itself, plus the shared "challenge a friend" / share / leaderboard UI.
 export default function Game() {
   const { slug } = useParams()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const game = GAMES.find((g) => g.slug === slug)
-  const [outcome, setOutcome] = useState(null)
-  const [score, setScore] = useState(null)
+  const [outcome, setOutcome] = useState(null) // 'win' / 'draw' / 'loss' once the game ends
+  const [score, setScore] = useState(null) // the numeric score, for games that have one
   // Arriving via the homepage's "2 Player" filter (Connect Four's card
   // appends ?mode=friend for games that also have a single-player mode —
   // see GameCard.jsx) means the visitor already chose that mode, so open
@@ -100,11 +104,12 @@ export default function Game() {
   const [challengeMaxPlayers, setChallengeMaxPlayers] = useState(2)
   const [challengeSubmitting, setChallengeSubmitting] = useState(false)
   const [challengeError, setChallengeError] = useState('')
-  const [soundOn, setSoundOn] = useState(isSoundEnabled)
+  const [soundOn, setSoundOn] = useState(isSoundEnabled) // whether game sound effects are on
   const viewedRef = useRef(false)
 
-  useDocumentMeta(game?.title, game?.description)
+  useDocumentMeta(game?.title, game?.description) // sets the browser tab title + meta description for this page
 
+  // Logs a "view" and adds this game to the recently-viewed list, once loaded.
   useEffect(() => {
     if (!game || viewedRef.current) return
     viewedRef.current = true
@@ -121,6 +126,8 @@ export default function Game() {
     )
   }
 
+  // Called by the game component when it finishes — records the result and
+  // plays a win/lose sound.
   function handleGameEnd(result, gameScore) {
     setOutcome(result)
     setScore(gameScore ?? null)
@@ -129,11 +136,13 @@ export default function Game() {
     playSound(result === 'win' ? 'win' : 'lose')
   }
 
+  // Called when the visitor starts a new round of the same game.
   function handleGameReset() {
     setOutcome(null)
     setScore(null)
   }
 
+  // Flips the sound effects on/off and remembers the choice.
   function toggleSound() {
     setSoundOn((prev) => {
       const next = !prev
@@ -151,6 +160,8 @@ export default function Game() {
     if (e.target.closest('button')) playSound('click')
   }
 
+  // Runs when the "challenge a friend" form is submitted — creates a
+  // multiplayer match and sends the visitor to its game room.
   async function handleChallengeSubmit(e) {
     e.preventDefault()
     if (!challengeName.trim()) return
@@ -197,6 +208,8 @@ export default function Game() {
   // same as every other game's single-player mode — "You" is a fine label
   // for a solo match nobody else will ever see the lobby for.
   const [vsHouseSubmitting, setVsHouseSubmitting] = useState(false)
+  // Runs when the visitor clicks "Play vs House" — starts a Ludo match with
+  // an AI-controlled opponent filling the other seat.
   async function handlePlayVsHouse() {
     setVsHouseSubmitting(true)
     setChallengeError('')
@@ -213,6 +226,7 @@ export default function Game() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      {/* Back button + sound on/off toggle */}
       <div className="flex items-center justify-between mb-4">
         <BackButton />
         <button
@@ -228,6 +242,7 @@ export default function Game() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">{game.title}</h1>
       <p className="text-gray-500 dark:text-gray-400 mb-8">{game.description}</p>
 
+      {/* "Challenge a friend" form/buttons — only shown for games that support a live multiplayer match */}
       {(game.slug === 'tic-tac-toe' || game.slug === 'connect-four' || game.slug === 'snake-ladder' || game.slug === 'chess' || game.slug === 'ludo') && (
         <div className="mb-8 max-w-xs mx-auto">
           {showChallengeForm ? (
@@ -303,6 +318,7 @@ export default function Game() {
         </div>
       )}
 
+      {/* The actual game board — only the matching one for this page's slug renders */}
       <div onClick={handleGameAreaClick}>
         {game.slug === 'tic-tac-toe' && (
           <TicTacToe onGameEnd={handleGameEnd} onReset={handleGameReset} />
@@ -342,6 +358,7 @@ export default function Game() {
         )}
       </div>
 
+      {/* Reactions, share buttons, and leaderboard — all only shown once the game has ended */}
       {outcome && (
         <div className="mt-6">
           <ContentReactions contentType="game" contentId={game.slug} />

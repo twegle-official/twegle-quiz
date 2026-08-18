@@ -18,6 +18,8 @@ import { fireConfetti } from '../utils/confetti'
 
 const SUGGESTION_COUNT = 4
 
+// The page shown after finishing a quiz — displays the result, lets the
+// player share it, compare with a friend, and see other quizzes to try.
 export default function Result() {
   const { quizId: slug, resultKey } = useParams()
   const location = useLocation()
@@ -28,20 +30,28 @@ export default function Result() {
   // state, so the score line below is a nice-to-have, not load-bearing;
   // the result's own authored title/description still convey the tier either way.
   const { score, total, finished } = location.state || {}
+  // The quiz data loaded from the server
   const [quiz, setQuiz] = useState(null)
+  // True if no quiz/result matches this URL
   const [notFound, setNotFound] = useState(false)
+  // True while the shareable result image is being created
   const [generating, setGenerating] = useState(false)
+  // Other quizzes to recommend at the bottom of the page
   const [suggestions, setSuggestions] = useState([])
+  // The player's current daily-quiz streak count, if this was today's quiz
   const [dailyStreak, setDailyStreak] = useState(null)
+  // True if this quiz happens to be today's "Quiz of the Day"
   const [isDailyQuiz, setIsDailyQuiz] = useState(false)
   const recordedRef = useRef(false)
 
+  // State for the "compare your result with a friend" feature
   const [showCompareForm, setShowCompareForm] = useState(false)
   const [compareName, setCompareName] = useState('')
   const [compareCode, setCompareCode] = useState(null)
   const [compareSubmitting, setCompareSubmitting] = useState(false)
   const [compareError, setCompareError] = useState('')
 
+  // Loads the quiz this result belongs to
   useEffect(() => {
     fetchQuizBySlug(slug, previewToken)
       .then((data) => (data ? setQuiz(data) : setNotFound(true)))
@@ -49,6 +59,7 @@ export default function Result() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
+  // Logs this play once (not on preview links), for view-count stats
   useEffect(() => {
     if (recordedRef.current || previewToken) return
     recordedRef.current = true
@@ -72,6 +83,8 @@ export default function Result() {
     }
   }, [slug, finished, score, total, quiz, previewToken])
 
+  // Builds the "you might also like" suggestions list, and checks whether
+  // this quiz is today's daily pick to update the streak counter
   useEffect(() => {
     if (!quiz) return
     fetchQuizzes(quiz.language)
@@ -177,6 +190,7 @@ export default function Result() {
       </div>
       <p className="text-gray-600 dark:text-gray-400 mb-8">{result.description}</p>
 
+      {/* Streak message shown only if this was today's daily quiz */}
       {isDailyQuiz && dailyStreak?.count > 0 && (
         <p className="inline-block mb-6 px-4 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-sm font-bold">
           🔥 {dailyStreak.count}-day streak — that was today's Quiz of the Day!
@@ -201,6 +215,8 @@ export default function Result() {
         onShare={() => recordEngagement('quiz', quiz._id, 'share')}
       />
 
+      {/* The "compare with a friend" card — shows a form, then a share link
+          once the compare link has been created */}
       <div className="mt-8 max-w-sm mx-auto">
         {compareCode ? (
           <div className="rounded-2xl border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40 p-6">
@@ -254,6 +270,7 @@ export default function Result() {
         This page may contain affiliate links — we may earn a commission at no extra cost to you.
       </p>
 
+      {/* Recommended quizzes to try next */}
       {suggestions.length > 0 && (
         <div className="mt-10 text-left">
           <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">You might also like</h2>

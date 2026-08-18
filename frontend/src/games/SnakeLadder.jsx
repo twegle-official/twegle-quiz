@@ -8,18 +8,20 @@ import PlayerChip from './PlayerChip'
 // only action every turn is rolling a die — so unlike TicTacToe.jsx's
 // minimax or ConnectFour.jsx's alpha-beta search, this just rolls randomly
 // on a short delay, same as a human would.
+// Rolls a standard six-sided die.
 function rollDie() {
   return Math.floor(Math.random() * 6) + 1
 }
 
+// The single-player Snake and Ladder game — race the house to square 100.
 export default function SnakeLadder({ onGameEnd, onReset }) {
-  const [myPosition, setMyPosition] = useState(0)
-  const [housePosition, setHousePosition] = useState(0)
-  const [turn, setTurn] = useState('me')
+  const [myPosition, setMyPosition] = useState(0) // the player's current square
+  const [housePosition, setHousePosition] = useState(0) // the house's current square
+  const [turn, setTurn] = useState('me') // whose turn it is: 'me' or 'house'
   const [winner, setWinner] = useState(null)
-  const [lastRoll, setLastRoll] = useState(null)
-  const [rolling, setRolling] = useState(false)
-  const [notified, setNotified] = useState(false)
+  const [lastRoll, setLastRoll] = useState(null) // the most recent dice value shown
+  const [rolling, setRolling] = useState(false) // true briefly while the dice animation plays
+  const [notified, setNotified] = useState(false) // guards against reporting the result more than once
 
   const gameOver = Boolean(winner)
 
@@ -41,12 +43,14 @@ export default function SnakeLadder({ onGameEnd, onReset }) {
     return () => clearTimeout(timer)
   }, [turn, gameOver, housePosition])
 
+  // Reports the final result to the parent once, when the game ends.
   useEffect(() => {
     if (!gameOver || notified) return
     setNotified(true)
     onGameEnd?.(winner === 'me' ? 'win' : 'loss')
   }, [gameOver, winner, notified, onGameEnd])
 
+  // Runs when the player rolls the dice — moves their token, applying any snake/ladder on landing.
   function handleRoll() {
     if (gameOver || turn !== 'me' || rolling) return
     setRolling(true)
@@ -64,6 +68,7 @@ export default function SnakeLadder({ onGameEnd, onReset }) {
     }, 400)
   }
 
+  // Starts a brand new game with both tokens back at the start.
   function handleReset() {
     setMyPosition(0)
     setHousePosition(0)
@@ -83,6 +88,7 @@ export default function SnakeLadder({ onGameEnd, onReset }) {
     <div className="text-center">
       <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
+      {/* Shows both players' names, tokens, and current square */}
       <div className="flex items-center justify-center gap-3 mb-4">
         <PlayerChip emoji="🔵" color="blue" name="You" position={myPosition} active={turn === 'me' && !gameOver} />
         <span className="text-xs font-bold text-gray-300 dark:text-gray-600">VS</span>

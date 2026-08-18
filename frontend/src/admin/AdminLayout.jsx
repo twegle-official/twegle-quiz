@@ -4,8 +4,10 @@ import { useAuth } from './AuthContext'
 import LogoMark, { LogoWithWordmark } from '../components/Logo'
 import ThemeToggle from '../components/ThemeToggle'
 
+// localStorage key remembering whether the desktop sidebar is collapsed
 const COLLAPSE_KEY = 'twegle-admin-sidebar-collapsed'
 
+// The links shown in the sidebar/mobile menu for every admin
 const NAV_ITEMS = [
   { to: '/admin/dashboard', label: 'Dashboard', emoji: '🏠' },
   { to: '/admin/quizzes', label: 'Quizzes', emoji: '🎯' },
@@ -27,10 +29,12 @@ const ADMINS_ITEM = { to: '/admin/admins', label: 'Admins', emoji: '👤' }
 // The label hides only at the lg breakpoint when collapsed — mobile always
 // stacks with full labels regardless of the collapse toggle (there's no
 // permanent-width sidebar to reclaim space from on mobile in the first place).
+// Hides a nav item's text label when the sidebar is collapsed to icons only
 function labelClass(collapsed) {
   return collapsed ? 'lg:hidden' : ''
 }
 
+// Builds the CSS classes for a nav link, highlighting it when it's the active page
 function makeNavClass(collapsed) {
   return function navClass({ isActive }) {
     return `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium lg:w-full ${
@@ -39,14 +43,18 @@ function makeNavClass(collapsed) {
   }
 }
 
+// The overall frame around every admin page: sidebar (or mobile menu) on the
+// left/top, plus the actual page content on the right. Every admin screen
+// renders inside this layout.
 export default function AdminLayout() {
   const { session, logout, hasRole } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1')
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem(COLLAPSE_KEY) === '1') // is the desktop sidebar shrunk to icons only?
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false) // is the mobile off-canvas menu open?
 
+  // Auto-closes the mobile menu whenever the page changes.
   // Closes the mobile menu after following a nav link — without this it
   // stayed open over the newly-loaded page since it's not conditioned on
   // route at all, just a plain toggle.
@@ -54,6 +62,7 @@ export default function AdminLayout() {
     setMobileMenuOpen(false)
   }, [location.pathname])
 
+  // Flips the sidebar collapsed/expanded and remembers the choice for next time
   function toggleCollapsed() {
     setCollapsed((prev) => {
       const next = !prev
@@ -62,6 +71,7 @@ export default function AdminLayout() {
     })
   }
 
+  // Stops the page from scrolling behind the mobile drawer while it's open.
   // Locks background scroll while the mobile drawer is open — without this,
   // the page behind the backdrop could still scroll, which reads oddly for
   // an overlay that's meant to fully take over the screen.
@@ -72,11 +82,13 @@ export default function AdminLayout() {
     }
   }, [mobileMenuOpen])
 
+  // Logs the admin out and sends them back to the login screen
   function handleLogout() {
     logout()
     navigate('/admin/login')
   }
 
+  // The final nav list — adds Quick Add/Bulk Import for editors+ and Admins for superadmins only
   const items = [
     ...NAV_ITEMS.slice(0, 5),
     ...(hasRole('superadmin', 'editor') ? [QUICK_ADD_ITEM, BULK_IMPORT_ITEM] : []),
@@ -217,6 +229,7 @@ export default function AdminLayout() {
           </button>
         </div>
       </aside>
+      {/* The actual admin page content (Dashboard, Quizzes, etc.) renders here */}
       <main className="flex-1 min-w-0 max-w-5xl mx-auto px-4 py-8">
         <Outlet />
       </main>

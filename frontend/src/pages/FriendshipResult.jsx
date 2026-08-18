@@ -7,6 +7,7 @@ import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordShare } from '../utils/badges'
 
+// Picks an encouraging message to show based on how many guesses were correct.
 function scoreMessage(score, total) {
   const pct = score / total
   if (pct === 1) return "Perfect score! You truly know them."
@@ -15,11 +16,14 @@ function scoreMessage(score, total) {
   return "Time to hang out more — there's a lot to learn!"
 }
 
+// Shows how well a friend guessed someone's answers in the "Friendship
+// Quiz" — the score, an answer-by-answer breakdown, and ways to share it.
 export default function FriendshipResult() {
   const { attemptId } = useParams()
-  const [result, setResult] = useState(null)
-  const [notFound, setNotFound] = useState(false)
+  const [result, setResult] = useState(null) // the scored result once loaded
+  const [notFound, setNotFound] = useState(false) // true if this result doesn't exist
 
+  // Loads this attempt's result using the id from the URL.
   useEffect(() => {
     fetchFriendshipAttempt(attemptId)
       .then((data) => (data ? setResult(data) : setNotFound(true)))
@@ -52,6 +56,7 @@ export default function FriendshipResult() {
   const challengeUrl = getFriendshipShareUrl(result.instanceCode)
   const challengeText = `I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz — think you know them better?`
 
+  // Shares (or copies) a link inviting another friend to take this same guessing quiz.
   async function handleChallenge() {
     if (navigator.share) {
       try {
@@ -100,6 +105,7 @@ export default function FriendshipResult() {
         />
       </div>
 
+      {/* The breakdown showing each question, the real answer, and whether the guess was right */}
       <div className="mt-10 text-left">
         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">Answer by answer</h2>
         <div className="space-y-3">

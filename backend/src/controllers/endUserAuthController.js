@@ -8,6 +8,7 @@ import { isValidUsername, isValidPassword, isValidDisplayName, isValidAvatar } f
 // so every character needs to be unambiguous when read back.
 const RECOVERY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
 
+// Builds one random block of letters/numbers for a recovery code, e.g. "X7K2".
 function randomGroup(length) {
   let out = ''
   for (let i = 0; i < length; i++) {
@@ -26,6 +27,7 @@ export function generateRecoveryCode() {
   return `TWEGLE-${randomGroup(4)}-${randomGroup(4)}`
 }
 
+// Creates the login token (JWT) a user's browser keeps to prove who they are.
 function signUserToken(user) {
   // `type: 'user'` distinguishes this from an admin token — both are signed
   // with the same JWT_SECRET (no separate env var needed), so without this
@@ -36,10 +38,13 @@ function signUserToken(user) {
   })
 }
 
+// Picks out only the safe-to-share fields for a user, hiding password/recovery data.
 function publicUser(user) {
   return { id: user._id, username: user.username, displayName: user.displayName, avatar: user.avatar || null }
 }
 
+// Handles a new visitor creating an account — checks the details, saves the
+// user, and returns a login token plus their one-time recovery code.
 export async function signup(req, res) {
   try {
     const { username, password, displayName } = req.body
@@ -59,9 +64,9 @@ export async function signup(req, res) {
       return res.status(409).json({ error: 'That username is already taken' })
     }
 
-    const passwordHash = await bcrypt.hash(password, 10)
-    const recoveryCode = generateRecoveryCode()
-    const recoveryCodeHash = await bcrypt.hash(recoveryCode, 10)
+    const passwordHash = await bcrypt.hash(password, 10) // scramble the password before saving it
+    const recoveryCode = generateRecoveryCode() // make a one-time-shown recovery code
+    const recoveryCodeHash = await bcrypt.hash(recoveryCode, 10) // scramble the recovery code too
 
     const user = await EndUser.create({
       username: username.toLowerCase(),
@@ -80,6 +85,7 @@ export async function signup(req, res) {
   }
 }
 
+// Handles an existing user logging in — checks username/password and returns a login token.
 export async function login(req, res) {
   try {
     const { username, password } = req.body
@@ -93,7 +99,7 @@ export async function login(req, res) {
       return res.status(401).json({ error: 'Invalid username or password' })
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash)
+    const valid = await bcrypt.compare(password, user.passwordHash) // check typed password against the scrambled one
     if (!valid) {
       return res.status(401).json({ error: 'Invalid username or password' })
     }
@@ -112,6 +118,7 @@ export async function login(req, res) {
 // Issues a fresh recovery code on success, since the original is meant to
 // be usable indefinitely going forward (not a single-use token) but
 // rotating it after a reset avoids two valid codes existing at once.
+// Handles a user resetting their password using their recovery code (no email/SMS needed).
 export async function resetPassword(req, res) {
   try {
     const { username, recoveryCode, newPassword } = req.body
@@ -154,6 +161,7 @@ export async function resetPassword(req, res) {
   }
 }
 
+// Returns the currently logged-in user's own profile info.
 export async function me(req, res) {
   const user = await EndUser.findById(req.user.id)
   if (!user) {
@@ -162,6 +170,7 @@ export async function me(req, res) {
   res.json({ user: publicUser(user) })
 }
 
+// Lets a logged-in user change their display name and/or avatar.
 export async function updateProfile(req, res) {
   const { displayName, avatar } = req.body
 
@@ -188,6 +197,7 @@ export async function updateProfile(req, res) {
 
 const MAX_STATS_BYTES = 10_000
 
+// Returns a user's saved stats (badges, streaks, etc.) for their app to display.
 export async function getStats(req, res) {
   const user = await EndUser.findById(req.user.id)
   if (!user) {
@@ -201,6 +211,7 @@ export async function getStats(req, res) {
 // the server just needs to store whatever it's handed. No cross-user
 // meaning to any of these numbers (badge progress, streak count), so there's
 // nothing here worth validating beyond a rough size cap against abuse.
+// Saves a user's latest stats, replacing whatever was stored before.
 export async function updateStats(req, res) {
   const { stats } = req.body
   if (typeof stats !== 'object' || stats === null || Array.isArray(stats)) {
@@ -217,6 +228,7 @@ export async function updateStats(req, res) {
 // Lets a user proactively rotate their recovery code any time (not just
 // after a password reset) — e.g. if they're worried it was seen by someone
 // else. Same "shown once" contract as signup/reset.
+// Lets a logged-in user generate a brand new recovery code, replacing the old one.
 export async function regenerateRecoveryCode(req, res) {
   const user = await EndUser.findById(req.user.id)
   if (!user) {

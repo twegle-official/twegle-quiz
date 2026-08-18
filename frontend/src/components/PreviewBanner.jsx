@@ -1,3 +1,4 @@
+// A small amber notice banner that says "Preview mode".
 // Shown on every public content page whenever it was opened via an admin's
 // preview link, so it's unmistakable this isn't the live version a real
 // visitor would land on — no wording change, no placement ambiguity.

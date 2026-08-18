@@ -19,6 +19,8 @@ const QUIZ_CATEGORIES = [
   { value: 'fun', label: 'Fun & Random' },
 ]
 
+// The admin page listing all quizzes, with search/filter, bulk actions, and
+// links to edit/clone/delete each one.
 export default function QuizList() {
   const { session, hasRole } = useAuth()
   const [quizzes, setQuizzes] = useState(null)
@@ -39,6 +41,7 @@ export default function QuizList() {
 
   const isFirstRender = useRef(true)
 
+  // Fetches the current page of quizzes using whatever search/filter values are set.
   function load() {
     listQuizzesAdmin(session.token, { search, category, language, status, page, limit: PAGE_SIZE })
       .then((data) => {
@@ -82,6 +85,7 @@ export default function QuizList() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => clear(), [search, category, language, status, page])
 
+  // Publishes every currently checked quiz.
   async function handleBulkPublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -92,6 +96,7 @@ export default function QuizList() {
     load()
   }
 
+  // Sets every currently checked quiz back to draft.
   async function handleBulkUnpublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -102,6 +107,7 @@ export default function QuizList() {
     load()
   }
 
+  // Deletes every currently checked quiz, after confirming with the admin.
   async function handleBulkDelete() {
     if (!window.confirm(`Delete ${selected.size} selected quiz(zes)? This cannot be undone.`)) return
     setBulkBusy(true)
@@ -113,12 +119,14 @@ export default function QuizList() {
     load()
   }
 
+  // Deletes a single quiz, after confirming with the admin.
   async function handleDelete(id, title) {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return
     await deleteQuiz(session.token, id)
     load()
   }
 
+  // Creates a copy of an existing quiz (with a unique title tag) as a new draft.
   async function handleClone(quiz) {
     try {
       // A short unique tag (not just a static "(Copy)") so the slug generated
@@ -212,6 +220,7 @@ export default function QuizList() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!quizzes && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
+      {/* Shows publish/unpublish/delete buttons once at least one quiz is checked */}
       {canWrite && (
         <BulkActionsBar
           count={selected.size}
@@ -230,6 +239,7 @@ export default function QuizList() {
               {hasFilters ? 'No quizzes match these filters.' : 'No quizzes yet.'}
             </p>
           )}
+          {/* Checkbox to select/deselect every quiz shown on this page */}
           {canWrite && quizzes.length > 0 && (
             <div className="flex items-center gap-2 p-3 text-xs text-gray-500 dark:text-gray-400">
               <input

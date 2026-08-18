@@ -5,6 +5,9 @@ import Pager from '../components/Pager'
 
 const PAGE_SIZE = 20
 
+// This page lists visitors who created a free account on the site (not
+// admins — regular members). You can search for someone, disable or delete
+// their account, or generate a password-recovery code for them.
 export default function EndUserList() {
   const { session, hasRole } = useAuth()
   const [users, setUsers] = useState(null)
@@ -12,8 +15,8 @@ export default function EndUserList() {
   const [error, setError] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
-  const [selectedUser, setSelectedUser] = useState(null)
-  const [recoveryResult, setRecoveryResult] = useState(null)
+  const [selectedUser, setSelectedUser] = useState(null) // which member's details popup is open
+  const [recoveryResult, setRecoveryResult] = useState(null) // the freshly generated recovery code, shown in its own popup
   const [recoveryError, setRecoveryError] = useState('')
   const [generatingRecovery, setGeneratingRecovery] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -21,6 +24,7 @@ export default function EndUserList() {
 
   const isFirstRender = useRef(true)
 
+  // Fetches the list of members matching the current search and page.
   function load() {
     listEndUsersAdmin(session.token, { search, page, limit: PAGE_SIZE })
       .then((data) => {
@@ -45,6 +49,7 @@ export default function EndUserList() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => setPage(1), [search])
 
+  // Disables or re-enables a member's account (they can't log in while disabled).
   async function handleToggleStatus(user) {
     const nextStatus = user.status === 'disabled' ? 'active' : 'disabled'
     const verb = nextStatus === 'disabled' ? 'Disable' : 'Re-enable'
@@ -58,6 +63,7 @@ export default function EndUserList() {
     }
   }
 
+  // Permanently deletes a member's account after confirming.
   async function handleDelete(id, displayName) {
     if (!window.confirm(`Permanently delete account "${displayName}"? This cannot be undone — their username becomes available again and all account data is gone.`)) return
     try {
@@ -69,6 +75,7 @@ export default function EndUserList() {
     }
   }
 
+  // Generates a temporary code you can send to a member so they can reset their password.
   async function handleGenerateRecoveryCode(user) {
     if (!window.confirm(`Generate a recovery code for "${user.displayName}"? It replaces their existing code and expires in 10 minutes.`)) return
     setGeneratingRecovery(true)
@@ -84,6 +91,7 @@ export default function EndUserList() {
     }
   }
 
+  // Copies the recovery code text to the clipboard so it can be pasted elsewhere (e.g. WhatsApp).
   async function handleCopyRecovery() {
     if (!recoveryResult) return
     const text = `Twegle account recovery\nUsername: ${recoveryResult.username}\nRecovery Code: ${recoveryResult.recoveryCode}\n\nThis code expires in 10 minutes — go to twegle.in, click "Forgot password?", and enter these to set a new password.`
@@ -188,6 +196,7 @@ export default function EndUserList() {
         <Pager page={pagination.page} totalPages={pagination.totalPages} total={pagination.total} onPageChange={setPage} />
       )}
 
+      {/* Popup showing one member's details, with buttons to disable/delete/recover them */}
       {selectedUser && (
         <div
           className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4"
@@ -273,6 +282,7 @@ export default function EndUserList() {
         </div>
       )}
 
+      {/* Popup showing the newly generated recovery code, ready to copy and send */}
       {recoveryResult && (
         <div
           className="fixed inset-0 z-[60] bg-black/40 flex items-center justify-center p-4"

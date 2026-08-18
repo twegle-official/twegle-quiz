@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { pickPuzzleOfTheDay, getPuzzleStreak } from '../utils/dailyQuiz'
 
+// A colorful banner highlighting today's featured puzzle, with a streak count.
 // Tracks its own independent streak from DailyQuizBanner right above it
 // (split apart on direct request — a shared counter read as confusing when
 // a visitor doing only quizzes or only puzzles saw one combined number).
@@ -23,6 +24,7 @@ export default function PuzzleOfTheDayBanner({ puzzles }) {
         <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Puzzle Streak</p>
         <p className="text-sm sm:text-base font-bold truncate">{puzzle.question}</p>
       </div>
+      {/* Only show the streak badge once the visitor has an actual streak going */}
       {streak.count > 0 && (
         <span className="shrink-0 text-[10px] sm:text-xs font-bold bg-white/25 rounded-full px-1.5 py-0.5 sm:px-2 sm:py-1 whitespace-nowrap">
           Day {streak.count}

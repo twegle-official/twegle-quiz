@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
 import { LogoWithWordmark } from '../../components/Logo'
 
+// This is the login page for admins — the gate you have to pass through
+// with your email and password before you can reach the rest of the admin panel.
 export default function Login() {
   const { login } = useAuth()
 
@@ -12,6 +14,7 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  // Runs when the login form is submitted — checks the email/password with the server.
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')

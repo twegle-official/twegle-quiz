@@ -13,6 +13,7 @@ export function registerLudoSocket(io) {
   const nsp = io.of('/ludo')
 
   nsp.on('connection', (socket) => {
+    // A player opens or reconnects to the match, so they get seated in the room and sent the current state
     socket.on('joinRoom', async ({ code, role }) => {
       try {
         const game = await LudoGame.findOne({ code })
@@ -36,6 +37,7 @@ export function registerLudoSocket(io) {
     // necessarily the signal to begin (a 3rd/4th friend might still be
     // on the way). Only the creator (the first player in the array) can
     // start, and only once at least one other player has actually joined.
+    // The host taps "start" once enough friends have joined the lobby
     socket.on('startMatch', async ({ code, role }) => {
       try {
         const game = await LudoGame.findOne({ code })
@@ -60,6 +62,7 @@ export function registerLudoSocket(io) {
       }
     })
 
+    // A player taps the dice to take their turn
     socket.on('rollDice', async ({ code, role }) => {
       try {
         const game = await LudoGame.findOne({ code })
@@ -102,6 +105,7 @@ export function registerLudoSocket(io) {
       }
     })
 
+    // A player picks which of their tokens to move with the roll they just got
     socket.on('moveToken', async ({ code, role, tokenIndex }) => {
       try {
         const game = await LudoGame.findOne({ code })
@@ -145,6 +149,7 @@ export function registerLudoSocket(io) {
     // code/room. Starter index rotates through every seat in turn
     // (not just a 2-way alternation) so the same player doesn't keep
     // going first forever.
+    // A player asks to start a new round after the match has finished
     socket.on('rematch', async ({ code, role }) => {
       try {
         const game = await LudoGame.findOne({ code })

@@ -18,6 +18,8 @@ const CATEGORY_LABELS = {
   'motivational-quote': 'Motivational Quote',
 }
 
+// The admin page listing all posts (jokes, funny lines, quotes, motivational
+// quotes), with search/filter, bulk actions, and links to edit/clone/delete each one.
 export default function PostList() {
   const { session, hasRole } = useAuth()
   const [posts, setPosts] = useState(null)
@@ -37,6 +39,7 @@ export default function PostList() {
 
   const isFirstRender = useRef(true)
 
+  // Fetches the current page of posts using whatever search/filter values are set.
   function load() {
     listPostsAdmin(session.token, { search, category, language, status, page, limit: PAGE_SIZE })
       .then((data) => {
@@ -75,6 +78,7 @@ export default function PostList() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => clear(), [search, category, language, status, page])
 
+  // Publishes every currently checked post.
   async function handleBulkPublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -85,6 +89,7 @@ export default function PostList() {
     load()
   }
 
+  // Sets every currently checked post back to draft.
   async function handleBulkUnpublish() {
     setBulkBusy(true)
     for (const id of selected) {
@@ -95,6 +100,7 @@ export default function PostList() {
     load()
   }
 
+  // Deletes every currently checked post, after confirming with the admin.
   async function handleBulkDelete() {
     if (!window.confirm(`Delete ${selected.size} selected post(s)? This cannot be undone.`)) return
     setBulkBusy(true)
@@ -106,12 +112,14 @@ export default function PostList() {
     load()
   }
 
+  // Deletes a single post, after confirming with the admin.
   async function handleDelete(id) {
     if (!window.confirm('Delete this post? This cannot be undone.')) return
     await deletePost(session.token, id)
     load()
   }
 
+  // Creates a copy of an existing post as a new draft.
   async function handleClone(post) {
     try {
       await createPost(session.token, {
@@ -197,6 +205,7 @@ export default function PostList() {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {!posts && !error && <p className="text-gray-400 dark:text-gray-500">Loading...</p>}
 
+      {/* Shows publish/unpublish/delete buttons once at least one post is checked */}
       {canWrite && (
         <BulkActionsBar
           count={selected.size}
@@ -215,6 +224,7 @@ export default function PostList() {
               {hasFilters ? 'No posts match these filters.' : 'No posts yet.'}
             </p>
           )}
+          {/* Checkbox to select/deselect every post shown on this page */}
           {canWrite && posts.length > 0 && (
             <div className="flex items-center gap-2 p-3 text-xs text-gray-500 dark:text-gray-400">
               <input

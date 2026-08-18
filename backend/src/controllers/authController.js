@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 import Admin from '../models/Admin.js'
 
+// Handles an admin signing in — checks their email/password and hands back a login token.
 export async function login(req, res) {
   try {
     const { email, password } = req.body
@@ -15,7 +16,7 @@ export async function login(req, res) {
       return res.status(401).json({ error: 'Invalid email or password' })
     }
 
-    const valid = await bcrypt.compare(password, admin.passwordHash)
+    const valid = await bcrypt.compare(password, admin.passwordHash) // checks the typed password against the stored scrambled version
     if (!valid) {
       return res.status(401).json({ error: 'Invalid email or password' })
     }
@@ -23,7 +24,7 @@ export async function login(req, res) {
     const token = jwt.sign(
       { id: admin._id.toString(), role: admin.role, name: admin.name },
       process.env.JWT_SECRET,
-      { expiresIn: '12h' }
+      { expiresIn: '12h' } // this login token stops working after 12 hours
     )
 
     res.json({
@@ -35,6 +36,7 @@ export async function login(req, res) {
   }
 }
 
+// Returns the currently logged-in admin's own details — used to show who's logged in.
 export async function me(req, res) {
   const admin = await Admin.findById(req.admin.id).select('-passwordHash')
   if (!admin) {

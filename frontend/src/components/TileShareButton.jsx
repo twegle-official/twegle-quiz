@@ -16,10 +16,11 @@ import { recordShare } from '../utils/badges'
 // handler calls both preventDefault and stopPropagation so tapping "share"
 // never also navigates into the card underneath it.
 export default function TileShareButton({ title, shareUrl, shareText }) {
-  const [showShare, setShowShare] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const shareRef = useRef(null)
+  const [showShare, setShowShare] = useState(false) // whether the share popover is open
+  const [copied, setCopied] = useState(false) // true briefly after "Copy link" is clicked
+  const shareRef = useRef(null) // reference to the popover element, used to detect outside clicks
 
+  // Closes the popover if the visitor clicks anywhere outside of it.
   useEffect(() => {
     if (!showShare) return
     function handleClickOutside(e) {
@@ -31,17 +32,20 @@ export default function TileShareButton({ title, shareUrl, shareText }) {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [showShare])
 
+  // Opens/closes the share popover without triggering the card's own link.
   function toggleShare(e) {
     e.preventDefault()
     e.stopPropagation()
     setShowShare((v) => !v)
   }
 
+  // Stops a click from navigating the card's link or bubbling further.
   function stop(e) {
     e.preventDefault()
     e.stopPropagation()
   }
 
+  // Opens the phone/browser's built-in share sheet, if available.
   async function handleNativeShare(e) {
     stop(e)
     try {
@@ -53,6 +57,7 @@ export default function TileShareButton({ title, shareUrl, shareText }) {
     setShowShare(false)
   }
 
+  // Opens a WhatsApp share link in a new tab.
   function handleWhatsApp(e) {
     stop(e)
     const text = `${shareText} ${shareUrl}`
@@ -61,6 +66,7 @@ export default function TileShareButton({ title, shareUrl, shareText }) {
     setShowShare(false)
   }
 
+  // Copies the share link to the clipboard and briefly shows "Copied!".
   async function handleCopyLink(e) {
     stop(e)
     try {
@@ -82,11 +88,13 @@ export default function TileShareButton({ title, shareUrl, shareText }) {
       >
         🔗
       </button>
+      {/* Popover with the actual share options, only rendered while open */}
       {showShare && (
         <div
           onClick={stop}
           className="absolute right-0 mt-2 w-40 p-2 rounded-xl bg-white dark:bg-gray-800 shadow-xl flex flex-col gap-1"
         >
+          {/* Only shown on devices/browsers that support the native share sheet */}
           {typeof navigator !== 'undefined' && navigator.share && (
             <button
               onClick={handleNativeShare}

@@ -17,12 +17,19 @@ function roleStorageKey(code) {
   return `tictactoe-role-${code}`
 }
 
+// The live two-player Tic-Tac-Toe page — shows the board, sends/receives
+// moves over a socket connection, and handles joining and rematch.
 export default function TicTacToeMultiplayer() {
   const { code } = useParams()
+  // The current game state as last received from the server (board, turn, etc.)
   const [game, setGame] = useState(null)
+  // True if no game matches this invite code
   const [notFound, setNotFound] = useState(false)
+  // 'X' or 'O' — which side this browser is playing, remembered in localStorage
   const [role, setRole] = useState(() => localStorage.getItem(roleStorageKey(code)))
+  // The name typed into the "join as O" form
   const [joinName, setJoinName] = useState('')
+  // True while the join request is in progress
   const [joining, setJoining] = useState(false)
   const [error, setError] = useState('')
   const movingRef = useRef(false)
@@ -45,12 +52,16 @@ export default function TicTacToeMultiplayer() {
   useEffect(() => {
     if (!role) return
 
+    // Runs whenever the server sends an updated game state (after a move,
+    // a player joining, a rematch, etc.)
     function handleGameState(data) {
       setGame(data)
     }
+    // Shows an error message sent by the server
     function handleError(message) {
       setError(message)
     }
+    // Tells the server which game and role this browser belongs to
     function joinRoom() {
       ticTacToeSocket.emit('joinRoom', { code, role })
     }
@@ -83,6 +94,7 @@ export default function TicTacToeMultiplayer() {
     }
   }, [game?.status, game?.winner, role])
 
+  // Submits the "join as O" form
   async function handleJoin(e) {
     e.preventDefault()
     if (!joinName.trim()) return
@@ -100,6 +112,8 @@ export default function TicTacToeMultiplayer() {
     }
   }
 
+  // Handles clicking a cell to place this player's mark, and sends the
+  // move to the server
   function handleCellClick(cell) {
     if (movingRef.current) return
     if (!role || game.board[cell] || game.status !== 'in_progress' || game.currentTurn !== role) return
@@ -206,6 +220,7 @@ export default function TicTacToeMultiplayer() {
       </p>
       <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
+      {/* The 3x3 game board — click an empty cell on your turn */}
       <div className="grid grid-cols-3 gap-2 w-80 sm:w-64 mx-auto mb-6">
         {game.board.map((cell, i) => (
           <button
@@ -220,6 +235,7 @@ export default function TicTacToeMultiplayer() {
         ))}
       </div>
 
+      {/* Invite link to share while waiting for an opponent */}
       {game.status === 'waiting' && (
         <div className="mb-6">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Send this link to a friend:</p>
@@ -231,6 +247,7 @@ export default function TicTacToeMultiplayer() {
         </div>
       )}
 
+      {/* Rematch button and result-sharing shown once the game ends */}
       {game.status === 'finished' && (
         <div className="mb-6">
           <button

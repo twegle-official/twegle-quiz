@@ -3,12 +3,15 @@ import { getGameShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 import { engagementLabel } from '../utils/engagementLabel'
 
+// Turns a raw play count into a short display string, e.g. 2500 -> "2.5k".
 function formatPlays(n) {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
   if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`
   return `${n}`
 }
 
+// A single clickable tile for one game — shown in the games grid on the
+// homepage/browse pages.
 export default function GameCard({ game, filterMode }) {
   const engagementText = engagementLabel(game.totalPlays) || `${formatPlays(game.totalPlays)} played`
   // Games that support both modes (currently just Tic-Tac-Toe) default to
@@ -25,6 +28,7 @@ export default function GameCard({ game, filterMode }) {
       to={to}
       className={`relative flex h-full flex-col rounded-2xl p-6 text-white shadow-md hover:scale-[1.02] transition-transform bg-gradient-to-br ${game.gradient}`}
     >
+      {/* Share icon button in the corner of the tile */}
       <TileShareButton
         title={game.title}
         shareUrl={getGameShareUrl(game.slug)}

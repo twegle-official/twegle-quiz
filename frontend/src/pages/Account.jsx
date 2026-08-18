@@ -18,18 +18,21 @@ const AVATAR_OPTIONS = [
   '🎮', '🕹️', '👾', '🤖', '⚡', '🎯', '🎧',
 ]
 
+// The "My Account" page — lets a logged-in user change their avatar and
+// display name, get a new Recovery Code, and see a summary of everything
+// they've done on the site (quizzes, puzzles, games, streaks).
 export default function Account() {
   const { session, logout, updateSession } = useUserAuth()
   const navigate = useNavigate()
-  const [displayName, setDisplayName] = useState(session?.user?.displayName || '')
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
-  const [error, setError] = useState('')
-  const [newRecoveryCode, setNewRecoveryCode] = useState(null)
-  const [regenerating, setRegenerating] = useState(false)
-  const [savingAvatar, setSavingAvatar] = useState(null)
-  const [quizzes, setQuizzes] = useState(null)
-  const [puzzles, setPuzzles] = useState(null)
+  const [displayName, setDisplayName] = useState(session?.user?.displayName || '') // the "Gamer Tag" text box
+  const [saving, setSaving] = useState(false) // true while the display name is being saved
+  const [saved, setSaved] = useState(false) // shows a "Saved ✓" message after saving
+  const [error, setError] = useState('') // holds any error message to show the user
+  const [newRecoveryCode, setNewRecoveryCode] = useState(null) // holds a freshly generated Recovery Code, if any
+  const [regenerating, setRegenerating] = useState(false) // true while a new Recovery Code is being generated
+  const [savingAvatar, setSavingAvatar] = useState(null) // which avatar is currently being saved
+  const [quizzes, setQuizzes] = useState(null) // full list of quizzes, used to look up titles for "Quizzes you've taken"
+  const [puzzles, setPuzzles] = useState(null) // full list of puzzles, used to look up titles for "Puzzles you've solved"
 
   useDocumentMeta('My Account', 'Manage your Twegle account.')
 
@@ -49,7 +52,7 @@ export default function Account() {
   // manual reload picked up the by-then-synced localStorage. Same fix
   // Home.jsx already uses for its "already attempted" tiles: force a
   // re-render once statsSync.js reports the sync actually landed.
-  const [, forceStatsRerender] = useState(0)
+  const [, forceStatsRerender] = useState(0) // a dummy value just used to force this page to re-render
   useEffect(() => {
     function handleStatsSynced() {
       forceStatsRerender((n) => n + 1)
@@ -164,6 +167,7 @@ export default function Account() {
           before My Activity (the right column) on mobile. */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-10 gap-y-8">
       <div>
+      {/* The row of avatar emoji buttons — click one to switch your avatar */}
       <div className="mb-8">
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Avatar</label>
         <div className="flex flex-wrap gap-2">
@@ -189,6 +193,7 @@ export default function Account() {
         </div>
       </div>
 
+      {/* The form for changing your display name ("Gamer Tag") */}
       <form onSubmit={handleSaveDisplayName} className="mb-8">
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
           Gamer Tag <span className="font-normal text-gray-400 dark:text-gray-500">(shown on leaderboards)</span>
@@ -210,6 +215,7 @@ export default function Account() {
         {saved && <span className="ml-3 text-sm text-green-600 dark:text-green-400">Saved ✓</span>}
       </form>
 
+      {/* The Recovery Code section — used to get a new code if the old one is lost */}
       <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
         <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Recovery Code</p>
         {newRecoveryCode ? (
@@ -243,6 +249,7 @@ export default function Account() {
           Synced to your account — same progress on every device you log into.
         </p>
 
+        {/* The row of clickable stat tiles — clicking one scrolls down to that section */}
         <div className="grid grid-cols-2 gap-3 mb-4">
           <button
             type="button"

@@ -6,13 +6,13 @@ import { getReactions, setReaction, getReactionsBatch } from '../controllers/rea
 const router = Router()
 
 // Public, unauthenticated — used by the end-user-facing site.
-router.get('/', listPublishedPosts)
+router.get('/', listPublishedPosts) // list all published posts
 // Must come before '/:id' — otherwise Express would match "reactions" as
 // an :id value and route here into getPublishedPostById instead.
-router.get('/reactions', getReactionsBatch)
-router.get('/:id', getPublishedPostById)
-router.post('/:id/engagement', recordEngagement)
-router.get('/:id/reactions', getReactions)
-router.post('/:id/reactions', setReaction)
+router.get('/reactions', getReactionsBatch) // fetch reaction counts for many posts at once
+router.get('/:id', getPublishedPostById) // fetch one post by its database id
+router.post('/:id/engagement', recordEngagement) // record a like/share/view type event on a post
+router.get('/:id/reactions', getReactions) // fetch reaction counts for one post
+router.post('/:id/reactions', setReaction) // set/change a visitor's reaction on a post
 
 export default router

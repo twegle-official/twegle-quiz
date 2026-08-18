@@ -6,16 +6,18 @@ import BackButton from '../components/BackButton'
 
 // Public-site login — a separate component/route from admin/pages/Login.jsx,
 // which is a different auth system entirely (see UserAuthContext.jsx).
+// The public sign-in page — lets a visitor with an existing account log in.
 export default function Login() {
   const { login } = useUserAuth()
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState('') // message shown if login fails
+  const [submitting, setSubmitting] = useState(false) // true while the login request is in flight
 
-  useDocumentMeta('Log In', 'Log in to your Twegle account.')
+  useDocumentMeta('Log In', 'Log in to your Twegle account.') // sets the browser tab title + meta description for this page
 
+  // Runs when the login form is submitted.
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
@@ -48,6 +50,7 @@ export default function Login() {
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
+      {/* The username + password login form */}
       <form onSubmit={handleSubmit}>
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Username</label>
         <input

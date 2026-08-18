@@ -9,6 +9,7 @@ const CATEGORIES = ['joke', 'funny-line', 'quote', 'motivational-quote']
 const MAX_TEXT_LENGTH = 500
 const MAX_AUTHOR_LENGTH = 100
 
+// Checks a post's details are valid before saving — returns an error message, or nothing if it's fine.
 function validatePostPayload({ category, text, author }) {
   if (!CATEGORIES.includes(category)) {
     return `Category must be one of: ${CATEGORIES.join(', ')}`
@@ -32,12 +33,13 @@ function postLabel(post) {
 
 // --- Admin-facing (requires auth) ---
 
+// Gets a filtered, paged list of posts for the admin panel — called when an admin opens the Posts list.
 export async function listPostsAdmin(req, res) {
   const { search, category, language, status } = req.query
   const filter = {}
   if (search && typeof search === 'string' && search.trim()) {
-    const pattern = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    filter.$or = [{ text: { $regex: pattern, $options: 'i' } }, { author: { $regex: pattern, $options: 'i' } }]
+    const pattern = search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // makes the search text safe to use in a text search
+    filter.$or = [{ text: { $regex: pattern, $options: 'i' } }, { author: { $regex: pattern, $options: 'i' } }] // matches posts where the text or author contains the search words
   }
   if (CATEGORIES.includes(category)) filter.category = category
   if (language === 'hi' || language === 'en') filter.language = language
@@ -51,12 +53,14 @@ export async function listPostsAdmin(req, res) {
   res.json({ posts, pagination: paginationMeta(page, limit, total) })
 }
 
+// Gets one post by id for the admin panel — called when an admin opens a single post to edit it.
 export async function getPostAdmin(req, res) {
   const post = await Post.findById(req.params.id)
   if (!post) return res.status(404).json({ error: 'Post not found' })
   res.json({ post })
 }
 
+// Creates a new post — called when an admin saves a brand-new joke/quote/etc.
 export async function createPost(req, res) {
   const { category, text, author, language, status, publishAt } = req.body
 
@@ -90,6 +94,7 @@ export async function createPost(req, res) {
   res.status(201).json({ post })
 }
 
+// Updates an existing post's details — called when an admin edits and saves a post.
 export async function updatePost(req, res) {
   const { category, text, author, language, status, publishAt } = req.body
 
@@ -130,6 +135,7 @@ export async function updatePost(req, res) {
   res.json({ post })
 }
 
+// Permanently deletes a post — called when an admin clicks delete on a post.
 export async function deletePost(req, res) {
   const post = await Post.findByIdAndDelete(req.params.id)
   if (post) {
@@ -146,6 +152,7 @@ export async function deletePost(req, res) {
 
 // --- Public-facing (no auth, published only) ---
 
+// Gets the public list of published posts (with view/share counts) — called when visitors browse posts on the site.
 export async function listPublishedPosts(req, res) {
   const { category, language } = req.query
   const filter = {
@@ -165,17 +172,18 @@ export async function listPublishedPosts(req, res) {
     { $match: { post: { $in: posts.map((p) => p._id) } } },
     { $group: { _id: '$post', total: { $sum: 1 } } },
   ])
-  const countsByPostId = Object.fromEntries(counts.map((c) => [c._id.toString(), c.total]))
+  const countsByPostId = Object.fromEntries(counts.map((c) => [c._id.toString(), c.total])) // turns the counts into a quick lookup by post id
 
   res.json({
     posts: posts.map((p) => ({ ...p.toObject(), totalEngagement: countsByPostId[p._id.toString()] || 0 })),
   })
 }
 
+// Gets one public post by id, allowing a valid preview link to see it early — called when a visitor opens a single post.
 export async function getPublishedPostById(req, res) {
   const post = await Post.findOne({ _id: req.params.id })
   if (!post) return res.status(404).json({ error: 'Post not found' })
-  const isLive = post.status === 'published' && (!post.publishAt || post.publishAt <= new Date())
+  const isLive = post.status === 'published' && (!post.publishAt || post.publishAt <= new Date()) // true if this post is actually visible to the public right now
   if (!isLive && !isValidPreviewToken(req.query.preview, 'post', post._id)) {
     return res.status(404).json({ error: 'Post not found' })
   }

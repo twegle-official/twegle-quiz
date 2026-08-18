@@ -15,20 +15,23 @@ const WIN_ROUND = 10
 const FLASH_MS = 500
 const GAP_MS = 250
 
+// Picks a random pad to add to the sequence.
 function nextStep() {
   return Math.floor(Math.random() * PADS.length)
 }
 
+// The Simon Says memory game — watch the pattern, then repeat it back.
 export default function SimonSays({ onGameEnd, onReset }) {
-  const [sequence, setSequence] = useState([nextStep()])
-  const [playerStep, setPlayerStep] = useState(0)
-  const [flashingPad, setFlashingPad] = useState(null)
-  const [isPlayingBack, setIsPlayingBack] = useState(true)
+  const [sequence, setSequence] = useState([nextStep()]) // the full pattern of pads to repeat, growing each round
+  const [playerStep, setPlayerStep] = useState(0) // how far into the sequence the player has correctly repeated
+  const [flashingPad, setFlashingPad] = useState(null) // which pad is lit up right now
+  const [isPlayingBack, setIsPlayingBack] = useState(true) // true while the game is showing the pattern (player can't click)
   const [gameOver, setGameOver] = useState(false)
-  const notifiedRef = useRef(false)
+  const notifiedRef = useRef(false) // guards against reporting the result more than once
 
   const round = sequence.length
 
+  // Plays back the current sequence by flashing each pad in order, then hands control to the player.
   useEffect(() => {
     if (gameOver) return
     setIsPlayingBack(true)
@@ -52,6 +55,7 @@ export default function SimonSays({ onGameEnd, onReset }) {
     }
   }, [sequence, gameOver])
 
+  // Ends the game and reports the win/loss result exactly once.
   function endGame(won) {
     if (notifiedRef.current) return
     notifiedRef.current = true
@@ -59,6 +63,7 @@ export default function SimonSays({ onGameEnd, onReset }) {
     onGameEnd?.(won ? 'win' : 'loss', round)
   }
 
+  // Runs when the player taps a pad — checks it against the next expected step in the sequence.
   function handlePadClick(padId) {
     if (isPlayingBack || gameOver) return
     if (padId !== sequence[playerStep]) {
@@ -77,6 +82,7 @@ export default function SimonSays({ onGameEnd, onReset }) {
     }
   }
 
+  // Starts a brand new game with a fresh one-step sequence.
   function handleReset() {
     setSequence([nextStep()])
     setPlayerStep(0)

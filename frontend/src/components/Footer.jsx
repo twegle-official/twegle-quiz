@@ -46,8 +46,10 @@ function LinkedinIcon(props) {
   )
 }
 
+// Site-wide footer shown at the bottom of every page — logo, blurb, social
+// links, install button, share buttons, and the Explore/Company link lists.
 export default function Footer() {
-  const { canInstall, promptInstall } = useInstallPrompt()
+  const { canInstall, promptInstall } = useInstallPrompt() // whether "Add to Home Screen" can be shown
 
   return (
     <footer className="border-t border-gray-200 dark:border-gray-800 mt-16 bg-gray-50 dark:bg-gray-900">
@@ -58,6 +60,7 @@ export default function Footer() {
             Quizzes, puzzles, jokes, quotes, games, stories, horoscope &amp; chaos — no sign up, just
             pick something and go. New stuff added regularly.
           </p>
+          {/* Social media icon links */}
           <div className="flex items-center gap-4 mt-4">
             <a
               href="https://instagram.com/twegle.official"
@@ -96,6 +99,7 @@ export default function Footer() {
               <LinkedinIcon className="w-5 h-5" />
             </a>
           </div>
+          {/* Only shown when the browser supports installing this site as an app */}
           {canInstall && (
             <button
               onClick={promptInstall}
@@ -104,6 +108,7 @@ export default function Footer() {
               📲 Add to Home Screen
             </button>
           )}
+          {/* Share buttons — hidden on larger screens where a share sidebar exists elsewhere */}
           <div className="mt-4 xl:hidden">
             <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
               Share Twegle
@@ -117,6 +122,7 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Links to the main content sections of the site */}
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Explore</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
@@ -136,6 +142,7 @@ export default function Footer() {
           </ul>
         </div>
 
+        {/* Links to About, FAQ, Feedback, and legal pages */}
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Company</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
@@ -148,6 +155,7 @@ export default function Footer() {
         </div>
       </div>
 
+      {/* Copyright and affiliate/ads disclosure line at the very bottom */}
       <div className="border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-400 dark:text-gray-500">
           <p>© {new Date().getFullYear()} Twegle. All rights reserved.</p>

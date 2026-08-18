@@ -4,15 +4,17 @@ import { submitFeedback } from '../api'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import BackButton from '../components/BackButton'
 
+// The Feedback page — a simple form for users to send a message to the Twegle team.
 export default function Feedback() {
-  const [message, setMessage] = useState('')
-  const [email, setEmail] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
-  const [sent, setSent] = useState(false)
+  const [message, setMessage] = useState('') // the feedback text typed by the user
+  const [email, setEmail] = useState('') // optional email, only needed if they want a reply
+  const [submitting, setSubmitting] = useState(false) // true while the feedback is being sent
+  const [error, setError] = useState('') // holds any error message to show the user
+  const [sent, setSent] = useState(false) // true once the feedback has been sent successfully
 
   useDocumentMeta('Feedback', 'Tell us what you think of Twegle — good, bad, or "you should add..."')
 
+  // Sends the feedback message (and optional email) to the server.
   async function handleSubmit(e) {
     e.preventDefault()
     if (!message.trim()) return
@@ -28,6 +30,7 @@ export default function Feedback() {
     }
   }
 
+  // A thank-you screen shown after feedback is successfully sent
   if (sent) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
@@ -57,6 +60,7 @@ export default function Feedback() {
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
+      {/* The feedback message and optional email form */}
       <form onSubmit={handleSubmit}>
         <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Your feedback</label>
         <textarea

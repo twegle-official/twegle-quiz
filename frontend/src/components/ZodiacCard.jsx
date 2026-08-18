@@ -2,12 +2,15 @@ import { Link } from 'react-router-dom'
 import { getHoroscopeShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 
+// A clickable card for one zodiac sign, shown in the horoscope section —
+// links through to that sign's horoscope page.
 export default function ZodiacCard({ sign, language }) {
   return (
     <Link
       to={`/horoscope/${sign.key}`}
       className={`relative flex h-full flex-col rounded-2xl p-6 text-white shadow-md hover:scale-[1.02] transition-transform bg-gradient-to-br ${sign.gradient}`}
     >
+      {/* Small share icon in the corner of the card */}
       <TileShareButton
         title={`${sign.name} Horoscope`}
         shareUrl={getHoroscopeShareUrl(sign.key, 'day', language)}

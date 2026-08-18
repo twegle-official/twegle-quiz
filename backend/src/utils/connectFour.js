@@ -44,6 +44,7 @@ export function checkWinner(board, row, col) {
   return null
 }
 
+// Checks whether every cell on the board is filled (a full board with no winner is a draw)
 export function isBoardFull(board) {
   return board.every((row) => row.every((cell) => cell !== ''))
 }

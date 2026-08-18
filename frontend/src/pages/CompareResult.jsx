@@ -8,6 +8,7 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { shareOrDownloadCompareImage } from '../utils/shareImage'
 import { recordShare } from '../utils/badges'
 
+// A small card showing one person's name and quiz result.
 function PersonCard({ person }) {
   return (
     <div className="flex-1 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 text-center">
@@ -18,12 +19,15 @@ function PersonCard({ person }) {
   )
 }
 
+// Shows whether two friends matched on a quiz once both have taken it —
+// or a "still waiting" screen if only one of them has so far.
 export default function CompareResult() {
   const { quizId: slug, code } = useParams()
-  const [compare, setCompare] = useState(null)
-  const [notFound, setNotFound] = useState(false)
-  const [generating, setGenerating] = useState(false)
+  const [compare, setCompare] = useState(null) // the comparison data (both people's results)
+  const [notFound, setNotFound] = useState(false) // true if this comparison doesn't exist
+  const [generating, setGenerating] = useState(false) // true while the shareable image is being made
 
+  // Loads the comparison data for the quiz and code in the URL.
   useEffect(() => {
     fetchQuizCompare(slug, code)
       .then((data) => (data ? setCompare(data) : setNotFound(true)))
@@ -75,6 +79,7 @@ export default function CompareResult() {
 
   const shareUrl = getQuizCompareShareUrl(code)
 
+  // Makes a shareable image of both people's results and starts the share/download flow.
   async function handleShareImage() {
     setGenerating(true)
     try {
@@ -110,6 +115,7 @@ export default function CompareResult() {
         </h1>
       </div>
 
+      {/* The two side-by-side result cards, one per friend */}
       <div className="flex gap-4 mb-8">
         <PersonCard person={compare.personA} />
         <PersonCard person={compare.personB} />

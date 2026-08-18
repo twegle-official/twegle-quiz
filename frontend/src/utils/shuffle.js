@@ -1,3 +1,4 @@
+// Puts the items of a list into a random order.
 // Fisher-Yates, returns a new array (doesn't mutate the input).
 export function shuffleArray(arr) {
   const result = [...arr]

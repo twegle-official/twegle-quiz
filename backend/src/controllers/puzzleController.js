@@ -9,6 +9,7 @@ export const PUZZLE_DIFFICULTIES = ['easy', 'medium', 'hard']
 const MAX_QUESTION_LENGTH = 500
 const MAX_ANSWER_LENGTH = 500
 
+// Checks that a puzzle submission has a valid question, answer, and difficulty.
 function validatePuzzlePayload({ question, answer, difficulty }) {
   if (typeof question !== 'string' || !question.trim()) {
     return 'Question is required'
@@ -30,10 +31,12 @@ function validatePuzzlePayload({ question, answer, difficulty }) {
 
 // --- Admin-facing (requires auth) ---
 
+// Lists puzzles for the admin panel, with optional search/filter/pagination.
 export async function listPuzzlesAdmin(req, res) {
   const { search, difficulty, language, status } = req.query
   const filter = {}
   if (search && typeof search === 'string' && search.trim()) {
+    // Escapes special regex characters so a search with symbols doesn't break or misbehave
     filter.question = { $regex: search.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' }
   }
   if (PUZZLE_DIFFICULTIES.includes(difficulty)) filter.difficulty = difficulty
@@ -48,12 +51,14 @@ export async function listPuzzlesAdmin(req, res) {
   res.json({ puzzles, pagination: paginationMeta(page, limit, total) })
 }
 
+// Fetches a single puzzle (including its answer) for editing in the admin panel.
 export async function getPuzzleAdmin(req, res) {
   const puzzle = await Puzzle.findById(req.params.id)
   if (!puzzle) return res.status(404).json({ error: 'Puzzle not found' })
   res.json({ puzzle })
 }
 
+// Creates a new puzzle from the admin panel form.
 export async function createPuzzle(req, res) {
   const { question, answer, imageUrl, difficulty, emoji, gradient, language, status, publishAt } = req.body
 
@@ -90,6 +95,7 @@ export async function createPuzzle(req, res) {
   res.status(201).json({ puzzle })
 }
 
+// Updates an existing puzzle's fields from the admin panel.
 export async function updatePuzzle(req, res) {
   const { question, answer, imageUrl, difficulty, emoji, gradient, language, status, publishAt } = req.body
 
@@ -133,6 +139,7 @@ export async function updatePuzzle(req, res) {
   res.json({ puzzle })
 }
 
+// Deletes a puzzle and logs the deletion for the admin activity log.
 export async function deletePuzzle(req, res) {
   const puzzle = await Puzzle.findByIdAndDelete(req.params.id)
   if (puzzle) {
@@ -149,6 +156,7 @@ export async function deletePuzzle(req, res) {
 
 // --- Public-facing (no auth, published only) ---
 
+// Lists all published puzzles for visitors to browse, with engagement counts.
 export async function listPublishedPuzzles(req, res) {
   const filter = {
     status: 'published',
@@ -183,6 +191,7 @@ export async function listPublishedPuzzles(req, res) {
   })
 }
 
+// Fetches one published puzzle (with its answer) for a visitor to view/play.
 export async function getPublishedPuzzleById(req, res) {
   const puzzle = await Puzzle.findOne({ _id: req.params.id })
   if (!puzzle) return res.status(404).json({ error: 'Puzzle not found' })

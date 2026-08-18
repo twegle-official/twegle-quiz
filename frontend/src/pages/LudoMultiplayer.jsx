@@ -21,14 +21,23 @@ function roleStorageKey(code) {
   return `ludo-role-${code}`
 }
 
+// The live 2-4 player Ludo page — shows the board, sends/receives dice
+// rolls and token moves over a socket connection, and handles joining,
+// starting the match, and rematch.
 export default function LudoMultiplayer() {
   const { code } = useParams()
+  // The current game state as last received from the server (players, board, whose turn, etc.)
   const [game, setGame] = useState(null)
+  // True if no game matches this invite code
   const [notFound, setNotFound] = useState(false)
+  // This browser's player color ('red'/'green'/'yellow'/'blue'), remembered in localStorage
   const [role, setRole] = useState(() => localStorage.getItem(roleStorageKey(code)))
+  // The name typed into the join form
   const [joinName, setJoinName] = useState('')
+  // True while the join request is in progress
   const [joining, setJoining] = useState(false)
   const [error, setError] = useState('')
+  // True while the dice-roll animation is playing
   const [rolling, setRolling] = useState(false)
 
   const load = useCallback(() => {
@@ -44,14 +53,18 @@ export default function LudoMultiplayer() {
   useEffect(() => {
     if (!role) return
 
+    // Runs whenever the server sends an updated game state (dice roll,
+    // token move, a player joining, match start, rematch, etc.)
     function handleGameState(data) {
       setGame(data)
       setRolling(false)
     }
+    // Shows an error message sent by the server
     function handleError(message) {
       setError(message)
       setRolling(false)
     }
+    // Tells the server which game and role this browser belongs to
     function joinRoom() {
       ludoSocket.emit('joinRoom', { code, role })
     }
@@ -102,6 +115,7 @@ export default function LudoMultiplayer() {
     return () => clearTimeout(timer)
   }, [game, code])
 
+  // Submits the "join this match" form
   async function handleJoin(e) {
     e.preventDefault()
     if (!joinName.trim()) return
@@ -119,10 +133,12 @@ export default function LudoMultiplayer() {
     }
   }
 
+  // The host clicks this to begin the match once enough players have joined
   function handleStartMatch() {
     ludoSocket.emit('startMatch', { code, role })
   }
 
+  // Rolls the dice on this player's turn
   function handleRoll() {
     if (rolling || !isMyTurn || game.pendingRoll !== null) return
     setRolling(true)
@@ -130,6 +146,7 @@ export default function LudoMultiplayer() {
     ludoSocket.emit('rollDice', { code, role })
   }
 
+  // Moves a token after tapping it
   function handleTokenTap(tokenRole, tokenIndex) {
     playSound('move')
     ludoSocket.emit('moveToken', { code, role: tokenRole, tokenIndex })
@@ -226,6 +243,7 @@ export default function LudoMultiplayer() {
       <div className="text-left mb-4"><BackButton /></div>
       <p className="text-xl sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{status}</p>
 
+      {/* A chip for each player showing their name and how many tokens are home */}
       <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
         {game.players.map((p) => (
           <PlayerChip
@@ -243,12 +261,14 @@ export default function LudoMultiplayer() {
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4">{error}</p>
       )}
 
+      {/* The Ludo board itself, once the match has started */}
       {game.status !== 'waiting' && (
         <div className="-mx-4 sm:mx-0 flex justify-center">
           <LudoBoard players={game.players} movable={movable} onTokenTap={handleTokenTap} />
         </div>
       )}
 
+      {/* Dice and roll button */}
       {game.status === 'in_progress' && (
         <div className="flex flex-col items-center gap-4 mb-6">
           <DiceDisplay roll={game.pendingRoll} rolling={rolling} />
@@ -262,6 +282,7 @@ export default function LudoMultiplayer() {
         </div>
       )}
 
+      {/* Waiting room: host can start the match, everyone can invite more friends */}
       {game.status === 'waiting' && (
         <div className="mb-6">
           {isCreator && game.players.length >= 2 && (
@@ -285,6 +306,7 @@ export default function LudoMultiplayer() {
         </div>
       )}
 
+      {/* Rematch button and result-sharing shown once the game ends */}
       {game.status === 'finished' && (
         <div className="mb-6">
           <button

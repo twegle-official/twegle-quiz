@@ -9,12 +9,17 @@ import PuzzleCard from '../components/PuzzleCard'
 import AdSlot from '../components/AdSlot'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
+// The search results page — shows everything on the site that matches the
+// text typed into the search box, grouped by content type.
 export default function SearchResults() {
   const [searchParams] = useSearchParams()
   const q = searchParams.get('q') || ''
+  // The list of matching items from the server (null while loading)
   const [results, setResults] = useState(null)
+  // True if the search request failed
   const [error, setError] = useState(false)
 
+  // Runs a new search whenever the search text in the URL changes
   useEffect(() => {
     if (!q.trim()) {
       setResults([])
@@ -29,6 +34,8 @@ export default function SearchResults() {
 
   useDocumentMeta(`Search: ${q}`, `Search results for "${q}" on Twegle.`)
 
+  // Split the combined results into one list per content type, so each
+  // type can get its own section below
   const quizzes = results?.filter((r) => r.type === 'quiz') || []
   const friendshipQuizzes = results?.filter((r) => r.type === 'friendship') || []
   const stories = results?.filter((r) => r.type === 'story') || []
@@ -51,6 +58,7 @@ export default function SearchResults() {
         <p className="text-center text-red-500">Couldn't search right now. Please try again shortly.</p>
       )}
 
+      {/* Loading placeholder shown while the search request is in flight */}
       {!error && !results && (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-pulse">
           {[0, 1, 2].map((i) => (
@@ -65,6 +73,7 @@ export default function SearchResults() {
         </p>
       )}
 
+      {/* One section per content type, each only shown if it has matches */}
       {quizzes.length > 0 && (
         <div className="mb-10">
           <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Quizzes</h2>

@@ -2,6 +2,7 @@
 // scheduled, not actually live yet — worth showing distinctly in admin list
 // views so an admin isn't surprised it's not visible to real visitors.
 export default function StatusLabel({ item }) {
+  // Published but the publish date is still in the future — show "scheduled" instead
   if (item.status === 'published' && item.publishAt && new Date(item.publishAt) > new Date()) {
     return (
       <span className="text-blue-600 dark:text-blue-400">
@@ -9,6 +10,7 @@ export default function StatusLabel({ item }) {
       </span>
     )
   }
+  // Otherwise just show the plain status (e.g. "draft" or "published")
   return (
     <span className={item.status === 'published' ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}>
       {item.status}

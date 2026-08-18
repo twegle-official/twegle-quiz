@@ -5,6 +5,7 @@ import { sanitize } from 'express-mongo-sanitize'
 // Applied to req.body only — this app never builds queries from req.query or
 // req.params, and Express 5 makes those getter-only (no setter), so rewriting
 // them in place would throw.
+// Cleans dangerous characters out of the request body before it's used.
 export function sanitizeBody(req, res, next) {
   if (req.body && typeof req.body === 'object') {
     req.body = sanitize(req.body)

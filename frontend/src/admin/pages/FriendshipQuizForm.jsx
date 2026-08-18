@@ -16,6 +16,9 @@ const emptyQuiz = {
   questions: [{ text: '', options: ['', ''] }],
 }
 
+// This page is the form for creating or editing a "friendship quiz" — the
+// kind where one person answers questions about themselves, then shares a
+// link so friends can try to guess their answers.
 export default function FriendshipQuizForm() {
   const { session } = useAuth()
   const { id } = useParams()
@@ -28,6 +31,7 @@ export default function FriendshipQuizForm() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
+  // If we're editing an existing quiz, load its current data into the form.
   useEffect(() => {
     if (!isEdit) return
     getFriendshipQuizAdmin(session.token, id)
@@ -88,6 +92,7 @@ export default function FriendshipQuizForm() {
     })
   }
 
+  // Runs when "Save Friendship Quiz" is clicked — creates a new quiz or updates the existing one.
   async function handleSubmit(e) {
     e.preventDefault()
     setSaving(true)

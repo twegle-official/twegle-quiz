@@ -4,7 +4,7 @@ import { listPublishedPuzzles, getPublishedPuzzleById } from '../controllers/puz
 const router = Router()
 
 // Public, unauthenticated — used by the end-user-facing site.
-router.get('/', listPublishedPuzzles)
-router.get('/:id', getPublishedPuzzleById)
+router.get('/', listPublishedPuzzles) // list all published puzzles
+router.get('/:id', getPublishedPuzzleById) // fetch one published puzzle by its id
 
 export default router

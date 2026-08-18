@@ -13,10 +13,12 @@ const FILES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 const WHITE_GLYPHS = { k: '♔', q: '♕', r: '♖', b: '♗', n: '♘', p: '♙' }
 const BLACK_GLYPHS = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' }
 
+// Converts a grid position (row/column) into standard chess square names like "e4".
 function squareName(row, col) {
   return `${FILES[col]}${8 - row}`
 }
 
+// Draws the 8x8 chess board with pieces, highlights, and legal-move dots.
 export default function ChessBoard({
   fen,
   orientation = 'white',
@@ -27,10 +29,10 @@ export default function ChessBoard({
   onSquareClick,
   disabled = false,
 }) {
-  const board = new Chess(fen).board()
-  const rowOrder = orientation === 'white' ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0]
+  const board = new Chess(fen).board() // rebuilds the piece layout from the FEN text
+  const rowOrder = orientation === 'white' ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0] // flips the board if playing as black
   const colOrder = orientation === 'white' ? [0, 1, 2, 3, 4, 5, 6, 7] : [7, 6, 5, 4, 3, 2, 1, 0]
-  const legalSet = new Set(legalTargets)
+  const legalSet = new Set(legalTargets) // quick lookup of which squares are legal to move to
 
   return (
     <div className="inline-block bg-gradient-to-br from-amber-800 to-amber-950 dark:from-amber-950 dark:to-black rounded-2xl p-2 sm:p-3 shadow-lg">
@@ -84,9 +86,11 @@ export default function ChessBoard({
                       {piece.color === 'w' ? WHITE_GLYPHS[piece.type] : BLACK_GLYPHS[piece.type]}
                     </span>
                   )}
+                  {/* Small dot marks an empty square you can move to */}
                   {isLegalTarget && !piece && (
                     <span className="absolute w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-full bg-violet-500/60" />
                   )}
+                  {/* Ring marks an opponent piece you can capture */}
                   {isLegalTarget && piece && (
                     <span className="absolute inset-0.5 rounded-sm ring-4 ring-inset ring-violet-500/70" />
                   )}
@@ -95,12 +99,14 @@ export default function ChessBoard({
             })
           )}
         </div>
+        {/* Row numbers (1-8) shown down the right side of the board */}
         <div className="flex flex-col justify-around ml-1 text-[10px] sm:text-xs text-amber-200/80 font-semibold">
           {rowOrder.map((row) => (
             <span key={row} className="w-3 text-center">{8 - row}</span>
           ))}
         </div>
       </div>
+      {/* Column letters (a-h) shown along the bottom of the board */}
       <div className="flex mt-1 pl-0">
         {colOrder.map((col) => (
           <span

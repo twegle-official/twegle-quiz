@@ -21,6 +21,7 @@ function slugify(title) {
   return base || `story-${Date.now().toString(36)}`
 }
 
+// Checks a story's details are valid before saving — returns an error message, or nothing if it's fine.
 function validateStoryPayload({ title, body, category }) {
   if (typeof title !== 'string' || !title.trim()) {
     return 'Title is required'
@@ -42,6 +43,7 @@ function validateStoryPayload({ title, body, category }) {
 
 // --- Admin-facing (requires auth) ---
 
+// Gets a filtered, paged list of stories for the admin panel — called when an admin opens the Stories list.
 export async function listStoriesAdmin(req, res) {
   const { search, category, language, status } = req.query
   const filter = {}
@@ -60,12 +62,14 @@ export async function listStoriesAdmin(req, res) {
   res.json({ stories, pagination: paginationMeta(page, limit, total) })
 }
 
+// Gets one story by id for the admin panel — called when an admin opens a single story to edit it.
 export async function getStoryAdmin(req, res) {
   const story = await Story.findById(req.params.id)
   if (!story) return res.status(404).json({ error: 'Story not found' })
   res.json({ story })
 }
 
+// Creates a new story — called when an admin saves a brand-new story.
 export async function createStory(req, res) {
   const { title, category, body, emoji, gradient, language, status, publishAt } = req.body
 
@@ -79,7 +83,7 @@ export async function createStory(req, res) {
   }
 
   const slug = slugify(title)
-  const existing = await Story.findOne({ slug })
+  const existing = await Story.findOne({ slug }) // makes sure no other story already has this same URL
   if (existing) {
     return res.status(409).json({ error: 'A story with a matching slug already exists' })
   }
@@ -108,6 +112,7 @@ export async function createStory(req, res) {
   res.status(201).json({ story })
 }
 
+// Updates an existing story's details — called when an admin edits and saves a story.
 export async function updateStory(req, res) {
   const { title, category, body, emoji, gradient, language, status, publishAt } = req.body
 
@@ -153,6 +158,7 @@ export async function updateStory(req, res) {
   res.json({ story })
 }
 
+// Permanently deletes a story — called when an admin clicks delete on a story.
 export async function deleteStory(req, res) {
   const story = await Story.findByIdAndDelete(req.params.id)
   if (story) {
@@ -169,6 +175,7 @@ export async function deleteStory(req, res) {
 
 // --- Public-facing (no auth, published only) ---
 
+// Gets the public list of published stories (with view/share counts) — called when visitors browse stories on the site.
 export async function listPublishedStories(req, res) {
   const filter = {
     status: 'published',
@@ -194,17 +201,18 @@ export async function listPublishedStories(req, res) {
     { $match: { contentType: 'story', contentId: { $in: stories.map((s) => s._id.toString()) } } },
     { $group: { _id: '$contentId', total: { $sum: 1 } } },
   ])
-  const countsByStoryId = Object.fromEntries(counts.map((c) => [c._id, c.total]))
+  const countsByStoryId = Object.fromEntries(counts.map((c) => [c._id, c.total])) // turns the counts into a quick lookup by story id
 
   res.json({
     stories: stories.map((s) => ({ ...s.toObject(), totalEngagement: countsByStoryId[s._id.toString()] || 0 })),
   })
 }
 
+// Gets one public story by its URL slug, allowing a valid preview link to see it early — called when a visitor opens a single story.
 export async function getPublishedStoryBySlug(req, res) {
   const story = await Story.findOne({ slug: req.params.slug })
   if (!story) return res.status(404).json({ error: 'Story not found' })
-  const isLive = story.status === 'published' && (!story.publishAt || story.publishAt <= new Date())
+  const isLive = story.status === 'published' && (!story.publishAt || story.publishAt <= new Date()) // true if this story is actually visible to the public right now
   if (!isLive && !isValidPreviewToken(req.query.preview, 'story', story._id)) {
     return res.status(404).json({ error: 'Story not found' })
   }

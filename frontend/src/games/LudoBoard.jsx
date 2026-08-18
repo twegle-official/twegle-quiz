@@ -36,6 +36,7 @@ const TOKEN_EMOJI = { red: '🔴', green: '🟢', yellow: '🟡', blue: '🔵' }
 // individually-bordered cells. This picks out that inner 4x4 region (the
 // yard's 6x6 minus a 1-cell colored margin all round) so it can render as
 // one seamless light block instead of yet more grid squares.
+// Checks if a cell is inside a colored yard's inner tray (where waiting tokens sit).
 function isYardTray(row, col, color) {
   const b = YARD_BOUNDS[color]
   return row >= b.rowStart + 1 && row <= b.rowStart + 4 && col >= b.colStart + 1 && col <= b.colStart + 4
@@ -44,6 +45,7 @@ function isYardTray(row, col, color) {
 // Rounds the tray's 4 outer corners (rather than every cell) so the 16
 // contiguous, borderless tray cells read as one rounded panel — matching
 // a real board's look — instead of a sharp-cornered rectangle.
+// Figures out which corner-rounding style a tray cell needs.
 function trayCornerClass(row, col, color) {
   const b = YARD_BOUNDS[color]
   const top = row === b.rowStart + 1
@@ -68,6 +70,7 @@ const SAFE_CELL_KEYS = new Set(SAFE_SQUARES.map((i) => ringSquareCoords(i).join(
 // quadrant whose true center sits exactly on the line between two cells —
 // unreachable by grid placement, reachable by percentage-based absolute
 // positioning.
+// Gets the pixel-percentage box for a color's yard tray, for placing tokens inside it.
 function trayRectPercent(color) {
   const b = YARD_BOUNDS[color]
   return {
@@ -88,6 +91,7 @@ const QUADRANT_OFFSETS = [
   [0.75, 0.75],
 ]
 
+// Picks the background color/style for a single board cell.
 function cellClass(cell, row, col) {
   const isSafe = SAFE_CELL_KEYS.has(`${row},${col}`)
   if (cell.type === 'yard') {
@@ -116,8 +120,8 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
   // (path squares, home stretch) still uses simple per-cell placement,
   // since a single path/home-stretch square only ever needs to center
   // content within itself, no cross-cell centering involved.
-  const cellTokens = new Map()
-  const yardTokensByColor = { red: [], green: [], yellow: [], blue: [] }
+  const cellTokens = new Map() // maps each board cell to the tokens currently sitting on it
+  const yardTokensByColor = { red: [], green: [], yellow: [], blue: [] } // tokens still waiting in their home yard
   players.forEach((player) => {
     let yardSlot = 0
     player.tokens.forEach((position, tokenIndex) => {
@@ -134,6 +138,7 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
     })
   })
 
+  // Checks whether a given token can be tapped to move right now.
   const isMovable = (role, tokenIndex) => movable && movable.role === role && movable.indices.includes(tokenIndex)
 
   return (
@@ -159,6 +164,7 @@ export default function LudoBoard({ players, movable, onTokenTap }) {
             background: `conic-gradient(from -45deg, ${PINWHEEL_HEX.red} 0deg 90deg, ${PINWHEEL_HEX.green} 90deg 180deg, ${PINWHEEL_HEX.yellow} 180deg 270deg, ${PINWHEEL_HEX.blue} 270deg 360deg)`,
           }}
         />
+        {/* Draws every square of the board, plus any tokens sitting on it */}
         {LAYOUT.flat().map((cell, i) => {
           const row = Math.floor(i / BOARD_SIZE)
           const col = i % BOARD_SIZE

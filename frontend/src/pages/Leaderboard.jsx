@@ -3,10 +3,12 @@ import { fetchLevelLeaderboard } from '../api'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
+// Shows the top 100 players site-wide, ranked by level/points.
 export default function Leaderboard() {
-  useDocumentMeta('Global Leaderboard', 'The top 100 Twegle players, ranked by level.')
-  const [entries, setEntries] = useState(null)
+  useDocumentMeta('Global Leaderboard', 'The top 100 Twegle players, ranked by level.') // sets the browser tab title + meta description for this page
+  const [entries, setEntries] = useState(null) // the list of ranked players, once loaded
 
+  // Fetches the leaderboard once when the page first loads.
   useEffect(() => {
     fetchLevelLeaderboard().then((data) => setEntries(data || []))
   }, [])
@@ -28,6 +30,7 @@ export default function Leaderboard() {
         </p>
       )}
 
+      {/* The ranked list of players */}
       {entries && entries.length > 0 && (
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm divide-y divide-gray-100 dark:divide-gray-800">
           {entries.map((entry, i) => (

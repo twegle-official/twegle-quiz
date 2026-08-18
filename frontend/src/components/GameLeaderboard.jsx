@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react'
 import { fetchGameLeaderboard, submitGameScore } from '../api'
 import { useUserAuth } from '../UserAuthContext'
 
+// Shows the top scores for a game, and a form to submit the visitor's own
+// score. Used at the end of a game round.
 export default function GameLeaderboard({ slug, label, score }) {
-  const { session } = useUserAuth()
-  const [entries, setEntries] = useState(null)
-  const [nickname, setNickname] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
+  const { session } = useUserAuth() // logged-in user, if any
+  const [entries, setEntries] = useState(null) // leaderboard rows
+  const [nickname, setNickname] = useState('') // guest's typed-in name
+  const [submitted, setSubmitted] = useState(false) // true once this score has been saved
+  const [submitting, setSubmitting] = useState(false) // true while the save is in progress
   const [error, setError] = useState('')
 
+  // Load the leaderboard whenever the game changes.
   useEffect(() => {
     setSubmitted(false)
     fetchGameLeaderboard(slug).then(setEntries)
@@ -21,6 +24,7 @@ export default function GameLeaderboard({ slug, label, score }) {
   // existed.
   const submitName = session ? session.user.displayName : nickname.trim()
 
+  // Runs when the visitor submits their score to the leaderboard.
   async function handleSubmit(e) {
     e.preventDefault()
     if (!submitName) return
@@ -44,6 +48,7 @@ export default function GameLeaderboard({ slug, label, score }) {
     <div className="mt-8 max-w-sm mx-auto text-left">
       <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3 text-center">🏆 Leaderboard</h2>
 
+      {/* Score-submission form — only shown right after finishing a game, before saving */}
       {score != null && !submitted && (
         <form onSubmit={handleSubmit} className="mb-4 rounded-2xl border border-gray-200 dark:border-gray-700 p-4">
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -78,6 +83,7 @@ export default function GameLeaderboard({ slug, label, score }) {
         </form>
       )}
 
+      {/* The actual ranked list of scores */}
       {entries.length === 0 ? (
         <p className="text-sm text-gray-400 dark:text-gray-500 text-center">No scores yet — be the first!</p>
       ) : (

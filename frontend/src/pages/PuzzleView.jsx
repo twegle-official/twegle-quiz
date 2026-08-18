@@ -17,18 +17,21 @@ import { recordRecentlyViewed } from '../utils/recentlyViewed'
 const SUGGESTION_COUNT = 4
 const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
 
+// Shows a single puzzle: the question, a "reveal answer" button, sharing,
+// and (if it's today's daily puzzle) streak tracking.
 export default function PuzzleView() {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
   const previewToken = searchParams.get('preview')
-  const [puzzle, setPuzzle] = useState(null)
+  const [puzzle, setPuzzle] = useState(null) // the puzzle's question/answer, once loaded
   const [notFound, setNotFound] = useState(false)
-  const [revealed, setRevealed] = useState(false)
-  const [suggestions, setSuggestions] = useState([])
-  const [dailyStreak, setDailyStreak] = useState(null)
-  const [isDailyPuzzle, setIsDailyPuzzle] = useState(false)
+  const [revealed, setRevealed] = useState(false) // whether the answer has been shown yet
+  const [suggestions, setSuggestions] = useState([]) // other puzzles to show below, "you might also like"
+  const [dailyStreak, setDailyStreak] = useState(null) // the updated streak count, if this was today's puzzle
+  const [isDailyPuzzle, setIsDailyPuzzle] = useState(false) // whether this puzzle is today's daily pick
   const viewedRef = useRef(false)
 
+  // Loads this puzzle's data when the page first opens.
   useEffect(() => {
     fetchPuzzleById(id, previewToken)
       .then((data) => (data ? setPuzzle(data) : setNotFound(true)))
@@ -36,6 +39,7 @@ export default function PuzzleView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id])
 
+  // Logs a "view" and adds this puzzle to the recently-viewed list, once loaded.
   useEffect(() => {
     if (!puzzle || viewedRef.current || previewToken) return
     viewedRef.current = true
@@ -62,6 +66,7 @@ export default function PuzzleView() {
       .catch(() => {})
   }, [puzzle])
 
+  // Runs when the visitor clicks "Reveal Answer".
   function handleReveal() {
     if (revealed) return
     setRevealed(true)
@@ -103,6 +108,7 @@ export default function PuzzleView() {
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       {previewToken && <PreviewBanner />}
       <div className="text-left mb-4"><BackButton /></div>
+      {/* The puzzle's question on a colored card */}
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${puzzle.gradient}`}
       >
@@ -121,6 +127,7 @@ export default function PuzzleView() {
         />
       )}
 
+      {/* The reveal button, or the answer once revealed */}
       <div className="mt-6">
         {!revealed ? (
           <button
@@ -156,6 +163,7 @@ export default function PuzzleView() {
         <AdSlot />
       </div>
 
+      {/* "You might also like" — a few other suggested puzzles */}
       {suggestions.length > 0 && (
         <div className="mt-10 text-left">
           <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">You might also like</h2>

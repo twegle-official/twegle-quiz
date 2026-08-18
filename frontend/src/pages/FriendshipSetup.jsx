@@ -6,19 +6,22 @@ import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
+// Where someone fills in the answers "about themselves" for a friendship
+// quiz, before sharing the resulting link with a friend to guess.
 export default function FriendshipSetup() {
   const { slug } = useParams()
   const [searchParams] = useSearchParams()
   const previewToken = searchParams.get('preview')
-  const [quiz, setQuiz] = useState(null)
+  const [quiz, setQuiz] = useState(null) // the friendship quiz's questions, once loaded
   const [notFound, setNotFound] = useState(false)
-  const [subjectName, setSubjectName] = useState('')
-  const [answers, setAnswers] = useState([])
+  const [subjectName, setSubjectName] = useState('') // the name of the person the quiz is about
+  const [answers, setAnswers] = useState([]) // the chosen option index for each question
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
-  const [code, setCode] = useState(null)
+  const [code, setCode] = useState(null) // the share code returned once the quiz is created
   const viewedRef = useRef(false)
 
+  // Loads the friendship quiz's questions when the page first opens.
   useEffect(() => {
     fetchFriendshipQuizBySlug(slug, previewToken)
       .then((data) => {
@@ -30,6 +33,7 @@ export default function FriendshipSetup() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slug])
 
+  // Logs a "view" once the quiz has loaded (but not for preview links).
   useEffect(() => {
     if (!quiz || viewedRef.current || previewToken) return
     viewedRef.current = true
@@ -83,6 +87,7 @@ export default function FriendshipSetup() {
 
   const allAnswered = answers.every((a) => a !== null)
 
+  // Runs when the "Get My Shareable Link" form is submitted.
   async function handleSubmit(e) {
     e.preventDefault()
     if (!subjectName.trim() || !allAnswered) return
@@ -112,6 +117,7 @@ export default function FriendshipSetup() {
         <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-4 text-center">{error}</p>
       )}
 
+      {/* The setup form: your name + an answer for each question */}
       <form onSubmit={handleSubmit}>
         <div className="mb-8">
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Your name</label>

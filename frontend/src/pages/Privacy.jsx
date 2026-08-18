@@ -1,8 +1,9 @@
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import BackButton from '../components/BackButton'
 
+// A simple static page — the site's Privacy Policy text, no data fetching or state.
 export default function Privacy() {
-  useDocumentMeta('Privacy Policy', 'What Twegle does and doesn\'t collect, and how it\'s used.')
+  useDocumentMeta('Privacy Policy', 'What Twegle does and doesn\'t collect, and how it\'s used.') // sets the browser tab title + meta description for this page
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 text-gray-700 dark:text-gray-300">

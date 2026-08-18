@@ -12,6 +12,8 @@ const REASON_LABELS = {
   other: 'Other',
 }
 
+// This page lists messages sent through the site's Feedback form, plus
+// content reports (when a visitor flags a quiz or post as wrong/offensive/broken).
 export default function FeedbackList() {
   const { session, hasRole } = useAuth()
   const [entries, setEntries] = useState(null)
@@ -20,6 +22,7 @@ export default function FeedbackList() {
   const [page, setPage] = useState(1)
   const canWrite = hasRole('superadmin', 'editor')
 
+  // Fetches the current page of feedback/report entries.
   function load() {
     listFeedbackAdmin(session.token, { page, limit: PAGE_SIZE })
       .then((data) => {
@@ -31,11 +34,13 @@ export default function FeedbackList() {
 
   useEffect(load, [session.token, page])
 
+  // Marks an entry as read or unread.
   async function handleToggleRead(entry) {
     await updateFeedback(session.token, entry._id, { read: !entry.read })
     load()
   }
 
+  // Deletes a feedback entry after confirming.
   async function handleDelete(id) {
     if (!window.confirm('Delete this feedback entry? This cannot be undone.')) return
     await deleteFeedback(session.token, id)

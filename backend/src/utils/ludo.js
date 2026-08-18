@@ -37,6 +37,7 @@ const SHARED_PATH_LENGTH = 56
 const HOME_ENTRY = 55 // local positions 55-60 are the private home stretch
 const FINISHED = 61
 
+// Converts a token's position on its own colored path into its position on the shared board loop
 export function localToGlobal(color, local) {
   return (PATH_OFFSET[color] + local) % SHARED_PATH_LENGTH
 }
@@ -61,6 +62,7 @@ export function legalMoves(player, roll) {
 // caller saves the Mongo doc afterward) and returns what happened, since
 // the socket handler needs to know whether to grant an extra roll's worth
 // of feedback or declare a winner.
+// Moves a token forward by the dice roll, sends any opponent token it lands on back to start, and checks for a win
 export function applyMove(game, playerIndex, tokenIndex, roll) {
   const player = game.players[playerIndex]
   const current = player.tokens[tokenIndex]

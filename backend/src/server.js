@@ -62,18 +62,24 @@ import leaderboardRoutes from './routes/leaderboardRoutes.js'
 import reactionRoutes from './routes/reactionRoutes.js'
 import statsRoutes from './routes/statsRoutes.js'
 
+// This file is the app's entry point: it creates the web server, wires up
+// every API route, turns on the security/rate-limit protections, and starts
+// listening once the database is connected. Run with `npm run dev`.
 const app = express()
 
+// Security & request-parsing middleware — runs on every request, in order.
 // In production, set CORS_ORIGIN to your real frontend domain (e.g.
 // https://yourdomain.com). Left open ("*") by default for local development.
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }))
-app.use(helmet())
-app.use(express.json({ limit: '100kb' }))
-app.use(sanitizeBody)
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' })) // controls which websites are allowed to call this API
+app.use(helmet()) // adds a set of standard security-related HTTP headers
+app.use(express.json({ limit: '100kb' })) // parses incoming JSON request bodies, capped at 100kb
+app.use(sanitizeBody) // strips anything in a request body that looks like a NoSQL injection attempt
 
+// A couple of routes that don't fit under /api/* — a simple uptime check, and the sitemap search engines read.
 app.get('/api/health', (req, res) => res.json({ ok: true }))
 app.get('/sitemap.xml', getSitemap)
 
+// Rate limiters — cap how often a visitor can hit certain sensitive/abuse-prone endpoints (see middleware/rateLimiters.js for the actual limits).
 app.use('/api/auth/login', loginLimiter)
 app.use('/api/users/login', userLoginLimiter)
 app.use('/api/users/signup', userSignupLimiter)
@@ -89,6 +95,8 @@ app.use('/api/reactions/:contentType/:id', reactionLimiter)
 app.use('/api/feedback', feedbackLimiter)
 app.use('/api/engagement', engagementLimiter)
 
+// The actual routes — every content type and feature gets its own path
+// prefix, handed off to that feature's own route file (see routes/).
 app.use('/api/auth', authRoutes)
 app.use('/api/users', endUserAuthRoutes)
 app.use('/api/admins', adminRoutes)
@@ -132,6 +140,7 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 4000
 
+// From here on: setting up live (real-time) multiplayer connections.
 // Wrapped in a plain http.Server (instead of calling app.listen directly)
 // so socket.io can attach to the same server/port — this is the site's
 // first real-time feature (Connect Four, see realtime/connectFourSocket.js);
@@ -153,6 +162,8 @@ registerLudoSocket(io)
 // otherwise give route handlers a way to reach it.
 app.set('io', io)
 
+// Connect to the database first, make sure at least one admin account
+// exists, and only then start actually accepting requests.
 connectDB()
   .then(() => ensureFirstAdmin())
   .then(() => {
@@ -160,5 +171,5 @@ connectDB()
   })
   .catch((err) => {
     console.error('Failed to connect to database', err)
-    process.exit(1)
+    process.exit(1) // can't run without a database, so exit rather than serve broken requests
   })
