@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../AuthContext'
-import { fetchAnalytics, fetchPostAnalytics, fetchEngagementSummary, fetchWeeklyDigest } from '../adminApi'
+import { fetchAnalytics, fetchPostAnalytics, fetchEngagementSummary, fetchWeeklyDigest, fetchCohortRetention } from '../adminApi'
 import { exportToCSV } from '../csvExport'
 
 // A small button that downloads the table above it as a CSV file (opens in Excel/Sheets).
@@ -15,6 +15,11 @@ function ExportButton({ filename, rows, columns }) {
       ⬇ Export CSV
     </button>
   )
+}
+
+// Formats a cohort week boundary as a short date, e.g. "Aug 4".
+function formatWeek(dateStr) {
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 const ENGAGEMENT_SECTIONS = [
@@ -87,6 +92,7 @@ export default function Analytics() {
   const [postSummary, setPostSummary] = useState(null)
   const [engagementSummaries, setEngagementSummaries] = useState({})
   const [digest, setDigest] = useState(null)
+  const [cohortData, setCohortData] = useState(null)
   const [error, setError] = useState('')
 
   // Loads all the numbers shown on this page — the weekly summary, quiz
@@ -100,6 +106,9 @@ export default function Analytics() {
       .catch((err) => setError(err.message))
     fetchPostAnalytics(session.token)
       .then((data) => setPostSummary(data.summary))
+      .catch((err) => setError(err.message))
+    fetchCohortRetention(session.token)
+      .then(setCohortData)
       .catch((err) => setError(err.message))
     ENGAGEMENT_SECTIONS.forEach(({ contentType }) => {
       fetchEngagementSummary(session.token, contentType)
@@ -128,6 +137,84 @@ export default function Analytics() {
             ✨ <strong>{digest.newContentCount}</strong> new pieces of content published
           </p>
         </div>
+      )}
+
+      {/* Registered-account activity — separate from every table above/below,
+          which are all anonymous-ID content stats. This is the only section
+          that can answer "did the same person come back," since it's built
+          on real accounts, not anonymous IDs. See getCohortRetention on the
+          backend for the exact definitions and their honest limitations
+          (a single last-active timestamp, not a full session log). */}
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">Account Activity &amp; Retention</h2>
+      {!cohortData && !error && <p className="text-gray-400 dark:text-gray-500 mb-8">Loading...</p>}
+      {cohortData && (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5">
+              <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Weekly Active Users</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">{cohortData.wau}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Registered accounts active in the last 7 days</p>
+            </div>
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5">
+              <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-1">Of All Accounts</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                {cohortData.totalActiveAccounts > 0 ? `${Math.round((cohortData.wau / cohortData.totalActiveAccounts) * 100)}%` : '—'}
+              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                {cohortData.wau} of {cohortData.totalActiveAccounts} total active accounts
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Signup Cohort Retention</h3>
+            <ExportButton
+              filename="cohort-retention.csv"
+              rows={cohortData.cohorts.map((c) => ({
+                week: `${formatWeek(c.weekStart)} - ${formatWeek(c.weekEnd)}`,
+                cohortSize: c.cohortSize,
+                retainedDay7: c.retainedDay7 ?? 'too early',
+                retentionRate: c.retentionRate != null ? `${Math.round(c.retentionRate * 100)}%` : 'too early',
+              }))}
+              columns={[
+                { key: 'week', label: 'Signup Week' },
+                { key: 'cohortSize', label: 'Cohort Size' },
+                { key: 'retainedDay7', label: 'Returned After 7 Days' },
+                { key: 'retentionRate', label: 'Retention %' },
+              ]}
+            />
+          </div>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+            "Returned after 7 days" means the account was active again at some point at least a week after signing up —
+            cohorts less than a week old show "too early" rather than a misleading 0%.
+          </p>
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-10 overflow-x-auto">
+            <table className="w-full min-w-[480px] text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-left">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Signup Week</th>
+                  <th className="px-4 py-3 font-medium">Cohort Size</th>
+                  <th className="px-4 py-3 font-medium">Returned After 7 Days</th>
+                  <th className="px-4 py-3 font-medium">Retention %</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {cohortData.cohorts.map((c) => (
+                  <tr key={c.weekStart}>
+                    <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium whitespace-nowrap">
+                      {formatWeek(c.weekStart)} - {formatWeek(c.weekEnd)}
+                    </td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{c.cohortSize}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{c.retainedDay7 ?? '—, too early'}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
+                      {c.retentionRate != null ? `${Math.round(c.retentionRate * 100)}%` : '—, too early'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       <div className="flex items-center justify-between mb-3">

@@ -26,9 +26,18 @@ export async function requireUserAuth(req, res, next) {
     if (payload.type !== 'user') {
       return res.status(401).json({ error: 'Invalid or expired token' })
     }
-    const user = await EndUser.findById(payload.id).select('status')
+    const user = await EndUser.findById(payload.id).select('status lastActiveAt')
     if (!user || user.status === 'disabled') {
       return res.status(403).json({ error: 'This account has been disabled.' })
+    }
+    // Refreshes lastActiveAt (see EndUser.js) so the admin panel's Weekly
+    // Active Users / retention numbers reflect real usage, not just login
+    // moments — but only once every 15 minutes per account, not on every
+    // single request, since this middleware runs on every authenticated
+    // call and a write-per-request would be wasteful. Fire-and-forget: this
+    // must never add latency to the actual request going through.
+    if (!user.lastActiveAt || Date.now() - user.lastActiveAt > 15 * 60 * 1000) {
+      EndUser.updateOne({ _id: user._id }, { lastActiveAt: new Date() }).catch(() => {})
     }
     req.user = payload
     next()

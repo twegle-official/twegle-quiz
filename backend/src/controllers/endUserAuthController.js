@@ -120,6 +120,14 @@ export async function login(req, res) {
       return res.status(403).json({ error: 'This account has been disabled. Contact support if you think this is a mistake.' })
     }
 
+    // Records "this account was just active" for the admin panel's Weekly
+    // Active Users / retention numbers (see EndUser.js's lastActiveAt and
+    // adminEndUserController.js's getCohortRetention) — login is the one
+    // moment every session definitely passes through, in addition to the
+    // throttled per-request refresh in middleware/userAuth.js.
+    user.lastActiveAt = new Date()
+    await user.save()
+
     res.json({ token: signUserToken(user), user: publicUser(user) })
   } catch (err) {
     res.status(500).json({ error: 'Something went wrong' })

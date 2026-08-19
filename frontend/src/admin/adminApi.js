@@ -62,6 +62,9 @@ export const fetchDashboard = (token, range) =>
 export const fetchAnalytics = (token) => request('/admin/quizzes/analytics', { token })
 export const fetchPostAnalytics = (token) => request('/admin/posts/analytics', { token })
 
+// Weekly Active Users + signup-cohort retention (registered accounts only — see backend/src/controllers/adminEndUserController.js)
+export const fetchCohortRetention = (token) => request('/admin/end-users/cohort-retention', { token })
+
 // Shared across all 5 admin-authored content types — see AdminPreviewButton.jsx.
 export const createPreviewLink = (token, contentType, id) =>
   request(`/admin/preview-link${toQueryString({ contentType, id })}`, { token })

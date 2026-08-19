@@ -51,6 +51,16 @@ const endUserSchema = new mongoose.Schema(
     // a migration here) and the server only stores/returns it, never reads
     // into it. Not validated beyond a rough size cap in the controller.
     stats: { type: mongoose.Schema.Types.Mixed, default: {} }, // the user's saved game stats (streaks, badges, etc.)
+    // Stamped on login and refreshed (throttled to once per 15 minutes, see
+    // middleware/userAuth.js) on every authenticated request — the only
+    // signal this app has for "is this account still actively used," which
+    // powers the admin panel's Weekly Active Users / retention numbers (see
+    // adminEndUserController.js's getCohortRetention). `default: Date.now`
+    // so a brand-new signup counts as active immediately; accounts that
+    // already existed before this field was added won't have it in the
+    // database until their next login — expected, since there's no way to
+    // know their true past activity retroactively.
+    lastActiveAt: { type: Date, default: Date.now }, // when this account was last seen using the site
   },
   { timestamps: true }
 )
