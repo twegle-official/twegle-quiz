@@ -271,6 +271,14 @@ export default function QuizList() {
                       ⚠️ Needs a refresh
                     </span>
                   )}
+                  {quiz.sponsor?.name && (
+                    <span
+                      title={`Sponsored by ${quiz.sponsor.name}`}
+                      className="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 text-[11px] font-semibold"
+                    >
+                      ✨ Sponsored
+                    </span>
+                  )}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   /{quiz.slug} · <StatusLabel item={quiz} /> · {playCounts[quiz._id] || 0} plays

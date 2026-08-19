@@ -214,6 +214,7 @@ Five different types of content each have their own dedicated page in the admin 
 - **Clone** an existing item as a starting point for a new one, instead of writing everything from scratch.
 - **Schedule** something to automatically go live at a chosen future date and time, instead of publishing it right away.
 - **Select several items at once** (a checkbox on each row, or "select all on this page") and **publish, unpublish, or delete them all in one action** instead of one at a time.
+- **Mark a Quiz or Post as sponsored** — when a brand pays to have something featured, an admin can fill in the sponsor's name, a logo emoji, and an optional link. That quiz or post then shows a clear "✨ Sponsored" label on its tile and a "Sponsored by..." line on the actual page — always openly disclosed, never hidden, and it doesn't get any special boost in ranking, just the label.
 
 ## Quick Add
 

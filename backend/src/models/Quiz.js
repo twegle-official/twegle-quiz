@@ -63,6 +63,16 @@ const quizSchema = new mongoose.Schema(
     questions: { type: [questionSchema], default: [] }, // the list of questions in this quiz
     results: { type: [resultSchema], default: [] }, // the list of possible outcomes a player can land on
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' }, // which admin created this quiz
+    // Manually filled in by an admin when a brand pays to feature this quiz
+    // — no self-serve signup, no payment processing here, just a clearly
+    // disclosed sponsor label (legally what keeps this honest, not hidden
+    // influence). Whether a quiz is sponsored is just `sponsor.name` being
+    // non-empty — no separate boolean to keep in sync.
+    sponsor: {
+      name: { type: String, default: '' }, // brand name, e.g. "Nykaa"
+      logo: { type: String, default: '' }, // an emoji, same convention as the quiz's own `emoji` field
+      url: { type: String, default: '' }, // optional "Visit sponsor" link
+    },
   },
   { timestamps: true }
 )

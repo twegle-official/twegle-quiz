@@ -24,6 +24,7 @@ const emptyQuiz = {
   language: 'en',
   type: 'personality',
   publishAt: null,
+  sponsor: { name: '', logo: '', url: '' },
   questions: [{ text: '', options: [{ text: '', result: '' }] }],
   results: [{ key: '', emoji: '', title: '', description: '' }],
 }
@@ -49,7 +50,9 @@ export default function QuizForm() {
     if (!isEdit) return
     getQuizAdmin(session.token, id)
       .then((data) => {
-        setQuiz({ type: 'personality', ...data.quiz })
+        // `sponsor` falls back the same way `type` does — a quiz created
+        // before this field existed simply won't have it yet.
+        setQuiz({ type: 'personality', sponsor: { name: '', logo: '', url: '' }, ...data.quiz })
         setPublishAtLocal(toDatetimeLocalValue(data.quiz.publishAt))
       })
       .catch((err) => setError(err.message))
@@ -59,6 +62,11 @@ export default function QuizForm() {
   // Updates one top-level field of the quiz (title, status, category, etc).
   function updateField(field, value) {
     setQuiz((q) => ({ ...q, [field]: value }))
+  }
+
+  // Updates one field of the sponsor block (name/logo/url) without touching the others.
+  function updateSponsorField(field, value) {
+    setQuiz((q) => ({ ...q, sponsor: { ...q.sponsor, [field]: value } }))
   }
 
   // --- Results ---
@@ -269,6 +277,43 @@ export default function QuizForm() {
               Leave blank to go live immediately once Published. Set a future date/time to keep it
               hidden from visitors until then, even if Status is already Published.
             </p>
+          </div>
+        </div>
+
+        {/* Sponsor — fill in only when a brand has actually paid to feature
+            this quiz. Leaving Sponsor Name blank means "not sponsored,"
+            shown as a normal quiz with no label. */}
+        <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Sponsor <span className="text-gray-400 dark:text-gray-500 font-normal">(optional — leave blank if this quiz isn't sponsored)</span>
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sponsor Name</label>
+              <input
+                value={quiz.sponsor.name}
+                onChange={(e) => updateSponsorField('name', e.target.value)}
+                placeholder="e.g. Nykaa"
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sponsor Logo</label>
+              <input
+                value={quiz.sponsor.logo}
+                onChange={(e) => updateSponsorField('logo', e.target.value)}
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-center"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sponsor Link</label>
+              <input
+                value={quiz.sponsor.url}
+                onChange={(e) => updateSponsorField('url', e.target.value)}
+                placeholder="https://..."
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-64 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+              />
+            </div>
           </div>
         </div>
       </div>

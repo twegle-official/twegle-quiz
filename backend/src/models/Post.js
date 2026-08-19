@@ -17,6 +17,13 @@ const postSchema = new mongoose.Schema(
     // See Quiz.js's publishAt for the reasoning — same scheduled-publishing pattern.
     publishAt: { type: Date, default: null }, // a future date/time to auto-publish this post
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' }, // which admin created this post
+    // See Quiz.js's `sponsor` for the reasoning — same manual,
+    // admin-entered, clearly-disclosed sponsorship pattern.
+    sponsor: {
+      name: { type: String, default: '' }, // brand name, e.g. "Nykaa"
+      logo: { type: String, default: '' }, // an emoji
+      url: { type: String, default: '' }, // optional "Visit sponsor" link
+    },
   },
   { timestamps: true }
 )

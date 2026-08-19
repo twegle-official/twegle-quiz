@@ -256,6 +256,14 @@ export default function PostList() {
                         ⚠️ Needs a refresh
                       </span>
                     )}
+                    {post.sponsor?.name && (
+                      <span
+                        title={`Sponsored by ${post.sponsor.name}`}
+                        className="px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/40 text-violet-700 dark:text-violet-400 text-[11px] font-semibold normal-case tracking-normal"
+                      >
+                        ✨ Sponsored
+                      </span>
+                    )}
                   </p>
                   <p className="text-gray-900 dark:text-gray-100 truncate">{post.text}</p>
                   <p className="text-sm text-gray-400 dark:text-gray-500">

@@ -1,6 +1,6 @@
 import Post from '../models/Post.js'
 import PostEngagement from '../models/PostEngagement.js'
-import { parsePublishAt } from '../utils/validators.js'
+import { parsePublishAt, isValidSponsorUrl } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
 import { isValidPreviewToken } from '../utils/previewToken.js'
@@ -62,7 +62,7 @@ export async function getPostAdmin(req, res) {
 
 // Creates a new post — called when an admin saves a brand-new joke/quote/etc.
 export async function createPost(req, res) {
-  const { category, text, author, language, status, publishAt } = req.body
+  const { category, text, author, language, status, publishAt, sponsor } = req.body
 
   const validationError = validatePostPayload({ category, text, author })
   if (validationError) {
@@ -72,6 +72,9 @@ export async function createPost(req, res) {
   if (parsedPublishAt === 'INVALID') {
     return res.status(400).json({ error: 'Publish date is not valid' })
   }
+  if (sponsor !== undefined && !isValidSponsorUrl(sponsor.url)) {
+    return res.status(400).json({ error: 'Sponsor link must be a valid http(s) URL' })
+  }
 
   const post = await Post.create({
     category,
@@ -80,6 +83,7 @@ export async function createPost(req, res) {
     language: language === 'hi' ? 'hi' : 'en',
     status,
     publishAt: parsedPublishAt || null,
+    sponsor,
     createdBy: req.admin.id,
   })
 
@@ -96,7 +100,7 @@ export async function createPost(req, res) {
 
 // Updates an existing post's details — called when an admin edits and saves a post.
 export async function updatePost(req, res) {
-  const { category, text, author, language, status, publishAt } = req.body
+  const { category, text, author, language, status, publishAt, sponsor } = req.body
 
   if (category !== undefined && !CATEGORIES.includes(category)) {
     return res.status(400).json({ error: `Category must be one of: ${CATEGORIES.join(', ')}` })
@@ -111,6 +115,9 @@ export async function updatePost(req, res) {
   if (parsedPublishAt === 'INVALID') {
     return res.status(400).json({ error: 'Publish date is not valid' })
   }
+  if (sponsor !== undefined && !isValidSponsorUrl(sponsor.url)) {
+    return res.status(400).json({ error: 'Sponsor link must be a valid http(s) URL' })
+  }
 
   const post = await Post.findById(req.params.id)
   if (!post) return res.status(404).json({ error: 'Post not found' })
@@ -121,6 +128,7 @@ export async function updatePost(req, res) {
   if (language !== undefined) post.language = language === 'hi' ? 'hi' : 'en'
   if (status !== undefined) post.status = status
   if (parsedPublishAt !== undefined) post.publishAt = parsedPublishAt
+  if (sponsor !== undefined) post.sponsor = sponsor
 
   await post.save()
 

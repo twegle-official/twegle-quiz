@@ -416,6 +416,29 @@ Fixed in three parts:
 
 Verified locally end-to-end: two brand-new accounts signed up back-to-back with neither ever setting a handle (the exact original repro — previously failed on the second one, now both succeed); confirmed the on-boot migration removed the leftover null-handle accounts already sitting in the local dev database; confirmed clearing a handle now leaves it genuinely absent, not null again. Re-verified directly against production after deploying: two disposable signups succeeded back-to-back with no error.
 
+## Sponsored Quizzes & Posts (native advertising)
+
+Manual, admin-entered sponsorship — no self-serve brand signup, no payment
+processing. `Quiz`/`Post` both gained an optional `sponsor: { name, logo,
+url }` subdocument (2026-08-19); whether something is sponsored is just
+`sponsor.name` being non-empty, no separate boolean to keep in sync.
+`isValidSponsorUrl()` (`validators.js`) rejects anything that isn't a real
+`http(s)` URL, blocking a `javascript:` URL from ever being saved and later
+rendered as a link. `createQuiz`/`updateQuiz`/`createPost`/`updatePost` all
+pass `sponsor` through the same optional-field pattern every other field
+already uses — no new routes needed.
+
+**Real bug caught during verification**: `listPublishedQuizzes` (the public
+homepage quiz-grid endpoint) has a hardcoded `.select('title slug
+description emoji gradient category language createdAt')` field
+projection — the new `sponsor` field was silently stripped from every
+response until added to that list, so the frontend's tile badge (which
+reads `quiz.sponsor?.name`) never actually rendered even though the field
+saved correctly. A reminder that adding a schema field isn't enough by
+itself when a controller explicitly whitelists response fields — always
+verify a new field through the real public API response, not just the
+admin save.
+
 ## Folder structure
 
 ```

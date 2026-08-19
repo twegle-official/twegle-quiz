@@ -122,6 +122,20 @@ export default function PostView() {
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       {previewToken && <PreviewBanner />}
       <div className="text-left mb-4"><BackButton /></div>
+      {/* Clearly disclosed, not hidden — the actual legal-disclosure moment
+          for a sponsored post, unlike the tile badge which is easy to miss. */}
+      {post.sponsor?.name && (
+        <p className="text-left text-xs font-medium text-gray-400 dark:text-gray-500 mb-4">
+          ✨ Sponsored by{' '}
+          {post.sponsor.url ? (
+            <a href={post.sponsor.url} target="_blank" rel="noopener noreferrer" className="text-violet-600 dark:text-violet-400 hover:underline">
+              {post.sponsor.logo} {post.sponsor.name}
+            </a>
+          ) : (
+            <>{post.sponsor.logo} {post.sponsor.name}</>
+          )}
+        </p>
+      )}
       {/* The post's text on a colored card */}
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}

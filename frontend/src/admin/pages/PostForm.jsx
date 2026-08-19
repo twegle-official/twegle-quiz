@@ -12,6 +12,7 @@ const emptyPost = {
   language: 'en',
   status: 'draft',
   publishAt: null,
+  sponsor: { name: '', logo: '', url: '' },
 }
 
 // The admin page for creating or editing a single post (joke, funny line,
@@ -34,12 +35,18 @@ export default function PostForm() {
     if (!isEdit) return
     getPostAdmin(session.token, id)
       .then((data) => {
-        setPost(data.post)
+        // `sponsor` falls back for a post saved before this field existed.
+        setPost({ sponsor: { name: '', logo: '', url: '' }, ...data.post })
         setPublishAtLocal(toDatetimeLocalValue(data.post.publishAt))
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
   }, [id])
+
+  // Updates one field of the sponsor block (name/logo/url) without touching the others.
+  function updateSponsorField(field, value) {
+    setPost((p) => ({ ...p, sponsor: { ...p.sponsor, [field]: value } }))
+  }
 
   // Runs when the form is submitted — creates a new post or saves changes to an existing one.
   async function handleSubmit(e) {
@@ -144,6 +151,42 @@ export default function PostForm() {
             onChange={(e) => setPost({ ...post, author: e.target.value })}
             className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
           />
+        </div>
+
+        {/* Sponsor — fill in only when a brand has actually paid to feature
+            this post. Leaving Sponsor Name blank means "not sponsored." */}
+        <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            Sponsor <span className="text-gray-400 dark:text-gray-500 font-normal">(optional — leave blank if this post isn't sponsored)</span>
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sponsor Name</label>
+              <input
+                value={post.sponsor.name}
+                onChange={(e) => updateSponsorField('name', e.target.value)}
+                placeholder="e.g. Nykaa"
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sponsor Logo</label>
+              <input
+                value={post.sponsor.logo}
+                onChange={(e) => updateSponsorField('logo', e.target.value)}
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-20 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-center"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sponsor Link</label>
+              <input
+                value={post.sponsor.url}
+                onChange={(e) => updateSponsorField('url', e.target.value)}
+                placeholder="https://..."
+                className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-64 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+              />
+            </div>
+          </div>
         </div>
       </div>
 

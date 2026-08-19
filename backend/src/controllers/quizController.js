@@ -1,6 +1,6 @@
 import Quiz from '../models/Quiz.js'
 import PlaySession from '../models/PlaySession.js'
-import { validateQuizPayload, parsePublishAt } from '../utils/validators.js'
+import { validateQuizPayload, parsePublishAt, isValidSponsorUrl } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
 import { isValidPreviewToken } from '../utils/previewToken.js'
@@ -51,7 +51,7 @@ export async function getQuizAdmin(req, res) {
 
 // Handles an admin creating a new quiz — validates it, then saves it to the database.
 export async function createQuiz(req, res) {
-  const { title, description, emoji, gradient, category, language, type, status, questions, results, publishAt, slug: customSlug } = req.body
+  const { title, description, emoji, gradient, category, language, type, status, questions, results, publishAt, sponsor, slug: customSlug } = req.body
 
   if (typeof title !== 'string' || !title || !questions?.length || !results?.length) {
     return res.status(400).json({ error: 'Title, questions, and results are required' })
@@ -66,6 +66,9 @@ export async function createQuiz(req, res) {
   const parsedPublishAt = parsePublishAt(publishAt)
   if (parsedPublishAt === 'INVALID') {
     return res.status(400).json({ error: 'Publish date is not valid' })
+  }
+  if (sponsor !== undefined && !isValidSponsorUrl(sponsor.url)) {
+    return res.status(400).json({ error: 'Sponsor link must be a valid http(s) URL' })
   }
 
   // Non-Latin-script titles (e.g. Hindi) slugify to empty, so allow an
@@ -89,6 +92,7 @@ export async function createQuiz(req, res) {
     publishAt: parsedPublishAt || null,
     questions,
     results,
+    sponsor,
     createdBy: req.admin.id,
   })
 
@@ -105,7 +109,7 @@ export async function createQuiz(req, res) {
 
 // Handles an admin editing an existing quiz's details.
 export async function updateQuiz(req, res) {
-  const { title, description, emoji, gradient, category, language, type, status, questions, results, publishAt } = req.body
+  const { title, description, emoji, gradient, category, language, type, status, questions, results, publishAt, sponsor } = req.body
 
   const validationError = validateQuizPayload({ title, questions, results, type })
   if (validationError) {
@@ -117,6 +121,9 @@ export async function updateQuiz(req, res) {
   const parsedPublishAt = parsePublishAt(publishAt)
   if (parsedPublishAt === 'INVALID') {
     return res.status(400).json({ error: 'Publish date is not valid' })
+  }
+  if (sponsor !== undefined && !isValidSponsorUrl(sponsor.url)) {
+    return res.status(400).json({ error: 'Sponsor link must be a valid http(s) URL' })
   }
 
   const quiz = await Quiz.findById(req.params.id)
@@ -135,6 +142,7 @@ export async function updateQuiz(req, res) {
   if (parsedPublishAt !== undefined) quiz.publishAt = parsedPublishAt
   if (questions !== undefined) quiz.questions = questions
   if (results !== undefined) quiz.results = results
+  if (sponsor !== undefined) quiz.sponsor = sponsor
 
   await quiz.save()
 
@@ -180,7 +188,7 @@ export async function listPublishedQuizzes(req, res) {
   }
 
   const quizzes = await Quiz.find(filter).select(
-    'title slug description emoji gradient category language createdAt'
+    'title slug description emoji gradient category language createdAt sponsor'
   )
 
   // Play counts are social proof on the cards ("12.4k took this") — cheap to

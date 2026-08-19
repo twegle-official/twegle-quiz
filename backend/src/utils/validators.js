@@ -59,6 +59,14 @@ export function isValidAvatar(avatar) {
   return AVATAR_OPTIONS.includes(avatar)
 }
 
+// Checks that a sponsor link is either empty (no link) or a real http(s)
+// URL — blocks a `javascript:` URL or similar from ever being saved and
+// later rendered as a clickable "Visit sponsor" link.
+export function isValidSponsorUrl(url) {
+  if (url === undefined || url === null || url === '') return true
+  return typeof url === 'string' && /^https?:\/\//i.test(url)
+}
+
 // Used for the optional scheduled-publishing field. Returns:
 // - `undefined` if the field wasn't sent at all (leave whatever's already stored alone)
 // - `null` if explicitly cleared (empty string/null — publish immediately)

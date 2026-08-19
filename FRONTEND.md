@@ -511,6 +511,39 @@ Frontend half of the backend feature described in `BACKEND.md` (2026-08-19). A n
 
 Verified locally with 3 seeded test accounts spanning different signup weeks and activity states (retained, churned, too-early) plus a disabled account: WAU, totals, cohort sizes, and a 33% retention figure all hand-verified correct against the seeded data; confirmed a disabled account is excluded from WAU/totals but still correctly counted in its signup cohort's size; dark mode and mobile (375px) both checked.
 
+## Sponsored Quizzes & Posts (native advertising)
+
+First of 5 monetization/growth ideas requested directly (2026-08-19), built
+first per direct instruction. `QuizForm.jsx`/`PostForm.jsx` both gained a
+"Sponsor (optional)" block (name/logo/link) in the existing Basic Info
+card, styled identically to the neighboring fields; since `sponsor` is a
+nested object, each form got a small `updateSponsorField()` helper
+alongside its existing field-update pattern. `QuizList.jsx`/`PostList.jsx`
+show a small "✨" pill next to a sponsored row's title, same visual
+convention as the existing "⚠️ Needs a refresh" freshness flag.
+
+On the public site: `QuizCard.jsx`/`PostCard.jsx` show a "✨ Sponsored"
+pill, absolutely positioned top-left (opposite the existing
+`TileShareButton`, which sits top-right) so it never adds height to the
+tile — the same hard rule the "already attempted" checkmark overlay
+already follows. `Quiz.jsx`/`PostView.jsx` show a clearly-visible "✨
+Sponsored by {logo} {name}" disclosure line near the top of the actual
+page (below `BackButton`), linking to the sponsor when a URL is set — this
+is the real legal-disclosure moment, not just the tile badge, which is
+easy to miss. Sort order (Newest/Trending) is deliberately untouched;
+sponsored content is only labeled, never pinned or boosted, to keep it
+from looking like paid placement disguised as organic ranking.
+
+Verified end-to-end: created a real sponsored quiz and post via the admin
+API, confirmed the tile badge and full-page disclosure line both render
+and the sponsor link opens safely (`target="_blank" rel="noopener
+noreferrer"`); confirmed the badge adds zero height to the tile by
+comparing against sibling cards directly; confirmed the edit form
+correctly reloads previously-saved sponsor fields; dark mode and mobile
+(375px) both checked. Caught a real backend bug along the way — see
+`BACKEND.md`'s matching entry (the public quiz-list endpoint was silently
+stripping the new field via a hardcoded projection).
+
 ## FAQ / Help page
 
 `/faq` (`Faq.jsx`) — a static, hand-written click-to-expand accordion of 10 common questions (accounts, cost, privacy, streaks, badges, languages, reporting content, kid-appropriateness), linked from the footer's "Explore" column. No backend involved — the Q&A content lives directly in the component, same reasoning as the legal pages (Privacy/Terms), since it changes rarely and doesn't need admin editing. Renders a `FAQPage` JSON-LD block (`<script type="application/ld+json">`, same pattern `Home.jsx` already uses for its `WebSite` schema) so Google can show the FAQ rich-snippet treatment directly in search results. Added to the sitemap (`sitemapController.js`) alongside About/Privacy/Terms.

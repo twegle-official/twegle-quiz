@@ -32,6 +32,12 @@ export default function PostCard({ post, index = 0, reactionCounts, onReact }) {
       style={animationStyle}
     >
       {shareButton}
+      {/* Same top-left, no-added-height disclosure badge as QuizCard.jsx */}
+      {post.sponsor?.name && (
+        <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-semibold uppercase tracking-wide">
+          ✨ Sponsored
+        </span>
+      )}
       <div className="text-3xl mb-3">{style.emoji}</div>
       <p className="text-lg font-medium pr-8">{post.text}</p>
       {post.author && <p className="text-sm text-white/80 mt-2">— {post.author}</p>}

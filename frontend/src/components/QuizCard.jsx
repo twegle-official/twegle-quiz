@@ -27,6 +27,15 @@ export default function QuizCard({ quiz }) {
         shareText={`Take the "${quiz.title}" quiz on Twegle!`}
       />
 
+      {/* Absolutely positioned top-left, opposite TileShareButton — a paid
+          sponsorship must be clearly disclosed, but never add height to the
+          tile (same hard rule the "already attempted" mark below follows). */}
+      {quiz.sponsor?.name && (
+        <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-semibold uppercase tracking-wide">
+          ✨ Sponsored
+        </span>
+      )}
+
       {/* Absolutely positioned over the emoji, not a flex sibling — an
           "already attempted" mark must never add height to the tile (cards
           in the same row need to stay the same height). */}

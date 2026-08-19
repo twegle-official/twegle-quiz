@@ -159,6 +159,20 @@ export default function Quiz() {
       <script type="application/ld+json">{JSON.stringify(quizSchema)}</script>
       {previewToken && <PreviewBanner />}
       <BackButton className="mb-4" />
+      {/* Clearly disclosed, not hidden — the actual legal-disclosure moment
+          for a sponsored quiz, unlike the tile badge which is easy to miss. */}
+      {quiz.sponsor?.name && (
+        <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-4">
+          ✨ Sponsored by{' '}
+          {quiz.sponsor.url ? (
+            <a href={quiz.sponsor.url} target="_blank" rel="noopener noreferrer" className="text-violet-600 dark:text-violet-400 hover:underline">
+              {quiz.sponsor.logo} {quiz.sponsor.name}
+            </a>
+          ) : (
+            <>{quiz.sponsor.logo} {quiz.sponsor.name}</>
+          )}
+        </p>
+      )}
       <ProgressBar current={questionIndex} total={quiz.questions.length} />
 
       {/* The current question and its clickable answer buttons */}
