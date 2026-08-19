@@ -14,23 +14,25 @@ import PuzzleOfTheDayBanner from '../components/PuzzleOfTheDayBanner'
 import RecentlyViewedRow from '../components/RecentlyViewedRow'
 import AdSlot from '../components/AdSlot'
 
-// Ordered by expected usage/revenue impact, most to least: Quizzes stays
-// first — biggest content library and the strongest share loop (a solo
-// quiz result is the easiest thing to reshare, no second person needed),
-// so it drives the most pageviews/ad impressions. Friendship Quiz next
-// (same growth-loop idea, but needs a friend to join, so more friction on
-// a first click). Games next — replayable, has its own "beat me" share
-// hook. Puzzles after Games — shares the same daily-streak mechanism as
-// Quiz of the Day (see dailyQuiz.js — each keeps its own independent
-// streak, but both are the same "do it every day" habit loop). Posts
-// (merged from the previous 5 separate Jokes/Funny Lines/Quotes/
-// Motivational tabs — same underlying Post model with a category filter,
-// just one continuous scroll-through feed instead of several homepage
-// tabs) after Puzzles. Stories and Horoscope last — longer-dwell, less
-// share-driven formats.
+// Ordered by expected usage/revenue impact, most to least: Quizzes first
+// — biggest content library, the site's core brand identity, and the
+// strongest share loop (a solo quiz result is the easiest thing to
+// reshare, no second person needed, and a personality-quiz result is
+// inherently identity-expressive — "I got X" — which is what actually
+// drives sharing/SEO). Games next — replayable, has its own "beat me"
+// share hook, and several have live multiplayer. Friendship Quiz next
+// (same growth-loop idea as Quizzes, but needs a friend to join, so more
+// friction on a first click). Puzzles after Games — shares the same
+// daily-streak mechanism as Quiz of the Day (see dailyQuiz.js — each
+// keeps its own independent streak, but both are the same "do it every
+// day" habit loop). Posts (merged from the previous 5 separate Jokes/
+// Funny Lines/Quotes/Motivational tabs — same underlying Post model with
+// a category filter, just one continuous scroll-through feed instead of
+// several homepage tabs) after Puzzles. Stories and Horoscope last —
+// longer-dwell, less share-driven formats.
 const TABS = [
-  { key: 'games', label: 'Games', emoji: '🎮' },
   { key: 'quizzes', label: 'Quizzes', emoji: '🎯' },
+  { key: 'games', label: 'Games', emoji: '🎮' },
   { key: 'friendship', label: 'Friendship Quiz', emoji: '🤝' },
   { key: 'puzzles', label: 'Puzzles', emoji: '🧩' },
   { key: 'posts', label: 'Posts', emoji: '💬' },
@@ -149,9 +151,9 @@ export default function Home() {
   }
 
   // Which tab is currently open (Games, Quizzes, Puzzles, etc).
-  const activeTab = getParam('tab', TABS.map((t) => t.key), 'games')
+  const activeTab = getParam('tab', TABS.map((t) => t.key), 'quizzes')
   function setActiveTab(tab) {
-    setParam('tab', tab, 'games', { push: true })
+    setParam('tab', tab, 'quizzes', { push: true })
   }
   // English or Hindi — applies across every tab.
   const language = getParam('lang', ['en', 'hi'], 'en')
@@ -188,7 +190,7 @@ export default function Home() {
   // is in flight — this is what previously caused a crash and a "duplicate
   // key" warning when switching tabs quickly (old items briefly rendered
   // under the new tab).
-  const [content, setContent] = useState({ tab: 'games', language: 'en', category: 'all', items: null })
+  const [content, setContent] = useState({ tab: 'quizzes', language: 'en', category: 'all', items: null })
   const [error, setError] = useState(false)
   // Real counts for the hero band, across both languages — replaces a
   // hardcoded number that had to be manually edited every time content was
