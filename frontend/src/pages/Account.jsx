@@ -178,13 +178,13 @@ export default function Account() {
       </Link>
       <div className="flex items-center justify-between mb-2">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Account</h1>
-        {/* A second, compact Log Out next to the heading — requested directly
-            so logging out doesn't require scrolling past the whole page to
-            reach the full-width button at the bottom. Both stay in sync
-            since they call the same handleLogout. */}
+        {/* A compact Log Out next to the heading, so it doesn't require
+            scrolling past the whole page to find. Given a solid red fill
+            (rather than only turning red on hover) per direct feedback that
+            the previous plain-gray version was too easy to miss. */}
         <button
           onClick={handleLogout}
-          className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-950/40 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400"
+          className="px-3 py-1.5 rounded-lg bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-sm font-semibold text-white"
         >
           Log Out
         </button>
