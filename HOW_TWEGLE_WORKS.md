@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, changed, or removed on the site — for visitors or for admins — this file gets updated the same day, so it always describes what the app actually does *right now*. It is not a history of how things got built (see `APPLICATION_FLOW.md` for that). There is no code and no technical jargon here. If someone with zero computer background reads this from top to bottom, they should come away understanding exactly what Twegle does, what a visitor can do on it, and what an admin can do on it.
 
-**Last updated:** 9 August 2026.
+**Last updated:** 19 August 2026.
 
 ---
 
@@ -31,13 +31,14 @@ Open `twegle.in` in any browser — on a phone, tablet, or computer. There is no
 
 The homepage is the hub. From here you can reach every kind of content on the site. It has:
 
-- **A row of tabs**, one for each type of content: Quizzes, Puzzles, Friendship Quiz, Games, Posts (jokes/quotes/etc.), Stories, and Horoscope. Tapping a tab shows you a grid of that type of content, like tiles you can tap into.
+- **A row of tabs**, one for each type of content: **Games** (the default tab you land on), Quizzes, Friendship Quiz, Puzzles, Posts (jokes/quotes/etc.), Stories, and Horoscope. Tapping a tab shows you a grid of that type of content, like tiles you can tap into.
 - **A language switch** (EN / हिंदी) — flips everything on the page between English and Hindi.
 - **A sort switch** (Newest / Trending) — "Newest" shows what was added most recently; "Trending" shows what's currently the most popular.
 - **A search box** at the top of every page — type anything and it looks across quizzes, puzzles, posts, and friendship quizzes at once for a match.
-- **Two daily banners** at the top — one quiz and one puzzle are picked automatically each day (the same ones for every visitor, and they change every day at midnight). Finishing the quiz keeps your Quiz streak going, and revealing the puzzle keeps your Puzzle streak going — two separate streaks (explained below).
+- **A hero banner** at the very top — the "Where Fun Goes Viral" tagline, plus a small stats strip showing how many games/quizzes/jokes are on the site right now and how many people played something today, and a small floating share panel on the side of the screen so you can share Twegle itself with a friend at any time, from any page.
+- **"Jump back in"** — a small row of pills just under the hero, showing the last few things you personally opened on this device (a quiz, a game, whatever), so you can pick up where you left off in one tap. Only shows up once you've actually visited something.
+- **Two daily banners** — one quiz and one puzzle are picked automatically each day (the same ones for every visitor, and they change every day at midnight). Finishing the quiz keeps your Quiz streak going, and revealing the puzzle keeps your Puzzle streak going — two separate streaks (explained below).
 - **A dark mode switch** — a small button that flips the whole site between a light look and a dark look. Your choice is remembered the next time you visit.
-- **A "Where Fun Goes Viral" tagline and hero banner**, plus a small floating share panel on the side of the screen so you can share Twegle itself with a friend at any time, from any page.
 
 ## 1. Quizzes
 
@@ -45,9 +46,11 @@ These are the heart of the site. Most are **personality quizzes** — fun questi
 
 After finishing a quiz, on the result page you can:
 - **Share the result** — either as a plain link, or as a nicely designed image made just for that result (great for posting to an Instagram or WhatsApp Story).
+- **React** to your result with an emoji (😂 🔥 😭 👍), the same as you can on a Post.
 - **Compare with a friend** — send them a link to take the exact same quiz; once they finish too, you both see a side-by-side "did you match?" screen, which can also be shared as its own image.
 - See a few **"you might also like"** suggestions for other quizzes to try next, plus a small nudge toward something completely different (a game, a joke) so there's always a next thing to do.
 - **Report** the quiz if something about it seems wrong, broken, or inappropriate.
+- Getting a perfect score on a trivia quiz sets off a small confetti celebration.
 
 If you play a quiz you've already taken before, the tile for it on the homepage shows a small green checkmark, so you can tell at a glance what you've already tried.
 
@@ -68,23 +71,36 @@ Four simple, quick-to-read content types, shown together in one "Posts" tab (wit
 
 ## 5. Games
 
-Nine small games, all playable instantly in the browser — nothing to download:
+**13 small games**, all playable instantly in the browser — nothing to download. Every game can be played solo against the computer; five of them can also be played **live, in real time, against a friend** (both screens update instantly, no waiting or refreshing) via a shareable link:
 
-- **Tic-Tac-Toe** — play against a computer that never loses (the best you can do is tie), or challenge a real friend via a shareable link for a genuine back-and-forth match.
-- **Rock Paper Scissors** — one round against the computer, which picks completely randomly.
-- **Memory Match** — flip cards, find the matching pairs, try to do it in as few tries as possible.
-- **2048** — slide numbered tiles to combine them and reach the tile numbered 2048.
-- **Word Guess** — guess a hidden word one letter at a time before you run out of tries.
-- **Guess the Number** — the site picks a secret number between 1 and 100; you guess, and it tells you higher or lower.
-- **Sudoku** — the classic number grid puzzle, fill it so every row, column, and box has 1 through 9.
-- **Simon Says** — watch a pattern of flashing colors, then repeat it back; the pattern gets one step longer every round.
-- **Whack-a-Mole** — moles pop up one at a time for less than a second each; whack as many as you can in 20 seconds.
+| Game | Solo vs. computer | Live with friends |
+|---|---|---|
+| **Tic-Tac-Toe** | Yes (unbeatable — best you can do is tie) | Yes — 2 players |
+| **Connect Four** | Yes | Yes — 2 players |
+| **Snake and Ladder** | Yes | Yes — 2 players |
+| **Chess** | Yes | Yes — 2 players |
+| **Ludo** | No — live matches only | Yes — **2, 3, or 4 players** |
+| Rock Paper Scissors | Yes (computer picks randomly) | — |
+| Memory Match | Yes | — |
+| 2048 | Yes | — |
+| Word Guess | Yes | — |
+| Guess the Number | Yes | — |
+| Sudoku | Yes | — |
+| Simon Says | Yes | — |
+| Whack-a-Mole | Yes | — |
 
-Six of these nine (2048, Memory Match, Word Guess, Guess the Number, Simon Says, Whack-a-Mole) have a **leaderboard** — after finishing, you can save your score under a nickname and see how you stack up against everyone else who's played.
+A few things worth knowing about the live games:
+- Starting a live match gives you a link to send a friend (or up to 3 friends, for Ludo) — whoever opens it joins the same match, and every move appears on both screens instantly.
+- **Ludo** is the only game with a real waiting lobby: the person who creates the match picks how many can join (2-4), friends join one at a time, and the creator taps "Start match" once enough people are in.
+- Every one of the 5 live games can also be played **"vs House"** — instant solo play against a built-in computer opponent, using the exact same live-match screen and rules, just with no friend needed.
+- Dice rolls (Snake and Ladder, Ludo) have a little tumble/settle animation, and on the Snake and Ladder board every snake and ladder is now drawn as a connecting line/curve, not just a lone icon, so it's obvious at a glance where you'll end up if you land on one.
+- Winning or losing a live match plays a short sound, and unlocking a badge, leveling up, or a perfect trivia score sets off a small confetti burst — all of this respects your device's "reduce motion" setting if you have it turned on.
+
+On the Games tab you can filter by **Single Player** or **2 Player** to only see games of that kind. There are also two separate leaderboards for games: each game with a leaderboard (2048, Memory Match, Word Guess, Guess the Number, Simon Says, Whack-a-Mole) has its own top-scores list you can add your name to after finishing a round, and separately there's one site-wide **Global Leaderboard** (see "Achievements" below) ranking accounts by their overall level/points across everything on the site, not just games.
 
 ## 6. Stories
 
-Original short stories, sorted into 6 categories: Horror, Comedy, Romance, Mystery, Moral Tales, and Motivational. You can read any story on-screen, or tap **"🔊 Listen to this story"** and have your phone or browser read it out loud to you — this uses a built-in feature every modern phone/browser already has, so there's no separate app or download needed.
+Original short stories, sorted into 6 categories: Horror, Comedy, Romance, Mystery, Moral Tales, and Motivational. You can read any story on-screen, tap **"🔊 Listen to this story"** and have your phone or browser read it out loud to you (a built-in feature every modern phone/browser already has, so there's no separate app or download needed), or react to it with an emoji the same as a Post.
 
 ## 7. Horoscope
 
@@ -94,19 +110,27 @@ All 12 zodiac signs, each with a horoscope for Today, This Week, This Month, or 
 
 There are two separate streaks, one for quizzes and one for puzzles — finishing the daily quiz keeps your **Quiz streak** going, and revealing the daily puzzle keeps your **Puzzle streak** going. Each shows its own "how many days in a row" counter (like popular word games do), right on its own homepage banner. They're tracked independently on purpose — you might only ever do one of the two, and each still gets its own honest count rather than being lumped into one shared number. It's a light nudge to come back tomorrow, nothing more — there's no penalty for missing a day, a streak just goes back to zero and you can start it again anytime.
 
+If a streak of yours is about to expire (you kept it going yesterday but haven't played yet today), a small "don't lose it" reminder pops up once, the first time you open the site that day — a gentle nudge, not a nag, and it never shows more than once per day.
+
 ## Achievements — 10 levels to work toward
 
 A "🏆 My Achievements" page (reachable from the header and the footer) is the site's main progression system: 10 levels, from **Fresh Face** at the very start up to **Twegle Legend** at the top, each with its own fun name and emoji. You move up by earning points from basically everything you do on the site — taking quizzes, solving puzzles, playing games, reacting to posts, sharing things, and keeping your two daily streaks alive. The page itself shows exactly how many points each action is worth, so it's never a mystery what to do next to level up. Reaching a new level pops up a small celebration with a button to share it. To keep leveling up from taking real time rather than one big session, some repeatable actions (playing the same game over and over, reacting to lots of posts) only earn points up to a point — quizzes, puzzles, and sharing don't have that limit.
 
-There's also a public **leaderboard** (reachable from the same page) showing the top 100 accounts by points — you need a free account (see below) to appear on it, since a guest's progress only lives in their own browser with no identity to rank.
+If you've done anything in the last 7 days, this page also shows **"🎁 Your Twegle Wrapped"** — a quick, Spotify-Wrapped-style recap of what you got up to that week (games played, quizzes taken, puzzles solved, reactions given, things shared), with its own "📸 Share my Wrapped" button to turn it into an image.
+
+There's also a public **Global Leaderboard** (reachable from the same page) showing the top 100 accounts by points — you need a free account (see below) to appear on it, since a guest's progress only lives in their own browser with no identity to rank.
 
 Separately, a smaller set of **7 Bonus Badges** still exists too — things like beating the computer at a game three times, trying every single game at least once, or getting a perfect score on a trivia quiz. These are a lighter side-collection, not part of the level/points system above. Whenever you unlock a level or a bonus badge, a small notification pops up in the corner of the screen to let you know.
+
+## Your own public profile page (optional)
+
+If you have a free account (see below), you can turn on a **public profile page** — a shareable page at `twegle.in/u/<yourhandle>` that shows off your avatar, level, unlocked bonus badges, both streaks, and the quizzes you've recently completed. It's entirely opt-in: your profile doesn't exist at any address until you specifically pick a public handle and switch on "Make my profile public" in My Account — nothing changes for anyone who doesn't do that. Anyone with the link can view it, no account or login needed on their end, and it has its own Share button just like everything else on the site. Turning sharing back off makes the page disappear again — from the outside, a profile that was never made public and one that's been switched back off look exactly the same (a plain "not found" message), so there's no way to tell the difference.
 
 ## Sharing — how things spread
 
 Nearly everything on Twegle has a share option, and there are three different ways to share depending on where you are:
 - **A plain link** — copy it or send it directly through WhatsApp.
-- **A branded image** — a nicely designed picture generated on the spot (for a quiz result, a joke, a compare-with-a-friend reveal, and more), perfect for posting as an Instagram or WhatsApp Story.
+- **A branded image** — a nicely designed picture generated on the spot (for a quiz result, a joke, a compare-with-a-friend reveal, your level, your weekly Wrapped, your public profile, and more), perfect for posting as an Instagram or WhatsApp Story. Every shared image now has "twegle.in" built right into the picture itself, so it stays attached even if the caption gets dropped.
 - **The device's own native share menu** — on a phone, tapping share can pop up your phone's regular share sheet, letting you send it through any app you already have installed.
 
 ## Search
@@ -135,14 +159,16 @@ On a phone, most browsers let you "Add to Home Screen" for Twegle, which puts an
 
 ## Optional accounts — no email or phone number, ever
 
-Everything described above works completely without ever creating an account. But if you'd like your daily streaks, level/points progress, badges, and "already played" history to follow you from your phone to your computer and back, you can create a free account (the 👤 icon in the header).
+Everything described above works completely without ever creating an account. But if you'd like your daily streaks, level/points progress, badges, weekly recap, and "already played" history to follow you from your phone to your computer and back, you can create a free account (the 👤 icon in the header).
 
 Here's exactly what that involves:
 
 - **You only ever need a username and a password.** Twegle never asks for an email address or a phone number — not at signup, not ever. There is nothing personally identifying for anyone to lose or misuse.
-- You also pick a public **Gamer Tag** — a nickname that can appear on game leaderboards. It's completely separate from your private username, which is never shown to anyone else.
-- Since there's no email or phone number on file, a forgotten password can't be reset by clicking a link in an email the way most sites do it. Instead, the moment you sign up (and again any time it's regenerated), you're shown a one-time **Recovery Code** — write it down somewhere safe. It is the *only* way back into your account if you ever forget your password. If both the password and the Recovery Code are lost, the account genuinely cannot be recovered by anyone, including the Twegle team — this is stated plainly on the page itself, so it's never a surprise later.
+- You also pick a public **Gamer Tag** — a nickname that can appear on game leaderboards. It's completely separate from your private username, which is never shown to anyone else. If you later choose to make a public profile page (see above), that uses a third, also-separate public "handle" you pick yourself — your private login username is never used or shown for that either.
+- You can pick an avatar from a set of preset emoji (28 to choose from).
+- Since there's no email or phone number on file, a forgotten password can't be reset by clicking a link in an email the way most sites do it. Instead, the moment you sign up (and again any time it's regenerated), you're shown a one-time **Recovery Code** — write it down somewhere safe. It is the *only* way back into your account if you ever forget your password. If both the password and the Recovery Code are lost, the account genuinely cannot be recovered by yourself alone — though the Twegle team can issue you a fresh short-lived recovery code if you can reach them another way (e.g. through the Feedback page) and confirm it's really your account.
 - **Everything about accounts is optional.** No feature anywhere on the site is ever locked behind having one.
+- Logging out clears everything this browser remembers about your account, so a shared or public computer doesn't keep showing your progress (or hand it to whoever logs in next) after you've left.
 
 ### What actually syncs across your devices once you're logged in
 
@@ -150,6 +176,7 @@ If you're logged into the same account on, say, your phone and your laptop, thes
 1. Your **Quiz streak** and **Puzzle streak** counts (tracked separately).
 2. Your **level/points progress** and **unlocked badges**.
 3. Your **"already played" history** — the small green checkmarks on quiz and puzzle tiles.
+4. Your **this-week activity**, so "Your Twegle Wrapped" reflects everything you did across every device, not just the one you're currently on.
 
 This sync happens **automatically in the background**, with no button to press. If you do something on your phone and then look at an already-open tab on your laptop, it picks up the change within about 20 seconds on its own — you never need to manually refresh the page or clear anything for it to catch up.
 
@@ -186,6 +213,7 @@ Five different types of content each have their own dedicated page in the admin 
 - **Edit or delete** anything that already exists.
 - **Clone** an existing item as a starting point for a new one, instead of writing everything from scratch.
 - **Schedule** something to automatically go live at a chosen future date and time, instead of publishing it right away.
+- **Select several items at once** (a checkbox on each row, or "select all on this page") and **publish, unpublish, or delete them all in one action** instead of one at a time.
 
 ## Quick Add
 
@@ -201,11 +229,13 @@ On the Quizzes and Posts lists, anything that's been live for a couple of weeks 
 
 ## Analytics
 
-A dedicated page showing exactly which quizzes, posts, friendship quizzes, games, puzzles, stories, and horoscope signs are actually getting played, viewed, or shared the most — so it's obvious what's working, not a guess. A "This week" summary sits at the top with three quick numbers (plays, views/shares, and new content published) before diving into the full breakdown tables further down.
+A dedicated page showing exactly which quizzes, posts, friendship quizzes, games, puzzles, stories, and horoscope signs are actually getting played, viewed, or shared the most — so it's obvious what's working, not a guess. A "This week" summary sits at the top with three quick numbers (plays, views/shares, and new content published) before diving into the full breakdown tables further down. Every table on this page has its own **"⬇ Export CSV"** button, so any of these numbers can be pulled into a spreadsheet in one click.
+
+Further down, a separate **"Account Activity & Retention"** section covers registered visitor accounts specifically (this is the only place on the site that can answer "did the same person come back," since it's built on real accounts rather than anonymous visits): a **Weekly Active Users** count (how many accounts have used the site in the last 7 days, and what share of all accounts that is), plus a **signup-cohort retention table** — one row per week, showing how many people who signed up that week were still coming back at least 7 days later. A cohort that hasn't reached the 7-day mark yet honestly shows "too early" instead of a misleading 0%.
 
 ## Activity log
 
-A running, timestamped record of every admin action — who created, edited, or deleted what, and when. Useful for keeping track once more than one person has admin access. It can be searched page by page.
+A running, timestamped record of every admin action — who created, edited, or deleted what, and when. Useful for keeping track once more than one person has admin access. It can be searched page by page, and filtered down by admin, by what type of content was affected, or by what kind of action it was (create/update/delete).
 
 ## Feedback inbox
 
@@ -213,7 +243,7 @@ Every message submitted through the public Feedback page, plus every 🚩 report
 
 ## Members (visitor accounts)
 
-A searchable list of everyone who's created an optional visitor account. Admins can see a member's Gamer Tag, avatar, and join date — but never their password or Recovery Code, which are never visible to anyone, including admins. Two actions are available for a problem account: **Disable** (reversible — logs the account out immediately and blocks sign-in until an admin re-enables it) and **Delete** (permanent removal).
+A searchable list of everyone who's created an optional visitor account. Admins can see a member's Gamer Tag, avatar, and join date — but never their password or Recovery Code, which are never visible to anyone, including admins. If a member has lost both their password and their own Recovery Code, an admin can **generate them a fresh short-lived recovery code** (valid for 10 minutes, since it has to be shared over a channel like WhatsApp or email the site doesn't control) so they can get back into their own account. Two more actions are available for a problem account: **Disable** (reversible — logs the account out immediately and blocks sign-in until an admin re-enables it) and **Delete** (permanent removal).
 
 ## Admin accounts
 
@@ -227,6 +257,6 @@ Just like the public site, the entire admin panel has its own dark mode toggle, 
 
 # The short version
 
-**If you're a visitor:** open the site, no login needed, pick whatever looks fun — a quiz, a puzzle, a game, a story, a horoscope — enjoy it, and share it with a friend if you want to. If you'd like your progress to follow you across your phone and computer, you can optionally create a free account with just a username and password. That's the entire experience, repeated across many different kinds of content, all designed to be quick to enjoy and easy to pass along.
+**If you're a visitor:** open the site, no login needed, pick whatever looks fun — a quiz, a puzzle, a game (13 of them, 5 playable live with friends), a story, a horoscope — enjoy it, and share it with a friend if you want to. If you'd like your progress to follow you across your phone and computer, or a public profile page to show off your level and badges, you can optionally create a free account with just a username and password. That's the entire experience, repeated across many different kinds of content, all designed to be quick to enjoy and easy to pass along.
 
-**If you're an admin:** log in, create and manage content through the admin panel, keep an eye on what's performing well through Analytics and the freshness flags, and handle whatever feedback or reports come in from visitors.
+**If you're an admin:** log in, create and manage content through the admin panel (one at a time or in bulk), keep an eye on what's performing well through Analytics, the freshness flags, and the account-retention numbers, and handle whatever feedback or reports come in from visitors.
