@@ -219,7 +219,10 @@ export async function updateProfile(req, res) {
 
   if (displayName !== undefined) user.displayName = displayName.trim()
   if (avatar !== undefined) user.avatar = avatar
-  if (handle !== undefined) user.handle = handle === null ? null : handle.toLowerCase()
+  // Assigning `undefined` (not `null`) here so save() genuinely unsets the
+  // field in MongoDB rather than storing an explicit null — see EndUser.js
+  // for why that distinction matters for the sparse unique index.
+  if (handle !== undefined) user.handle = handle === null ? undefined : handle.toLowerCase()
   if (isProfilePublic !== undefined) user.isProfilePublic = !!isProfilePublic
   // A profile can't be public without a handle to be public *at* — covers
   // both "never set one" and "just cleared it in this same request."

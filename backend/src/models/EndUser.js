@@ -34,13 +34,20 @@ const endUserSchema = new mongoose.Schema(
     // (not deleted), so this is reversible. Default 'active' so nothing
     // changes for the accounts that already exist.
     status: { type: String, enum: ['active', 'disabled'], default: 'active' }, // whether this account is allowed to log in
-    // Opt-in only — null until the user picks one in Account.jsx. Separate
+    // Opt-in only — unset until the user picks one in Account.jsx. Separate
     // from `username` on purpose (see the note above: username is private,
     // login-only) so nobody's login name is ever exposed just by turning on
-    // profile sharing. `sparse: true` lets many accounts share the same
-    // `null` value without tripping the unique index — only actually-set
-    // handles need to be unique.
-    handle: { type: String, unique: true, sparse: true, lowercase: true, trim: true, default: null }, // public profile URL slug (twegle.in/u/<handle>), opt-in
+    // profile sharing. `sparse: true` is meant to let many accounts share
+    // an unset handle without tripping the unique index — but that only
+    // works if the field is genuinely *absent*, not present with a value of
+    // `null` (a sparse index still indexes an explicit null, same as any
+    // other value). Deliberately no `default` here for that reason: giving
+    // this a `default: null` was the actual bug (fixed 2026-08-19, see
+    // PENDING_TASKS.md) — every new account got an explicit `handle: null`,
+    // so the *second* account that never set one collided with the first on
+    // this unique index and failed to sign up. Leaving the field genuinely
+    // unset means any number of accounts can go without a handle at once.
+    handle: { type: String, unique: true, sparse: true, lowercase: true, trim: true }, // public profile URL slug (twegle.in/u/<handle>), opt-in
     // A handle can be set without the profile being visible yet — keeps
     // "pick a handle" and "go public" as two separate, reversible steps.
     isProfilePublic: { type: Boolean, default: false }, // whether /u/<handle> is currently visible to anyone
