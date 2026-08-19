@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useLocation, useSearchParams, Link } from 'react-router-dom'
-import { fetchQuizBySlug, joinQuizCompare, recordEngagement } from '../api'
+import { fetchQuizBySlug, joinQuizCompare, recordEngagement, createQuizBattle } from '../api'
 import ProgressBar from '../components/ProgressBar'
 import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
@@ -51,6 +51,12 @@ export default function Quiz() {
   // Running tally of points per result/answer key as the player answers
   const [scores, setScores] = useState({})
   const viewedRef = useRef(false)
+  // "Battle a friend live" mini-form state — trivia quizzes only, see the
+  // gated block near the bottom of the render.
+  const [showBattleForm, setShowBattleForm] = useState(false)
+  const [battleName, setBattleName] = useState('')
+  const [battleSubmitting, setBattleSubmitting] = useState(false)
+  const [battleError, setBattleError] = useState('')
 
   // Loads the quiz for this URL when the page first opens
   useEffect(() => {
@@ -142,6 +148,25 @@ export default function Quiz() {
     setQuestionIndex((i) => i + 1)
   }
 
+  // Submits the "Battle a friend live" mini-form — creates a Live Quiz
+  // Battle and sends the creator straight to its waiting room. Mirrors
+  // Game.jsx's handleChallengeSubmit one-for-one.
+  async function handleBattleSubmit(e) {
+    e.preventDefault()
+    if (!battleName.trim()) return
+    setBattleSubmitting(true)
+    setBattleError('')
+    try {
+      const data = await createQuizBattle(slug, battleName.trim())
+      localStorage.setItem(`quizbattle-role-${data.code}`, 'A')
+      navigate(`/quiz/${slug}/battle/${data.code}`)
+    } catch (err) {
+      setBattleError(err.message)
+    } finally {
+      setBattleSubmitting(false)
+    }
+  }
+
   // Schema.org Quiz structured data — same JSON-LD pattern Home.jsx
   // (WebSite) and Faq.jsx (FAQPage) already use. Doesn't change anything
   // visible; it's purely for how a quiz link can be described in Google's
@@ -172,6 +197,44 @@ export default function Quiz() {
             <>{quiz.sponsor.logo} {quiz.sponsor.name}</>
           )}
         </p>
+      )}
+      {/* Only trivia quizzes have a real "correct" answer to race for —
+          personality quizzes have nothing to win/lose, so racing wouldn't
+          make sense. Only shown before any answer is picked, so normal
+          solo play is untouched. */}
+      {quiz.type === 'trivia' && questionIndex === 0 && (
+        <div className="mb-6 max-w-xs mx-auto text-center">
+          {showBattleForm ? (
+            <form onSubmit={handleBattleSubmit} className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 text-left">
+              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">🆚 Battle a friend live</p>
+              {battleError && (
+                <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-3">{battleError}</p>
+              )}
+              <input
+                required
+                autoFocus
+                value={battleName}
+                onChange={(e) => setBattleName(e.target.value)}
+                placeholder="Your name"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl mb-3 text-sm"
+              />
+              <button
+                type="submit"
+                disabled={!battleName.trim() || battleSubmitting}
+                className="w-full px-4 py-2 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40"
+              >
+                {battleSubmitting ? 'Creating your battle...' : 'Get My Battle Link'}
+              </button>
+            </form>
+          ) : (
+            <button
+              onClick={() => setShowBattleForm(true)}
+              className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+            >
+              🆚 Battle a friend live
+            </button>
+          )}
+        </div>
       )}
       <ProgressBar current={questionIndex} total={quiz.questions.length} />
 

@@ -12,6 +12,7 @@ import {
   shareQuizCompare,
   shareTicTacToe,
   shareConnectFour,
+  shareQuizBattle,
   shareSnakeLadder,
   shareChess,
   shareLudo,
@@ -37,6 +38,7 @@ router.get('/friendship-result/:id', shareFriendshipAttempt) // build the sharea
 router.get('/quiz-compare/:code', shareQuizCompare) // build the shareable preview page comparing two quiz results
 router.get('/tictactoe/:code', shareTicTacToe) // build the shareable preview page for a Tic Tac Toe match
 router.get('/connect-four/:code', shareConnectFour) // build the shareable preview page for a Connect Four match
+router.get('/quiz-battle/:code', shareQuizBattle) // build the shareable preview page for a Live Quiz Battle
 router.get('/snake-ladder/:code', shareSnakeLadder) // build the shareable preview page for a Snake & Ladder match
 router.get('/chess/:code', shareChess) // build the shareable preview page for a Chess match
 router.get('/ludo/:code', shareLudo) // build the shareable preview page for a Ludo match

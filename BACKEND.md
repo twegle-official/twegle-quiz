@@ -439,6 +439,50 @@ itself when a controller explicitly whitelists response fields — always
 verify a new field through the real public API response, not just the
 admin save.
 
+## Live Quiz Battle mode
+
+A real-time, timed head-to-head race between two friends through one trivia
+quiz's questions (2026-08-19). Reuses the site's existing live-multiplayer
+pattern end-to-end — one socket.io namespace (`/quiz-battle`) + REST
+create/get/join (`quizBattleController.js`/`quizBattleRoutes.js`) + Mongo as
+the source of truth (`QuizBattleGame.js`), same structure as
+`connectFourController.js`/`ConnectFourGame.js`/`connectFourSocket.js`.
+
+The one genuinely new piece: the board games are turn-based on one shared
+piece of state, but a quiz battle isn't — both players progress through the
+same quiz's questions independently, each at their own pace. So
+`QuizBattleGame` tracks per-player *progress* instead of a shared board:
+`{ name, answeredCount, correctCount, finishedAt }` for each of `playerA`/
+`playerB`, plus one shared `startedAt` (set the instant `playerB` joins) so
+both players' elapsed time is directly comparable for the tie-break.
+`realtime/quizBattleSocket.js`'s `maybeFinish()` decides the winner once both
+players have answered every question: higher `correctCount` wins outright;
+a tie is broken by whoever finished faster (`finishedAt - startedAt`); a true
+`'draw'` only if both are exactly equal.
+
+Answering a question happens over the socket (`answerQuestion`), never REST
+— same reasoning as Connect Four's disc drops. The server never trusts a
+client's own correctness claim: it looks up the real `Quiz` document by the
+battle's stored `quizSlug` and checks
+`quiz.questions[questionIndex].options[optionIndex].result === 'correct'`
+itself. A player may only answer their own current unanswered question
+(`questionIndex !== player.answeredCount` is rejected) — this is the actual
+guard against a duplicate/rapid-double-click submission, not just a
+frontend debounce. The opponent's live progress is broadcast as aggregate
+counts only (`answeredCount`/`correctCount`), never which specific
+question/option was picked, so the race stays fair.
+
+Scoped deliberately to `type: 'trivia'` quizzes only — a personality quiz
+has no "correct" answer to race for, so `createGame` rejects any other
+quiz type with a 400. No leaderboard/`GameScore` integration for v1 either,
+matching the confirmed precedent that no other 2-player live game writes to
+the leaderboard on completion — bragging rights via the winner screen only,
+not new scoring wiring.
+
+"Battle Again" (`rematch` socket event) resets both players' progress and
+`startedAt` to now, keeping the same room/code — same pattern as every other
+game's rematch, no new invite link needed.
+
 ## Folder structure
 
 ```

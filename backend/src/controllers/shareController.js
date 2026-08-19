@@ -7,6 +7,7 @@ import FriendshipAttempt from '../models/FriendshipAttempt.js'
 import QuizCompare from '../models/QuizCompare.js'
 import TicTacToeGame from '../models/TicTacToeGame.js'
 import ConnectFourGame from '../models/ConnectFourGame.js'
+import QuizBattleGame from '../models/QuizBattleGame.js'
 import SnakeLadderGame from '../models/SnakeLadderGame.js'
 import ChessGame from '../models/ChessGame.js'
 import LudoGame from '../models/LudoGame.js'
@@ -255,6 +256,24 @@ export async function shareConnectFour(req, res) {
       title: `🔴 ${game.playerRedName} wants to play Connect Four with you — live!`,
       description: 'Real-time match, no waiting for your turn — join now on Twegle!',
       redirectUrl: `${frontendUrl()}/games/connect-four/${code}`,
+    })
+  )
+}
+
+// Serves a share-preview page for a Live Quiz Battle invite link.
+export async function shareQuizBattle(req, res) {
+  const { code } = req.params
+  const game = await QuizBattleGame.findOne({ code })
+  if (!game) {
+    return res.status(404).send('Not found')
+  }
+
+  res.set('Content-Type', 'text/html')
+  res.send(
+    renderSharePage({
+      title: `🆚 ${game.playerA.name} challenged you to a live "${game.quizTitle}" battle!`,
+      description: 'Race to answer first and most correctly — join now on Twegle!',
+      redirectUrl: `${frontendUrl()}/quiz/${game.quizSlug}/battle/${code}`,
     })
   )
 }

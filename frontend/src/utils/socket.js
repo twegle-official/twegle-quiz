@@ -19,3 +19,5 @@ export const snakeLadderSocket = io(`${SERVER_URL}/snake-ladder`, { autoConnect:
 export const chessSocket = io(`${SERVER_URL}/chess`, { autoConnect: false })
 // Live connection used for multiplayer Ludo matches.
 export const ludoSocket = io(`${SERVER_URL}/ludo`, { autoConnect: false })
+// Live connection used for Live Quiz Battle matches.
+export const quizBattleSocket = io(`${SERVER_URL}/quiz-battle`, { autoConnect: false })

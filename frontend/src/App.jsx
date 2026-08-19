@@ -20,6 +20,7 @@ import FriendshipPlay from './pages/FriendshipPlay'
 import FriendshipResult from './pages/FriendshipResult'
 import CompareInvite from './pages/CompareInvite'
 import CompareResult from './pages/CompareResult'
+import QuizBattleMultiplayer from './pages/QuizBattleMultiplayer'
 import SearchResults from './pages/SearchResults'
 import Game from './pages/Game'
 import TicTacToeMultiplayer from './pages/TicTacToeMultiplayer'
@@ -139,6 +140,7 @@ function PublicSite() {
           <Route path="/quiz/:quizId" element={<Quiz />} />
           <Route path="/quiz/:quizId/vs/:code" element={<CompareInvite />} />
           <Route path="/quiz/:quizId/vs/:code/result" element={<CompareResult />} />
+          <Route path="/quiz/:quizId/battle/:code" element={<QuizBattleMultiplayer />} />
           <Route path="/result/:quizId/:resultKey" element={<Result />} />
           <Route path="/browse/:category" element={<Browse />} />
           <Route path="/search" element={<SearchResults />} />

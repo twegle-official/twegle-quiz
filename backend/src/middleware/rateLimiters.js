@@ -173,3 +173,14 @@ export const userSignupLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: 'Too many signup attempts. Please try again in a few minutes.' },
 })
+
+// Applied to creating/joining a Live Quiz Battle over REST — answering each
+// question happens over the socket, not REST (see realtime/quizBattleSocket.js),
+// same reasoning as connectFourLimiter.
+export const quizBattleLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})

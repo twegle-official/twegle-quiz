@@ -544,6 +544,52 @@ correctly reloads previously-saved sponsor fields; dark mode and mobile
 `BACKEND.md`'s matching entry (the public quiz-list endpoint was silently
 stripping the new field via a hardcoded projection).
 
+## Live Quiz Battle mode
+
+Second of the 5 monetization/growth ideas, picked next by the owner
+(2026-08-19). `QuizBattleMultiplayer.jsx` (route `/quiz/:quizId/battle/:code`)
+follows `ConnectFourMultiplayer.jsx`'s structure — role (`'A'`/`'B'`)
+remembered per-code in `localStorage`, REST fetch on mount, then
+`quizBattleSocket` (new export in `utils/socket.js`) takes over for live
+updates — adapted for concurrent-not-turn-based play: since the server only
+tracks *how many* questions each player has answered, not *which* question
+either is currently on, "which question to show next" is purely local state
+(`myQuestionIndex`), resynced from the server's `answeredCount` whenever the
+battle doc updates (covers a mid-battle refresh landing back on the right
+question instead of restarting).
+
+Entry point: a "🆚 Battle a friend live" link on `Quiz.jsx`'s own page,
+gated on `quiz.type === 'trivia' && questionIndex === 0` (only trivia
+quizzes have a real "correct" answer to race for, and it's only offered
+before any answer is picked, so normal solo play is untouched) — mirrors
+`Game.jsx`'s "Challenge a friend" mini-form one-for-one.
+
+States, in order: not-found → loading skeleton → join form (no stored
+role) → waiting-for-opponent (`<ShareButtons>` with the battle link) → live
+racing (own current question + answer buttons, plus an opponent readout —
+"`X`: `n`/`total` answered · `m` correct" — counts only, never which
+questions) → finished (win/lose/draw status, side-by-side score cards, "🔁
+Battle Again" emitting the `rematch` socket event, `<ShareButtons>` with a
+result-flavored message).
+
+**Real bug caught during verification**: answering advances
+`myQuestionIndex` optimistically for snappy pacing, but right after the
+*last* question this could briefly point one past the end of
+`quiz.questions` while the server's confirming broadcast was still in
+flight — indexing `quiz.questions[myQuestionIndex]` then hit `undefined`
+and crashed reading `.text` off it. Fixed by deriving the "I'm done"
+state from that same local `myQuestionIndex` (`>= totalQuestions`) instead
+of the server's `answeredCount`, so the question view never renders past
+the real end of the array.
+
+Verified end-to-end with two live browser sessions racing the same
+quiz: opponent progress updates live and only ever shows counts; a battle
+with differing correctness produced the right winner/loser screen on both
+sides at once; Battle Again reset both sides to question 1 on the same
+room/code with no new link; a mid-battle refresh resumed on the correct
+question; a personality quiz correctly shows no Battle button; dark mode
+and mobile (375px) both checked.
+
 ## FAQ / Help page
 
 `/faq` (`Faq.jsx`) — a static, hand-written click-to-expand accordion of 10 common questions (accounts, cost, privacy, streaks, badges, languages, reporting content, kid-appropriateness), linked from the footer's "Explore" column. No backend involved — the Q&A content lives directly in the component, same reasoning as the legal pages (Privacy/Terms), since it changes rarely and doesn't need admin editing. Renders a `FAQPage` JSON-LD block (`<script type="application/ld+json">`, same pattern `Home.jsx` already uses for its `WebSite` schema) so Google can show the FAQ rich-snippet treatment directly in search results. Added to the sitemap (`sitemapController.js`) alongside About/Privacy/Terms.

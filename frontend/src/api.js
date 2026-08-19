@@ -352,6 +352,28 @@ export function getConnectFourShareUrl(code) {
   return `${API_URL}/share/connect-four/${code}`
 }
 
+// Live Quiz Battle — a real-time, timed head-to-head race through one
+// trivia quiz's questions. Unlike quiz-compare below (async, share-link
+// based), this is truly live: answers are submitted over quizBattleSocket
+// in utils/socket.js, not REST.
+export async function createQuizBattle(quizSlug, name) {
+  return postJson('/quiz-battle', { quizSlug, name })
+}
+
+export async function fetchQuizBattle(code) {
+  const res = await fetch(`${API_URL}/quiz-battle/${code}`)
+  if (!res.ok) return null
+  return res.json()
+}
+
+export async function joinQuizBattle(code, name) {
+  return postJson(`/quiz-battle/${code}/join`, { name })
+}
+
+export function getQuizBattleShareUrl(code) {
+  return `${API_URL}/share/quiz-battle/${code}`
+}
+
 export async function createSnakeLadderGame(name) {
   return postJson('/snake-ladder', { name })
 }
