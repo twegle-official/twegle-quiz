@@ -38,8 +38,11 @@ export default function QuizCard({ quiz }) {
 
       {/* Absolutely positioned over the emoji, not a flex sibling — an
           "already attempted" mark must never add height to the tile (cards
-          in the same row need to stay the same height). */}
-      <div className="relative inline-block mb-3 w-fit">
+          in the same row need to stay the same height). Pushed down with
+          extra top margin when sponsored, so the emoji (and its checkmark)
+          doesn't render underneath the absolutely-positioned Sponsored pill
+          above it. */}
+      <div className={`relative inline-block mb-3 w-fit ${quiz.sponsor?.name ? 'mt-8' : ''}`}>
         <div className="text-4xl">{quiz.emoji}</div>
         {attempted && (
           <span

@@ -38,7 +38,10 @@ export default function PostCard({ post, index = 0, reactionCounts, onReact }) {
           ✨ Sponsored
         </span>
       )}
-      <div className="text-3xl mb-3">{style.emoji}</div>
+      {/* Pushed down with extra top margin when sponsored, so the emoji
+          doesn't render underneath the absolutely-positioned Sponsored pill
+          above it — same fix as QuizCard.jsx. */}
+      <div className={`text-3xl mb-3 ${post.sponsor?.name ? 'mt-8' : ''}`}>{style.emoji}</div>
       <p className="text-lg font-medium pr-8">{post.text}</p>
       {post.author && <p className="text-sm text-white/80 mt-2">— {post.author}</p>}
       {/* Emoji reaction buttons (only shown if the parent page wants them) */}
