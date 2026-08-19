@@ -36,10 +36,10 @@ export async function search(req, res) {
   // Searches all content types in parallel and waits for every result to come back
   const [quizzes, posts, friendshipQuizzes, stories, puzzles] = await Promise.all([
     Quiz.find(withTextMatch(publishedFilter(language), [{ title: regex }, { description: regex }]))
-      .select('title slug description emoji gradient category')
+      .select('title slug description emoji gradient category sponsor')
       .limit(RESULTS_PER_TYPE),
     Post.find(withTextMatch(publishedFilter(language), [{ text: regex }, { author: regex }]))
-      .select('text author category imageUrl')
+      .select('text author category imageUrl sponsor')
       .limit(RESULTS_PER_TYPE),
     FriendshipQuiz.find(withTextMatch(publishedFilter(language), [{ title: regex }, { description: regex }]))
       .select('title slug description emoji gradient')
@@ -63,6 +63,7 @@ export async function search(req, res) {
         emoji: q.emoji,
         gradient: q.gradient,
         category: q.category,
+        sponsor: q.sponsor,
       })),
       ...friendshipQuizzes.map((q) => ({
         type: 'friendship',
@@ -87,6 +88,7 @@ export async function search(req, res) {
         author: p.author,
         category: p.category,
         imageUrl: p.imageUrl,
+        sponsor: p.sponsor,
       })),
       ...puzzles.map((p) => ({
         type: 'puzzle',
