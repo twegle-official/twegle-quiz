@@ -757,6 +757,51 @@ mirrors the backend field into `getStats()`/`mergeStats()` the same way
 `skydriftTilesPlaced` already does; `POINTS_PER_SKY_EVENT` and the new
 "🔮 Sky Whisperer" badge are hand-mirrored copies of the backend originals.
 
+**Replaced every canvas-drawn emoji with hand-built vector icons
+(`games/skydriftIcons.js`)**, reported directly with a real phone
+screenshot showing decorations as faint "ghost" shapes. Root cause,
+confirmed by the screenshot itself: the DOM palette buttons (real HTML
+text) showed proper color emoji, but the canvas-drawn decorations —
+`ctx.font = '...px "Segoe UI Emoji", "Apple Color Emoji", sans-serif"'`
++ `fillText` — didn't, because neither font exists on Android and a
+`<canvas>` doesn't fall back to the device's own emoji font the way
+normal text does. `skydriftIcons.js` exports `drawWindling`/
+`drawDecoration`/`drawWeatherIcon`, each a small composition of
+`ctx.arc`/gradients/paths per type (a shared blob-with-eyes base for the
+5 Windlings, distinct shapes for the 9 decorations) — same visual result
+on every device, nothing depending on installed fonts. `SkydriftCanvas.jsx`
+also gained: an organic wobbled island silhouette (14-point ring with
+per-point deterministic wobble) instead of a plain ellipse, a rim-light
+stroke, two small drifting satellite rocks, a gentle overall bob, and a
+persistent weather badge drawn directly on the canvas (the page header's
+weather label can scroll out of view on a tall mobile page; the canvas
+fills most of the screen and stays put). Weather cadence (`utils/skydrift.js`)
+dropped from 10 minutes to 3 — 10 was too slow to ever notice changing
+during a normal session.
+
+**Found and fixed a second, unrelated rendering bug while verifying the
+icon swap**: a freshly placed decoration could render at zero scale
+(invisible) and stay that way permanently. The pop-in animation
+(`popScale`) starts a new item at scale 0 and grows it over 350ms timed
+against `performance.now()`, expecting further `requestAnimationFrame`
+frames to carry the animation forward — but the "force an immediate
+repaint the moment `island` changes" fix (added earlier the same day, see
+above) could fire that one guaranteed repaint at essentially zero elapsed
+time, and without a guaranteed follow-up frame (a throttled/backgrounded
+tab isn't owed one — confirmed directly in this dev environment, where
+`requestAnimationFrame` doesn't reliably keep ticking at all), the item
+stayed stuck at its very first, invisible instant forever. Fixed with an
+`instant` flag threaded through `draw(opts)`: both forced/single-shot
+repaints (the mount-time synchronous paint and the island-change forced
+repaint) now pass `{ instant: true }`, which makes `popScale` return 1
+unconditionally — a newly placed item is always at least fully visible
+immediately, and the grow-in animation only plays as a bonus on frames
+that come from an actually-ticking rAF loop, never something correctness
+depends on. Verified via direct canvas pixel sampling against known icon
+colors at the exact server-recorded tile coordinates (not just visual
+inspection) — confirmed both a page-load render and a live placement with
+no reload immediately show the correct icon.
+
 Still not built — more weather/rarity variety and a companion
 boys-first-styled game remain in `PENDING_TASKS.md`'s Skydrift Isles
 Phase 2 backlog.

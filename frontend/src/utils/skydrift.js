@@ -5,7 +5,7 @@
 // client's background/label agrees without a round trip.
 
 export const WEATHER_TYPES = ['sunny', 'rainy', 'windy', 'frosty', 'aurora']
-const WEATHER_CYCLE_MS = 10 * 60 * 1000 // 10 minutes per weather
+const WEATHER_CYCLE_MS = 3 * 60 * 1000 // 3 minutes per weather — fast enough to actually notice changing during a normal play session
 
 export function currentWeather(now = Date.now()) {
   const index = Math.floor(now / WEATHER_CYCLE_MS) % WEATHER_TYPES.length
