@@ -11,6 +11,8 @@ export const POINTS_PER_GAME_PLAY = 2
 export const POINTS_PER_SHARE = 10
 export const POINTS_PER_REACTION = 1
 export const POINTS_PER_STREAK_WEEK = 25
+export const POINTS_PER_REFERRAL = 30 // per friend who signs up through this account's invite link
+export const POINTS_PER_REFERRAL_SIGNUP = 15 // one-time, for signing up through someone else's invite link
 
 // Quizzes/puzzles are naturally capped by how much content exists, and
 // shares are deliberately uncapped (that's the one behavior actually worth
@@ -56,7 +58,9 @@ export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
     gamePlays * POINTS_PER_GAME_PLAY +
     (stats.sharesGiven || 0) * POINTS_PER_SHARE +
     reactions * POINTS_PER_REACTION +
-    streakWeeks * POINTS_PER_STREAK_WEEK
+    streakWeeks * POINTS_PER_STREAK_WEEK +
+    (stats.referralsGiven || 0) * POINTS_PER_REFERRAL +
+    (stats.referralSignupBonus ? POINTS_PER_REFERRAL_SIGNUP : 0)
   )
 }
 

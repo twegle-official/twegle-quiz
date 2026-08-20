@@ -1,4 +1,4 @@
-// The 7 "bonus badge" unlock rules, ported from the frontend's
+// The 9 "bonus badge" unlock rules, ported from the frontend's
 // frontend/src/utils/badges.js so the public profile page can compute
 // someone else's badge status server-side (the frontend original reads
 // localStorage directly, which only works for the current browser's own
@@ -21,6 +21,8 @@ export const BADGES = [
   { id: 'week-streak', emoji: '🔥', label: '7-Day Streak', description: 'Complete Quiz of the Day or Puzzle of the Day 7 days in a row.', check: (s, quizStreakCount, puzzleStreakCount) => Math.max(quizStreakCount || 0, puzzleStreakCount || 0) >= 7 },
   { id: 'reaction-fan', emoji: '😍', label: 'Reaction Fan', description: 'React to 10 posts.', check: (s) => (s.reactionsGiven || 0) >= 10 },
   { id: 'super-sharer', emoji: '📣', label: 'Super Sharer', description: 'Share 5 things from Twegle.', check: (s) => (s.sharesGiven || 0) >= 5 },
+  { id: 'twegle-ambassador', emoji: '🤝', label: 'Twegle Ambassador', description: 'Invite a friend who joins Twegle.', check: (s) => (s.referralsGiven || 0) >= 1 },
+  { id: 'warm-welcome', emoji: '🎉', label: 'Warm Welcome', description: "Joined Twegle through a friend's invite.", check: (s) => !!s.referralSignupBonus },
 ]
 
 // Returns every badge with whether it's unlocked, for a given stats blob —

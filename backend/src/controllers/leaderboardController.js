@@ -13,13 +13,19 @@ import { calculatePoints, getLevelInfo } from '../utils/levels.js'
 // Returns the top 100 ranked users by points, for the public leaderboard page.
 export async function getLevelLeaderboard(req, res) {
   // Only active (non-disabled) accounts, and only the fields safe to show publicly
-  const users = await EndUser.find({ status: 'active' }, 'displayName avatar stats').lean()
+  const users = await EndUser.find(
+    { status: 'active' },
+    'displayName avatar stats referralCount referralWelcomeBonus'
+  ).lean()
 
   const ranked = users
     .map((u) => {
       const quizStreakCount = (u.stats?.quizStreak || u.stats?.streak)?.count
       const puzzleStreakCount = u.stats?.puzzleStreak?.count
-      const points = calculatePoints(u.stats?.stats, quizStreakCount, puzzleStreakCount)
+      // Overlay the server-authoritative referral facts, same reasoning as
+      // getPublicProfile (endUserController.js) — see EndUser.js.
+      const stats = { ...(u.stats?.stats || {}), referralsGiven: u.referralCount, referralSignupBonus: u.referralWelcomeBonus }
+      const points = calculatePoints(stats, quizStreakCount, puzzleStreakCount)
       const { index, level } = getLevelInfo(points)
       return {
         displayName: u.displayName,

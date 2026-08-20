@@ -4,6 +4,7 @@ import { syncStatsOnLogin } from './utils/statsSync'
 import { clearLocalStats } from './utils/badges'
 import { clearLocalStreaks } from './utils/dailyQuiz'
 import { clearDailyActivity } from './utils/weeklyRecap'
+import { getStoredReferralCode, clearStoredReferralCode } from './utils/referral'
 
 // Separate, parallel context from admin/AuthContext.jsx — different name,
 // different localStorage key (`userSession` vs `adminSession`), wraps only
@@ -78,7 +79,12 @@ export function UserAuthProvider({ children }) {
   // Creates a new account, logs it in, and returns the recovery code to show
   // the visitor once (see Signup.jsx).
   async function signup(username, password, displayName) {
-    const data = await signupUser(username, password, displayName)
+    // Consumed on this one attempt regardless of outcome — see
+    // utils/referral.js. An invalid/unknown code is silently ignored by the
+    // backend (never blocks signup), so there's no reason to keep retrying it.
+    const referralCode = getStoredReferralCode()
+    const data = await signupUser(username, password, displayName, referralCode)
+    clearStoredReferralCode()
     localStorage.setItem('userSession', JSON.stringify({ token: data.token, user: data.user }))
     setSession({ token: data.token, user: data.user })
     syncStatsOnLogin(data.token)

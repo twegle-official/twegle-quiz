@@ -33,6 +33,18 @@ export function generateRecoveryCode() {
   return `TWEGLE-${randomGroup(4)}-${randomGroup(4)}`
 }
 
+// A short, URL-safe personal invite code (twegle.in/?ref=<code>), generated
+// once at signup for every account — retried on the rare collision, same
+// loop shape as the live games' room-code generators (e.g.
+// connectFourController.js's generateUniqueCode).
+async function generateReferralCode() {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = crypto.randomBytes(4).toString('base64url')
+    if (!(await EndUser.findOne({ referralCode: code }))) return code
+  }
+  throw new Error('Could not generate a unique referral code')
+}
+
 // Creates the login token (JWT) a user's browser keeps to prove who they are.
 function signUserToken(user) {
   // `type: 'user'` distinguishes this from an admin token — both are signed
@@ -53,6 +65,7 @@ function publicUser(user) {
     avatar: user.avatar || null,
     handle: user.handle || null,
     isProfilePublic: !!user.isProfilePublic,
+    referralCode: user.referralCode,
   }
 }
 
@@ -60,7 +73,7 @@ function publicUser(user) {
 // user, and returns a login token plus their one-time recovery code.
 export async function signup(req, res) {
   try {
-    const { username, password, displayName } = req.body
+    const { username, password, displayName, referralCode } = req.body
 
     if (!isValidUsername(username)) {
       return res.status(400).json({ error: 'Username must be 3-20 letters, numbers, or underscores' })
@@ -80,13 +93,28 @@ export async function signup(req, res) {
     const passwordHash = await bcrypt.hash(password, 10) // scramble the password before saving it
     const recoveryCode = generateRecoveryCode() // make a one-time-shown recovery code
     const recoveryCodeHash = await bcrypt.hash(recoveryCode, 10) // scramble the recovery code too
+    const newReferralCode = await generateReferralCode() // this new account's own invite code
+
+    // An invalid/unknown referral code is silently ignored — it never blocks
+    // signup, it just means no referral credit is awarded to anyone.
+    const referrer =
+      typeof referralCode === 'string' && referralCode.trim()
+        ? await EndUser.findOne({ referralCode: referralCode.trim().slice(0, 20) })
+        : null
 
     const user = await EndUser.create({
       username: username.toLowerCase(),
       passwordHash,
       recoveryCodeHash,
       displayName: displayName.trim(),
+      referralCode: newReferralCode,
+      referredBy: referrer?._id ?? null,
+      referralWelcomeBonus: !!referrer,
     })
+
+    if (referrer) {
+      await EndUser.findByIdAndUpdate(referrer._id, { $inc: { referralCount: 1 } })
+    }
 
     res.status(201).json({
       token: signUserToken(user),
@@ -249,7 +277,17 @@ export async function getStats(req, res) {
   if (!user) {
     return res.status(404).json({ error: 'Account not found' })
   }
-  res.json({ stats: user.stats || {} })
+  const stats = user.stats || {}
+  // referralCount/referralWelcomeBonus are server-authoritative (see
+  // EndUser.js) — always overlay the true value here rather than trusting
+  // whatever's sitting in the nested counters blob, so a stale/absent value
+  // there never masks a real referral credit.
+  res.json({
+    stats: {
+      ...stats,
+      stats: { ...(stats.stats || {}), referralsGiven: user.referralCount, referralSignupBonus: user.referralWelcomeBonus },
+    },
+  })
 }
 
 // Overwrites wholesale rather than merging — the frontend already computes

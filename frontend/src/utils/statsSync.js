@@ -80,6 +80,13 @@ function mergeStats(a = {}, b = {}) {
     reactionsGiven: Math.max(a.reactionsGiven || 0, b.reactionsGiven || 0),
     sharesGiven: Math.max(a.sharesGiven || 0, b.sharesGiven || 0),
     perfectTrivia: !!(a.perfectTrivia || b.perfectTrivia),
+    // Server-authoritative (see EndUser.js) — merging with Math.max/OR here
+    // is what lets a referral credit (only ever added server-side, during
+    // someone else's signup) actually reach this browser's localStorage the
+    // next time it pulls and merges, since this function only ever passes
+    // through fields it explicitly lists.
+    referralsGiven: Math.max(a.referralsGiven || 0, b.referralsGiven || 0),
+    referralSignupBonus: !!(a.referralSignupBonus || b.referralSignupBonus),
   }
 }
 

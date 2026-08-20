@@ -68,6 +68,26 @@ const endUserSchema = new mongoose.Schema(
     // database until their next login — expected, since there's no way to
     // know their true past activity retroactively.
     lastActiveAt: { type: Date, default: Date.now }, // when this account was last seen using the site
+    // This account's own personal invite link code (twegle.in/?ref=<code>).
+    // Generated unconditionally at signup (see endUserAuthController.js's
+    // generateReferralCode) — never null/absent, so this can be a plain
+    // `unique` index with no sparse-index gotcha like `handle` had.
+    referralCode: { type: String, required: true, unique: true },
+    // Which account's invite link this one signed up through, if any — set
+    // once at signup, never changed after.
+    referredBy: { type: mongoose.Schema.Types.ObjectId, ref: 'EndUser', default: null },
+    // How many friends have signed up through this account's invite link.
+    // Server-authoritative: only ever changed by signup() incrementing it
+    // directly, NEVER read from or overwritten by a client's `stats` push
+    // (see updateStats/getStats) — that push overwrites the whole `stats`
+    // blob wholesale with no merge, so storing this fact there instead would
+    // risk a referral credit being silently wiped by an unrelated stats sync
+    // race. Injected into the computed stats object at every read site
+    // instead (getStats/getPublicProfile/getLevelLeaderboard).
+    referralCount: { type: Number, default: 0 },
+    // True if this account itself signed up via someone else's invite link
+    // — also server-authoritative, same reasoning as referralCount above.
+    referralWelcomeBonus: { type: Boolean, default: false },
   },
   { timestamps: true }
 )

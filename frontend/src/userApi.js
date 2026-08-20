@@ -27,8 +27,10 @@ async function request(path, { token, method = 'GET', body } = {}) {
 }
 
 // Creates a new account and returns a login token + a one-time recovery code.
-export const signupUser = (username, password, displayName) =>
-  request('/users/signup', { method: 'POST', body: { username, password, displayName } })
+// referralCode is optional — the inviting friend's own personal code, if
+// this signup arrived via someone's invite link (see utils/referral.js).
+export const signupUser = (username, password, displayName, referralCode) =>
+  request('/users/signup', { method: 'POST', body: { username, password, displayName, referralCode } })
 
 // Logs an existing user in and returns a login token.
 export const loginUser = (username, password) =>

@@ -33,6 +33,7 @@ import Badges from './pages/Badges'
 import Leaderboard from './pages/Leaderboard'
 import BadgeToast from './components/BadgeToast'
 import { checkStreakReminders } from './utils/badges'
+import { captureReferralCode } from './utils/referral'
 import NotFound from './pages/NotFound'
 import Signup from './pages/Signup'
 import UserLogin from './pages/Login'
@@ -122,6 +123,9 @@ function PublicSite() {
   // its 'twegle-streak-reminder' event.
   useEffect(() => {
     checkStreakReminders()
+    // Captures a `?ref=` invite code arriving on ANY public route, not just
+    // the homepage — see utils/referral.js.
+    captureReferralCode()
   }, [])
 
   return (

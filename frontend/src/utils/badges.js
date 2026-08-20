@@ -12,7 +12,7 @@ import { recordDailyActivity } from './weeklyRecap'
 export const STATS_KEY = 'twegleStats'
 export const SEEN_KEY = 'twegleBadgesSeen'
 // The highest level index (into levels.js's LEVELS array) already notified
-// via a toast — separate from SEEN_KEY above since levels and the 7
+// via a toast — separate from SEEN_KEY above since levels and the 9
 // one-off badges are two different systems (see FRONTEND.md).
 export const LEVEL_SEEN_KEY = 'twegleLevelSeen'
 
@@ -28,10 +28,15 @@ export function getStats() {
       reactionsGiven: 0,
       sharesGiven: 0,
       perfectTrivia: false,
+      // referralsGiven/referralSignupBonus are server-authoritative — never
+      // written locally, only ever arrive here via statsSync.js pulling and
+      // merging the account's server copy (see EndUser.js/endUserAuthController.js).
+      referralsGiven: 0,
+      referralSignupBonus: false,
       ...JSON.parse(localStorage.getItem(STATS_KEY)),
     }
   } catch {
-    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false }
+    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false }
   }
 }
 
@@ -58,6 +63,11 @@ export const BADGES = [
   { id: 'week-streak', emoji: '🔥', label: '7-Day Streak', description: 'Complete Quiz of the Day or Puzzle of the Day 7 days in a row.', check: () => Math.max(getQuizStreak().count, getPuzzleStreak().count) >= 7, progress: () => `${Math.min(Math.max(getQuizStreak().count, getPuzzleStreak().count), 7)}/7` },
   { id: 'reaction-fan', emoji: '😍', label: 'Reaction Fan', description: 'React to 10 posts.', check: (s) => s.reactionsGiven >= 10, progress: (s) => `${Math.min(s.reactionsGiven, 10)}/10` },
   { id: 'super-sharer', emoji: '📣', label: 'Super Sharer', description: 'Share 5 things from Twegle.', check: (s) => s.sharesGiven >= 5, progress: (s) => `${Math.min(s.sharesGiven, 5)}/5` },
+  // Both referral badges depend on stats only an account (not a guest) can
+  // have, and only the backend ever sets them — see EndUser.js's
+  // referralCount/referralWelcomeBonus and statsSync.js's mergeStats.
+  { id: 'twegle-ambassador', emoji: '🤝', label: 'Twegle Ambassador', description: 'Invite a friend who joins Twegle.', check: (s) => (s.referralsGiven || 0) >= 1, progress: (s) => `${Math.min(s.referralsGiven || 0, 1)}/1` },
+  { id: 'warm-welcome', emoji: '🎉', label: 'Warm Welcome', description: "Joined Twegle through a friend's invite.", check: (s) => !!s.referralSignupBonus, progress: (s) => (s.referralSignupBonus ? '1/1' : '0/1') },
 ]
 
 function unlockedIds(stats) {

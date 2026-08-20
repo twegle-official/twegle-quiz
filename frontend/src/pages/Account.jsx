@@ -7,6 +7,7 @@ import { getStats } from '../utils/badges'
 import { getQuizStreak, getPuzzleStreak } from '../utils/dailyQuiz'
 import { fetchQuizzes, fetchPuzzles } from '../api'
 import { GAMES } from '../games/registry'
+import ShareButtons from '../components/ShareButtons'
 
 // Must match backend/src/utils/validators.js's AVATAR_OPTIONS exactly — a
 // fixed emoji preset, not an upload, so no file storage is ever needed.
@@ -339,6 +340,22 @@ export default function Account() {
             </button>
           </div>
         )}
+      </div>
+
+      {/* Invite friends — a referral bonus (points + a badge) for both
+          sides once a friend actually signs up through this link. The code
+          itself is generated once at signup (see EndUser.js), never
+          user-chosen, so there's nothing to save here — just a link to share. */}
+      <div className="border-t border-gray-200 dark:border-gray-700 pt-6 mt-6">
+        <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Invite friends</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+          Share your personal link — when a friend signs up through it, you both get bonus points and a badge.
+        </p>
+        <ShareButtons
+          title="Twegle"
+          url={`${window.location.origin}/?ref=${session.user.referralCode}`}
+          shareText="Join me on Twegle — quizzes, puzzles & games!"
+        />
       </div>
       </div>
 
