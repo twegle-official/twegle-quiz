@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { LogoWithWordmark } from './Logo'
 import ShareButtons from './ShareButtons'
 import { useInstallPrompt } from '../utils/useInstallPrompt'
+import { useUserAuth } from '../UserAuthContext'
 
 // Plain inline SVGs (currentColor) rather than emoji — emoji render as tiny,
 // inconsistent glyphs across platforms and don't clearly read as "this is the
@@ -50,6 +51,7 @@ function LinkedinIcon(props) {
 // links, install button, share buttons, and the Explore/Company link lists.
 export default function Footer() {
   const { canInstall, promptInstall } = useInstallPrompt() // whether "Add to Home Screen" can be shown
+  const { session } = useUserAuth()
 
   return (
     <footer className="border-t border-gray-200 dark:border-gray-800 mt-16 bg-gray-50 dark:bg-gray-900">
@@ -108,15 +110,31 @@ export default function Footer() {
               📲 Add to Home Screen
             </button>
           )}
-          {/* Share buttons — hidden on larger screens where a share sidebar exists elsewhere */}
-          <div className="mt-4 xl:hidden">
+          {/* Share buttons — shown at every width (not just below the floating
+              rail's xl breakpoint), so the full explanatory sentence below is
+              always available somewhere, even on the widest screens where the
+              rail's own hover tooltip has to stay short. Swaps into "Invite
+              friends" once logged in — same page real estate, different
+              purpose: a guest shares the site itself, an account holder
+              shares their own rewarded invite link (see ShareSidebar.jsx for
+              the equivalent swap on the floating rail). */}
+          <div className="mt-4">
             <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-2">
-              Share Twegle
+              {session ? 'Invite friends' : 'Share Twegle'}
             </p>
+            {session && (
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                Share your personal link — when a friend signs up through it, you both get bonus points and a badge.
+              </p>
+            )}
             <ShareButtons
-              title="Twegle — Quizzes, Quotes & Chaos for Everyone"
-              url={window.location.origin}
-              shareText="Check out Twegle — free quizzes, puzzles, games, jokes, quotes & more, no sign up needed!"
+              title="Twegle"
+              url={session ? `${window.location.origin}/?ref=${session.user.referralCode}` : window.location.origin}
+              shareText={
+                session
+                  ? 'Join me on Twegle — quizzes, puzzles & games!'
+                  : 'Check out Twegle — free quizzes, puzzles, games, jokes, quotes & more, no sign up needed!'
+              }
               align="start"
             />
           </div>
