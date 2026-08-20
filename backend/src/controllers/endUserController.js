@@ -19,7 +19,7 @@ export async function getPublicProfile(req, res) {
   const handle = req.params.handle?.toLowerCase()
   const user = await EndUser.findOne(
     { handle, isProfilePublic: true, status: 'active' },
-    'displayName avatar stats referralCount referralWelcomeBonus skydriftTilesPlaced skydriftWindlingsCaught'
+    'displayName avatar stats referralCount referralWelcomeBonus skydriftTilesPlaced skydriftWindlingsCaught skydriftSkyEventsFound'
   ).lean()
 
   if (!user) {
@@ -38,6 +38,7 @@ export async function getPublicProfile(req, res) {
     referralSignupBonus: user.referralWelcomeBonus,
     skydriftTilesPlaced: user.skydriftTilesPlaced,
     skydriftWindlingsCaught: user.skydriftWindlingsCaught,
+    skydriftSkyEventsFound: user.skydriftSkyEventsFound,
   }
 
   const points = calculatePoints(stats, quizStreakCount, puzzleStreakCount)

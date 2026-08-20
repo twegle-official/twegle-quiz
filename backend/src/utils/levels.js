@@ -16,6 +16,7 @@ export const POINTS_PER_REFERRAL = 30 // per friend who signs up through this ac
 export const POINTS_PER_REFERRAL_SIGNUP = 15 // one-time, for signing up through someone else's invite link
 export const POINTS_PER_SKYDRIFT_TILE = 1 // per decoration placed on a Skydrift island
 export const POINTS_PER_SKYDRIFT_WINDLING = 4 // per Windling caught
+export const POINTS_PER_SKY_EVENT = 20 // per Sky Event discovered — the real milestone reward, uncapped (only 5 exist)
 
 // Quizzes/puzzles are naturally capped by how much content exists, and
 // shares are deliberately uncapped (that's the one behavior actually worth
@@ -61,6 +62,7 @@ export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
   const streakWeeks = Math.floor((quizStreakCount || 0) / 7) + Math.floor((puzzleStreakCount || 0) / 7)
   const skydriftTiles = Math.min(stats.skydriftTilesPlaced || 0, MAX_COUNTED_SKYDRIFT_TILES)
   const skydriftWindlings = Math.min(stats.skydriftWindlingsCaught || 0, MAX_COUNTED_SKYDRIFT_WINDLINGS)
+  const skydriftSkyEvents = stats.skydriftSkyEventsFound || 0 // uncapped — only 5 can ever exist per island
   return (
     (stats.quizzesCompleted?.length || 0) * POINTS_PER_QUIZ +
     (stats.puzzlesRevealed?.length || 0) * POINTS_PER_PUZZLE +
@@ -71,7 +73,8 @@ export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
     (stats.referralsGiven || 0) * POINTS_PER_REFERRAL +
     (stats.referralSignupBonus ? POINTS_PER_REFERRAL_SIGNUP : 0) +
     skydriftTiles * POINTS_PER_SKYDRIFT_TILE +
-    skydriftWindlings * POINTS_PER_SKYDRIFT_WINDLING
+    skydriftWindlings * POINTS_PER_SKYDRIFT_WINDLING +
+    skydriftSkyEvents * POINTS_PER_SKY_EVENT
   )
 }
 

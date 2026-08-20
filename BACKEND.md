@@ -596,11 +596,46 @@ Whisperer," "🏝️ Island Architect"); `GAMES_COUNT` bumped 14→15 for the
 copies of `levels.js`/`badges.js`, same convention those files already
 document.
 
-Deliberately scoped small for V1 — the full "combine Windling types for
-rare Sky Events" system from the original pitch is intentionally deferred
-(see `PENDING_TASKS.md`'s Skydrift Isles Phase 2 backlog), keeping this
-build to a proven, shippable core loop (catch, decorate, endless) rather
-than the whole combinatorial vision at once.
+V1 shipped without the "combine Windling types" system on purpose, to keep
+the first build small — but direct feedback the same day ("just paste
+little little icon on egg type image this is the game?") was fair: without
+a real discovery mechanic, that's genuinely all it was. **Sky Events**
+shipped immediately after, pulled forward from the Phase 2 backlog rather
+than deferred further.
+
+`utils/skydrift.js` gained: 5 of the 9 `DECORATION_TYPES` are now
+`unlockedBy`-gated (one per adjacent pair in the weather cycle — Sunny→
+Rainy→Windy→Frosty→Aurora→Sunny — so "collect around the cycle" reads as
+an intentional set, not all 10 possible pairs); `STARTER_DECORATION_IDS`
+is the free 4; `checkSkyEvents(island, now)` scans every pair of *caught*
+Windlings for a new, still-untriggered pairing within `COMBO_RADIUS`
+(0.12 normalized units) of each other, mutating `island.skyEvents`/
+`island.unlockedDecorations` in place and returning the newly triggered
+events. Each pairKey triggers **at most once per island ever** — a
+discovery, not a repeatable action, same reasoning as a badge unlock.
+
+`SkydriftIsland.js` gained `unlockedDecorations` (defaults to the 4
+starters) and `skyEvents` (the permanent discovery log, `{ pairKey,
+decorationId, x, y, triggeredAt }`). `skydriftSocket.js`'s `placeTile`
+now checks the *island's own* `unlockedDecorations` (not just "is this id
+valid anywhere") before accepting a placement — confirmed directly that a
+crafted socket call for a locked decoration is rejected server-side, not
+just hidden by the frontend palette. A new `moveWindling` handler lets the
+account that caught a Windling reposition it (only their own catch,
+matching the ownership model everywhere else) — this is the actual
+player-directed action that triggers combos, since Windling positions
+were otherwise fixed at spawn/catch time. Both `catchWindling` and
+`moveWindling` call `checkSkyEvents` after their own mutation and include
+`newSkyEvents` in the broadcast payload, so clients can distinguish "the
+full state synced" from "something was just discovered" without a
+separate event type.
+
+Points/badges follow the same pattern as everything else here: a new
+server-authoritative `EndUser.skydriftSkyEventsFound` counter (`$inc`'d
+by the count of `newSkyEvents` on each triggering action), overlaid at
+every stats read site, `POINTS_PER_SKY_EVENT = 20` (uncapped — only 5 can
+ever exist per account's activity, so no grind risk), and a new "🔮 Sky
+Whisperer" badge.
 
 ## Folder structure
 

@@ -28,14 +28,38 @@ export const WINDLING_TYPES = [
   { id: 'starlight', weather: 'aurora', emoji: '🌌', label: 'Starlight Windling' },
 ]
 
+// 4 starters (free from the moment an island exists) + 5 unlockable-only
+// ones, each tied to one Sky Event (`unlockedBy` is that event's pairKey —
+// see SKY_EVENTS below). Combining two different caught Windling types
+// near each other is what unlocks the rest — the actual discovery loop,
+// without which the game was just "place a free icon on the island."
 export const DECORATION_TYPES = [
   { id: 'flower-patch', emoji: '🌸', label: 'Flower Patch' },
   { id: 'tree', emoji: '🌳', label: 'Tree' },
   { id: 'lantern', emoji: '🏮', label: 'Lantern' },
   { id: 'fountain', emoji: '⛲', label: 'Fountain' },
-  { id: 'crystal', emoji: '💎', label: 'Crystal' },
-  { id: 'bridge', emoji: '🌉', label: 'Rainbow Bridge' },
+  { id: 'bridge', emoji: '🌉', label: 'Rainbow Bridge', unlockedBy: 'droplet+sunbeam' },
+  { id: 'storm-cloud', emoji: '⛈️', label: 'Storm Cloud', unlockedBy: 'breeze+droplet' },
+  { id: 'snow-drift', emoji: '🌨️', label: 'Snow Drift', unlockedBy: 'breeze+frost' },
+  { id: 'ice-spire', emoji: '🧊', label: 'Ice Spire', unlockedBy: 'frost+starlight' },
+  { id: 'sunrise-glow', emoji: '🌅', label: 'Sunrise Glow', unlockedBy: 'starlight+sunbeam' },
 ]
+
+export const STARTER_DECORATION_IDS = DECORATION_TYPES.filter((d) => !d.unlockedBy).map((d) => d.id)
+
+export function pairKey(typeA, typeB) {
+  return [typeA, typeB].sort().join('+')
+}
+
+// One Sky Event per adjacent pair in the weather cycle (Sunny→Rainy→Windy→
+// Frosty→Aurora→Sunny) — 5 discoveries total, matching the 5 unlockable
+// decorations above.
+export const SKY_EVENTS = DECORATION_TYPES.filter((d) => d.unlockedBy).map((d) => ({
+  pairKey: d.unlockedBy,
+  decorationId: d.id,
+  label: d.label,
+  emoji: d.emoji,
+}))
 
 export function windlingTypeFor(id) {
   return WINDLING_TYPES.find((w) => w.id === id) || null

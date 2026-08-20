@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+import { STARTER_DECORATION_IDS } from '../utils/skydrift.js'
 
 // Twegle's first account-gated live game (every other live game — Ludo,
 // Chess, Connect Four — allows anonymous play with no auth at all). One
@@ -44,6 +45,26 @@ const skydriftIslandSchema = new mongoose.Schema(
         y: { type: Number, required: true },
         caughtBy: { type: mongoose.Schema.Types.ObjectId, ref: 'EndUser', default: null }, // null while still wild
         spawnedAt: { type: Date, default: Date.now },
+      },
+    ],
+    // Which decoration ids this island's palette currently offers — starts
+    // with just the 4 free starters; a Sky Event permanently appends the
+    // decoration it unlocks (see utils/skydrift.js's checkSkyEvents). Kept
+    // as an explicit island-level list (not just "check unlockedBy against
+    // skyEvents every render") so a decoration set never silently changes
+    // meaning if SKY_EVENTS' definitions are ever edited later.
+    unlockedDecorations: { type: [String], default: () => [...STARTER_DECORATION_IDS] },
+    // The permanent log of Sky Events this island has discovered — each
+    // pairKey triggers at most once ever (checkSkyEvents skips anything
+    // already logged here), same "discovery, not a repeatable action"
+    // reasoning a badge unlock follows.
+    skyEvents: [
+      {
+        pairKey: { type: String, required: true }, // e.g. "droplet+sunbeam" — see utils/skydrift.js's pairKey()
+        decorationId: { type: String, required: true },
+        x: { type: Number, required: true }, // where it triggered, for the canvas's one-time celebration effect
+        y: { type: Number, required: true },
+        triggeredAt: { type: Date, default: Date.now },
       },
     ],
   },

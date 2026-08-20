@@ -25,6 +25,7 @@ export const BADGES = [
   { id: 'warm-welcome', emoji: '🎉', label: 'Warm Welcome', description: "Joined Twegle through a friend's invite.", check: (s) => !!s.referralSignupBonus },
   { id: 'windling-whisperer', emoji: '🌤️', label: 'Windling Whisperer', description: 'Catch your first Windling on Skydrift Isles.', check: (s) => (s.skydriftWindlingsCaught || 0) >= 1 },
   { id: 'island-architect', emoji: '🏝️', label: 'Island Architect', description: 'Place 25 decorations on a Skydrift island.', check: (s) => (s.skydriftTilesPlaced || 0) >= 25 },
+  { id: 'sky-whisperer', emoji: '🔮', label: 'Sky Whisperer', description: 'Discover a Sky Event by bringing two different Windlings together.', check: (s) => (s.skydriftSkyEventsFound || 0) >= 1 },
 ]
 
 // Returns every badge with whether it's unlocked, for a given stats blob —

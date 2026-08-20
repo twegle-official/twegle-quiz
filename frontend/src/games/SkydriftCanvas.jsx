@@ -8,9 +8,13 @@ import { currentWeather, WEATHER_LABELS, windlingTypeFor, decorationTypeFor } fr
 //
 // Interaction is deliberately tap-only, no drag: pick a decoration from the
 // palette (SkydriftIsles.jsx), then tap a spot on the island to place it;
-// tap a visible Windling to catch it. This keeps hit-testing to simple
-// point-in-circle checks and works identically on mobile touch and desktop
-// click, with no separate drag/touch code path to maintain.
+// tap a wild (glowing) Windling to catch it; tap one of YOUR OWN already-
+// caught Windlings to select it, then tap the island to move it there —
+// this last one is the actual player-directed action Sky Events reward
+// (bring two different caught types close together on purpose). All of
+// this keeps hit-testing to simple point-in-circle checks and works
+// identically on mobile touch and desktop click, with no separate
+// drag/touch code path to maintain.
 //
 // All stored positions are normalized specifically so a resize (rotating a
 // phone, opening the palette drawer, entering fullscreen) never reflows
@@ -41,19 +45,41 @@ function drawCloud(ctx, x, y, scale) {
   ctx.restore()
 }
 
-export default function SkydriftCanvas({ island, selectedDecoration, onPlaceTile, onCatchWindling }) {
+export default function SkydriftCanvas({
+  island,
+  myUserId,
+  selectedDecoration,
+  selectedWindlingId,
+  onPlaceTile,
+  onCatchWindling,
+  onSelectWindling,
+  onMoveWindling,
+}) {
   const canvasRef = useRef(null)
   const containerRef = useRef(null)
   const islandRef = useRef(island)
+  const selectedWindlingRef = useRef(selectedWindlingId)
+  selectedWindlingRef.current = selectedWindlingId
   // Tracks the moment each tile/Windling first appeared, so freshly placed/
   // spawned things pop in with a quick scale animation instead of just
   // snapping into existence — the one bit of "juice" that makes an action
   // feel like it landed.
   const seenAtRef = useRef(new Map())
+  // Same idea, for Sky Events — the first time this component instance
+  // sees a given pairKey in island.skyEvents, it gets a one-time
+  // celebration burst. Deliberately keyed by pairKey and tracked
+  // client-side (not the event's real triggeredAt) so reconnecting to an
+  // island that discovered something days ago doesn't replay the burst.
+  const celebratedRef = useRef(new Set())
+  const newCelebrationsRef = useRef(new Map())
+  const hasLoadedOnceRef = useRef(false)
   islandRef.current = island
 
   useEffect(() => {
     const now = performance.now()
+    const isFirstLoad = !hasLoadedOnceRef.current
+    hasLoadedOnceRef.current = true
+
     for (const t of island?.tiles || []) {
       const key = `tile:${t.x}:${t.y}:${t.type}`
       if (!seenAtRef.current.has(key)) seenAtRef.current.set(key, now)
@@ -61,6 +87,16 @@ export default function SkydriftCanvas({ island, selectedDecoration, onPlaceTile
     for (const w of island?.windlings || []) {
       const key = `w:${w.id}`
       if (!seenAtRef.current.has(key)) seenAtRef.current.set(key, now)
+    }
+    for (const e of island?.skyEvents || []) {
+      if (celebratedRef.current.has(e.pairKey)) continue
+      celebratedRef.current.add(e.pairKey)
+      // The very first load shouldn't replay every historical discovery as
+      // a fresh celebration burst — only a Sky Event that triggers while
+      // this component is already mounted and showing something gets one.
+      if (!isFirstLoad) {
+        newCelebrationsRef.current.set(e.pairKey, { x: e.x, y: e.y, decorationId: e.decorationId, startedAt: now })
+      }
     }
   }, [island])
 
@@ -238,10 +274,57 @@ export default function SkydriftCanvas({ island, selectedDecoration, onPlaceTile
           ctx.fill()
         }
 
+        // A dashed ring around whichever of YOUR caught Windlings is
+        // currently selected for moving — the only visual cue that
+        // "tapping the island now moves this one," so it doesn't look like
+        // the tap silently did nothing.
+        if (w.id === selectedWindlingRef.current) {
+          ctx.save()
+          ctx.strokeStyle = '#7c3aed'
+          ctx.lineWidth = 2.5 * dpr
+          ctx.setLineDash([5 * dpr, 4 * dpr])
+          ctx.lineDashOffset = -t / 30
+          ctx.beginPath()
+          ctx.arc(px, py, size * 0.9, 0, Math.PI * 2)
+          ctx.stroke()
+          ctx.restore()
+        }
+
         ctx.save()
         ctx.globalAlpha = w.caughtBy ? 0.85 : 1
         ctx.font = `${size}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`
         ctx.fillText(type.emoji, px, py)
+        ctx.restore()
+      }
+
+      // Sky Event celebration bursts — a brief expanding sparkle ring plus
+      // the newly unlocked decoration's emoji, at the midpoint between the
+      // two Windlings that triggered it. Purely cosmetic and self-expiring
+      // (removed from the map once its 1.4s window ends).
+      for (const [key, c] of newCelebrationsRef.current) {
+        const elapsed = t - c.startedAt
+        if (elapsed > 1400) {
+          newCelebrationsRef.current.delete(key)
+          continue
+        }
+        const progress = elapsed / 1400
+        const px = c.x * width
+        const py = c.y * height
+        const ringRadius = emojiSize * (0.5 + progress * 2.2)
+        ctx.save()
+        ctx.globalAlpha = 1 - progress
+        ctx.strokeStyle = '#f0abfc'
+        ctx.lineWidth = 3 * dpr
+        ctx.beginPath()
+        ctx.arc(px, py, ringRadius, 0, Math.PI * 2)
+        ctx.stroke()
+        const deco = decorationTypeFor(c.decorationId)
+        if (deco) {
+          const popup = progress < 0.3 ? progress / 0.3 : 1
+          ctx.globalAlpha = 1 - Math.max(0, progress - 0.6) / 0.4
+          ctx.font = `${emojiSize * 1.6 * popup}px "Segoe UI Emoji", "Apple Color Emoji", sans-serif`
+          ctx.fillText(deco.emoji, px, py - emojiSize * 1.4 * progress)
+        }
         ctx.restore()
       }
 
@@ -258,22 +341,65 @@ export default function SkydriftCanvas({ island, selectedDecoration, onPlaceTile
     return () => cancelAnimationFrame(frameId)
   }, [])
 
+  function nearestWindling(list, x, y) {
+    return list
+      .map((w) => ({ w, dist: Math.hypot(w.x - x, w.y - y) }))
+      .sort((a, b) => a.dist - b.dist)
+      .find((r) => r.dist <= WINDLING_HIT_RADIUS)?.w
+  }
+
   function handleClick(e) {
     const canvas = canvasRef.current
     if (!canvas) return
     const rect = canvas.getBoundingClientRect()
     const x = (e.clientX - rect.left) / rect.width
     const y = (e.clientY - rect.top) / rect.height
+    const windlings = island?.windlings || []
 
-    const wild = (island?.windlings || []).filter((w) => !w.caughtBy)
-    const nearest = wild
-      .map((w) => ({ w, dist: Math.hypot(w.x - x, w.y - y) }))
-      .sort((a, b) => a.dist - b.dist)[0]
-    if (nearest && nearest.dist <= WINDLING_HIT_RADIUS) {
-      onCatchWindling(nearest.w.id)
+    // 1. A wild (uncaught) Windling — tap to catch it. Always wins, even
+    // while a move is pending, since a wild Windling can't be a move target
+    // anyway (only caught ones can be repositioned).
+    const wild = nearestWindling(
+      windlings.filter((w) => !w.caughtBy),
+      x,
+      y
+    )
+    if (wild) {
+      onCatchWindling(wild.id)
       return
     }
 
+    // 2. A Windling is already selected for moving.
+    if (selectedWindlingId) {
+      // Tapping the selected Windling itself cancels the move instead of
+      // relocating it onto its own current spot (a pointless no-op tap).
+      const selected = windlings.find((w) => w.id === selectedWindlingId)
+      if (selected && Math.hypot(selected.x - x, selected.y - y) <= WINDLING_HIT_RADIUS) {
+        onSelectWindling(null)
+        return
+      }
+      // Otherwise this tap relocates it here, even if it happens to land
+      // near a different owned Windling (the whole point is usually to
+      // move it next to one) — checked before "tap an owned Windling to
+      // select it" below so that case can't ambiguously steal the tap.
+      onMoveWindling(x, y)
+      return
+    }
+
+    // 3. One of your own already-caught Windlings, nothing selected yet —
+    // tap to select it for moving (only your own; you can't rearrange a
+    // friend's catch).
+    const mine = nearestWindling(
+      windlings.filter((w) => w.caughtBy === myUserId),
+      x,
+      y
+    )
+    if (mine) {
+      onSelectWindling(mine.id)
+      return
+    }
+
+    // 4. Otherwise, a decoration is selected from the palette — place it.
     if (selectedDecoration) {
       onPlaceTile(x, y)
     }
@@ -284,7 +410,7 @@ export default function SkydriftCanvas({ island, selectedDecoration, onPlaceTile
       <canvas
         ref={canvasRef}
         onClick={handleClick}
-        className={selectedDecoration ? 'cursor-crosshair' : 'cursor-pointer'}
+        className={selectedDecoration || selectedWindlingId ? 'cursor-crosshair' : 'cursor-pointer'}
       />
     </div>
   )

@@ -721,11 +721,45 @@ merge). Two new badges ("🌤️ Windling Whisperer," "🏝️ Island Architect"
 in `utils/badges.js`, `POINTS_PER_SKYDRIFT_TILE`/`_WINDLING` (capped) in
 `utils/levels.js`, both hand-mirrored from the backend copies.
 
-Deliberately scoped small for V1 (shared island + weather cycle + catch-
-and-decorate loop only) — the full combinatorial "Sky Events" system from
-the original pitch, more weather/rarity variety, and a companion
-boys-first-styled game are all captured in `PENDING_TASKS.md`'s Skydrift
-Isles Phase 2 backlog rather than built now.
+V1 shipped without the combinatorial "Sky Events" system on purpose —
+direct feedback the same day ("just paste little little icon on egg type
+image this is the game?") was fair, though: without it, that's genuinely
+all the game was. Shipped immediately after instead of staying deferred.
+
+**Two rendering/interaction additions to `SkydriftCanvas.jsx`**: a dashed
+purple ring around whichever of your own caught Windlings is currently
+selected for moving (the only visual cue that "tapping the island now
+relocates this one" — otherwise the tap would look like it silently did
+nothing), and a self-expiring sparkle-burst celebration (~1.4s, tracked in
+a `Map` keyed by pairKey so a reconnect never replays a discovery that
+already happened) at the midpoint between the two Windlings whenever
+`island.skyEvents` gains an entry the component hasn't already shown. Tap
+priority inside `handleClick` had to be ordered carefully — a real bug
+found during verification: moving a selected Windling onto a spot that
+happened to land near a *different* owned Windling was being swallowed by
+the "select that one instead" branch before the move ever ran, since
+selection-detection ran before the pending-move check. Fixed by checking
+"is a move pending" first; tapping the selected Windling itself now
+cancels the move (instead of relocating it onto its own position) rather
+than falling through to select-a-different-one.
+
+`SkydriftIsles.jsx`'s palette now maps over the full `DECORATION_TYPES`
+list but only lets you pick the ones in `island.unlockedDecorations` —
+locked ones render as `🔒 ???` (visible-but-disabled, not hidden, so
+there's a collection goal to see) — plus a live "🔮 Sky Events discovered:
+X/5" counter and a local toast banner when this browser's own action was
+the one that triggered a discovery (separate from the canvas's
+room-wide sparkle burst, which everyone sees; the toast is "here's
+specifically what you just unlocked").
+
+Points/badges: `skydriftSkyEventsFound` (server-authoritative, uncapped)
+mirrors the backend field into `getStats()`/`mergeStats()` the same way
+`skydriftTilesPlaced` already does; `POINTS_PER_SKY_EVENT` and the new
+"🔮 Sky Whisperer" badge are hand-mirrored copies of the backend originals.
+
+Still not built — more weather/rarity variety and a companion
+boys-first-styled game remain in `PENDING_TASKS.md`'s Skydrift Isles
+Phase 2 backlog.
 
 ## FAQ / Help page
 

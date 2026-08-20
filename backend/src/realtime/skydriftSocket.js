@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import SkydriftIsland from '../models/SkydriftIsland.js'
 import EndUser from '../models/EndUser.js'
 import { islandPayload } from '../controllers/skydriftController.js'
-import { isValidDecoration, inBounds, maybeSpawnWindling } from '../utils/skydrift.js'
+import { isValidDecoration, inBounds, maybeSpawnWindling, checkSkyEvents } from '../utils/skydrift.js'
 
 // Same hybrid REST + socket.io design as every other live game — Mongo
 // stays the source of truth, every action is validated and saved there
@@ -65,6 +65,13 @@ export function registerSkydriftSocket(io) {
         const island = await SkydriftIsland.findOne({ code })
         if (!island) return socket.emit('errorMsg', 'Island not found')
         if (!isMember(island)) return socket.emit('errorMsg', 'You have not joined this island')
+        // A decoration only became placeable at all once its Sky Event
+        // triggered on THIS island — checked against the island's own
+        // unlockedDecorations, not just "is this id valid anywhere," so a
+        // crafted socket call can't skip the discovery.
+        if (!island.unlockedDecorations.includes(type)) {
+          return socket.emit('errorMsg', "You haven't unlocked that decoration yet")
+        }
 
         island.tiles.push({ x, y, type, placedBy: socket.data.userId })
         maybeSpawnWindling(island)
@@ -90,12 +97,51 @@ export function registerSkydriftSocket(io) {
 
         windling.caughtBy = socket.data.userId
         maybeSpawnWindling(island)
+        const newSkyEvents = checkSkyEvents(island)
         await island.save()
-        await EndUser.updateOne({ _id: socket.data.userId }, { $inc: { skydriftWindlingsCaught: 1 } })
+        await EndUser.updateOne(
+          { _id: socket.data.userId },
+          { $inc: { skydriftWindlingsCaught: 1, skydriftSkyEventsFound: newSkyEvents.length } }
+        )
 
-        nsp.to(code).emit('islandState', islandPayload(island))
+        nsp.to(code).emit('islandState', { ...islandPayload(island), newSkyEvents })
       } catch {
         socket.emit('errorMsg', 'Could not catch that Windling')
+      }
+    })
+
+    // A player repositions one of their own already-caught Windlings — the
+    // actual player-directed action Sky Events reward: catch two different
+    // types, then drag them near each other on purpose. Only the account
+    // that caught it can move it (no shared-ownership tug-of-war).
+    socket.on('moveWindling', async ({ code, windlingId, x, y }) => {
+      try {
+        if (!inBounds(x, y)) return socket.emit('errorMsg', 'That spot is off the island')
+
+        const island = await SkydriftIsland.findOne({ code })
+        if (!island) return socket.emit('errorMsg', 'Island not found')
+        if (!isMember(island)) return socket.emit('errorMsg', 'You have not joined this island')
+
+        const windling = island.windlings.find((w) => w.id === windlingId)
+        if (!windling) return socket.emit('errorMsg', 'That Windling is gone')
+        if (windling.caughtBy?.toString() !== socket.data.userId) {
+          return socket.emit('errorMsg', 'You can only move a Windling you caught yourself')
+        }
+
+        windling.x = x
+        windling.y = y
+        const newSkyEvents = checkSkyEvents(island)
+        await island.save()
+        if (newSkyEvents.length > 0) {
+          await EndUser.updateOne(
+            { _id: socket.data.userId },
+            { $inc: { skydriftSkyEventsFound: newSkyEvents.length } }
+          )
+        }
+
+        nsp.to(code).emit('islandState', { ...islandPayload(island), newSkyEvents })
+      } catch {
+        socket.emit('errorMsg', 'Could not move that Windling')
       }
     })
   })

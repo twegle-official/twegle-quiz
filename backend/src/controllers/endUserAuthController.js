@@ -291,6 +291,7 @@ export async function getStats(req, res) {
         referralSignupBonus: user.referralWelcomeBonus,
         skydriftTilesPlaced: user.skydriftTilesPlaced,
         skydriftWindlingsCaught: user.skydriftWindlingsCaught,
+        skydriftSkyEventsFound: user.skydriftSkyEventsFound,
       },
     },
   })

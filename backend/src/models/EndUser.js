@@ -94,6 +94,7 @@ const endUserSchema = new mongoose.Schema(
     // handlers, never trusted from a client's wholesale `stats` push.
     skydriftTilesPlaced: { type: Number, default: 0 },
     skydriftWindlingsCaught: { type: Number, default: 0 },
+    skydriftSkyEventsFound: { type: Number, default: 0 }, // Sky Events this account has personally triggered, across any island
   },
   { timestamps: true }
 )

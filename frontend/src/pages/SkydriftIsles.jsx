@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
 import { fetchMySkydriftIsland, joinSkydriftIsland } from '../userApi'
 import { skydriftSocket } from '../utils/socket'
-import { currentWeather, WEATHER_LABELS, DECORATION_TYPES } from '../utils/skydrift'
+import { currentWeather, WEATHER_LABELS, DECORATION_TYPES, SKY_EVENTS, decorationTypeFor } from '../utils/skydrift'
 import SkydriftCanvas from '../games/SkydriftCanvas'
 import ShareButtons from '../components/ShareButtons'
 import BackButton from '../components/BackButton'
@@ -24,8 +24,14 @@ export default function SkydriftIsles() {
   const [island, setIsland] = useState(null)
   const [error, setError] = useState('')
   const [selectedDecoration, setSelectedDecoration] = useState(null)
+  const [selectedWindlingId, setSelectedWindlingId] = useState(null)
   const [weatherLabel, setWeatherLabel] = useState(() => currentWeather())
   const [isFullscreen, setIsFullscreen] = useState(false)
+  // A brief celebration banner when this browser's own action just
+  // triggered a Sky Event — separate from SkydriftCanvas's on-canvas
+  // sparkle burst, which plays for everyone in the room; this text banner
+  // is local feedback confirming what was actually unlocked.
+  const [skyEventToast, setSkyEventToast] = useState(null)
   // Shown once per browser — a first-time visitor otherwise lands on a
   // plain island with no explanation of what to do (reported directly:
   // "I dont know how to play this game"). Same localStorage-gated,
@@ -78,6 +84,13 @@ export default function SkydriftIsles() {
 
     function handleIslandState(data) {
       setIsland(data)
+      if (data.newSkyEvents?.length > 0) {
+        const first = data.newSkyEvents[0]
+        const deco = decorationTypeFor(first.decorationId)
+        setSkyEventToast(deco ? `✨ Sky Event! You unlocked ${deco.emoji} ${deco.label}` : '✨ Sky Event discovered!')
+        setSelectedWindlingId(null)
+        setTimeout(() => setSkyEventToast(null), 4500)
+      }
     }
     function handleError(message) {
       setError(message)
@@ -129,6 +142,22 @@ export default function SkydriftIsles() {
     skydriftSocket.emit('catchWindling', { code: island.code, windlingId })
   }
 
+  function handleSelectWindling(windlingId) {
+    setSelectedWindlingId(windlingId)
+    if (windlingId) setSelectedDecoration(null)
+  }
+
+  function handleMoveWindling(x, y) {
+    if (!selectedWindlingId) return
+    skydriftSocket.emit('moveWindling', { code: island.code, windlingId: selectedWindlingId, x, y })
+    setSelectedWindlingId(null)
+  }
+
+  function selectDecoration(id) {
+    setSelectedDecoration((cur) => (cur === id ? null : id))
+    setSelectedWindlingId(null)
+  }
+
   useDocumentMeta('Skydrift Isles', 'A live, endless floating island you build with friends — catch Windlings, decorate, never-ending.')
 
   if (!session) return null
@@ -168,11 +197,19 @@ export default function SkydriftIsles() {
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
         {isOwner ? 'Your island — decorate it and catch Windlings, forever.' : "You're visiting a friend's island."}
       </p>
-      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-        🌸 Pick a decoration below, then tap the island to place it. ✨ Tap a glowing Windling to catch it.
+      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+        🌸 Pick a decoration below, then tap the island to place it. ✨ Tap a glowing Windling to catch it, then tap it again and tap the island to move it near another Windling you've caught — different types placed close together unlock something new.
+      </p>
+      <p className="text-xs font-semibold text-violet-600 dark:text-violet-400 mb-4">
+        🔮 Sky Events discovered: {island.skyEvents.length}/{SKY_EVENTS.length}
       </p>
 
       {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
+      {skyEventToast && (
+        <div className="mb-3 rounded-xl bg-violet-600 text-white text-sm font-semibold px-4 py-2 text-center animate-pulse">
+          {skyEventToast}
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-2 mb-3">
         {island.players.map((p) => (
@@ -195,9 +232,13 @@ export default function SkydriftIsles() {
       <div ref={wrapperRef} className="relative bg-gray-900 rounded-2xl overflow-hidden" style={{ height: isFullscreen ? '100vh' : '65vh' }}>
         <SkydriftCanvas
           island={island}
+          myUserId={session.user.id}
           selectedDecoration={selectedDecoration}
+          selectedWindlingId={selectedWindlingId}
           onPlaceTile={handlePlaceTile}
           onCatchWindling={handleCatchWindling}
+          onSelectWindling={handleSelectWindling}
+          onMoveWindling={handleMoveWindling}
         />
         {showOnboarding && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 p-4">
@@ -207,6 +248,7 @@ export default function SkydriftIsles() {
               <ul className="text-sm text-left text-gray-600 dark:text-gray-300 space-y-2 mb-4">
                 <li>🌸 Pick a decoration below, then tap the island to place it</li>
                 <li>✨ Tap a glowing Windling to catch it — it's yours forever</li>
+                <li>🔮 Tap a Windling you've caught, then tap the island to move it near another type — that's how you discover new decorations</li>
                 <li>🌦️ The weather changes over time, and brings different Windlings</li>
                 <li>🤝 Invite up to 3 friends to build with you, live</li>
               </ul>
@@ -222,23 +264,33 @@ export default function SkydriftIsles() {
       </div>
 
       <div className="flex flex-wrap gap-2 mt-4">
-        {DECORATION_TYPES.map((d) => (
-          <button
-            key={d.id}
-            onClick={() => setSelectedDecoration((cur) => (cur === d.id ? null : d.id))}
-            className={`flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-semibold border transition-colors ${
-              selectedDecoration === d.id
-                ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
-                : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-300'
-            }`}
-          >
-            <span className="text-xl">{d.emoji}</span>
-            {d.label}
-          </button>
-        ))}
+        {DECORATION_TYPES.map((d) => {
+          const unlocked = island.unlockedDecorations.includes(d.id)
+          return (
+            <button
+              key={d.id}
+              onClick={() => unlocked && selectDecoration(d.id)}
+              disabled={!unlocked}
+              title={unlocked ? d.label : 'Discover this by bringing two different Windlings together'}
+              className={`flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-semibold border transition-colors ${
+                !unlocked
+                  ? 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-60'
+                  : selectedDecoration === d.id
+                  ? 'border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
+                  : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-300'
+              }`}
+            >
+              <span className="text-xl">{unlocked ? d.emoji : '🔒'}</span>
+              {unlocked ? d.label : '???'}
+            </button>
+          )
+        })}
       </div>
       {selectedDecoration && (
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Tap anywhere on the island to place it.</p>
+      )}
+      {selectedWindlingId && (
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">Tap anywhere on the island to move that Windling there.</p>
       )}
 
       {isOwner && island.players.length < 4 && (

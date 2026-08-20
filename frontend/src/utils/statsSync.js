@@ -89,6 +89,7 @@ function mergeStats(a = {}, b = {}) {
     referralSignupBonus: !!(a.referralSignupBonus || b.referralSignupBonus),
     skydriftTilesPlaced: Math.max(a.skydriftTilesPlaced || 0, b.skydriftTilesPlaced || 0),
     skydriftWindlingsCaught: Math.max(a.skydriftWindlingsCaught || 0, b.skydriftWindlingsCaught || 0),
+    skydriftSkyEventsFound: Math.max(a.skydriftSkyEventsFound || 0, b.skydriftSkyEventsFound || 0),
   }
 }
 

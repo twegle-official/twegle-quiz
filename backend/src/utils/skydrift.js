@@ -29,14 +29,94 @@ export const WINDLING_TYPES = [
   { id: 'starlight', weather: 'aurora', emoji: '🌌', label: 'Starlight Windling' },
 ]
 
+// 4 starters (free from the moment an island exists) + 5 unlockable-only
+// ones, each tied to one Sky Event below (`unlockedBy` is that event's
+// pairKey — see SKY_EVENTS). This is the "combining Windling types near
+// each other" discovery hook from the original pitch: without it, the
+// game was just "place a free icon on the island," which is exactly the
+// feedback that prompted this addition — a real reason to keep playing
+// beyond decorating for its own sake.
 export const DECORATION_TYPES = [
   { id: 'flower-patch', emoji: '🌸', label: 'Flower Patch' },
   { id: 'tree', emoji: '🌳', label: 'Tree' },
   { id: 'lantern', emoji: '🏮', label: 'Lantern' },
   { id: 'fountain', emoji: '⛲', label: 'Fountain' },
-  { id: 'crystal', emoji: '💎', label: 'Crystal' },
-  { id: 'bridge', emoji: '🌉', label: 'Rainbow Bridge' },
+  { id: 'bridge', emoji: '🌉', label: 'Rainbow Bridge', unlockedBy: 'droplet+sunbeam' },
+  { id: 'storm-cloud', emoji: '⛈️', label: 'Storm Cloud', unlockedBy: 'breeze+droplet' },
+  { id: 'snow-drift', emoji: '🌨️', label: 'Snow Drift', unlockedBy: 'breeze+frost' },
+  { id: 'ice-spire', emoji: '🧊', label: 'Ice Spire', unlockedBy: 'frost+starlight' },
+  { id: 'sunrise-glow', emoji: '🌅', label: 'Sunrise Glow', unlockedBy: 'starlight+sunbeam' },
 ]
+
+export const STARTER_DECORATION_IDS = DECORATION_TYPES.filter((d) => !d.unlockedBy).map((d) => d.id)
+
+// The 5 discoverable Sky Events — one per adjacent pair in the weather
+// cycle (Sunny→Rainy→Windy→Frosty→Aurora→Sunny), so "collect your way
+// around the cycle" reads as an intentional set, not an arbitrary
+// combinatorial explosion (5 events, not all 10 possible pairs).
+// `pairKey` is the two Windling type ids, alphabetically sorted and
+// joined — the canonical, order-independent key used everywhere below.
+export function pairKey(typeA, typeB) {
+  return [typeA, typeB].sort().join('+')
+}
+
+export const SKY_EVENTS = DECORATION_TYPES.filter((d) => d.unlockedBy).map((d) => ({
+  pairKey: d.unlockedBy,
+  decorationId: d.id,
+  label: d.label,
+  emoji: d.emoji,
+}))
+
+const SKY_EVENT_BY_PAIR = Object.fromEntries(SKY_EVENTS.map((e) => [e.pairKey, e]))
+
+// How close two caught Windlings need to sit (normalized units) to combo —
+// deliberately generous, since positions come from where they happened to
+// spawn/get moved to rather than a precise grid.
+const COMBO_RADIUS = 0.12
+
+// Scans every pair of *caught* Windlings on the island for a new Sky Event
+// — same weather-cycle-adjacent pairing as SKY_EVENTS above, triggered by
+// physical proximity (see SkydriftIsles.jsx's "move your caught Windling"
+// interaction, the actual player action this rewards). Each pairKey only
+// ever triggers once per island (a discovery, not a repeatable action) —
+// already-triggered pairs are skipped via `island.skyEvents`. Mutates
+// `island.skyEvents`/`island.unlockedDecorations` in place (caller already
+// has the Mongoose doc loaded and will .save() it); returns the newly
+// triggered events so the caller can broadcast/reward them.
+export function checkSkyEvents(island, now = Date.now()) {
+  const already = new Set(island.skyEvents.map((e) => e.pairKey))
+  const caught = island.windlings.filter((w) => w.caughtBy)
+  const newEvents = []
+
+  for (let i = 0; i < caught.length; i++) {
+    for (let j = i + 1; j < caught.length; j++) {
+      const a = caught[i]
+      const b = caught[j]
+      if (a.type === b.type) continue
+      const key = pairKey(a.type, b.type)
+      if (already.has(key)) continue
+      const spec = SKY_EVENT_BY_PAIR[key]
+      if (!spec) continue
+      if (Math.hypot(a.x - b.x, a.y - b.y) > COMBO_RADIUS) continue
+
+      const event = {
+        pairKey: key,
+        decorationId: spec.decorationId,
+        x: (a.x + b.x) / 2,
+        y: (a.y + b.y) / 2,
+        triggeredAt: new Date(now),
+      }
+      island.skyEvents.push(event)
+      if (!island.unlockedDecorations.includes(spec.decorationId)) {
+        island.unlockedDecorations.push(spec.decorationId)
+      }
+      already.add(key)
+      newEvents.push(event)
+    }
+  }
+
+  return newEvents
+}
 
 export function isValidDecoration(type) {
   return DECORATION_TYPES.some((d) => d.id === type)

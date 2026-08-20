@@ -36,10 +36,11 @@ export function getStats() {
       referralSignupBonus: false,
       skydriftTilesPlaced: 0,
       skydriftWindlingsCaught: 0,
+      skydriftSkyEventsFound: 0,
       ...JSON.parse(localStorage.getItem(STATS_KEY)),
     }
   } catch {
-    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false, skydriftTilesPlaced: 0, skydriftWindlingsCaught: 0 }
+    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false, skydriftTilesPlaced: 0, skydriftWindlingsCaught: 0, skydriftSkyEventsFound: 0 }
   }
 }
 
@@ -75,6 +76,7 @@ export const BADGES = [
   // badges above — see EndUser.js's skydriftTilesPlaced/skydriftWindlingsCaught.
   { id: 'windling-whisperer', emoji: '🌤️', label: 'Windling Whisperer', description: 'Catch your first Windling on Skydrift Isles.', check: (s) => (s.skydriftWindlingsCaught || 0) >= 1, progress: (s) => `${Math.min(s.skydriftWindlingsCaught || 0, 1)}/1` },
   { id: 'island-architect', emoji: '🏝️', label: 'Island Architect', description: 'Place 25 decorations on a Skydrift island.', check: (s) => (s.skydriftTilesPlaced || 0) >= 25, progress: (s) => `${Math.min(s.skydriftTilesPlaced || 0, 25)}/25` },
+  { id: 'sky-whisperer', emoji: '🔮', label: 'Sky Whisperer', description: 'Discover a Sky Event by bringing two different Windlings together.', check: (s) => (s.skydriftSkyEventsFound || 0) >= 1, progress: (s) => `${Math.min(s.skydriftSkyEventsFound || 0, 1)}/1` },
 ]
 
 function unlockedIds(stats) {

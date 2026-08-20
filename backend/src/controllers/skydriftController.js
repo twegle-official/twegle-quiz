@@ -46,6 +46,14 @@ export function islandPayload(island) {
       y: w.y,
       caughtBy: w.caughtBy ? w.caughtBy.toString() : null,
     })),
+    unlockedDecorations: island.unlockedDecorations,
+    skyEvents: island.skyEvents.map((e) => ({
+      pairKey: e.pairKey,
+      decorationId: e.decorationId,
+      x: e.x,
+      y: e.y,
+      triggeredAt: e.triggeredAt,
+    })),
   }
 }
 
