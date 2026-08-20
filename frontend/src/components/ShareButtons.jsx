@@ -38,7 +38,15 @@ export default function ShareButtons({ title, url, onShare, shareText: shareText
   const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${url}`)}`
 
   return (
-    <div className={`flex flex-wrap gap-3 ${align === 'start' ? 'justify-start' : 'justify-center'}`}>
+    <div
+      className={`flex flex-wrap gap-3 ${
+        align === 'start'
+          ? 'justify-start'
+          : align === 'start-mobile'
+          ? 'justify-start sm:justify-center'
+          : 'justify-center'
+      }`}
+    >
       {/* Only shown on devices/browsers that support the native share sheet */}
       {typeof navigator !== 'undefined' && navigator.share && (
         <button
