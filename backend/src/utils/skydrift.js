@@ -71,11 +71,12 @@ export function randomUnoccupiedSpot(occupied) {
 
 const SPAWN_CHANCE = 0.25 // rolled once per placeTile/catchWindling action, not on a timer — see skydriftSocket.js
 
-// Maybe spawns a new Windling matching the current weather, appending it to
-// the mutable `windlings` array passed in (caller already has the Mongoose
-// doc loaded and will .save() it). Returns the spawned windling, or null.
-export function maybeSpawnWindling(island, now = Date.now()) {
-  if (Math.random() > SPAWN_CHANCE) return null
+// Unconditionally spawns one Windling matching the current weather —
+// separated from the probabilistic maybeSpawnWindling below so a
+// brand-new island can be seeded with something to catch immediately
+// (see skydriftController.js's getMyIsland) instead of a first-time
+// visitor staring at an empty island until a spawn happens to roll.
+export function spawnWindling(island, now = Date.now()) {
   const weather = currentWeather(now)
   const type = WINDLING_TYPES.find((w) => w.weather === weather)
   if (!type) return null
@@ -88,4 +89,12 @@ export function maybeSpawnWindling(island, now = Date.now()) {
   const windling = { id: crypto.randomUUID(), type: type.id, x, y, caughtBy: null, spawnedAt: new Date() }
   island.windlings.push(windling)
   return windling
+}
+
+// Maybe spawns a new Windling matching the current weather, appending it to
+// the mutable `windlings` array passed in (caller already has the Mongoose
+// doc loaded and will .save() it). Returns the spawned windling, or null.
+export function maybeSpawnWindling(island, now = Date.now()) {
+  if (Math.random() > SPAWN_CHANCE) return null
+  return spawnWindling(island, now)
 }

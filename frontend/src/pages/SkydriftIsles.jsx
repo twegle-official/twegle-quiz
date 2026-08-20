@@ -26,7 +26,20 @@ export default function SkydriftIsles() {
   const [selectedDecoration, setSelectedDecoration] = useState(null)
   const [weatherLabel, setWeatherLabel] = useState(() => currentWeather())
   const [isFullscreen, setIsFullscreen] = useState(false)
+  // Shown once per browser — a first-time visitor otherwise lands on a
+  // plain island with no explanation of what to do (reported directly:
+  // "I dont know how to play this game"). Same localStorage-gated,
+  // shown-once pattern as every other one-time UI on the site (e.g. the
+  // streak-reminder toast in badges.js).
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => localStorage.getItem(ONBOARDING_SEEN_KEY) !== 'true'
+  )
   const wrapperRef = useRef(null)
+
+  function dismissOnboarding() {
+    localStorage.setItem(ONBOARDING_SEEN_KEY, 'true')
+    setShowOnboarding(false)
+  }
 
   // Redirecting during render triggers React's cross-component update
   // warning, same reasoning as Account.jsx's identical guard — has to
@@ -152,8 +165,11 @@ export default function SkydriftIsles() {
       </div>
 
       <h1 className="text-2xl font-bold mb-1">🌤️ Skydrift Isles</h1>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
         {isOwner ? 'Your island — decorate it and catch Windlings, forever.' : "You're visiting a friend's island."}
+      </p>
+      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+        🌸 Pick a decoration below, then tap the island to place it. ✨ Tap a glowing Windling to catch it.
       </p>
 
       {error && <p className="text-sm text-red-600 mb-3">{error}</p>}
@@ -176,13 +192,33 @@ export default function SkydriftIsles() {
         </button>
       </div>
 
-      <div ref={wrapperRef} className="bg-gray-900 rounded-2xl overflow-hidden" style={{ height: isFullscreen ? '100vh' : '65vh' }}>
+      <div ref={wrapperRef} className="relative bg-gray-900 rounded-2xl overflow-hidden" style={{ height: isFullscreen ? '100vh' : '65vh' }}>
         <SkydriftCanvas
           island={island}
           selectedDecoration={selectedDecoration}
           onPlaceTile={handlePlaceTile}
           onCatchWindling={handleCatchWindling}
         />
+        {showOnboarding && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 p-4">
+            <div className="max-w-xs w-full rounded-2xl bg-white dark:bg-gray-800 p-5 text-center shadow-xl">
+              <div className="text-4xl mb-2">🌤️🏝️</div>
+              <h2 className="text-lg font-bold mb-3">Welcome to your island!</h2>
+              <ul className="text-sm text-left text-gray-600 dark:text-gray-300 space-y-2 mb-4">
+                <li>🌸 Pick a decoration below, then tap the island to place it</li>
+                <li>✨ Tap a glowing Windling to catch it — it's yours forever</li>
+                <li>🌦️ The weather changes over time, and brings different Windlings</li>
+                <li>🤝 Invite up to 3 friends to build with you, live</li>
+              </ul>
+              <button
+                onClick={dismissOnboarding}
+                className="w-full rounded-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold py-2"
+              >
+                Let's go!
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-2 mt-4">
@@ -222,3 +258,4 @@ export default function SkydriftIsles() {
 }
 
 const PLAYER_COLOR_HEX = { violet: '#7c3aed', sky: '#0284c7', amber: '#d97706', rose: '#e11d48' }
+const ONBOARDING_SEEN_KEY = 'twegleSkydriftOnboardingSeen'

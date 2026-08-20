@@ -1,6 +1,7 @@
 import crypto from 'node:crypto'
 import SkydriftIsland from '../models/SkydriftIsland.js'
 import EndUser from '../models/EndUser.js'
+import { spawnWindling } from '../utils/skydrift.js'
 
 // Skydrift Isles' REST half — creating/joining an island. Everything that
 // happens once you're actually on an island (placing a tile, catching a
@@ -59,11 +60,17 @@ export async function getMyIsland(req, res) {
   if (!island) {
     const user = await EndUser.findById(req.user.id).select('displayName')
     const code = await generateUniqueCode()
-    island = await SkydriftIsland.create({
+    island = new SkydriftIsland({
       code,
       owner: req.user.id,
       players: [{ userId: req.user.id, displayName: user.displayName, color: PLAYER_COLORS[0] }],
     })
+    // Seed 2 Windlings so a brand-new island has something to catch right
+    // away, instead of a first-time visitor staring at an empty island
+    // until placeTile/catchWindling's probabilistic spawn happens to roll.
+    spawnWindling(island)
+    spawnWindling(island)
+    await island.save()
   }
 
   res.json(islandPayload(island))
