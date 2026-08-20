@@ -99,7 +99,7 @@ export function validateQuizPayload({ title, questions, results, type }) {
   // least one question needs a correct answer for scoring to mean anything.
   if (type === 'trivia') {
     if (results?.some((r) => typeof r.minScore !== 'number' || typeof r.maxScore !== 'number')) {
-      return 'Every result needs a numeric min and max score for a trivia quiz'
+      return 'Every result needs a numeric min and max score for a right/wrong quiz'
     }
     if (questions?.length && !questions.some((q) => q.options?.some((o) => o.result === 'correct'))) {
       return 'At least one question needs an answer marked correct'

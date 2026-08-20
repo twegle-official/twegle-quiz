@@ -58,7 +58,7 @@ export async function createGame(req, res) {
   // Only trivia quizzes have a real "correct" answer per question — a
   // personality quiz has no concept of racing to the right answer.
   if (quiz.type !== 'trivia') {
-    return res.status(400).json({ error: 'Only trivia quizzes support Live Quiz Battle' })
+    return res.status(400).json({ error: 'Only right/wrong quizzes support Live Quiz Battle' })
   }
   if (!quiz.questions.length) return res.status(400).json({ error: 'This quiz has no questions' })
 

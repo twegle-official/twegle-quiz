@@ -237,7 +237,7 @@ export default function QuizForm() {
               className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
             >
               <option value="personality">Personality (answers → a result)</option>
-              <option value="trivia">Trivia (right/wrong → a score)</option>
+              <option value="trivia">Right/Wrong (answers scored, not a personality result)</option>
             </select>
           </div>
           <div>
