@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, changed, or removed on the site — for visitors or for admins — this file gets updated the same day, so it always describes what the app actually does *right now*. It is not a history of how things got built (see `APPLICATION_FLOW.md` for that). There is no code and no technical jargon here. If someone with zero computer background reads this from top to bottom, they should come away understanding exactly what Twegle does, what a visitor can do on it, and what an admin can do on it.
 
-**Last updated:** 19 August 2026.
+**Last updated:** 20 August 2026.
 
 ---
 
@@ -42,15 +42,17 @@ The homepage is the hub. From here you can reach every kind of content on the si
 
 ## 1. Quizzes
 
-These are the heart of the site. Most are **personality quizzes** — fun questions like "What's Your Skincare Personality?" or "Which K-pop Idol Position Are You?" — where you answer a short series of questions (usually around 5) and land on a result that describes "you." A few are **trivia quizzes** — like "How Well Do You Know Bollywood?" — where there are actually right and wrong answers and you get a real score at the end.
+These are the heart of the site. Most are **personality quizzes** — fun questions like "What's Your Skincare Personality?" or "Which K-pop Idol Position Are You?" — where you answer a short series of questions (usually around 5) and land on a result that describes "you." A few are **right/wrong quizzes** — like "How Well Do You Know Bollywood?" — where there are actually right and wrong answers and you get a real score at the end.
+
+Before starting a right/wrong quiz, there's a **"🆚 Battle a friend live"** option — it creates a link to send a friend, and once they open it, you both race through the exact same questions at the same time. Whoever gets the most correct fastest wins; there's a "🔁 Battle Again" button to instantly rematch afterward, no new link needed. (Only right/wrong quizzes offer this — a personality quiz has no "correct" answer to race for.)
 
 After finishing a quiz, on the result page you can:
 - **Share the result** — either as a plain link, or as a nicely designed image made just for that result (great for posting to an Instagram or WhatsApp Story).
 - **React** to your result with an emoji (😂 🔥 😭 👍), the same as you can on a Post.
-- **Compare with a friend** — send them a link to take the exact same quiz; once they finish too, you both see a side-by-side "did you match?" screen, which can also be shared as its own image.
+- **Compare with a friend** — send them a link to take the exact same quiz; once they finish too, you both see a side-by-side "did you match?" screen, which can also be shared as its own image. (Unlike Battle above, this is take-it-whenever, not live at the same time.)
 - See a few **"you might also like"** suggestions for other quizzes to try next, plus a small nudge toward something completely different (a game, a joke) so there's always a next thing to do.
 - **Report** the quiz if something about it seems wrong, broken, or inappropriate.
-- Getting a perfect score on a trivia quiz sets off a small confetti celebration.
+- Getting a perfect score on a right/wrong quiz sets off a small confetti celebration.
 
 If you play a quiz you've already taken before, the tile for it on the homepage shows a small green checkmark, so you can tell at a glance what you've already tried.
 
@@ -94,7 +96,7 @@ A few things worth knowing about the live games:
 - **Ludo** is the only game with a real waiting lobby: the person who creates the match picks how many can join (2-4), friends join one at a time, and the creator taps "Start match" once enough people are in.
 - Every one of the 5 live games can also be played **"vs House"** — instant solo play against a built-in computer opponent, using the exact same live-match screen and rules, just with no friend needed.
 - Dice rolls (Snake and Ladder, Ludo) have a little tumble/settle animation, and on the Snake and Ladder board every snake and ladder is now drawn as a connecting line/curve, not just a lone icon, so it's obvious at a glance where you'll end up if you land on one.
-- Winning or losing a live match plays a short sound, and unlocking a badge, leveling up, or a perfect trivia score sets off a small confetti burst — all of this respects your device's "reduce motion" setting if you have it turned on.
+- Winning or losing a live match plays a short sound, and unlocking a badge, leveling up, or a perfect right/wrong-quiz score sets off a small confetti burst — all of this respects your device's "reduce motion" setting if you have it turned on.
 
 On the Games tab you can filter by **Single Player** or **2 Player** to only see games of that kind. There are also two separate leaderboards for games: each game with a leaderboard (2048, Memory Match, Word Guess, Guess the Number, Simon Says, Whack-a-Mole) has its own top-scores list you can add your name to after finishing a round, and separately there's one site-wide **Global Leaderboard** (see "Achievements" below) ranking accounts by their overall level/points across everything on the site, not just games.
 
@@ -120,7 +122,7 @@ If you've done anything in the last 7 days, this page also shows **"🎁 Your Tw
 
 There's also a public **Global Leaderboard** (reachable from the same page) showing the top 100 accounts by points — you need a free account (see below) to appear on it, since a guest's progress only lives in their own browser with no identity to rank.
 
-Separately, a smaller set of **7 Bonus Badges** still exists too — things like beating the computer at a game three times, trying every single game at least once, or getting a perfect score on a trivia quiz. These are a lighter side-collection, not part of the level/points system above. Whenever you unlock a level or a bonus badge, a small notification pops up in the corner of the screen to let you know.
+Separately, a smaller set of **7 Bonus Badges** still exists too — things like beating the computer at a game three times, trying every single game at least once, or getting a perfect score on a right/wrong quiz. These are a lighter side-collection, not part of the level/points system above. Whenever you unlock a level or a bonus badge, a small notification pops up in the corner of the screen to let you know.
 
 ## Your own public profile page (optional)
 

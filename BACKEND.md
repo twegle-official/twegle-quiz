@@ -123,7 +123,7 @@ A fallback for when a user can't use the self-service recovery flow above at all
 
 ## Seeding starter content
 
-- `npm run seed:quizzes` — loads all 25 quizzes: 12 personality-quiz topics × English + Hindi (skincare personality, Bollywood era, aesthetic, procrastination style, chai/coffee order, Korean beauty standard, squishy, blind bag, K-pop idol position, K-pop comeback era, texting personality, monsoon mood), plus 1 English-only trivia quiz ("How Well Do You Know Bollywood?") — each tagged with a category (beauty/entertainment/kpop/lifestyle/fun), published and ready to view.
+- `npm run seed:quizzes` — loads all 25 quizzes: 12 personality-quiz topics × English + Hindi (skincare personality, Bollywood era, aesthetic, procrastination style, chai/coffee order, Korean beauty standard, squishy, blind bag, K-pop idol position, K-pop comeback era, texting personality, monsoon mood), plus 1 English-only right/wrong quiz ("How Well Do You Know Bollywood?") — each tagged with a category (beauty/entertainment/kpop/lifestyle/fun), published and ready to view.
 - `npm run seed:posts` — loads posts across Jokes/Funny Lines/Quotes/Motivational Quotes, written natively in English and Hindi (not translated). (Memes were a content type in this seed until 2026-08-06, when they were removed as a category — see `PENDING_TASKS.md`.)
 - `npm run seed:friendship-quizzes` — loads 4 friendship-quiz templates (2 English + 2 Hindi): "How Well Does Anyone Know Me?" and "How Well Do You Know My Entertainment Taste?" — a person fills in their own real answers, then friends guess.
 - `npm run seed:stories` — loads 8 original short stories (6 English across all 6 categories, 2 Hindi — one moral, one motivational). Every story is original writing, not adapted from any existing published work, which sidesteps the copyright question for the story text itself (see "Stories" below).
@@ -181,13 +181,13 @@ Unlike friendship quizzes (one answer-key, many guessers), this is strictly **1:
 
 The philosophy is also different from friendship quizzes: there, the first person never gets a personal result at all (they only create an answer key). Here, both people take the *real* quiz normally and each gets their own real personality result — person A already saw theirs on the normal Result page before ever generating a compare link, and a friend opening the invite link is never shown person A's result until after they've finished playing themselves (the `GET /compare/:code` response omits person B's fields — and by extension the match outcome — until `personBResultKey` is set), so the friend can't be biased into copying an answer.
 
-## Non-personality (trivia) quizzes
+## Non-personality (right/wrong) quizzes
 
-Every quiz until now was "personality" shaped: each answer option maps to a result *key*, and whichever key gets the most votes across all questions wins. `Quiz.type` (`'personality'` default, or `'trivia'`) adds a second shape — right/wrong questions scored numerically — **without a parallel model or a second quiz-taking flow**, by reusing the exact same data shapes with a different convention:
+Every quiz until now was "personality" shaped: each answer option maps to a result *key*, and whichever key gets the most votes across all questions wins. `Quiz.type` (`'personality'` default, or `'trivia'` — an internal code label, never shown to a user; user-facing text always says "right/wrong quiz") adds a second shape — right/wrong questions scored numerically — **without a parallel model or a second quiz-taking flow**, by reusing the exact same data shapes with a different convention:
 
-- **Options** still just have a `result` string (unchanged schema) — for a trivia quiz, the *only* two values that mean anything are the literal strings `'correct'` and `'incorrect'`, instead of a personality key. This means the frontend's existing per-option tally (`scores[option.result]++`, see `FRONTEND.md`) already produces the right numeric score with zero new tallying logic — `scores.correct` just *is* the count of right answers.
-- **Results** gained two new optional fields, `minScore`/`maxScore` (both `Number`, default `null`) — for a trivia quiz, the result whose range contains the final score is the one shown, instead of whichever key got the most tallied votes. `key` is still required and still becomes part of the shareable result URL, exactly like a personality quiz.
-- `validateQuizPayload` (`utils/validators.js`) branches on `type`: a trivia quiz requires every result to have numeric `minScore`/`maxScore`, and at least one question to have an option marked `'correct'` (otherwise the quiz is unwinnable by construction).
+- **Options** still just have a `result` string (unchanged schema) — for a right/wrong quiz, the *only* two values that mean anything are the literal strings `'correct'` and `'incorrect'`, instead of a personality key. This means the frontend's existing per-option tally (`scores[option.result]++`, see `FRONTEND.md`) already produces the right numeric score with zero new tallying logic — `scores.correct` just *is* the count of right answers.
+- **Results** gained two new optional fields, `minScore`/`maxScore` (both `Number`, default `null`) — for a right/wrong quiz, the result whose range contains the final score is the one shown, instead of whichever key got the most tallied votes. `key` is still required and still becomes part of the shareable result URL, exactly like a personality quiz.
+- `validateQuizPayload` (`utils/validators.js`) branches on `type`: a right/wrong quiz requires every result to have numeric `minScore`/`maxScore`, and at least one question to have an option marked `'correct'` (otherwise the quiz is unwinnable by construction).
 
 One seeded example: `bollywood-trivia` ("How Well Do You Know Bollywood?") — 5 factual questions, 3 score tiers (0-1, 2-3, 4-5 correct).
 
@@ -437,12 +437,13 @@ reads `quiz.sponsor?.name`) never actually rendered even though the field
 saved correctly. A reminder that adding a schema field isn't enough by
 itself when a controller explicitly whitelists response fields — always
 verify a new field through the real public API response, not just the
-admin save.
+admin save. **A second instance of the same bug class was found later** (2026-08-20, during a QA sweep): `searchController.js`'s hardcoded `.select()` projections and its manual response-object mapping had the identical problem for quiz/post search results — fixed the same way, by adding `sponsor` to both the projection and the mapped output.
 
 ## Live Quiz Battle mode
 
-A real-time, timed head-to-head race between two friends through one trivia
-quiz's questions (2026-08-19). Reuses the site's existing live-multiplayer
+A real-time, timed head-to-head race between two friends through one
+right/wrong quiz's questions (2026-08-19 — internally `Quiz.type: 'trivia'`,
+never shown to a user). Reuses the site's existing live-multiplayer
 pattern end-to-end — one socket.io namespace (`/quiz-battle`) + REST
 create/get/join (`quizBattleController.js`/`quizBattleRoutes.js`) + Mongo as
 the source of truth (`QuizBattleGame.js`), same structure as
