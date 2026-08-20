@@ -618,6 +618,28 @@ showing the read-only link
 existing `<ShareButtons>` component reused wholesale — it already has its
 own copy-link button, so no bespoke one needed here.
 
+**Also made globally shareable (2026-08-20, follow-up)** — the owner asked
+why the invite link only lived on the Account page when the site-wide
+"Share Twegle" icons (`ShareSidebar.jsx`'s floating desktop rail,
+`Footer.jsx`'s share block) already exist on every page. Rather than add a
+*second* icon, both components now check `useUserAuth()`'s `session` and
+swap their `url`/`shareText` to the account's own `?ref=` link once logged
+in — the same click that shared the plain site now shares your invite
+link instead, since once you have an account there's no reason a "share
+the site" action shouldn't also count in your favor. `ShareSidebar.jsx`'s
+tooltips change too ("Share Twegle" → "Invite a friend — earn bonus
+points", etc.) but stay necessarily short (a hover-tooltip pill has no
+room for the full sentence). `Footer.jsx`'s share block — previously
+`xl:hidden` (hidden on desktop, where the floating rail already covered
+that space) — now shows at **every** width, specifically so its full
+heading + the same "Share your personal link..." sentence from Account.jsx
+has somewhere to live on desktop too, where the rail's tooltip can't fit
+it. Guests see unchanged behavior in both places (today's generic "Share
+Twegle" text/link). Verified logged-out and logged-in states on both
+desktop (1280px, rail + footer both correct) and mobile (375px, rail
+correctly hidden, footer block shows full text, no overflow), plus dark
+mode.
+
 `utils/levels.js` gained `POINTS_PER_REFERRAL`/`POINTS_PER_REFERRAL_SIGNUP`
 and two new formula terms (mirrored from the backend copy, same
 hand-duplication convention every other constant already follows);
