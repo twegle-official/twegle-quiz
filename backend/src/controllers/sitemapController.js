@@ -12,7 +12,7 @@ import Puzzle from '../models/Puzzle.js'
 //
 // NOTE: this lives at the API's own /sitemap.xml, not under /api. Once
 // deployed with the frontend and backend on separate domains (frontend on
-// Vercel, backend on Render/Railway — see DEVELOPMENT_PLAN.md), a one-time
+// Vercel, backend on Render/Railway — see ORIGINAL_PLAN.md), a one-time
 // hosting-level rewrite is needed so https://<your-frontend-domain>/sitemap.xml
 // proxies to this endpoint — search engines expect the sitemap to live on the
 // same domain as the pages it lists, not on a separate API subdomain.

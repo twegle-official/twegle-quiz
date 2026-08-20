@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 // This is the database shape for one record of someone playing a quiz —
 // which quiz, what result they got, and where they came from.
 // Anonymous by design — no personal data, just enough to power analytics.
-// See "Legal & Compliance" in DEVELOPMENT_PLAN.md for why this stays anonymous.
+// See "Legal & Compliance" in ORIGINAL_PLAN.md for why this stays anonymous.
 const playSessionSchema = new mongoose.Schema(
   {
     quiz: { type: mongoose.Schema.Types.ObjectId, ref: 'Quiz', required: true }, // which quiz was played

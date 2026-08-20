@@ -2,7 +2,7 @@
 
 **This is a living checklist** — both your business/account tasks and the development backlog, in one place. Updated every time something completes, and every time something new comes up in conversation. Check here first for "what's left."
 
-For deeper detail on any development item, see `DEVELOPMENT_PLAN.md` / `APPLICATION_FLOW.md` — `APPLICATION_FLOW.md`'s change log has the full narrative for each entry below (what was tried, what broke, how it was verified); this file keeps the condensed checklist version.
+For deeper detail on any development item, see `ORIGINAL_PLAN.md` / `APPLICATION_FLOW.md` — `APPLICATION_FLOW.md`'s change log has the full narrative for each entry below (what was tried, what broke, how it was verified); this file keeps the condensed checklist version.
 
 ---
 
@@ -40,7 +40,7 @@ For deeper detail on any development item, see `DEVELOPMENT_PLAN.md` / `APPLICAT
 - [ ] **[Look] Translate site-wide CTA button labels in Hindi mode** — added 2026-08-20, found during a QA sweep. In Hindi mode, every card's action-button text ("Take the quiz →", "Play now →", "Fill it in →", "Solve it →", "🔊 Read & Listen →", "Today's Horoscope →") stays hardcoded in English while the actual title/description content is properly translated — a consistent, site-wide gap, not a one-off bug in any single card. Needs a small `language`-aware label per card component (`QuizCard.jsx`, `GameCard.jsx`, `FriendshipQuizCard.jsx`, `PuzzleCard.jsx`, `StoryCard.jsx`, `ZodiacCard.jsx`), all fixed together so no card is left inconsistent with the rest.
 
 ### Suggested (Phase 2), not started
-*Phase 1 (MVP + all its polish/growth work) is complete — the owner confirmed 2026-08-17 there's nothing left to pull forward from it, so the old "Suggested (Phase 1)" section and its now-moot framing are gone; everything left in the backlog lives here. Phase 2 in `DEVELOPMENT_PLAN.md` §4 is end-user accounts plus what accounts unlock — end-user accounts are already live (2026-08-05), so all of this is genuinely buildable, not blocked on a prerequisite that doesn't exist yet. Ordered highest priority first within each column.*
+*Phase 1 (MVP + all its polish/growth work) is complete — the owner confirmed 2026-08-17 there's nothing left to pull forward from it, so the old "Suggested (Phase 1)" section and its now-moot framing are gone; everything left in the backlog lives here. Phase 2 in `ORIGINAL_PLAN.md` §4 is end-user accounts plus what accounts unlock — end-user accounts are already live (2026-08-05), so all of this is genuinely buildable, not blocked on a prerequisite that doesn't exist yet. Ordered highest priority first within each column.*
 
 **User-side**
 - [ ] **Bookmarks / Favorites** — save a quiz, post, or story to revisit later, tied to the account (guests keep working exactly as they do today; this is additive, same as everything else account-related). Highest priority here: small, self-contained, no external dependency, and a clear return-visit hook now that accounts exist.
@@ -56,7 +56,7 @@ For deeper detail on any development item, see `DEVELOPMENT_PLAN.md` / `APPLICAT
 - [ ] **Fix: two different accounts logged in at once in the same browser can leak stats between them** — found 2026-08-20 while verifying Referral rewards, not user-reported. `localStorage`'s `twegleStats` key is a single global key, not scoped per-account — if two different accounts are ever logged into two different tabs of the same browser at the same time, each one's 20-second background stats sync can read the *other* account's locally-cached numbers and merge them in (via the existing `Math.max`/OR merge in `statsSync.js`), inflating that field going forward for both. This is a rare scenario in real usage (a referrer and a new friend are essentially always on separate devices — the two roles this feature is actually built around), and the server-authoritative referral fields specifically were verified immune to it (only their unauthoritative *cached copy* could drift, self-healing on the next clean login). Every other stat field, though, has no such protection and could drift the same way for anyone who keeps two Twegle accounts open in one browser (e.g. a shared family computer). Low priority given how narrow the trigger is, but a real latent bug — proper fix would be namespacing `twegleStats` (and the other synced keys) by account/token rather than one shared key.
 
 ### Deferred on purpose (not needed now)
-- [ ] Native mobile app — a real App Store/Play Store app, not the current web app. Only worth considering later, if the web version proves traction first (see `DEVELOPMENT_PLAN.md`'s Phase 3).
+- [ ] Native mobile app — a real App Store/Play Store app, not the current web app. Only worth considering later, if the web version proves traction first (see `ORIGINAL_PLAN.md`'s Phase 3).
 - [ ] Third language — no rebuild needed when requested, purely a content task
 - [ ] Real ad code / real affiliate links — blocked on the AdSense/affiliate account tasks above, not code work
 

@@ -504,7 +504,7 @@ export function getHoroscopeShareUrl(sign, period, language) {
 }
 
 // A random id kept in this browser only — never sent alongside any personal
-// information. See "Legal & Compliance" in DEVELOPMENT_PLAN.md.
+// information. See "Legal & Compliance" in ORIGINAL_PLAN.md.
 function getAnonymousId() {
   let id = localStorage.getItem('anonymousId')
   if (!id) {

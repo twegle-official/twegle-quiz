@@ -1,8 +1,13 @@
-# Twegle Quiz — Development Plan
+# Twegle Quiz — Original Plan
 
-**Status:** Planning
+**Status:** Historical — the original one-time blueprint written before the
+site was built. Frozen on purpose, not a living document: everything
+current is tracked in `HOW_TWEGLE_WORKS.md`, `APPLICATION_FLOW.md`, and
+`PENDING_TASKS.md` instead (confirmed 2026-08-20 that nothing here exists
+only here). Kept as a record of the original thinking, not updated as the
+app changes.
 **Owner:** Ashish (non-technical, product/business owner)
-**Last updated:** 2026-07-30 (latest)
+**Last updated:** 2026-07-30 (original), renamed from `DEVELOPMENT_PLAN.md` 2026-08-20
 
 ## 1. Goal
 

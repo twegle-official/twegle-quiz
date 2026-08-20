@@ -25,7 +25,7 @@ Copy `.env.example` to `.env` and fill in real values before deploying anywhere 
 
 Locally, this project uses the **MongoDB you already have installed and running** (Windows service, `127.0.0.1:27017`) — set in `.env` as `MONGODB_URI=mongodb://127.0.0.1:27017/twegle-quiz-dev`. This is a real, persistent database: data survives server restarts normally.
 
-**For a real deployment** (once the site goes live), replace that with a MongoDB Atlas connection string (see "Non-Technical Tasks" in `DEVELOPMENT_PLAN.md`) — a local Windows machine isn't reachable by the internet, so production needs a cloud-hosted database.
+**For a real deployment** (once the site goes live), replace that with a MongoDB Atlas connection string (see "Non-Technical Tasks" in `ORIGINAL_PLAN.md`) — a local Windows machine isn't reachable by the internet, so production needs a cloud-hosted database.
 
 **If `MONGODB_URI` is left blank**, the server falls back to a temporary in-memory MongoDB so it still runs without any setup — but that fallback does not reliably persist data across restarts (see the note below), so the real local MongoDB is the better option whenever it's available, which it now is.
 
@@ -41,7 +41,7 @@ Locally, this project uses the **MongoDB you already have installed and running*
    - **analyst** — read-only: can view quizzes and analytics, cannot create/edit/delete anything.
 4. Tested directly with real HTTP requests: login, viewing as analyst (allowed), creating a quiz as analyst (blocked, 403), managing admins as analyst (blocked, 403), and missing/invalid tokens (401).
 
-End users (quiz takers) never *have to* authenticate — every feature works fully as a guest, see the "Access Model" in `DEVELOPMENT_PLAN.md`. They can optionally create an account (see below); this is entirely separate from admin auth.
+End users (quiz takers) never *have to* authenticate — every feature works fully as a guest, see the "Access Model" in `ORIGINAL_PLAN.md`. They can optionally create an account (see below); this is entirely separate from admin auth.
 
 ## End-user accounts (optional, no email/phone collected)
 
@@ -583,6 +583,6 @@ backend/src/
 ## What's next
 
 - The admin panel frontend and the public-site API wiring are both done — see `FRONTEND.md`.
-- Every item from the original "strengthen before launch" list (see `DEVELOPMENT_PLAN.md` §12) is now done, including clone, activity log, and scheduled publishing.
-- **Deploy somewhere public** — right now everything only runs on this machine. Going live means: MongoDB Atlas (replacing the local MongoDB), a host for this backend (Render/Railway), and a host for the frontend (Vercel) — all one-time setup steps already listed in `DEVELOPMENT_PLAN.md`. Remember the sitemap hosting-rewrite step (see "SEO" above) once that happens.
+- Every item from the original "strengthen before launch" list (see `ORIGINAL_PLAN.md` §12) is now done, including clone, activity log, and scheduled publishing.
+- **Deploy somewhere public** — right now everything only runs on this machine. Going live means: MongoDB Atlas (replacing the local MongoDB), a host for this backend (Render/Railway), and a host for the frontend (Vercel) — all one-time setup steps already listed in `ORIGINAL_PLAN.md`. Remember the sitemap hosting-rewrite step (see "SEO" above) once that happens.
 - Content variety is inherently ongoing — more quiz topics, more posts, more friendship-quiz templates, whenever there's an appetite for them.
