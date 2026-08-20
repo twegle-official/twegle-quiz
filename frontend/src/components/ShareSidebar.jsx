@@ -74,26 +74,26 @@ export default function ShareSidebar() {
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={session ? 'Invite on WhatsApp' : 'Share on WhatsApp'}
+          aria-label={session ? 'Invite on WhatsApp — earn bonus points' : 'Share on WhatsApp'}
           className="w-11 h-11 rounded-full bg-green-500 text-white shadow-lg flex items-center justify-center text-lg hover:bg-green-600 transition-colors"
         >
           💬
         </a>
         <span className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-gray-900 text-white text-xs font-medium px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {session ? 'Invite on WhatsApp' : 'Share on WhatsApp'}
+          {session ? 'Invite on WhatsApp — earn bonus points' : 'Share on WhatsApp'}
         </span>
       </div>
       {/* Copy link icon */}
       <div className="group relative">
         <button
           onClick={handleCopyLink}
-          aria-label={session ? 'Copy invite link' : 'Copy link'}
+          aria-label={session ? 'Copy invite link — earn bonus points' : 'Copy link'}
           className="w-11 h-11 rounded-full bg-gray-800 text-white shadow-lg flex items-center justify-center text-base hover:bg-gray-900 transition-colors"
         >
           {copied ? '✓' : '🔗'}
         </button>
         <span className="pointer-events-none absolute left-full ml-2 top-1/2 -translate-y-1/2 whitespace-nowrap rounded-md bg-gray-900 text-white text-xs font-medium px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {copied ? 'Copied!' : session ? 'Copy invite link' : 'Copy link'}
+          {copied ? 'Copied!' : session ? 'Copy invite link — earn bonus points' : 'Copy link'}
         </span>
       </div>
     </div>
