@@ -590,6 +590,55 @@ room/code with no new link; a mid-battle refresh resumed on the correct
 question; a personality quiz correctly shows no Battle button; dark mode
 and mobile (375px) both checked.
 
+## Referral rewards
+
+Top pick off the Site Polish & Growth backlog (2026-08-20). A new
+`utils/referral.js` (`captureReferralCode()`/`getStoredReferralCode()`/
+`clearStoredReferralCode()`) reads `?ref=<code>` off the URL and holds it in
+`localStorage` (first-touch — never overwrites an existing stored code)
+until signup, however many pages/minutes that takes — deliberately not the
+one-hop React Router `navigate(state)` handoff the quiz-compare invite code
+uses, since that doesn't survive a reload. `captureReferralCode()` is called
+once in `App.jsx`'s `PublicSite()` mount effect (alongside the existing
+`checkStreakReminders()` call) so a link landing on *any* public route gets
+captured, not just the homepage.
+
+`UserAuthContext.jsx`'s `signup()` reads the stored code, passes it to
+`userApi.js`'s `signupUser(username, password, displayName, referralCode)`,
+and clears it after (consumed on the one attempt regardless of outcome — an
+invalid code is silently ignored server-side, never blocks signup).
+`Signup.jsx` itself needed no changes — the whole thing is invisible/
+automatic from the visitor's side, same as the recovery-code flow not
+asking for anything either.
+
+New "Invite friends" section on `Account.jsx`, added right after the
+existing "Public Profile" block (same divider/heading/description style),
+showing the read-only link
+(`${window.location.origin}/?ref=${session.user.referralCode}`) via the
+existing `<ShareButtons>` component reused wholesale — it already has its
+own copy-link button, so no bespoke one needed here.
+
+`utils/levels.js` gained `POINTS_PER_REFERRAL`/`POINTS_PER_REFERRAL_SIGNUP`
+and two new formula terms (mirrored from the backend copy, same
+hand-duplication convention every other constant already follows);
+`utils/badges.js` gained two entries in `BADGES` ("🤝 Twegle Ambassador" /
+"🎉 Warm Welcome"). Both read `stats.referralsGiven`/`stats.referralSignupBonus`
+— fields this browser never sets itself (only the backend ever does, during
+someone else's signup), so `utils/statsSync.js`'s `mergeStats()` needed both
+fields explicitly added to its merge list — that function only passes
+through fields it names, so without this a real server-side referral credit
+would never have survived into this page's local-storage-only view.
+
+**Real bug found during verification, not fixed as part of this task**:
+the `twegleStats` localStorage key is global, not scoped per account — two
+different accounts logged into two tabs of the *same* browser at once leak
+cached stats into each other via the `Math.max`/OR merge above, since each
+account's 20-second background sync reads/writes that same shared key. The
+server-authoritative referral fields self-heal on the next clean login
+(confirmed directly against the database); every other stat field has no
+such protection. Narrow trigger, doesn't affect the realistic referrer/
+friend-on-separate-devices case — logged to `PENDING_TASKS.md`.
+
 ## FAQ / Help page
 
 `/faq` (`Faq.jsx`) — a static, hand-written click-to-expand accordion of 10 common questions (accounts, cost, privacy, streaks, badges, languages, reporting content, kid-appropriateness), linked from the footer's "Explore" column. No backend involved — the Q&A content lives directly in the component, same reasoning as the legal pages (Privacy/Terms), since it changes rarely and doesn't need admin editing. Renders a `FAQPage` JSON-LD block (`<script type="application/ld+json">`, same pattern `Home.jsx` already uses for its `WebSite` schema) so Google can show the FAQ rich-snippet treatment directly in search results. Added to the sitemap (`sitemapController.js`) alongside About/Privacy/Terms.

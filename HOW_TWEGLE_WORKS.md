@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, changed, or removed on the site — for visitors or for admins — this file gets updated the same day, so it always describes what the app actually does *right now*. It is not a history of how things got built (see `APPLICATION_FLOW.md` for that). There is no code and no technical jargon here. If someone with zero computer background reads this from top to bottom, they should come away understanding exactly what Twegle does, what a visitor can do on it, and what an admin can do on it.
 
-**Last updated:** 20 August 2026.
+**Last updated:** 20 August 2026 (latest — Referral rewards added).
 
 ---
 
@@ -122,7 +122,11 @@ If you've done anything in the last 7 days, this page also shows **"🎁 Your Tw
 
 There's also a public **Global Leaderboard** (reachable from the same page) showing the top 100 accounts by points — you need a free account (see below) to appear on it, since a guest's progress only lives in their own browser with no identity to rank.
 
-Separately, a smaller set of **7 Bonus Badges** still exists too — things like beating the computer at a game three times, trying every single game at least once, or getting a perfect score on a right/wrong quiz. These are a lighter side-collection, not part of the level/points system above. Whenever you unlock a level or a bonus badge, a small notification pops up in the corner of the screen to let you know.
+Separately, a smaller set of **9 Bonus Badges** still exists too — things like beating the computer at a game three times, trying every single game at least once, getting a perfect score on a right/wrong quiz, or inviting a friend (see "Invite friends" below). These are a lighter side-collection, not part of the level/points system above. Whenever you unlock a level or a bonus badge, a small notification pops up in the corner of the screen to let you know.
+
+## Invite friends (referral rewards)
+
+If you have a free account, "My Account" has an **Invite friends** section with your own personal link. Send it to a friend, and if they sign up through it, you both get a reward: bonus points plus a permanent badge — "🤝 Twegle Ambassador" for you, "🎉 Warm Welcome" for them. There's no limit to how many friends you can invite. The link works whether your friend signs up right away or browses the site for a while first — it's remembered on their device until they actually create an account.
 
 ## Your own public profile page (optional)
 

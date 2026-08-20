@@ -484,6 +484,56 @@ not new scoring wiring.
 `startedAt` to now, keeping the same room/code — same pattern as every other
 game's rematch, no new invite link needed.
 
+## Referral rewards
+
+A personal invite link (2026-08-20) that awards both sides — a one-time
+points bonus plus a permanent badge each — once a friend actually signs up
+through it. `EndUser` gained four fields: `referralCode` (unique, generated
+unconditionally at signup via `generateReferralCode()` in
+`endUserAuthController.js` — `crypto.randomBytes(4).toString('base64url')`,
+retried on collision, so it's never absent and needs no sparse index, unlike
+`handle`'s earlier lesson), `referredBy` (ObjectId ref, set once at signup),
+and `referralCount`/`referralWelcomeBonus` (the actual reward facts).
+
+**The core design problem**: points/badges are always recomputed live from
+`EndUser.stats.stats` (a raw-counters object, see `levels.js`/`badges.js`),
+never stored — and `updateStats` **overwrites that whole blob wholesale**
+on every client push, no server-side merge. Storing the referral credit as
+just another key inside that same blob would have been genuinely racy: the
+referrer's own browser could push its own (not-yet-synced) stale copy
+moments after the server credits a referral, silently wiping the credit
+before that browser's next pull-and-merge ever ran. Fixed by keeping
+`referralCount`/`referralWelcomeBonus` as **dedicated top-level fields**,
+written only by `signup()`, and overlaid into the computed stats object at
+every read site — `getStats` (own account), `getPublicProfile`
+(`endUserController.js`), and `getLevelLeaderboard`
+(`leaderboardController.js`) — instead of ever trusting whatever a client
+last pushed for those two keys. This makes them immune to the overwrite
+race by construction, at the cost of computing them slightly differently
+from every other stat (which *are* trusted from the client blob).
+
+`signup()` resolves an optional `referralCode` in the request body to a
+real account (silently ignored if unknown/invalid — never blocks signup),
+sets the new user's `referredBy`/`referralWelcomeBonus: true`, and
+`$inc`s the referrer's `referralCount`. `POINTS_PER_REFERRAL` (30, per
+referral, referrer) and `POINTS_PER_REFERRAL_SIGNUP` (15, one-time, new
+signee) in `levels.js`; two new entries in `badges.js`'s `BADGES` array
+("🤝 Twegle Ambassador" / "🎉 Warm Welcome"), same shape as every existing
+badge. Both `levels.js` and `badges.js` changes mirrored into the frontend's
+hand-duplicated copies, same convention those files already document.
+
+**Real bug found during verification, not fixed as part of this task**:
+`localStorage`'s `twegleStats` key (frontend) is global, not scoped per
+account — two different accounts logged into two tabs of the *same*
+browser at once can leak each other's cached stats via the existing
+`Math.max`/OR merge in `statsSync.js`, since each account's 20-second
+background sync reads and writes that same shared key. The
+server-authoritative referral fields specifically self-heal on the next
+clean login (confirmed directly), but every other stat field has no such
+protection. Doesn't affect the realistic case this feature is built around
+(a referrer and a new friend are essentially always on separate devices) —
+logged to `PENDING_TASKS.md` as a low-priority fix for later.
+
 ## Folder structure
 
 ```
