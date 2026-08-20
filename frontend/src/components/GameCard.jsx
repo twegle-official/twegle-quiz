@@ -15,11 +15,13 @@ function formatPlays(n) {
 export default function GameCard({ game, filterMode }) {
   const engagementText = engagementLabel(game.totalPlays) || `${formatPlays(game.totalPlays)} played`
   // Games that support both modes (currently just Tic-Tac-Toe) default to
-  // their single-player board — but arriving via the "2 Player" homepage
-  // filter means the visitor already chose that mode, so skip straight to
-  // the challenge form instead of making them find the toggle themselves.
+  // their single-player board — but arriving via the "2 Player" or
+  // "Multiplayer" homepage filter means the visitor already chose that
+  // mode, so skip straight to the challenge form instead of making them
+  // find the toggle themselves. Both filters open the same form — Ludo's
+  // own "Max players" selector inside it is what actually picks 2 vs 3-4.
   const to =
-    filterMode === 'friend' && game.players?.includes('friend')
+    (filterMode === 'friend' || filterMode === 'multiplayer') && game.players?.includes(filterMode)
       ? `/games/${game.slug}?mode=friend`
       : `/games/${game.slug}`
 

@@ -4,17 +4,18 @@
 // game means adding an entry here, a component in this folder, and a case in
 // Game.jsx's switch.
 //
-// `players` marks which modes a game supports — 'single' (vs AI/house) and/or
-// 'friend' (a real second player, live or async). Most games are single-only;
-// Tic-Tac-Toe and Connect Four support both (AI by default, plus "Challenge
-// a friend"). Used to power the Games tab's category filter on the homepage.
+// `players` marks which modes a game supports — 'single' (vs AI/house),
+// 'friend' (a real second player, live or async), and/or 'multiplayer' (3-4
+// real players live in one room). Most games are single-only; Tic-Tac-Toe
+// and Connect Four support both single and friend. Used to power the Games
+// tab's category filter on the homepage.
 // Each entry below is one game shown on the homepage's Games tab:
 // - slug: the web address for the game (e.g. /games/tic-tac-toe)
 // - title: the name shown to players
 // - emoji: the icon shown on the game's card
 // - gradient: the card's background color
 // - description: the short blurb shown under the title
-// - players: which modes are offered — 'single' (vs the house) and/or 'friend' (vs a real person)
+// - players: which modes are offered — 'single' (vs the house), 'friend' (vs one real person), and/or 'multiplayer' (3-4 real players live)
 export const GAMES = [
   {
     slug: 'tic-tac-toe',
@@ -54,7 +55,7 @@ export const GAMES = [
     emoji: '🎲',
     gradient: 'from-fuchsia-500 to-cyan-400',
     description: 'Race your tokens home — roll, capture, and get all 4 home first. 2-4 players, live.',
-    players: ['single', 'friend'],
+    players: ['single', 'friend', 'multiplayer'],
   },
   {
     slug: 'rock-paper-scissors',

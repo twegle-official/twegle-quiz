@@ -61,6 +61,7 @@ const GAME_CATEGORIES = [
   { key: 'all', label: 'All' },
   { key: 'single', label: 'Single Player', emoji: '🧑' },
   { key: 'friend', label: '2 Player', emoji: '🤝' },
+  { key: 'multiplayer', label: 'Multiplayer', emoji: '👥' },
 ]
 
 const QUIZ_CATEGORIES = [
