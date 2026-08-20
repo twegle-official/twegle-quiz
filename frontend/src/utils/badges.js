@@ -28,15 +28,18 @@ export function getStats() {
       reactionsGiven: 0,
       sharesGiven: 0,
       perfectTrivia: false,
-      // referralsGiven/referralSignupBonus are server-authoritative — never
-      // written locally, only ever arrive here via statsSync.js pulling and
-      // merging the account's server copy (see EndUser.js/endUserAuthController.js).
+      // referralsGiven/referralSignupBonus/skydrift* are server-authoritative
+      // — never written locally, only ever arrive here via statsSync.js
+      // pulling and merging the account's server copy (see
+      // EndUser.js/endUserAuthController.js).
       referralsGiven: 0,
       referralSignupBonus: false,
+      skydriftTilesPlaced: 0,
+      skydriftWindlingsCaught: 0,
       ...JSON.parse(localStorage.getItem(STATS_KEY)),
     }
   } catch {
-    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false }
+    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false, skydriftTilesPlaced: 0, skydriftWindlingsCaught: 0 }
   }
 }
 
@@ -68,6 +71,10 @@ export const BADGES = [
   // referralCount/referralWelcomeBonus and statsSync.js's mergeStats.
   { id: 'twegle-ambassador', emoji: '🤝', label: 'Twegle Ambassador', description: 'Invite a friend who joins Twegle.', check: (s) => (s.referralsGiven || 0) >= 1, progress: (s) => `${Math.min(s.referralsGiven || 0, 1)}/1` },
   { id: 'warm-welcome', emoji: '🎉', label: 'Warm Welcome', description: "Joined Twegle through a friend's invite.", check: (s) => !!s.referralSignupBonus, progress: (s) => (s.referralSignupBonus ? '1/1' : '0/1') },
+  // Also server-authoritative, same reasoning/source as the two referral
+  // badges above — see EndUser.js's skydriftTilesPlaced/skydriftWindlingsCaught.
+  { id: 'windling-whisperer', emoji: '🌤️', label: 'Windling Whisperer', description: 'Catch your first Windling on Skydrift Isles.', check: (s) => (s.skydriftWindlingsCaught || 0) >= 1, progress: (s) => `${Math.min(s.skydriftWindlingsCaught || 0, 1)}/1` },
+  { id: 'island-architect', emoji: '🏝️', label: 'Island Architect', description: 'Place 25 decorations on a Skydrift island.', check: (s) => (s.skydriftTilesPlaced || 0) >= 25, progress: (s) => `${Math.min(s.skydriftTilesPlaced || 0, 25)}/25` },
 ]
 
 function unlockedIds(stats) {

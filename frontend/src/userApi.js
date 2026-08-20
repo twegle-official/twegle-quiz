@@ -65,3 +65,10 @@ export const fetchStats = (token) => request('/users/me/stats', { token })
 // Saves this device's local stats up to the account, merging with the server's copy.
 export const pushStats = (token, stats) =>
   request('/users/me/stats', { token, method: 'PUT', body: { stats } })
+
+// Fetches (or lazily creates, on first visit) the logged-in account's own Skydrift island.
+export const fetchMySkydriftIsland = (token) => request('/skydrift/my-island', { token })
+
+// Joins a friend's Skydrift island by its invite code.
+export const joinSkydriftIsland = (token, code) =>
+  request(`/skydrift/join/${code}`, { token, method: 'POST' })

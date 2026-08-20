@@ -278,14 +278,20 @@ export async function getStats(req, res) {
     return res.status(404).json({ error: 'Account not found' })
   }
   const stats = user.stats || {}
-  // referralCount/referralWelcomeBonus are server-authoritative (see
-  // EndUser.js) — always overlay the true value here rather than trusting
-  // whatever's sitting in the nested counters blob, so a stale/absent value
-  // there never masks a real referral credit.
+  // referralCount/referralWelcomeBonus/skydrift* are server-authoritative
+  // (see EndUser.js) — always overlay the true value here rather than
+  // trusting whatever's sitting in the nested counters blob, so a
+  // stale/absent value there never masks a real credit.
   res.json({
     stats: {
       ...stats,
-      stats: { ...(stats.stats || {}), referralsGiven: user.referralCount, referralSignupBonus: user.referralWelcomeBonus },
+      stats: {
+        ...(stats.stats || {}),
+        referralsGiven: user.referralCount,
+        referralSignupBonus: user.referralWelcomeBonus,
+        skydriftTilesPlaced: user.skydriftTilesPlaced,
+        skydriftWindlingsCaught: user.skydriftWindlingsCaught,
+      },
     },
   })
 }

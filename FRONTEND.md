@@ -661,6 +661,72 @@ server-authoritative referral fields self-heal on the next clean login
 such protection. Narrow trigger, doesn't affect the realistic referrer/
 friend-on-separate-devices case — logged to `PENDING_TASKS.md`.
 
+## Skydrift Isles (2026-08-20)
+
+A brand-new, original live multiplayer game — own dedicated page/route
+(`SkydriftIsles.jsx`, `/games/skydrift-isles`), bypassing `Game.jsx`'s
+generic per-slug "Challenge a friend" flow entirely, since that flow
+assumes anonymous/guest play and a disposable match rather than a
+permanent, account-owned world. Gated the exact same way `Account.jsx`
+gates itself: `useEffect(() => { if (!session) navigate('/login') }, [session])`.
+Arriving with `?code=...` (a friend's invite link) joins their island
+instead of loading your own — `SkydriftIsles.jsx` branches on that at
+load time between `fetchMySkydriftIsland`/`joinSkydriftIsland`
+(`userApi.js`, both auth-token calls, not `api.js`'s anonymous-traffic
+style).
+
+**`games/SkydriftCanvas.jsx`** — the site's first `<canvas>`-rendered game
+board (every other board here is CSS grid/divs, see `registry.js`'s
+`requiresAccount` comment). Free-form placement needs it: tiles/Windlings
+sit at arbitrary normalized (0-1) positions, not fixed grid cells. A
+`ResizeObserver` keeps the canvas's backing resolution matched to its
+container (and to `devicePixelRatio`) on every resize, including entering/
+exiting fullscreen — normalized coordinates mean a resize never reflows
+anything already placed. Interaction is deliberately **tap-only, no
+drag**: pick a decoration from the palette, tap a spot to place it; tap a
+visible Windling to catch it — simple point-in-circle hit-testing, and it
+works identically on mobile touch and desktop click with no separate
+touch/drag code path. A `requestAnimationFrame` loop only drives cosmetic
+idle motion (Windlings gently bobbing); gameplay state only ever changes
+via `islandState` socket updates.
+
+**`utils/skydrift.js`** — hand-mirrored copy of the backend's weather/
+Windling/decoration tables (same duplication convention as `levels.js`/
+`badges.js`). `currentWeather(now)` computes the same deterministic,
+clock-derived value the server does (10-minute cycle through Sunny/Rainy/
+Windy/Frosty/Aurora) so every connected client's background/label agrees
+with no round trip.
+
+**`utils/socket.js`** gained `skydriftSocket` — the first socket on the
+site whose `auth` option is a **callback**, not a fixed object, so it
+re-reads the current login token from `localStorage` fresh on every
+`connect()` call rather than baking in whatever token existed when the
+module first loaded. This is also the first namespace the backend
+actually authenticates (see `BACKEND.md`'s Skydrift Isles section) — every
+other game's socket trusts a bare role string with no auth at all.
+
+**`components/GameCard.jsx`** gained a `requiresAccount`-aware branch — a
+guest sees "Log in to play →" instead of "Play now →" and the card links
+straight to `/login` instead of the game, so clicking through doesn't just
+bounce them back out via the game page's own redirect. First (and so far
+only) game to set `requiresAccount: true` in `registry.js`.
+
+**Points/badges**: `skydriftTilesPlaced`/`skydriftWindlingsCaught` are
+server-authoritative `EndUser` fields (like `referralCount`), so
+`getStats()` (`badges.js`) seeds them at 0 with a comment explaining
+they're never written locally, and `statsSync.js`'s `mergeStats` merges
+them with `Math.max` — same pattern as the two referral fields, added at
+the same time for the same reason (an unlisted key silently drops on
+merge). Two new badges ("🌤️ Windling Whisperer," "🏝️ Island Architect")
+in `utils/badges.js`, `POINTS_PER_SKYDRIFT_TILE`/`_WINDLING` (capped) in
+`utils/levels.js`, both hand-mirrored from the backend copies.
+
+Deliberately scoped small for V1 (shared island + weather cycle + catch-
+and-decorate loop only) — the full combinatorial "Sky Events" system from
+the original pitch, more weather/rarity variety, and a companion
+boys-first-styled game are all captured in `PENDING_TASKS.md`'s Skydrift
+Isles Phase 2 backlog rather than built now.
+
 ## FAQ / Help page
 
 `/faq` (`Faq.jsx`) — a static, hand-written click-to-expand accordion of 10 common questions (accounts, cost, privacy, streaks, badges, languages, reporting content, kid-appropriateness), linked from the footer's "Explore" column. No backend involved — the Q&A content lives directly in the component, same reasoning as the legal pages (Privacy/Terms), since it changes rarely and doesn't need admin editing. Renders a `FAQPage` JSON-LD block (`<script type="application/ld+json">`, same pattern `Home.jsx` already uses for its `WebSite` schema) so Google can show the FAQ rich-snippet treatment directly in search results. Added to the sitemap (`sitemapController.js`) alongside About/Privacy/Terms.

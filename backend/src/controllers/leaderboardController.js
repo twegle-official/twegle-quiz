@@ -15,16 +15,22 @@ export async function getLevelLeaderboard(req, res) {
   // Only active (non-disabled) accounts, and only the fields safe to show publicly
   const users = await EndUser.find(
     { status: 'active' },
-    'displayName avatar stats referralCount referralWelcomeBonus'
+    'displayName avatar stats referralCount referralWelcomeBonus skydriftTilesPlaced skydriftWindlingsCaught'
   ).lean()
 
   const ranked = users
     .map((u) => {
       const quizStreakCount = (u.stats?.quizStreak || u.stats?.streak)?.count
       const puzzleStreakCount = u.stats?.puzzleStreak?.count
-      // Overlay the server-authoritative referral facts, same reasoning as
-      // getPublicProfile (endUserController.js) — see EndUser.js.
-      const stats = { ...(u.stats?.stats || {}), referralsGiven: u.referralCount, referralSignupBonus: u.referralWelcomeBonus }
+      // Overlay the server-authoritative referral/skydrift facts, same
+      // reasoning as getPublicProfile (endUserController.js) — see EndUser.js.
+      const stats = {
+        ...(u.stats?.stats || {}),
+        referralsGiven: u.referralCount,
+        referralSignupBonus: u.referralWelcomeBonus,
+        skydriftTilesPlaced: u.skydriftTilesPlaced,
+        skydriftWindlingsCaught: u.skydriftWindlingsCaught,
+      }
       const points = calculatePoints(stats, quizStreakCount, puzzleStreakCount)
       const { index, level } = getLevelInfo(points)
       return {

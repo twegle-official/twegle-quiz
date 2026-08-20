@@ -534,6 +534,74 @@ protection. Doesn't affect the realistic case this feature is built around
 (a referrer and a new friend are essentially always on separate devices) —
 logged to `PENDING_TASKS.md` as a low-priority fix for later.
 
+## Skydrift Isles (2026-08-20)
+
+A brand-new, original live multiplayer game — every account owns one
+permanent floating island; up to 3 friends can join and build on it
+together, live, with no win/lose condition. Reuses the site's proven live-
+game architecture (REST create/join, Socket.IO for live actions, Mongo as
+the sole source of truth, no in-memory server state, same
+`crypto.randomBytes(6).toString('base64url')` room-code pattern as
+`ludoController.js`) with three deliberate departures, all direct requests:
+
+1. **Account-gated.** `SkydriftIsland.js`'s `owner` field is a required,
+   unique `ObjectId` ref to `EndUser` — one island per account, not a
+   disposable guest room-code match. `skydriftRoutes.js` applies
+   `requireUserAuth` to both REST routes; `skydriftSocket.js` is the
+   site's **first socket namespace that actually authenticates** —
+   `nsp.use(...)` verifies the JWT at handshake time (mirroring
+   `middleware/userAuth.js`'s REST check exactly: `type === 'user'`,
+   account not disabled), attaching `socket.data.userId`. Every other live
+   game trusts a bare role string with no binding to a specific socket;
+   here identity has to be a verified account id, since the island is
+   permanently tied to one.
+2. **Canvas-rendered.** Free-form placement (`tiles`/`windlings` at
+   normalized 0-1 `x`/`y`, not fixed grid cells) has no precedent on this
+   site — every other board is CSS grid/divs. Rendering itself lives
+   entirely on the frontend (`SkydriftCanvas.jsx`); the backend just
+   stores/validates/broadcasts the normalized positions.
+3. Weather is **derived, never stored** — `utils/skydrift.js`'s
+   `currentWeather(now)` cycles through 5 types (Sunny/Rainy/Windy/Frosty/
+   Aurora) on a fixed 10-minute schedule purely from `Date.now()`, so every
+   connected client and the server agree with no scheduled job and nothing
+   to desync. Each `WINDLING_TYPES` entry only spawns while its matching
+   weather is active.
+
+`skydriftController.js`'s `getMyIsland` lazily creates the caller's island
+on first visit (no separate "create" step, matching every other game's
+zero-friction single-player entry). `joinIsland` adds a visiting player
+(max 4 total, cleanly rejected past that) and — since the join is REST but
+the owner may already be sitting in the socket room — broadcasts over the
+socket the same way `ludoController.js`'s `joinGame` does. Once inside,
+`skydriftSocket.js`'s `placeTile`/`catchWindling` handlers validate room
+membership, mutate-and-save the Mongo doc, `$inc` the placer/catcher's
+`EndUser` counter, roll a chance to spawn a new Windling
+(`maybeSpawnWindling`, no separate timer — rolled inline on every action,
+same "no in-memory server state" property Ludo relies on), then broadcast
+the full `islandState` to the room. No `disconnect` handler, consistent
+with every other live game.
+
+**Points/badges**, wired the same way Referral rewards was: two new
+server-authoritative `EndUser` counters (`skydriftTilesPlaced`,
+`skydriftWindlingsCaught` — incremented directly by the socket handlers,
+never trusted from a client's wholesale `stats` push), overlaid into the
+computed stats object at every read site (`getStats`, `getPublicProfile`,
+`getLevelLeaderboard`), same override reasoning as `referralCount`.
+`POINTS_PER_SKYDRIFT_TILE`/`POINTS_PER_SKYDRIFT_WINDLING` in `levels.js`,
+both capped (`MAX_COUNTED_SKYDRIFT_TILES`/`_WINDLINGS`) like every other
+infinitely-repeatable action, to stop one binge session from skipping
+straight to the top level. Two new badges in `badges.js` ("🌤️ Windling
+Whisperer," "🏝️ Island Architect"); `GAMES_COUNT` bumped 14→15 for the
+"Tried Every Game" badge. All mirrored into the frontend's hand-duplicated
+copies of `levels.js`/`badges.js`, same convention those files already
+document.
+
+Deliberately scoped small for V1 — the full "combine Windling types for
+rare Sky Events" system from the original pitch is intentionally deferred
+(see `PENDING_TASKS.md`'s Skydrift Isles Phase 2 backlog), keeping this
+build to a proven, shippable core loop (catch, decorate, endless) rather
+than the whole combinatorial vision at once.
+
 ## Folder structure
 
 ```

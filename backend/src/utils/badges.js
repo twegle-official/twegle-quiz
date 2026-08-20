@@ -9,7 +9,7 @@
 // GAMES_COUNT mirrors frontend/src/games/registry.js's GAMES.length for the
 // "tried every game" badge — update this number whenever a game is added
 // there (there's no backend games list to import it from).
-const GAMES_COUNT = 14
+const GAMES_COUNT = 15
 
 export const BADGES = [
   { id: 'beat-house-3', emoji: '🏆', label: 'Beat the House 3x', description: 'Win any 3 games.', check: (s) => (s.gameWins || 0) >= 3 },
@@ -23,6 +23,8 @@ export const BADGES = [
   { id: 'super-sharer', emoji: '📣', label: 'Super Sharer', description: 'Share 5 things from Twegle.', check: (s) => (s.sharesGiven || 0) >= 5 },
   { id: 'twegle-ambassador', emoji: '🤝', label: 'Twegle Ambassador', description: 'Invite a friend who joins Twegle.', check: (s) => (s.referralsGiven || 0) >= 1 },
   { id: 'warm-welcome', emoji: '🎉', label: 'Warm Welcome', description: "Joined Twegle through a friend's invite.", check: (s) => !!s.referralSignupBonus },
+  { id: 'windling-whisperer', emoji: '🌤️', label: 'Windling Whisperer', description: 'Catch your first Windling on Skydrift Isles.', check: (s) => (s.skydriftWindlingsCaught || 0) >= 1 },
+  { id: 'island-architect', emoji: '🏝️', label: 'Island Architect', description: 'Place 25 decorations on a Skydrift island.', check: (s) => (s.skydriftTilesPlaced || 0) >= 25 },
 ]
 
 // Returns every badge with whether it's unlocked, for a given stats blob —

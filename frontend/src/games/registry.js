@@ -16,6 +16,10 @@
 // - gradient: the card's background color
 // - description: the short blurb shown under the title
 // - players: which modes are offered — 'single' (vs the house), 'friend' (vs one real person), and/or 'multiplayer' (3-4 real players live)
+// - requiresAccount: optional — true only for Skydrift Isles so far. The
+//   game needs a logged-in account (its own dedicated page bypasses the
+//   normal Game.jsx flow entirely) — GameCard.jsx checks this to show a
+//   "Log in to play" state for guests instead of the normal card link.
 export const GAMES = [
   {
     slug: 'tic-tac-toe',
@@ -56,6 +60,18 @@ export const GAMES = [
     gradient: 'from-fuchsia-500 to-cyan-400',
     description: 'Race your tokens home — roll, capture, and get all 4 home first. 2-4 players, live.',
     players: ['single', 'friend', 'multiplayer'],
+  },
+  {
+    slug: 'skydrift-isles',
+    title: 'Skydrift Isles',
+    emoji: '🌤️',
+    gradient: 'from-sky-300 to-fuchsia-400',
+    description: 'Your own floating island, live with friends — catch Windlings, decorate, never-ending.',
+    players: ['single', 'multiplayer'],
+    // Unlike every other game, this one needs an account — the island is
+    // permanent and tied to it, not a disposable room-code match a guest
+    // can jump into. See SkydriftIsles.jsx and GameCard.jsx.
+    requiresAccount: true,
   },
   {
     slug: 'rock-paper-scissors',

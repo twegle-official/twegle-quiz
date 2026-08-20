@@ -88,6 +88,12 @@ const endUserSchema = new mongoose.Schema(
     // True if this account itself signed up via someone else's invite link
     // — also server-authoritative, same reasoning as referralCount above.
     referralWelcomeBonus: { type: Boolean, default: false },
+    // Skydrift Isles counters — same server-authoritative-field pattern as
+    // referralCount above and for the same reason: these are incremented
+    // directly by realtime/skydriftSocket.js's placeTile/catchWindling
+    // handlers, never trusted from a client's wholesale `stats` push.
+    skydriftTilesPlaced: { type: Number, default: 0 },
+    skydriftWindlingsCaught: { type: Number, default: 0 },
   },
   { timestamps: true }
 )

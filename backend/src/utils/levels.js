@@ -14,6 +14,8 @@ export const POINTS_PER_REACTION = 1
 export const POINTS_PER_STREAK_WEEK = 25
 export const POINTS_PER_REFERRAL = 30 // per friend who signs up through this account's invite link
 export const POINTS_PER_REFERRAL_SIGNUP = 15 // one-time, for signing up through someone else's invite link
+export const POINTS_PER_SKYDRIFT_TILE = 1 // per decoration placed on a Skydrift island
+export const POINTS_PER_SKYDRIFT_WINDLING = 4 // per Windling caught
 
 // Quizzes/puzzles are naturally capped by how much content exists, and
 // shares are deliberately uncapped (that's the one behavior actually worth
@@ -24,6 +26,10 @@ export const POINTS_PER_REFERRAL_SIGNUP = 15 // one-time, for signing up through
 // activity instead of one binge session.
 export const MAX_COUNTED_PLAYS_PER_GAME = 10
 export const MAX_COUNTED_REACTIONS = 50
+// Skydrift Isles is endless/infinitely repeatable by design, same
+// "otherwise grindable" reasoning as the two caps above.
+export const MAX_COUNTED_SKYDRIFT_TILES = 100
+export const MAX_COUNTED_SKYDRIFT_WINDLINGS = 50
 
 export const LEVELS = [
   { emoji: '🐣', name: 'Fresh Face', subtitle: 'Just landed on Twegle — take your first quiz or puzzle to get moving.', points: 0 },
@@ -53,6 +59,8 @@ export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
   )
   const reactions = Math.min(stats.reactionsGiven || 0, MAX_COUNTED_REACTIONS)
   const streakWeeks = Math.floor((quizStreakCount || 0) / 7) + Math.floor((puzzleStreakCount || 0) / 7)
+  const skydriftTiles = Math.min(stats.skydriftTilesPlaced || 0, MAX_COUNTED_SKYDRIFT_TILES)
+  const skydriftWindlings = Math.min(stats.skydriftWindlingsCaught || 0, MAX_COUNTED_SKYDRIFT_WINDLINGS)
   return (
     (stats.quizzesCompleted?.length || 0) * POINTS_PER_QUIZ +
     (stats.puzzlesRevealed?.length || 0) * POINTS_PER_PUZZLE +
@@ -61,7 +69,9 @@ export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
     reactions * POINTS_PER_REACTION +
     streakWeeks * POINTS_PER_STREAK_WEEK +
     (stats.referralsGiven || 0) * POINTS_PER_REFERRAL +
-    (stats.referralSignupBonus ? POINTS_PER_REFERRAL_SIGNUP : 0)
+    (stats.referralSignupBonus ? POINTS_PER_REFERRAL_SIGNUP : 0) +
+    skydriftTiles * POINTS_PER_SKYDRIFT_TILE +
+    skydriftWindlings * POINTS_PER_SKYDRIFT_WINDLING
   )
 }
 

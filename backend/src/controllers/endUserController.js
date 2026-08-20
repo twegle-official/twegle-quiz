@@ -19,7 +19,7 @@ export async function getPublicProfile(req, res) {
   const handle = req.params.handle?.toLowerCase()
   const user = await EndUser.findOne(
     { handle, isProfilePublic: true, status: 'active' },
-    'displayName avatar stats referralCount referralWelcomeBonus'
+    'displayName avatar stats referralCount referralWelcomeBonus skydriftTilesPlaced skydriftWindlingsCaught'
   ).lean()
 
   if (!user) {
@@ -28,11 +28,17 @@ export async function getPublicProfile(req, res) {
 
   const quizStreakCount = (user.stats?.quizStreak || user.stats?.streak)?.count || 0
   const puzzleStreakCount = user.stats?.puzzleStreak?.count || 0
-  // referralsGiven/referralSignupBonus are server-authoritative fields on
-  // the user doc itself (see EndUser.js), not part of the client-synced
-  // stats blob — overlay them here so a friend's public profile always
-  // shows the true, tamper-proof numbers.
-  const stats = { ...(user.stats?.stats || {}), referralsGiven: user.referralCount, referralSignupBonus: user.referralWelcomeBonus }
+  // referralsGiven/referralSignupBonus/skydrift* are server-authoritative
+  // fields on the user doc itself (see EndUser.js), not part of the
+  // client-synced stats blob — overlay them here so a friend's public
+  // profile always shows the true, tamper-proof numbers.
+  const stats = {
+    ...(user.stats?.stats || {}),
+    referralsGiven: user.referralCount,
+    referralSignupBonus: user.referralWelcomeBonus,
+    skydriftTilesPlaced: user.skydriftTilesPlaced,
+    skydriftWindlingsCaught: user.skydriftWindlingsCaught,
+  }
 
   const points = calculatePoints(stats, quizStreakCount, puzzleStreakCount)
   const { index, level } = getLevelInfo(points)

@@ -174,6 +174,17 @@ export const userSignupLimiter = rateLimit({
   message: { error: 'Too many signup attempts. Please try again in a few minutes.' },
 })
 
+// Applied to fetching/joining a Skydrift island over REST — placing
+// tiles/catching Windlings happens over the socket, not REST, same
+// reasoning as ludoLimiter.
+export const skydriftLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})
+
 // Applied to creating/joining a Live Quiz Battle over REST — answering each
 // question happens over the socket, not REST (see realtime/quizBattleSocket.js),
 // same reasoning as connectFourLimiter.

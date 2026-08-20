@@ -19,5 +19,22 @@ export const snakeLadderSocket = io(`${SERVER_URL}/snake-ladder`, { autoConnect:
 export const chessSocket = io(`${SERVER_URL}/chess`, { autoConnect: false })
 // Live connection used for multiplayer Ludo matches.
 export const ludoSocket = io(`${SERVER_URL}/ludo`, { autoConnect: false })
+// Live connection used for Skydrift Isles — the site's first socket
+// namespace that actually authenticates (see realtime/skydriftSocket.js on
+// the backend): `auth` is a callback (not a fixed object) so it re-reads
+// the current login token from localStorage fresh on every connect() call,
+// rather than baking in whatever token existed when this module first
+// loaded.
+export const skydriftSocket = io(`${SERVER_URL}/skydrift`, {
+  autoConnect: false,
+  auth: (cb) => {
+    try {
+      const session = JSON.parse(localStorage.getItem('userSession'))
+      cb({ token: session?.token })
+    } catch {
+      cb({})
+    }
+  },
+})
 // Live connection used for Live Quiz Battle matches.
 export const quizBattleSocket = io(`${SERVER_URL}/quiz-battle`, { autoConnect: false })

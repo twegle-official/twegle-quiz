@@ -87,6 +87,8 @@ function mergeStats(a = {}, b = {}) {
     // through fields it explicitly lists.
     referralsGiven: Math.max(a.referralsGiven || 0, b.referralsGiven || 0),
     referralSignupBonus: !!(a.referralSignupBonus || b.referralSignupBonus),
+    skydriftTilesPlaced: Math.max(a.skydriftTilesPlaced || 0, b.skydriftTilesPlaced || 0),
+    skydriftWindlingsCaught: Math.max(a.skydriftWindlingsCaught || 0, b.skydriftWindlingsCaught || 0),
   }
 }
 
