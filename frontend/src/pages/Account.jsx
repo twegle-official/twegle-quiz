@@ -355,7 +355,7 @@ export default function Account() {
           title="Twegle"
           url={`${window.location.origin}/?ref=${session.user.referralCode}`}
           shareText="Join me on Twegle — quizzes, puzzles & games!"
-          align="start-mobile"
+          align="start"
         />
       </div>
       </div>

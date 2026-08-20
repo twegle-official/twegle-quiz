@@ -40,11 +40,7 @@ export default function ShareButtons({ title, url, onShare, shareText: shareText
   return (
     <div
       className={`flex flex-wrap gap-3 ${
-        align === 'start'
-          ? 'justify-start'
-          : align === 'start-mobile'
-          ? 'justify-start sm:justify-center'
-          : 'justify-center'
+        align === 'start' ? 'justify-start' : 'justify-center'
       }`}
     >
       {/* Only shown on devices/browsers that support the native share sheet */}
