@@ -66,8 +66,15 @@ export default function Account() {
     return () => window.removeEventListener('twegle-stats-synced', handleStatsSynced)
   }, [])
 
+  // Redirecting during render (calling navigate() directly in the render
+  // body, e.g. right after logging out) triggers React's "Cannot update a
+  // component while rendering a different component" warning — it has to
+  // happen in an effect instead, after render finishes.
+  useEffect(() => {
+    if (!session) navigate('/login')
+  }, [session, navigate])
+
   if (!session) {
-    navigate('/login')
     return null
   }
 
