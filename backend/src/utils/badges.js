@@ -9,7 +9,7 @@
 // GAMES_COUNT mirrors frontend/src/games/registry.js's GAMES.length for the
 // "tried every game" badge — update this number whenever a game is added
 // there (there's no backend games list to import it from).
-const GAMES_COUNT = 15
+const GAMES_COUNT = 14 // Skydrift Isles temporarily hidden from the Games list — see registry.js
 
 export const BADGES = [
   { id: 'beat-house-3', emoji: '🏆', label: 'Beat the House 3x', description: 'Win any 3 games.', check: (s) => (s.gameWins || 0) >= 3 },

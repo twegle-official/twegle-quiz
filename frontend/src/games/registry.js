@@ -61,18 +61,25 @@ export const GAMES = [
     description: 'Race your tokens home — roll, capture, and get all 4 home first. 2-4 players, live.',
     players: ['single', 'friend', 'multiplayer'],
   },
-  {
-    slug: 'skydrift-isles',
-    title: 'Skydrift Isles',
-    emoji: '🌤️',
-    gradient: 'from-sky-300 to-fuchsia-400',
-    description: 'Your own floating island, live with friends — catch Windlings, decorate, never-ending.',
-    players: ['single', 'multiplayer'],
-    // Unlike every other game, this one needs an account — the island is
-    // permanent and tied to it, not a disposable room-code match a guest
-    // can jump into. See SkydriftIsles.jsx and GameCard.jsx.
-    requiresAccount: true,
-  },
+  // Skydrift Isles — hidden from the Games list at the owner's direct
+  // request (2026-08-20) while it's reworked; all of its code (page,
+  // canvas, backend routes/socket/model) is untouched and still fully
+  // functional, just not listed here, so a visitor can't discover it from
+  // the homepage. To bring it back, uncomment this entry and bump
+  // GAMES_COUNT back to 15 in both backend/src/utils/badges.js and
+  // frontend/src/utils/badges.js's "Tried Every Game" badge threshold.
+  // {
+  //   slug: 'skydrift-isles',
+  //   title: 'Skydrift Isles',
+  //   emoji: '🌤️',
+  //   gradient: 'from-sky-300 to-fuchsia-400',
+  //   description: 'Your own floating island, live with friends — catch Windlings, decorate, never-ending.',
+  //   players: ['single', 'multiplayer'],
+  //   // Unlike every other game, this one needs an account — the island is
+  //   // permanent and tied to it, not a disposable room-code match a guest
+  //   // can jump into. See SkydriftIsles.jsx and GameCard.jsx.
+  //   requiresAccount: true,
+  // },
   {
     slug: 'rock-paper-scissors',
     title: 'Rock Paper Scissors',
