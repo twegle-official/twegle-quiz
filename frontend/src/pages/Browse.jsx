@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import { fetchPosts } from '../api'
 import { POST_CATEGORY_STYLE } from '../postStyles'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -34,13 +34,17 @@ export default function Browse() {
     meta && `Browse ${meta.title.toLowerCase()} on Twegle — no sign up, just pick something and go.`
   )
 
+  // An unknown/removed category (e.g. /browse/memes, since Memes was
+  // fully removed as a content type — see PENDING_TASKS.md) used to just
+  // render a "doesn't exist" message at the same URL, with no way for a
+  // crawler to tell the page is really gone: a normal 200 response with
+  // dead-end content is exactly Search Console's definition of a "soft
+  // 404" (flagged there directly, 2026-08-21). Redirecting to the
+  // homepage instead means both a real visitor and Googlebot (which does
+  // execute JS and follow the resulting URL, see useDocumentMeta.js's own
+  // comment on that) land somewhere real instead of a dead end.
   if (!meta) {
-    return (
-      <div className="max-w-xl mx-auto px-4 py-16 text-center">
-        <p className="text-gray-600 dark:text-gray-400 mb-4">That category doesn't exist.</p>
-        <Link to="/" className="text-violet-600 font-semibold">Back home</Link>
-      </div>
-    )
+    return <Navigate to="/" replace />
   }
 
   return (
