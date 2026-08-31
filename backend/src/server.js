@@ -7,6 +7,7 @@ import { Server as SocketIOServer } from 'socket.io'
 import { connectDB } from './config/db.js'
 import { ensureFirstAdmin } from './scripts/ensureFirstAdmin.js'
 import { cleanupNullHandles } from './scripts/cleanupNullHandles.js'
+import { backfillReferralCodes } from './scripts/backfillReferralCodes.js'
 import { sanitizeBody } from './middleware/sanitize.js'
 import {
   loginLimiter,
@@ -178,6 +179,7 @@ app.set('io', io)
 connectDB()
   .then(() => ensureFirstAdmin())
   .then(() => cleanupNullHandles())
+  .then(() => backfillReferralCodes())
   .then(() => {
     httpServer.listen(port, () => console.log(`API running on http://localhost:${port}`))
   })

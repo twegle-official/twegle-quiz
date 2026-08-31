@@ -37,7 +37,7 @@ export function generateRecoveryCode() {
 // once at signup for every account — retried on the rare collision, same
 // loop shape as the live games' room-code generators (e.g.
 // connectFourController.js's generateUniqueCode).
-async function generateReferralCode() {
+export async function generateReferralCode() {
   for (let attempt = 0; attempt < 5; attempt++) {
     const code = crypto.randomBytes(4).toString('base64url')
     if (!(await EndUser.findOne({ referralCode: code }))) return code
@@ -153,8 +153,17 @@ export async function login(req, res) {
     // adminEndUserController.js's getCohortRetention) — login is the one
     // moment every session definitely passes through, in addition to the
     // throttled per-request refresh in middleware/userAuth.js.
-    user.lastActiveAt = new Date()
-    await user.save()
+    //
+    // A targeted updateOne, not `user.lastActiveAt = ...; user.save()` —
+    // found as the real cause of a live bug (2026-08-24, reported directly
+    // as a generic "Something went wrong" on login): Mongoose's `.save()`
+    // validates the ENTIRE document, not just the changed field, so any
+    // account created before a since-added `required` field existed (e.g.
+    // `referralCode`) failed validation on every login attempt. updateOne
+    // only validates the path being written, so this can't recur the next
+    // time a required field is added — same reasoning middleware/userAuth.js's
+    // own lastActiveAt refresh already follows.
+    await EndUser.updateOne({ _id: user._id }, { lastActiveAt: new Date() })
 
     res.json({ token: signUserToken(user), user: publicUser(user) })
   } catch (err) {
