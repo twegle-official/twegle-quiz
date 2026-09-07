@@ -867,6 +867,16 @@ and a "💘 Compatibility" badge replacing the guess-mode engagement count
 compatibility quiz, since that count only ever tracks `FriendshipAttempt`
 documents).
 
+**`pages/Home.jsx`** — same-day follow-up, requested directly after the
+owner couldn't find any compatibility quiz on production (there wasn't
+one yet — the badge alone wasn't enough to make the mode discoverable
+either). Added a `FRIENDSHIP_CATEGORIES` filter (All / 🕵️ Guess About Me /
+💘 Compatibility), shown only on the Friendship Quiz tab, exact same
+client-side-filter-a-fetched-list pattern `GAME_CATEGORIES` already uses
+for Single Player/2 Player/Multiplayer — filters `items` by `quiz.mode`
+(defaulting unset/legacy quizzes to `'guess'`), synced to the URL via the
+same `?fcat=` query-param convention every other tab filter already uses.
+
 **`admin/pages/FriendshipQuizForm.jsx`** — gained a Mode selector
 (🕵️ Guess about me / 💘 Compatibility match) next to the existing
 Language dropdown; the questions section's own helper text switches

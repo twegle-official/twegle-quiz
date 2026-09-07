@@ -64,6 +64,15 @@ const GAME_CATEGORIES = [
   { key: 'multiplayer', label: 'Multiplayer', emoji: '👥' },
 ]
 
+// Filters the fetched friendship-quiz list by its `mode` field — client-side,
+// same reasoning as GAME_CATEGORIES (a handful of items, not worth a
+// server round trip per filter click).
+const FRIENDSHIP_CATEGORIES = [
+  { key: 'all', label: 'All' },
+  { key: 'guess', label: 'Guess About Me', emoji: '🕵️' },
+  { key: 'compatibility', label: 'Compatibility', emoji: '💘' },
+]
+
 const QUIZ_CATEGORIES = [
   { key: 'all', label: 'All' },
   { key: 'beauty', label: 'Beauty', emoji: '💄' },
@@ -181,6 +190,10 @@ export default function Home() {
   function setGameCategory(cat) {
     setParam('gcat', cat, 'all')
   }
+  const friendshipCategory = getParam('fcat', FRIENDSHIP_CATEGORIES.map((c) => c.key), 'all')
+  function setFriendshipCategory(cat) {
+    setParam('fcat', cat, 'all')
+  }
   // Whether the content grid is sorted by newest first or by popularity.
   const sortMode = getParam('sort', ['newest', 'trending'], 'newest')
   function setSortMode(mode) {
@@ -240,7 +253,7 @@ export default function Home() {
   // together from the top — rather than a different spot each time.
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, gameCategory, sortMode])
+  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, gameCategory, friendshipCategory, sortMode])
 
   // Fetches today's "N played today" count for the hero stats band.
   useEffect(() => {
@@ -346,6 +359,8 @@ export default function Home() {
   const filteredItems =
     activeTab === 'games' && gameCategory !== 'all'
       ? items?.filter((g) => g.players?.includes(gameCategory))
+      : activeTab === 'friendship' && friendshipCategory !== 'all'
+      ? items?.filter((f) => (f.mode || 'guess') === friendshipCategory)
       : items
 
   const displayedItems = sortItems(filteredItems, activeTab, sortMode)
@@ -609,6 +624,24 @@ export default function Home() {
                 onClick={() => setGameCategory(cat.key)}
                 className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full lg:rounded-lg text-xs font-semibold transition-colors lg:text-left ${
                   gameCategory === cat.key
+                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {cat.emoji} {cat.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeTab === 'friendship' && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+            {FRIENDSHIP_CATEGORIES.map((cat) => (
+              <button
+                key={cat.key}
+                onClick={() => setFriendshipCategory(cat.key)}
+                className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full lg:rounded-lg text-xs font-semibold transition-colors lg:text-left ${
+                  friendshipCategory === cat.key
                     ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
