@@ -6,8 +6,10 @@ import { engagementLabel } from '../utils/engagementLabel'
 // A single clickable tile for one Friendship Quiz — shown in the friendship
 // quiz grid on the homepage/browse pages.
 export default function FriendshipQuizCard({ quiz }) {
+  const isCompatibility = quiz.mode === 'compatibility'
   const badge = engagementLabel(quiz.totalAttempts) // e.g. "Popular" style badge, if it qualifies
-  const engagementText = badge || `${quiz.totalAttempts} ${quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed`
+  const engagementText =
+    badge || `${quiz.totalAttempts} ${quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed`
 
   return (
     <Link
@@ -26,10 +28,10 @@ export default function FriendshipQuizCard({ quiz }) {
       <p className="text-white/90 text-sm mb-4">{quiz.description}</p>
       <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
-          Fill it in →
+          {isCompatibility ? 'Find out →' : 'Fill it in →'}
         </span>
         <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-          {engagementText}
+          {isCompatibility ? '💘 Compatibility' : engagementText}
         </span>
       </div>
     </Link>

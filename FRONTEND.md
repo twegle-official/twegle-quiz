@@ -822,9 +822,71 @@ Every real-visitor side effect these pages normally trigger — view/share engag
 
 Verified locally: created a draft quiz, confirmed a plain (no-token) request to its slug 404s, confirmed a garbage/tampered token still 404s, confirmed the real preview token returns the draft and renders it with the banner in the browser, played it through to Result.jsx and confirmed the banner and token carried over there too, and confirmed via a direct `PlaySession` count check before/after that finishing the previewed quiz recorded zero real plays.
 
+## Compatibility / match tester (2026-09-07)
+
+Second of the 4 viral-format ideas from the growth backlog. Reuses two
+existing systems' UI patterns rather than building new ones from scratch
+— see `BACKEND.md`'s matching section for why neither fit directly on its
+own, and the full backend design.
+
+**`pages/FriendshipSetup.jsx`** — branches on `quiz.mode` rather than
+becoming two components: `'guess'` keeps its original copy/endpoint
+unchanged, `'compatibility'` swaps the copy ("Answer these, then share the
+link to see how compatible you are") and posts to
+`createCompatibilitySession` instead of `createFriendshipInstance`. The
+exact same question-answering form UI serves both — it's the same "pick
+an option per question" interaction either way. The existing "Your link
+is ready!" success screen (already there for guess-mode) is reused too,
+just with different copy/share text and an added "Check your result
+later →" link to the new result page, since — unlike guess-mode, where
+person A never needs to revisit — person A here will want to come back
+once person B has answered.
+
+**`pages/CompatibilityPlay.jsx`** (new, mirrors `FriendshipPlay.jsx`'s
+structure closely) — person B loads the session by code and answers the
+same questions for real (not guessing). One addition beyond what
+`FriendshipPlay.jsx` needs: if the session is already `joined` (person B
+already answered, or a third person opened an already-used link), it
+redirects straight to the result page instead of showing the answer form
+again — same idempotent-link handling `CompareInvite.jsx` already does
+for Quiz Compare.
+
+**`pages/CompatibilityResult.jsx`** (new, mirrors `CompareResult.jsx`'s
+waiting/reveal duality) — shows a "Still waiting on your match!" screen
+with a share prompt if person B hasn't answered yet (same shape Quiz
+Compare's `CompareResult.jsx` already has for an unfinished comparison),
+otherwise the %/verdict banner plus an answer-by-answer breakdown list
+(styling reused from `FriendshipResult.jsx`'s existing breakdown UI,
+adapted from "correct/incorrect" to "same/different").
+
+**`components/FriendshipQuizCard.jsx`** — no route change (both modes
+still link to `/friendship/:slug`, since `FriendshipSetup.jsx` branches
+internally), just a mode-aware CTA label ("Find out →" vs "Fill it in →")
+and a "💘 Compatibility" badge replacing the guess-mode engagement count
+(which would otherwise misleadingly read "0 friends have guessed" for a
+compatibility quiz, since that count only ever tracks `FriendshipAttempt`
+documents).
+
+**`admin/pages/FriendshipQuizForm.jsx`** — gained a Mode selector
+(🕵️ Guess about me / 💘 Compatibility match) next to the existing
+Language dropdown; the questions section's own helper text switches
+between the two modes' explanations. No new admin content type, same
+form/fields either way.
+
+**`App.jsx`** — two new routes, `/friendship/compat/:code` and
+`/friendship/compat/:code/result`, following the same `/friendship/play/:code`
++ `/friendship/result/:attemptId` nesting pattern guess-mode already uses.
+
+Verified end-to-end with a real compatibility quiz and two real browser
+sessions: person A's setup → share screen, person B's answer flow, the
+"still waiting" state before person B answers, the revealed %/verdict/
+breakdown once both have answered (matching on both people's screens),
+the already-joined redirect, an unaffected guess-mode regression check,
+and mobile (375px, no horizontal overflow).
+
 ## How data flows now
 
-- `src/api.js` — public-site API calls (`fetchQuizzes`, `fetchQuizBySlug`, `recordPlay`, `fetchPosts`, `fetchPostById`, `recordPostEngagement`, `fetchStories`, `fetchStoryBySlug`, `recordEngagement`, `submitFeedback`, plus the friendship-quiz set: `fetchFriendshipQuizzes`, `fetchFriendshipQuizBySlug`, `createFriendshipInstance`, `fetchFriendshipInstance`, `submitFriendshipAttempt`, `fetchFriendshipAttempt`), all language-filter aware. Also generates and stores a random anonymous ID in `localStorage` for play/engagement tracking — never tied to any personal information.
+- `src/api.js` — public-site API calls (`fetchQuizzes`, `fetchQuizBySlug`, `recordPlay`, `fetchPosts`, `fetchPostById`, `recordPostEngagement`, `fetchStories`, `fetchStoryBySlug`, `recordEngagement`, `submitFeedback`, plus the friendship-quiz set: `fetchFriendshipQuizzes`, `fetchFriendshipQuizBySlug`, `createFriendshipInstance`, `fetchFriendshipInstance`, `submitFriendshipAttempt`, `fetchFriendshipAttempt`, and its compatibility-mode counterparts `createCompatibilitySession`, `fetchCompatibilitySession`, `joinCompatibilitySession`), all language-filter aware. Also generates and stores a random anonymous ID in `localStorage` for play/engagement tracking — never tied to any personal information.
 - `src/admin/adminApi.js` — authenticated admin API calls (quizzes, posts, stories, friendship quizzes, admins, analytics), all requiring the JWT from login.
 - `src/admin/AuthContext.jsx` — holds the logged-in admin's session (token + role), persisted in `localStorage` so a refresh doesn't log you out.
 - `src/admin/ProtectedRoute.jsx` — redirects to `/admin/login` if not logged in, or shows a permission message if the role doesn't match what a route requires.

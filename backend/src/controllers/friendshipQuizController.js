@@ -39,7 +39,7 @@ export async function getFriendshipQuizAdmin(req, res) {
 
 // Handles an admin creating a new friendship quiz — validates it, then saves it to the database.
 export async function createFriendshipQuiz(req, res) {
-  const { title, description, emoji, gradient, language, status, questions, publishAt, slug: customSlug } = req.body
+  const { title, description, emoji, gradient, language, status, questions, publishAt, mode, slug: customSlug } = req.body
 
   if (typeof title !== 'string' || !title || !questions?.length) {
     return res.status(400).json({ error: 'Title and questions are required' })
@@ -71,6 +71,7 @@ export async function createFriendshipQuiz(req, res) {
     status,
     publishAt: parsedPublishAt || null,
     questions,
+    mode: mode === 'compatibility' ? 'compatibility' : 'guess',
     createdBy: req.admin.id,
   })
 
@@ -87,7 +88,7 @@ export async function createFriendshipQuiz(req, res) {
 
 // Handles an admin editing an existing friendship quiz's details.
 export async function updateFriendshipQuiz(req, res) {
-  const { title, description, emoji, gradient, language, status, questions, publishAt } = req.body
+  const { title, description, emoji, gradient, language, status, questions, publishAt, mode } = req.body
 
   const validationError = validateFriendshipQuizPayload({ title, questions })
   if (validationError) {
@@ -111,6 +112,7 @@ export async function updateFriendshipQuiz(req, res) {
   if (status !== undefined) quiz.status = status
   if (parsedPublishAt !== undefined) quiz.publishAt = parsedPublishAt
   if (questions !== undefined) quiz.questions = questions
+  if (mode !== undefined) quiz.mode = mode === 'compatibility' ? 'compatibility' : 'guess'
 
   await quiz.save()
 
@@ -153,7 +155,7 @@ export async function listPublishedFriendshipQuizzes(req, res) {
   }
 
   const quizzes = await FriendshipQuiz.find(filter).select(
-    'title slug description emoji gradient language questions createdAt'
+    'title slug description emoji gradient language questions mode createdAt'
   )
 
   const counts = await FriendshipAttempt.aggregate([
@@ -170,6 +172,7 @@ export async function listPublishedFriendshipQuizzes(req, res) {
       emoji: q.emoji,
       gradient: q.gradient,
       language: q.language,
+      mode: q.mode,
       questionCount: q.questions.length,
       totalAttempts: countsByQuizId[q._id.toString()] || 0,
       createdAt: q.createdAt,

@@ -1,6 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { fetchFriendshipQuizBySlug, createFriendshipInstance, getFriendshipShareUrl, recordEngagement } from '../api'
+import {
+  fetchFriendshipQuizBySlug,
+  createFriendshipInstance,
+  createCompatibilitySession,
+  getFriendshipShareUrl,
+  getCompatibilityShareUrl,
+  recordEngagement,
+} from '../api'
 import ShareButtons from '../components/ShareButtons'
 import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
@@ -62,22 +69,37 @@ export default function FriendshipSetup() {
     )
   }
 
+  const isCompatibility = quiz.mode === 'compatibility'
+
   if (code) {
-    const shareUrl = getFriendshipShareUrl(code)
+    const shareUrl = isCompatibility ? getCompatibilityShareUrl(code) : getFriendshipShareUrl(code)
     return (
       <div className="max-w-xl mx-auto px-4 py-14 text-center">
-        <div className="text-5xl mb-4">🎉</div>
+        <div className="text-5xl mb-4">{isCompatibility ? '💘' : '🎉'}</div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Your link is ready!</h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">
-          Send this to a friend and see how well they know you. Anyone who opens it can take a guess
-          — send it to as many people as you like.
+          {isCompatibility
+            ? "Send this to someone and see how compatible you are — they'll answer the same questions for real."
+            : 'Send this to a friend and see how well they know you. Anyone who opens it can take a guess — send it to as many people as you like.'}
         </p>
         <ShareButtons
-          title={`How well do you know ${subjectName}?`}
+          title={isCompatibility ? `How compatible are you with ${subjectName}?` : `How well do you know ${subjectName}?`}
           url={shareUrl}
-          shareText={`How well do you actually know ${subjectName}? Take the quiz and find out!`}
+          shareText={
+            isCompatibility
+              ? `${subjectName} wants to see how compatible you are — take the quiz and find out!`
+              : `How well do you actually know ${subjectName}? Take the quiz and find out!`
+          }
           onShare={() => recordEngagement('friendshipQuiz', quiz._id, 'share')}
         />
+        {isCompatibility && (
+          <Link
+            to={`/friendship/compat/${code}/result`}
+            className="block mt-6 text-sm font-semibold text-violet-600"
+          >
+            Check your result later →
+          </Link>
+        )}
         <Link to="/" className="inline-block mt-10 text-violet-600 font-semibold">
           ← Back home
         </Link>
@@ -94,7 +116,9 @@ export default function FriendshipSetup() {
     setSubmitting(true)
     setError('')
     try {
-      const newCode = await createFriendshipInstance(slug, subjectName.trim(), answers)
+      const newCode = isCompatibility
+        ? await createCompatibilitySession(slug, subjectName.trim(), answers)
+        : await createFriendshipInstance(slug, subjectName.trim(), answers)
       setCode(newCode)
     } catch (err) {
       setError(err.message)

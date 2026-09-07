@@ -637,6 +637,71 @@ every stats read site, `POINTS_PER_SKY_EVENT = 20` (uncapped — only 5 can
 ever exist per account's activity, so no grind risk), and a new "🔮 Sky
 Whisperer" badge.
 
+## Compatibility / match tester (2026-09-07)
+
+Second of the 4 viral-format ideas from the growth backlog, picked over
+the Roast generator specifically because it's free to run (no AI API cost)
+and reuses existing two-person infrastructure rather than building a
+third parallel system — see `PENDING_TASKS.md` for the full pitch.
+
+Two existing systems were candidates to build on, and neither fit
+directly: **Friendship Quiz** (`FriendshipInstance`/`FriendshipAttempt`)
+is asymmetric — one subject answers for real, N friends *guess* what they
+answered — which doesn't match "both people answer for real." **Quiz
+Compare** (`QuizCompare`) is the right symmetric 1:1 session shape, but
+only ever compares a single aggregate result key
+(`personAResultKey === personBResultKey`), never individual answers.
+
+The fix reuses **both**, rather than either wholesale:
+
+- **`models/FriendshipQuiz.js`** gained `mode: { enum: ['guess',
+  'compatibility'], default: 'guess' }` — every quiz created before this
+  field existed is untouched. `mode: 'compatibility'` templates use the
+  exact same `questions: [{text, options}]` content shape a guess-mode
+  quiz already uses; no new admin content-authoring UI needed
+  (`FriendshipQuizForm.jsx` just gained a Mode selector).
+- **`models/CompatibilitySession.js`** (new) — mirrors `QuizCompare.js`'s
+  exact shape (`code`, `personAName`/`personAAnswers` set at creation,
+  `personBName`/`personBAnswers` filled in on join), not
+  `FriendshipInstance`/`FriendshipAttempt`'s one-answer-key-many-guessers
+  shape.
+- **`controllers/compatibilityController.js`** (new) — `createSession`/
+  `getSession`/`joinSession`, same REST create/join pattern (and the same
+  locally-duplicated `generateCode`/`generateUniqueCode` convention) every
+  other two-person feature here follows. `sessionPayload()` withholds
+  person A's real answers until person B has joined (`joined` flag), same
+  "don't leak before both sides are in, so the second person can't be
+  biased/copy" reasoning as `quizCompareController.js`'s `comparePayload` —
+  but unlike Quiz Compare (which sends a friend off to a whole separate
+  `Quiz` page to get questions), the question text/options themselves ARE
+  included even pre-join, since there's no separate page here; person B
+  answers directly against this same payload. Match % is a plain index
+  comparison (`personAAnswers.filter((a,i) => a === personBAnswers[i]).length`),
+  same exact-match style Friendship Quiz's guess scoring already uses,
+  just symmetric instead of one-real-one-guess. `verdictFor(percent)`
+  returns a friend-appropriate tier ("Best friends vibes!" down to
+  "Couldn't be more different!") — kept neutral by default (not
+  romance-only) given the site's 8-18 audience; an admin can still write
+  romance-flavored question content for a "couple quiz" template if they
+  want that framing without needing different verdict copy.
+- **`routes/friendshipRoutes.js`** — 3 new routes under the existing
+  `/api/friendship` prefix (`compatibility-sessions`), rate-limited the
+  same way (`friendshipLimiter`, mounted in `server.js`) as the existing
+  friendship-quiz routes.
+- **`shareController.js`/`shareRoutes.js`** — one new `shareCompatibilitySession`
+  preview page (`/share/compatibility/:code`), mirroring `shareQuizCompare`'s
+  single-URL-covers-both-states approach rather than `shareFriendshipInstance`
+  + `shareFriendshipAttempt`'s separate invite/result pages.
+
+Verified end-to-end with a real compatibility quiz and two real sessions:
+hand-checked %/verdict math (2/3 matches → 67%, "Great match!"), both
+people see the identical result once both have answered, re-opening an
+already-completed link redirects straight to the result instead of
+re-asking, and — the regression check that mattered most — an existing
+guess-mode quiz's create-instance flow is completely unaffected, with
+`mode` confirmed defaulting to `'guess'` on quizzes created before this
+field existed.
+
 ## Folder structure
 
 ```

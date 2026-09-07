@@ -5,6 +5,7 @@ import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import FriendshipInstance from '../models/FriendshipInstance.js'
 import FriendshipAttempt from '../models/FriendshipAttempt.js'
 import QuizCompare from '../models/QuizCompare.js'
+import CompatibilitySession from '../models/CompatibilitySession.js'
 import TicTacToeGame from '../models/TicTacToeGame.js'
 import ConnectFourGame from '../models/ConnectFourGame.js'
 import QuizBattleGame from '../models/QuizBattleGame.js'
@@ -454,6 +455,28 @@ export async function shareQuizCompare(req, res) {
       title: `${compare.personAName} wants to compare "${quiz.title}" results with you!`,
       description: `Take the quiz and see if you match with ${compare.personAName} — on Twegle!`,
       redirectUrl: `${frontendUrl()}/quiz/${quiz.slug}/vs/${code}`,
+    })
+  )
+}
+
+// Serves a share-preview page for a compatibility-match link — same
+// description works whether the crawler catches it before or after person
+// B has joined, so (unlike shareFriendshipAttempt) there's no separate
+// "result" share page, matching shareQuizCompare's one-URL approach.
+export async function shareCompatibilitySession(req, res) {
+  const { code } = req.params
+  const session = await CompatibilitySession.findOne({ code })
+  const quiz = session && (await FriendshipQuiz.findById(session.friendshipQuiz))
+  if (!session || !quiz) {
+    return res.status(404).send('Not found')
+  }
+
+  res.set('Content-Type', 'text/html')
+  res.send(
+    renderSharePage({
+      title: `${session.personAName} wants to see how compatible you are on "${quiz.title}"!`,
+      description: `Answer the same questions on Twegle and find out your match — with ${session.personAName}!`,
+      redirectUrl: `${frontendUrl()}/friendship/compat/${code}`,
     })
   )
 }

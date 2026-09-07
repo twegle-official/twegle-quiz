@@ -315,6 +315,27 @@ export function getQuizCompareShareUrl(code) {
   return `${API_URL}/share/quiz-compare/${code}`
 }
 
+// Starts a compatibility session once person A finishes answering for real, returning the invite code for person B.
+export async function createCompatibilitySession(slug, name, answers) {
+  const data = await postJson(`/friendship/quizzes/${slug}/compatibility-sessions`, { name, answers })
+  return data.code
+}
+
+export async function fetchCompatibilitySession(code) {
+  const res = await fetch(`${API_URL}/friendship/compatibility-sessions/${code}`)
+  if (!res.ok) return null
+  return res.json()
+}
+
+// Joins an existing compatibility session with person B's own real answers.
+export async function joinCompatibilitySession(code, name, answers) {
+  return postJson(`/friendship/compatibility-sessions/${code}/join`, { name, answers })
+}
+
+export function getCompatibilityShareUrl(code) {
+  return `${API_URL}/share/compatibility/${code}`
+}
+
 // Live multiplayer games below: each has the same create/fetch/join/share-link shape.
 export async function createTicTacToeGame(name) {
   return postJson('/tictactoe', { name })

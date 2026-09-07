@@ -9,6 +9,7 @@ import {
   submitAttempt,
   getAttempt,
 } from '../controllers/friendshipInstanceController.js'
+import { createSession, getSession, joinSession } from '../controllers/compatibilityController.js'
 
 const router = Router()
 
@@ -19,5 +20,8 @@ router.post('/quizzes/:slug/instances', createInstance) // start a new shareable
 router.get('/instances/:code', getInstanceForPlay) // fetch an instance by its share code so a friend can play it
 router.post('/instances/:code/attempts', submitAttempt) // submit a friend's answers for an instance
 router.get('/attempts/:id', getAttempt) // fetch the result of one submitted attempt
+router.post('/quizzes/:slug/compatibility-sessions', createSession) // start a new shareable compatibility session
+router.get('/compatibility-sessions/:code', getSession) // fetch a compatibility session by its share code
+router.post('/compatibility-sessions/:code/join', joinSession) // submit person B's real answers for a compatibility session
 
 export default router

@@ -18,6 +18,8 @@ import Faq from './pages/Faq'
 import FriendshipSetup from './pages/FriendshipSetup'
 import FriendshipPlay from './pages/FriendshipPlay'
 import FriendshipResult from './pages/FriendshipResult'
+import CompatibilityPlay from './pages/CompatibilityPlay'
+import CompatibilityResult from './pages/CompatibilityResult'
 import CompareInvite from './pages/CompareInvite'
 import CompareResult from './pages/CompareResult'
 import QuizBattleMultiplayer from './pages/QuizBattleMultiplayer'
@@ -171,6 +173,8 @@ function PublicSite() {
           <Route path="/friendship/:slug" element={<FriendshipSetup />} />
           <Route path="/friendship/play/:code" element={<FriendshipPlay />} />
           <Route path="/friendship/result/:attemptId" element={<FriendshipResult />} />
+          <Route path="/friendship/compat/:code" element={<CompatibilityPlay />} />
+          <Route path="/friendship/compat/:code/result" element={<CompatibilityResult />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>

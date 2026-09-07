@@ -10,6 +10,7 @@ import {
   shareFriendshipInstance,
   shareFriendshipAttempt,
   shareQuizCompare,
+  shareCompatibilitySession,
   shareTicTacToe,
   shareConnectFour,
   shareQuizBattle,
@@ -36,6 +37,7 @@ router.get('/puzzle/:id', sharePuzzle) // build the shareable preview page for a
 router.get('/friendship/:code', shareFriendshipInstance) // build the shareable preview page for a friendship quiz instance
 router.get('/friendship-result/:id', shareFriendshipAttempt) // build the shareable preview page for a friendship quiz attempt/result
 router.get('/quiz-compare/:code', shareQuizCompare) // build the shareable preview page comparing two quiz results
+router.get('/compatibility/:code', shareCompatibilitySession) // build the shareable preview page for a compatibility match session
 router.get('/tictactoe/:code', shareTicTacToe) // build the shareable preview page for a Tic Tac Toe match
 router.get('/connect-four/:code', shareConnectFour) // build the shareable preview page for a Connect Four match
 router.get('/quiz-battle/:code', shareQuizBattle) // build the shareable preview page for a Live Quiz Battle

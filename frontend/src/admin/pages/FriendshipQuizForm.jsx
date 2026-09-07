@@ -13,6 +13,7 @@ const emptyQuiz = {
   gradient: GRADIENT_OPTIONS[0].value,
   language: 'en',
   publishAt: null,
+  mode: 'guess',
   questions: [{ text: '', options: ['', ''] }],
 }
 
@@ -187,6 +188,17 @@ export default function FriendshipQuizForm() {
             </select>
           </div>
           <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mode</label>
+            <select
+              value={quiz.mode || 'guess'}
+              onChange={(e) => updateField('mode', e.target.value)}
+              className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+            >
+              <option value="guess">🕵️ Guess about me</option>
+              <option value="compatibility">💘 Compatibility match</option>
+            </select>
+          </div>
+          <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Publish at <span className="text-gray-400 dark:text-gray-500 font-normal">(optional)</span>
             </label>
@@ -204,8 +216,9 @@ export default function FriendshipQuizForm() {
       <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm p-5 mb-6">
         <h2 className="font-bold text-gray-900 dark:text-gray-100 mb-1">Questions</h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-          Each question needs at least 2 fixed answer options — the person filling this in picks the
-          one that's true about them, and a friend later guesses which one they picked.
+          {quiz.mode === 'compatibility'
+            ? "Each question needs at least 2 fixed answer options — both people answer for real, and a % match is computed from how many answers line up."
+            : "Each question needs at least 2 fixed answer options — the person filling this in picks the one that's true about them, and a friend later guesses which one they picked."}
         </p>
         <div className="space-y-5">
           {quiz.questions.map((question, qIndex) => (
