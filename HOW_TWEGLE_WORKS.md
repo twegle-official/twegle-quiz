@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, changed, or removed on the site — for visitors or for admins — this file gets updated the same day, so it always describes what the app actually does *right now*. It is not a history of how things got built (see `APPLICATION_FLOW.md` for that). There is no code and no technical jargon here. If someone with zero computer background reads this from top to bottom, they should come away understanding exactly what Twegle does, what a visitor can do on it, and what an admin can do on it.
 
-**Last updated:** 20 August 2026 (latest — Referral rewards added).
+**Last updated:** 7 September 2026 (latest — Compatibility Match added; also caught up two smaller things that had drifted stale since 20 August: the Games tab's "Multiplayer" filter and this file's own "Last updated" date).
 
 ---
 
@@ -60,9 +60,12 @@ If you play a quiz you've already taken before, the tile for it on the homepage 
 
 Short riddles and brain-teasers. You see the question, and there's a "🔍 Reveal Answer" button — tap it whenever you're ready to see the answer, no rush. Some puzzles include a picture alongside the riddle. Every puzzle is labeled with a difficulty: **Warm-Up**, **Challenge**, or **Brain Buster**, and you can filter the list by any of those. Revealing the day's featured puzzle keeps your own Puzzle streak going, tracked separately from your Quiz streak. Puzzles you've already revealed also get the small green checkmark on their tile.
 
-## 3. Friendship Quiz ("How well do you know me?")
+## 3. Friendship Quiz ("How well do you know me?") & Compatibility Match
 
-This one is built for two (or more) people. One person picks a topic and answers a set of questions about themselves — favorite food, biggest fear, that kind of thing — and gets a shareable link when done. Anyone who opens that link becomes a "guesser": they try to predict what the first person answered, without ever seeing the real answers first. Once a guesser submits their guesses, they see their own score (like "6 out of 8 correct"), a full breakdown of which guesses were right or wrong, and a button to reshare the *same original link* so even more friends can take a turn guessing. One person's setup can be reused by as many friends as want to try it.
+This tab actually holds two different games, told apart by a small badge on the card ("💘 Compatibility" vs. no badge for the original one):
+
+- **The original "guess about me" game**: built for two (or more) people. One person picks a topic and answers a set of questions about themselves — favorite food, biggest fear, that kind of thing — and gets a shareable link when done. Anyone who opens that link becomes a "guesser": they try to predict what the first person answered, without ever seeing the real answers first. Once a guesser submits their guesses, they see their own score (like "6 out of 8 correct"), a full breakdown of which guesses were right or wrong, and a button to reshare the *same original link* so even more friends can take a turn guessing. One person's setup can be reused by as many friends as want to try it.
+- **Compatibility Match** (added 7 September 2026): built for exactly two people. Person A answers a set of questions for real, gets a link, and sends it to one other person. Person B opens the link and answers the *same* questions for real too — not guessing. Once both have answered, both people see a "% compatible" score and a friendly verdict ("Best friends vibes!" down to "Couldn't be more different!"), plus a breakdown of which answers matched. Whoever hasn't answered yet sees a "still waiting" screen until the other person finishes.
 
 ## 4. Posts — Jokes, Funny Lines, Quotes & Motivational Quotes
 
@@ -98,7 +101,7 @@ A few things worth knowing about the live games:
 - Dice rolls (Snake and Ladder, Ludo) have a little tumble/settle animation, and on the Snake and Ladder board every snake and ladder is now drawn as a connecting line/curve, not just a lone icon, so it's obvious at a glance where you'll end up if you land on one.
 - Winning or losing a live match plays a short sound, and unlocking a badge, leveling up, or a perfect right/wrong-quiz score sets off a small confetti burst — all of this respects your device's "reduce motion" setting if you have it turned on.
 
-On the Games tab you can filter by **Single Player** or **2 Player** to only see games of that kind. There are also two separate leaderboards for games: each game with a leaderboard (2048, Memory Match, Word Guess, Guess the Number, Simon Says, Whack-a-Mole) has its own top-scores list you can add your name to after finishing a round, and separately there's one site-wide **Global Leaderboard** (see "Achievements" below) ranking accounts by their overall level/points across everything on the site, not just games.
+On the Games tab you can filter by **Single Player**, **2 Player**, or **Multiplayer** (3-4 players at once, live — currently just Ludo) to only see games of that kind. There are also two separate leaderboards for games: each game with a leaderboard (2048, Memory Match, Word Guess, Guess the Number, Simon Says, Whack-a-Mole) has its own top-scores list you can add your name to after finishing a round, and separately there's one site-wide **Global Leaderboard** (see "Achievements" below) ranking accounts by their overall level/points across everything on the site, not just games.
 
 ## 6. Stories
 
