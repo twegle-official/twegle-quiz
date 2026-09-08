@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { getPuzzleShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 import { hasRevealedPuzzle } from '../utils/badges'
+import { ctaLabel } from '../utils/ctaLabels'
 
 // The friendly display name shown for each difficulty level.
 const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
@@ -16,7 +17,7 @@ export default function PuzzleCard({ puzzle, index = 0 }) {
   // flex sibling, so it can't add height to the tile.
   const attemptedBadge = attempted && (
     <span
-      title="You've already revealed this puzzle's answer"
+      title={ctaLabel('alreadyRevealedPuzzle', puzzle.language)}
       className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[11px] font-bold flex items-center justify-center ring-2 ring-black/10"
     >
       ✓
@@ -56,7 +57,7 @@ export default function PuzzleCard({ puzzle, index = 0 }) {
       {/* Bottom row: call-to-action button and difficulty label */}
       <div className="mt-auto flex items-center justify-between pt-4">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
-          Solve it →
+          {ctaLabel('solveIt', puzzle.language)}
         </span>
         <span className="whitespace-nowrap text-xs text-white/80 font-medium">
           {DIFFICULTY_LABEL[puzzle.difficulty] || 'Warm-Up'}

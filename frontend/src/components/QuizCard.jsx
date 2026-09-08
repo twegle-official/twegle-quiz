@@ -3,6 +3,7 @@ import { getQuizIntroShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 import { engagementLabel } from '../utils/engagementLabel'
 import { hasCompletedQuiz } from '../utils/badges'
+import { ctaLabel } from '../utils/ctaLabels'
 
 // Turns a raw play count into a short readable label, like "2.3k" or "1.5M".
 function formatPlays(n) {
@@ -46,7 +47,7 @@ export default function QuizCard({ quiz }) {
         <div className="text-4xl">{quiz.emoji}</div>
         {attempted && (
           <span
-            title="You've already taken this quiz"
+            title={ctaLabel('alreadyTakenQuiz', quiz.language)}
             className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[11px] font-bold flex items-center justify-center ring-2 ring-black/10"
           >
             ✓
@@ -59,7 +60,7 @@ export default function QuizCard({ quiz }) {
       {/* Bottom row: call-to-action button and play-count label */}
       <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
-          Take the quiz →
+          {ctaLabel('takeQuiz', quiz.language)}
         </span>
         <span className="whitespace-nowrap text-xs text-white/80 font-medium">
           {engagementText}

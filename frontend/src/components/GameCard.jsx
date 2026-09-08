@@ -3,6 +3,7 @@ import { getGameShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 import { engagementLabel } from '../utils/engagementLabel'
 import { useUserAuth } from '../UserAuthContext'
+import { ctaLabel } from '../utils/ctaLabels'
 
 // Turns a raw play count into a short display string, e.g. 2500 -> "2.5k".
 function formatPlays(n) {
@@ -13,7 +14,11 @@ function formatPlays(n) {
 
 // A single clickable tile for one game — shown in the games grid on the
 // homepage/browse pages.
-export default function GameCard({ game, filterMode }) {
+// `language` (the site-wide EN/HI toggle, not a per-item field — games are
+// a static English-only registry, see registry.js's own comment) only
+// affects this card's own button/chrome text, not the game's title/
+// description, which stay English either way.
+export default function GameCard({ game, filterMode, language }) {
   const { session } = useUserAuth()
   const engagementText = engagementLabel(game.totalPlays) || `${formatPlays(game.totalPlays)} played`
   // Games that support both modes (currently just Tic-Tac-Toe) default to
@@ -50,10 +55,10 @@ export default function GameCard({ game, filterMode }) {
       <p className="text-white/90 text-sm mb-4">{game.description}</p>
       <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
-          {needsLogin ? 'Log in to play →' : 'Play now →'}
+          {ctaLabel(needsLogin ? 'logInToPlay' : 'playNow', language)}
         </span>
         <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-          🎮 Instant{engagementText && ` · ${engagementText}`}
+          {ctaLabel('instant', language)}{engagementText && ` · ${engagementText}`}
         </span>
       </div>
     </Link>

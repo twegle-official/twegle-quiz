@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { getHoroscopeShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import { ctaLabel } from '../utils/ctaLabels'
 
 // A clickable card for one zodiac sign, shown in the horoscope section —
 // links through to that sign's horoscope page.
@@ -23,7 +24,7 @@ export default function ZodiacCard({ sign, language }) {
 
       <div className="mt-auto flex items-center justify-between">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
-          Today's Horoscope →
+          {ctaLabel('todaysHoroscope', language)}
         </span>
       </div>
     </Link>

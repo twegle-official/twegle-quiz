@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { getStoryShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import { ctaLabel } from '../utils/ctaLabels'
 
 // A clickable story tile shown in lists of short stories — links through to
 // the full story page.
@@ -30,7 +31,7 @@ export default function StoryCard({ story, index = 0 }) {
 
       <div className="mt-auto flex items-center justify-between pt-4">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
-          🔊 Read & Listen →
+          {ctaLabel('readAndListen', story.language)}
         </span>
         <span className="whitespace-nowrap text-xs text-white/80 font-medium">{style.label}</span>
       </div>

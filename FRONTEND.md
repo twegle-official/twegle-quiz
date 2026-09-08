@@ -1015,6 +1015,29 @@ Added 2026-07-31 on request ("fast, visible, broad appeal") — a manual light/d
 - **Bug fixed 2026-07-31: adding `ThemeToggle` shifted the search box's position.** `Header.jsx` originally laid out logo/search/(nothing) with a plain `flex justify-between`, where the search form (`flex-1 max-w-xs`) simply took whatever space was left after the logo — adding `ThemeToggle` as a third flex item changed how much space that was, visibly moving the search box. Fixed by switching the header row to a `grid grid-cols-[auto_1fr_auto]` layout (logo / search / toggle) with the search form centered (`flex justify-center`) inside its own middle track — the search box's position now only depends on the logo and toggle's own widths staying fixed, not on whichever elements happen to be neighbors, so it won't shift again if another icon is ever added to either side.
 - **Bug fixed 2026-07-31: the initial dark-mode pass missed the 7 game engines entirely, breaking the site on any phone with system dark mode enabled.** Reported as "application not working properly in mobile browser, earlier it was working fine." Root cause: the no-flash script in `index.html` applies `.dark` based on the OS's `prefers-color-scheme` for anyone who's never explicitly toggled the switch — so a visitor whose phone defaults to dark mode (common on both Android and iOS) got the whole site's `.bg-dot-pattern` background switched to near-black (`#0f1115`) automatically, without ever touching the toggle. Every public page and shared component had been given `dark:` variants in the original pass, but the 7 actual game components in `src/games/` (`TicTacToe`, `RockPaperScissors`, `MemoryMatch`, `Game2048`, `WordGuess`, `GuessTheNumber`, `Sudoku`) were overlooked — only their `Game.jsx` wrapper page got dark treatment. These games render plain gray-scale UI (`text-gray-800` status lines, `bg-white` boards/tiles/buttons) with no `dark:` fallback, so on a dark-mode phone the status text became near-invisible (dark gray on near-black) and game boards looked visually broken against the dark page background — while the rest of the site (which does have `dark:` coverage) looked fine, making the games specifically read as "not working." Fixed by adding `dark:` variants to all 7 game files, matching the same treatment already given to `TicTacToeMultiplayer.jsx`. Verified via an automated contrast scan (comparing each leaf text node's color against its resolved background luminance) on Tic-Tac-Toe and Sudoku with `.dark` forced on — zero low-contrast text found afterward (previously flagged on every status line). This is also a good reminder that any future public-facing component needs the same `dark:` pass, not just top-level pages — a plain component with zero `dark:` classes doesn't error, it just silently renders in light-mode colors regardless of the page's theme, which reads as "half-fixed" rather than an obvious bug.
 
+## Hindi CTA translation fix (2026-09-08)
+
+Found during an earlier QA sweep, fixed directly on request: every content
+card's button/chrome text (`"Take the quiz →"`, `"Play now →"`, etc.)
+stayed hardcoded in English in Hindi mode, even though titles/descriptions
+translated correctly. New `utils/ctaLabels.js` — the first shared `{en,
+hi}` translation helper in the codebase (everywhere else uses one-off
+inline ternaries) — exports `ctaLabel(key, language)`. 5 of the 6 card
+components (`QuizCard`, `FriendshipQuizCard`, `PuzzleCard`, `StoryCard`,
+plus their "already attempted" tooltips) read the item's own `.language`
+field directly, so the fix applies everywhere that card is rendered
+(`Home.jsx`, `Result.jsx`, `SearchResults.jsx`, `PuzzleView.jsx`,
+`StoryView.jsx`) with zero prop changes needed. `GameCard.jsx` is the one
+exception — the `GAMES` registry is a static English-only list with no
+per-item language field — so it gained an explicit `language` prop from
+`Home.jsx` (its only call site) instead; a game's own title/description
+stay English regardless, only its button/"Instant" text follows the
+toggle. `ZodiacCard.jsx` already had a `language` prop for its share URL,
+so its CTA just points at that. Deliberately left `PuzzleCard`'s
+`DIFFICULTY_LABEL` and `StoryCard`'s category `style.label` untouched —
+same English-only-hardcoded-dictionary bug, but outside this fix's
+originally-reported scope.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:

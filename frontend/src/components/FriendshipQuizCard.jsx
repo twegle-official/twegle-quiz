@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { getFriendshipQuizIntroShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 import { engagementLabel } from '../utils/engagementLabel'
+import { ctaLabel } from '../utils/ctaLabels'
 
 // A single clickable tile for one Friendship Quiz — shown in the friendship
 // quiz grid on the homepage/browse pages.
@@ -28,10 +29,10 @@ export default function FriendshipQuizCard({ quiz }) {
       <p className="text-white/90 text-sm mb-4">{quiz.description}</p>
       <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
-          {isCompatibility ? 'Find out →' : 'Fill it in →'}
+          {ctaLabel(isCompatibility ? 'findOut' : 'fillItIn', quiz.language)}
         </span>
         <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-          {isCompatibility ? '💘 Compatibility' : engagementText}
+          {isCompatibility ? ctaLabel('compatibility', quiz.language) : engagementText}
         </span>
       </div>
     </Link>
