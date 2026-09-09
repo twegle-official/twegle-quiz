@@ -41,6 +41,8 @@ export default function FriendshipPlay() {
     )
   }
 
+  const isHindi = instance?.quizLanguage === 'hi'
+
   if (!instance) {
     return (
       <div className="max-w-xl mx-auto px-4 py-10 animate-pulse">
@@ -75,9 +77,13 @@ export default function FriendshipPlay() {
       <div className="text-center mb-8">
         <div className="text-5xl mb-3">{instance.quizEmoji}</div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          How well do you know {instance.subjectName}?
+          {isHindi ? `तुम ${instance.subjectName} को कितना जानते हो?` : `How well do you know ${instance.subjectName}?`}
         </h1>
-        <p className="text-gray-500 dark:text-gray-400">Guess what {instance.subjectName} would really say — no peeking!</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          {isHindi
+            ? `अंदाज़ा लगाओ ${instance.subjectName} असल में क्या कहेगा — झांककर मत देखो!`
+            : `Guess what ${instance.subjectName} would really say — no peeking!`}
+        </p>
       </div>
 
       {error && (
@@ -86,12 +92,14 @@ export default function FriendshipPlay() {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-8">
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Your name</label>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            {isHindi ? 'आपका नाम' : 'Your name'}
+          </label>
           <input
             required
             value={guesserName}
             onChange={(e) => setGuesserName(e.target.value)}
-            placeholder="e.g. Priya"
+            placeholder={isHindi ? 'जैसे प्रिया' : 'e.g. Priya'}
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl"
           />
         </div>
@@ -130,7 +138,9 @@ export default function FriendshipPlay() {
           disabled={!guesserName.trim() || !allAnswered || submitting}
           className="mt-8 w-full px-5 py-3 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white font-semibold hover:opacity-90 disabled:opacity-40"
         >
-          {submitting ? 'Scoring your guesses...' : 'See My Score'}
+          {submitting
+            ? isHindi ? 'तुम्हारे जवाब जांचे जा रहे हैं...' : 'Scoring your guesses...'
+            : isHindi ? 'मेरा स्कोर देखें' : 'See My Score'}
         </button>
       </form>
     </div>

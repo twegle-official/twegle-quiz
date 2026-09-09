@@ -43,21 +43,35 @@ export default function CompatibilityResult() {
     )
   }
 
+  const isHindi = session.quizLanguage === 'hi'
+
   if (!session.joined) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <div className="text-5xl mb-4">⏳</div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Still waiting on your match!</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          {isHindi ? 'अभी भी तुम्हारे मैच का इंतज़ार है!' : 'Still waiting on your match!'}
+        </h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">
-          Share your link and check back once "{session.quizTitle}" has been answered.
+          {isHindi
+            ? `अपना लिंक शेयर करो और "${session.quizTitle}" के जवाब आने के बाद वापस देखो।`
+            : `Share your link and check back once "${session.quizTitle}" has been answered.`}
         </p>
         <ShareButtons
-          title={`How compatible are you with ${session.personAName}?`}
+          title={
+            isHindi
+              ? `${session.personAName} के साथ तुम कितने कम्पैटिबल हो?`
+              : `How compatible are you with ${session.personAName}?`
+          }
           url={getCompatibilityShareUrl(code)}
-          shareText={`${session.personAName} wants to see how compatible you are — take the quiz and find out!`}
+          shareText={
+            isHindi
+              ? `${session.personAName} जानना चाहता/चाहती है तुम कितने कम्पैटिबल हो — क्विज़ लो और पता लगाओ!`
+              : `${session.personAName} wants to see how compatible you are — take the quiz and find out!`
+          }
         />
         <Link to="/" className="inline-block mt-10 text-violet-600 font-semibold">
-          ← Back home
+          {isHindi ? '← होम पर वापस जाएं' : '← Back home'}
         </Link>
       </div>
     )
@@ -79,14 +93,24 @@ export default function CompatibilityResult() {
       </div>
 
       <ShareButtons
-        title={`${session.personAName} & ${session.personBName} are ${session.percent}% compatible!`}
+        title={
+          isHindi
+            ? `${session.personAName} और ${session.personBName} ${session.percent}% कम्पैटिबल हैं!`
+            : `${session.personAName} & ${session.personBName} are ${session.percent}% compatible!`
+        }
         url={shareUrl}
-        shareText={`${session.personAName} & ${session.personBName} are ${session.percent}% compatible on ${session.quizTitle} — take it yourself!`}
+        shareText={
+          isHindi
+            ? `${session.personAName} और ${session.personBName} "${session.quizTitle}" पर ${session.percent}% कम्पैटिबल हैं — खुद भी ट्राई करो!`
+            : `${session.personAName} & ${session.personBName} are ${session.percent}% compatible on ${session.quizTitle} — take it yourself!`
+        }
       />
 
       {/* The breakdown showing each question and whether both answers matched */}
       <div className="mt-10 text-left">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">Answer by answer</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
+          {isHindi ? 'सवाल दर सवाल' : 'Answer by answer'}
+        </h2>
         <div className="space-y-3">
           {session.breakdown.map((r, i) => (
             <div
@@ -121,7 +145,7 @@ export default function CompatibilityResult() {
         to="/"
         className="inline-block mt-8 px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
       >
-        See more
+        {isHindi ? 'और देखें' : 'See more'}
       </Link>
     </div>
   )

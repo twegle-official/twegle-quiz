@@ -14,6 +14,7 @@ import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordRecentlyViewed } from '../utils/recentlyViewed'
+import { pickLabel } from '../utils/ctaLabels'
 
 const SUGGESTION_COUNT = 4
 
@@ -82,14 +83,14 @@ export default function PostView() {
         {
           gradient: style.gradient,
           emoji: style.emoji,
-          title: style.label,
+          title: pickLabel(style, post.language),
           text: post.text,
           author: post.author,
           tag: 'Twegle',
         },
         {
           filename: `twegle-${post._id}.png`,
-          title: style.label,
+          title: pickLabel(style, post.language),
           text: `${post.text} ${getPostShareUrl(post._id)}`,
         }
       )
@@ -126,7 +127,7 @@ export default function PostView() {
           for a sponsored post, unlike the tile badge which is easy to miss. */}
       {post.sponsor?.name && (
         <p className="text-left text-xs font-medium text-gray-400 dark:text-gray-500 mb-4">
-          ✨ Sponsored by{' '}
+          ✨ {post.language === 'hi' ? 'स्पॉन्सर्ड बाय' : 'Sponsored by'}{' '}
           {post.sponsor.url ? (
             <a href={post.sponsor.url} target="_blank" rel="noopener noreferrer" className="text-violet-600 dark:text-violet-400 hover:underline">
               {post.sponsor.logo} {post.sponsor.name}
@@ -155,7 +156,9 @@ export default function PostView() {
         disabled={generating}
         className="mt-6 mb-4 px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
       >
-        {generating ? 'Preparing image...' : '📸 Share as Image'}
+        {generating
+          ? post.language === 'hi' ? 'इमेज बन रही है...' : 'Preparing image...'
+          : post.language === 'hi' ? '📸 इमेज के रूप में शेयर करें' : '📸 Share as Image'}
       </button>
 
       <ShareButtons
@@ -171,7 +174,9 @@ export default function PostView() {
       {/* "You might also like" — a few other suggested posts */}
       {suggestions.length > 0 && (
         <div className="mt-10 text-left">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">You might also like</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
+            {post.language === 'hi' ? 'आपको ये भी पसंद आ सकते हैं' : 'You might also like'}
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {suggestions.map((s, i) => (
               <PostCard key={s._id} post={s} index={i} />
@@ -186,7 +191,7 @@ export default function PostView() {
         to="/"
         className="inline-block mt-8 px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
       >
-        See more
+        {post.language === 'hi' ? 'और देखें' : 'See more'}
       </Link>
 
       <div className="mt-6">

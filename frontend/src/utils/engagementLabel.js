@@ -11,10 +11,15 @@ const POPULAR_MAX = 14
 
 // Turns a view/play count into a friendly label like "New" or "Popular"
 // instead of showing a low number — returns null if the count is high
-// enough that showing the real number is better.
-export function engagementLabel(count) {
-  if (!count || count <= 0) return '🆕 New'
-  if (count <= NEW_MAX) return '🆕 New'
-  if (count <= POPULAR_MAX) return '⭐ Popular'
+// enough that showing the real number is better. `language` defaults to
+// English (matches every other language check in the codebase) — added
+// 2026-09-09, this used to always return the English text regardless of
+// the site's Hindi toggle.
+export function engagementLabel(count, language) {
+  const newLabel = language === 'hi' ? '🆕 नया' : '🆕 New'
+  const popularLabel = language === 'hi' ? '⭐ पॉपुलर' : '⭐ Popular'
+  if (!count || count <= 0) return newLabel
+  if (count <= NEW_MAX) return newLabel
+  if (count <= POPULAR_MAX) return popularLabel
   return null
 }

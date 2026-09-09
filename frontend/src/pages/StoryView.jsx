@@ -13,6 +13,7 @@ import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordRecentlyViewed } from '../utils/recentlyViewed'
+import { pickLabel } from '../utils/ctaLabels'
 
 const SUGGESTION_COUNT = 4
 
@@ -146,7 +147,7 @@ export default function StoryView() {
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}
       >
         <div className="text-6xl mb-4">{story.emoji || style.emoji}</div>
-        <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">{style.label}</p>
+        <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">{pickLabel(style, story.language)}</p>
         <h1 className="text-2xl font-bold leading-snug">{story.title}</h1>
       </div>
 
@@ -158,13 +159,17 @@ export default function StoryView() {
           once narration has started */}
       <div className="mt-6 flex justify-center">
         {!speech.supported ? (
-          <p className="text-sm text-gray-400 dark:text-gray-500">Read-aloud isn't supported in this browser — just read on below.</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500">
+            {story.language === 'hi'
+              ? 'इस ब्राउज़र में पढ़कर सुनाने की सुविधा नहीं है — नीचे पढ़ लो।'
+              : "Read-aloud isn't supported in this browser — just read on below."}
+          </p>
         ) : speech.status === 'idle' ? (
           <button
             onClick={speech.play}
             className="px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
           >
-            🔊 Listen to this story
+            🔊 {story.language === 'hi' ? 'यह कहानी सुनो' : 'Listen to this story'}
           </button>
         ) : (
           <div className="flex gap-2">
@@ -173,21 +178,21 @@ export default function StoryView() {
                 onClick={speech.pause}
                 className="px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
               >
-                ⏸ Pause
+                ⏸ {story.language === 'hi' ? 'रोकें' : 'Pause'}
               </button>
             ) : (
               <button
                 onClick={speech.resume}
                 className="px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
               >
-                ▶ Resume
+                ▶ {story.language === 'hi' ? 'फिर से शुरू' : 'Resume'}
               </button>
             )}
             <button
               onClick={speech.stop}
               className="px-5 py-2.5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:bg-gray-200 dark:hover:bg-gray-700"
             >
-              ⏹ Stop
+              ⏹ {story.language === 'hi' ? 'बंद करें' : 'Stop'}
             </button>
           </div>
         )}
@@ -202,7 +207,11 @@ export default function StoryView() {
         <ShareButtons
           title={story.title}
           url={shareUrl}
-          shareText={`"${story.title}" — a ${style.label.toLowerCase()} story on Twegle!`}
+          shareText={
+            story.language === 'hi'
+              ? `"${story.title}" — Twegle पर एक ${pickLabel(style, story.language)} कहानी!`
+              : `"${story.title}" — a ${style.label.toLowerCase()} story on Twegle!`
+          }
           onShare={() => !previewToken && recordEngagement('story', story._id, 'share')}
         />
       </div>
@@ -213,7 +222,9 @@ export default function StoryView() {
 
       {suggestions.length > 0 && (
         <div className="mt-10 text-left">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">You might also like</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
+            {story.language === 'hi' ? 'आपको ये भी पसंद आ सकते हैं' : 'You might also like'}
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {suggestions.map((s, i) => (
               <StoryCard key={s.slug} story={s} index={i} />
@@ -228,7 +239,7 @@ export default function StoryView() {
         to="/"
         className="inline-block mt-8 px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
       >
-        See more
+        {story.language === 'hi' ? 'और देखें' : 'See more'}
       </Link>
 
       <div className="mt-6">

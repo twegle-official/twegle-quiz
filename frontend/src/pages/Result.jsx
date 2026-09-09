@@ -184,7 +184,9 @@ export default function Result() {
       <div className="animate-pop-in">
         <div className="text-6xl mb-3">{result.emoji}</div>
         {quiz.type === 'trivia' && typeof score === 'number' && (
-          <p className="text-lg font-bold text-violet-600 dark:text-violet-400 mb-1">You scored {score}/{total}!</p>
+          <p className="text-lg font-bold text-violet-600 dark:text-violet-400 mb-1">
+            {quiz.language === 'hi' ? `आपका स्कोर ${score}/${total}!` : `You scored ${score}/${total}!`}
+          </p>
         )}
         <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-100 mb-3">{result.title}</h1>
       </div>
@@ -193,7 +195,10 @@ export default function Result() {
       {/* Streak message shown only if this was today's daily quiz */}
       {isDailyQuiz && dailyStreak?.count > 0 && (
         <p className="inline-block mb-6 px-4 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-sm font-bold">
-          🔥 {dailyStreak.count}-day streak — that was today's Quiz of the Day!
+          🔥{' '}
+          {quiz.language === 'hi'
+            ? `${dailyStreak.count} दिन की स्ट्रीक — यह आज का Quiz of the Day था!`
+            : `${dailyStreak.count}-day streak — that was today's Quiz of the Day!`}
         </p>
       )}
 
@@ -206,7 +211,9 @@ export default function Result() {
         disabled={generating}
         className="mb-4 px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-50"
       >
-        {generating ? 'Preparing image...' : '📸 Share as Image'}
+        {generating
+          ? quiz.language === 'hi' ? 'इमेज बन रही है...' : 'Preparing image...'
+          : quiz.language === 'hi' ? '📸 इमेज के रूप में शेयर करें' : '📸 Share as Image'}
       </button>
 
       <ShareButtons
@@ -220,19 +227,33 @@ export default function Result() {
       <div className="mt-8 max-w-sm mx-auto">
         {compareCode ? (
           <div className="rounded-2xl border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/40 p-6">
-            <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">🆚 Your link is ready!</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              🆚 {quiz.language === 'hi' ? 'आपका लिंक तैयार है!' : 'Your link is ready!'}
+            </p>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Send this to a friend — once they take the quiz, you'll both see if you match.
+              {quiz.language === 'hi'
+                ? 'इसे किसी दोस्त को भेजो — जब वो क्विज़ लेगा, तुम दोनों देख पाओगे कि तुम मैच करते हो या नहीं।'
+                : "Send this to a friend — once they take the quiz, you'll both see if you match."}
             </p>
             <ShareButtons
-              title={`Compare your "${quiz.title}" result with me!`}
+              title={
+                quiz.language === 'hi'
+                  ? `मेरे साथ अपना "${quiz.title}" रिज़ल्ट कम्पेयर करो!`
+                  : `Compare your "${quiz.title}" result with me!`
+              }
               url={getQuizCompareShareUrl(compareCode)}
-              shareText={`I got "${result.title}" on ${quiz.title} — take the quiz and see if we match!`}
+              shareText={
+                quiz.language === 'hi'
+                  ? `मुझे "${quiz.title}" पर "${result.title}" मिला — क्विज़ लो और देखो हम मैच करते हैं या नहीं!`
+                  : `I got "${result.title}" on ${quiz.title} — take the quiz and see if we match!`
+              }
             />
           </div>
         ) : showCompareForm ? (
           <form onSubmit={handleCompareSubmit} className="rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
-            <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">🆚 Compare with a friend</p>
+            <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+              🆚 {quiz.language === 'hi' ? 'किसी दोस्त से कम्पेयर करो' : 'Compare with a friend'}
+            </p>
             {compareError && (
               <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-3">{compareError}</p>
             )}
@@ -241,7 +262,7 @@ export default function Result() {
               autoFocus
               value={compareName}
               onChange={(e) => setCompareName(e.target.value)}
-              placeholder="Your name"
+              placeholder={quiz.language === 'hi' ? 'आपका नाम' : 'Your name'}
               className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl mb-3"
             />
             <button
@@ -249,7 +270,9 @@ export default function Result() {
               disabled={!compareName.trim() || compareSubmitting}
               className="w-full px-5 py-2.5 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40"
             >
-              {compareSubmitting ? 'Creating your link...' : 'Get My Compare Link'}
+              {compareSubmitting
+                ? quiz.language === 'hi' ? 'लिंक बन रहा है...' : 'Creating your link...'
+                : quiz.language === 'hi' ? 'मेरा कम्पेयर लिंक पाओ' : 'Get My Compare Link'}
             </button>
           </form>
         ) : (
@@ -257,7 +280,7 @@ export default function Result() {
             onClick={() => setShowCompareForm(true)}
             className="px-5 py-2.5 rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-semibold hover:border-violet-400 hover:text-violet-600 dark:hover:text-violet-400"
           >
-            🆚 Compare with a friend
+            🆚 {quiz.language === 'hi' ? 'किसी दोस्त से कम्पेयर करो' : 'Compare with a friend'}
           </button>
         )}
       </div>
@@ -267,13 +290,17 @@ export default function Result() {
       </div>
 
       <p className="text-xs text-gray-400 dark:text-gray-600 mt-4">
-        This page may contain affiliate links — we may earn a commission at no extra cost to you.
+        {quiz.language === 'hi'
+          ? 'इस पेज पर एफिलिएट लिंक हो सकते हैं — हमें बिना आपकी अतिरिक्त लागत के कमीशन मिल सकता है।'
+          : 'This page may contain affiliate links — we may earn a commission at no extra cost to you.'}
       </p>
 
       {/* Recommended quizzes to try next */}
       {suggestions.length > 0 && (
         <div className="mt-10 text-left">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">You might also like</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
+            {quiz.language === 'hi' ? 'आपको ये भी पसंद आ सकते हैं' : 'You might also like'}
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {suggestions.map((s) => (
               <QuizCard key={s._id} quiz={s} />
@@ -288,7 +315,7 @@ export default function Result() {
         to="/"
         className="inline-block mt-8 px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
       >
-        Take another quiz
+        {quiz.language === 'hi' ? 'एक और क्विज़ लो' : 'Take another quiz'}
       </Link>
 
       <div className="mt-6">

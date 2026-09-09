@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { getStoryShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
-import { ctaLabel } from '../utils/ctaLabels'
+import { ctaLabel, pickLabel } from '../utils/ctaLabels'
 
 // A clickable story tile shown in lists of short stories — links through to
 // the full story page.
@@ -23,7 +23,11 @@ export default function StoryCard({ story, index = 0 }) {
       <TileShareButton
         title={story.title}
         shareUrl={getStoryShareUrl(story.slug)}
-        shareText={`"${story.title}" — a ${style.label.toLowerCase()} story on Twegle!`}
+        shareText={
+          story.language === 'hi'
+            ? `"${story.title}" — Twegle पर एक ${pickLabel(style, story.language)} कहानी!`
+            : `"${story.title}" — a ${style.label.toLowerCase()} story on Twegle!`
+        }
       />
 
       <div className="text-4xl mb-3">{story.emoji || style.emoji}</div>
@@ -33,7 +37,7 @@ export default function StoryCard({ story, index = 0 }) {
         <span className="inline-block whitespace-nowrap bg-white/20 rounded-full px-4 py-1.5 text-sm font-semibold">
           {ctaLabel('readAndListen', story.language)}
         </span>
-        <span className="whitespace-nowrap text-xs text-white/80 font-medium">{style.label}</span>
+        <span className="whitespace-nowrap text-xs text-white/80 font-medium">{pickLabel(style, story.language)}</span>
       </div>
     </Link>
   )

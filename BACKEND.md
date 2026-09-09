@@ -678,12 +678,19 @@ The fix reuses **both**, rather than either wholesale:
   answers directly against this same payload. Match % is a plain index
   comparison (`personAAnswers.filter((a,i) => a === personBAnswers[i]).length`),
   same exact-match style Friendship Quiz's guess scoring already uses,
-  just symmetric instead of one-real-one-guess. `verdictFor(percent)`
-  returns a friend-appropriate tier ("Best friends vibes!" down to
-  "Couldn't be more different!") — kept neutral by default (not
+  just symmetric instead of one-real-one-guess. `verdictFor(percent,
+  language)` returns a friend-appropriate tier ("Best friends vibes!"
+  down to "Couldn't be more different!") — kept neutral by default (not
   romance-only) given the site's 8-18 audience; an admin can still write
   romance-flavored question content for a "couple quiz" template if they
-  want that framing without needing different verdict copy.
+  want that framing without needing different verdict copy. (2026-09-09:
+  gained the `language` param, and `sessionPayload()`'s `base` object
+  gained `quizLanguage: quiz.language` — neither existed originally, so
+  the frontend had no way to know a compatibility session's language at
+  all; part of the Phase 1 Hindi-localization sweep, see `FRONTEND.md`.
+  `friendshipInstanceController.js`'s `buildAttemptResult()` and
+  `getInstanceForPlay()` got the identical `quizLanguage` addition in the
+  same pass, for the same reason.)
 - **`routes/friendshipRoutes.js`** — 3 new routes under the existing
   `/api/friendship` prefix (`compatibility-sessions`), rate-limited the
   same way (`friendshipLimiter`, mounted in `server.js`) as the existing

@@ -58,6 +58,8 @@ export default function FriendshipSetup() {
     )
   }
 
+  const isHindi = quiz?.language === 'hi'
+
   if (!quiz) {
     return (
       <div className="max-w-xl mx-auto px-4 py-10 animate-pulse">
@@ -76,19 +78,33 @@ export default function FriendshipSetup() {
     return (
       <div className="max-w-xl mx-auto px-4 py-14 text-center">
         <div className="text-5xl mb-4">{isCompatibility ? '💘' : '🎉'}</div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Your link is ready!</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+          {isHindi ? 'आपका लिंक तैयार है!' : 'Your link is ready!'}
+        </h1>
         <p className="text-gray-600 dark:text-gray-400 mb-8">
           {isCompatibility
-            ? "Send this to someone and see how compatible you are — they'll answer the same questions for real."
-            : 'Send this to a friend and see how well they know you. Anyone who opens it can take a guess — send it to as many people as you like.'}
+            ? isHindi
+              ? 'इसे किसी को भेजो और देखो तुम कितने कम्पैटिबल हो — वो भी असली में इन्हीं सवालों के जवाब देंगे।'
+              : "Send this to someone and see how compatible you are — they'll answer the same questions for real."
+            : isHindi
+              ? 'इसे किसी दोस्त को भेजो और देखो वो तुम्हें कितना जानता है। कोई भी इसे खोलकर जवाब दे सकता है — जितने चाहो उतने लोगों को भेजो।'
+              : 'Send this to a friend and see how well they know you. Anyone who opens it can take a guess — send it to as many people as you like.'}
         </p>
         <ShareButtons
-          title={isCompatibility ? `How compatible are you with ${subjectName}?` : `How well do you know ${subjectName}?`}
+          title={
+            isCompatibility
+              ? isHindi ? `${subjectName} के साथ तुम कितने कम्पैटिबल हो?` : `How compatible are you with ${subjectName}?`
+              : isHindi ? `तुम ${subjectName} को कितना जानते हो?` : `How well do you know ${subjectName}?`
+          }
           url={shareUrl}
           shareText={
             isCompatibility
-              ? `${subjectName} wants to see how compatible you are — take the quiz and find out!`
-              : `How well do you actually know ${subjectName}? Take the quiz and find out!`
+              ? isHindi
+                ? `${subjectName} जानना चाहता/चाहती है तुम कितने कम्पैटिबल हो — क्विज़ लो और पता लगाओ!`
+                : `${subjectName} wants to see how compatible you are — take the quiz and find out!`
+              : isHindi
+                ? `तुम असल में ${subjectName} को कितना जानते हो? क्विज़ लो और पता लगाओ!`
+                : `How well do you actually know ${subjectName}? Take the quiz and find out!`
           }
           onShare={() => recordEngagement('friendshipQuiz', quiz._id, 'share')}
         />
@@ -97,11 +113,11 @@ export default function FriendshipSetup() {
             to={`/friendship/compat/${code}/result`}
             className="block mt-6 text-sm font-semibold text-violet-600"
           >
-            Check your result later →
+            {isHindi ? 'बाद में अपना रिज़ल्ट देखें →' : 'Check your result later →'}
           </Link>
         )}
         <Link to="/" className="inline-block mt-10 text-violet-600 font-semibold">
-          ← Back home
+          {isHindi ? '← होम पर वापस जाएं' : '← Back home'}
         </Link>
       </div>
     )
@@ -144,12 +160,14 @@ export default function FriendshipSetup() {
       {/* The setup form: your name + an answer for each question */}
       <form onSubmit={handleSubmit}>
         <div className="mb-8">
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Your name</label>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            {isHindi ? 'आपका नाम' : 'Your name'}
+          </label>
           <input
             required
             value={subjectName}
             onChange={(e) => setSubjectName(e.target.value)}
-            placeholder="e.g. Ashish"
+            placeholder={isHindi ? 'जैसे आशीष' : 'e.g. Ashish'}
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl"
           />
         </div>
@@ -187,7 +205,9 @@ export default function FriendshipSetup() {
           disabled={!subjectName.trim() || !allAnswered || submitting}
           className="mt-8 w-full px-5 py-3 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white font-semibold hover:opacity-90 disabled:opacity-40"
         >
-          {submitting ? 'Creating your link...' : 'Get My Shareable Link'}
+          {submitting
+            ? isHindi ? 'लिंक बन रहा है...' : 'Creating your link...'
+            : isHindi ? 'मेरा शेयर करने वाला लिंक पाओ' : 'Get My Shareable Link'}
         </button>
       </form>
     </div>

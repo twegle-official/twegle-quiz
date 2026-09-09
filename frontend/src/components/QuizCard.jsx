@@ -14,7 +14,9 @@ function formatPlays(n) {
 
 // A single colorful card for one quiz — used in the quiz grids/lists throughout the site.
 export default function QuizCard({ quiz }) {
-  const engagementText = engagementLabel(quiz.totalPlays) || `${formatPlays(quiz.totalPlays)} took this` // e.g. "Popular!" or "2.3k took this"
+  const engagementText =
+    engagementLabel(quiz.totalPlays, quiz.language) ||
+    (quiz.language === 'hi' ? `${formatPlays(quiz.totalPlays)} ने लिया` : `${formatPlays(quiz.totalPlays)} took this`) // e.g. "Popular!" or "2.3k took this"
   const attempted = hasCompletedQuiz(quiz.slug) // has this visitor already taken this quiz?
 
   return (

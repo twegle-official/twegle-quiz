@@ -20,7 +20,9 @@ function formatPlays(n) {
 // description, which stay English either way.
 export default function GameCard({ game, filterMode, language }) {
   const { session } = useUserAuth()
-  const engagementText = engagementLabel(game.totalPlays) || `${formatPlays(game.totalPlays)} played`
+  const engagementText =
+    engagementLabel(game.totalPlays, language) ||
+    (language === 'hi' ? `${formatPlays(game.totalPlays)} ने खेला` : `${formatPlays(game.totalPlays)} played`)
   // Games that support both modes (currently just Tic-Tac-Toe) default to
   // their single-player board — but arriving via the "2 Player" or
   // "Multiplayer" homepage filter means the visitor already chose that

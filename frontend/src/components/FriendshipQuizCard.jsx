@@ -8,9 +8,12 @@ import { ctaLabel } from '../utils/ctaLabels'
 // quiz grid on the homepage/browse pages.
 export default function FriendshipQuizCard({ quiz }) {
   const isCompatibility = quiz.mode === 'compatibility'
-  const badge = engagementLabel(quiz.totalAttempts) // e.g. "Popular" style badge, if it qualifies
+  const badge = engagementLabel(quiz.totalAttempts, quiz.language) // e.g. "Popular" style badge, if it qualifies
   const engagementText =
-    badge || `${quiz.totalAttempts} ${quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed`
+    badge ||
+    (quiz.language === 'hi'
+      ? `${quiz.totalAttempts} दोस्तों ने अंदाज़ा लगाया`
+      : `${quiz.totalAttempts} ${quiz.totalAttempts === 1 ? 'friend has' : 'friends have'} guessed`)
 
   return (
     <Link

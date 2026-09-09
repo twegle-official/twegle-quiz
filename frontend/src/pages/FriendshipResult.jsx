@@ -8,8 +8,14 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordShare } from '../utils/badges'
 
 // Picks an encouraging message to show based on how many guesses were correct.
-function scoreMessage(score, total) {
+function scoreMessage(score, total, isHindi) {
   const pct = score / total
+  if (isHindi) {
+    if (pct === 1) return 'परफेक्ट स्कोर! तुम उन्हें सच में अच्छे से जानते हो।'
+    if (pct >= 0.75) return 'शानदार — तुम उन्हें अच्छे से जानते हो।'
+    if (pct >= 0.5) return 'बुरा नहीं! उन्हें और बेहतर जानने की गुंजाइश है।'
+    return 'साथ में और वक्त बिताना होगा — जानने को बहुत कुछ बाकी है!'
+  }
   if (pct === 1) return "Perfect score! You truly know them."
   if (pct >= 0.75) return 'Impressive — you really know them well.'
   if (pct >= 0.5) return 'Not bad! Room to know them even better.'
@@ -52,15 +58,22 @@ export default function FriendshipResult() {
     )
   }
 
+  const isHindi = result.quizLanguage === 'hi'
   const shareUrl = getFriendshipResultShareUrl(attemptId)
   const challengeUrl = getFriendshipShareUrl(result.instanceCode)
-  const challengeText = `I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz — think you know them better?`
+  const challengeText = isHindi
+    ? `मैंने ${result.subjectName} की फ्रेंडशिप क्विज़ में ${result.score}/${result.total} स्कोर किया — क्या तुम इससे बेहतर कर सकते हो?`
+    : `I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz — think you know them better?`
 
   // Shares (or copies) a link inviting another friend to take this same guessing quiz.
   async function handleChallenge() {
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'Challenge Your Friend', text: challengeText, url: challengeUrl })
+        await navigator.share({
+          title: isHindi ? 'अपने दोस्त को चैलेंज करो' : 'Challenge Your Friend',
+          text: challengeText,
+          url: challengeUrl,
+        })
         recordShare()
         return
       } catch {
@@ -79,35 +92,45 @@ export default function FriendshipResult() {
       >
         <div className="text-6xl mb-4">{result.quizEmoji}</div>
         <p className="text-lg font-medium mb-1">
-          {result.guesserName}, you scored
+          {isHindi ? `${result.guesserName}, तुमने स्कोर किया` : `${result.guesserName}, you scored`}
         </p>
         <p className="text-5xl font-extrabold mb-3">
           {result.score}/{result.total}
         </p>
-        <p className="text-white/90">{scoreMessage(result.score, result.total)}</p>
+        <p className="text-white/90">{scoreMessage(result.score, result.total, isHindi)}</p>
       </div>
 
       <p className="mt-6 text-sm font-semibold text-gray-600 dark:text-gray-400">
-        Think your friend can do better?
+        {isHindi ? 'क्या तुम्हारा दोस्त इससे बेहतर कर सकता है?' : 'Think your friend can do better?'}
       </p>
       <button
         onClick={handleChallenge}
         className="mt-2 px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
       >
-        🏆 Challenge Your Friend
+        {isHindi ? '🏆 अपने दोस्त को चैलेंज करो' : '🏆 Challenge Your Friend'}
       </button>
 
       <div className="mt-4">
         <ShareButtons
-          title={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz!`}
+          title={
+            isHindi
+              ? `मैंने ${result.subjectName} की फ्रेंडशिप क्विज़ में ${result.score}/${result.total} स्कोर किया!`
+              : `I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz!`
+          }
           url={shareUrl}
-          shareText={`I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz!`}
+          shareText={
+            isHindi
+              ? `मैंने ${result.subjectName} की फ्रेंडशिप क्विज़ में ${result.score}/${result.total} स्कोर किया!`
+              : `I scored ${result.score}/${result.total} on ${result.subjectName}'s friendship quiz!`
+          }
         />
       </div>
 
       {/* The breakdown showing each question, the real answer, and whether the guess was right */}
       <div className="mt-10 text-left">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">Answer by answer</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
+          {isHindi ? 'सवाल दर सवाल' : 'Answer by answer'}
+        </h2>
         <div className="space-y-3">
           {result.results.map((r, i) => (
             <div
@@ -122,11 +145,12 @@ export default function FriendshipResult() {
                 {r.correct ? '✅' : '❌'} {r.text}
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {result.subjectName} picked: <span className="font-semibold">{r.options[r.correctIndex]}</span>
+                {isHindi ? `${result.subjectName} ने चुना: ` : `${result.subjectName} picked: `}
+                <span className="font-semibold">{r.options[r.correctIndex]}</span>
               </p>
               {!r.correct && (
                 <p className="text-sm text-gray-500 dark:text-gray-500">
-                  You guessed: {r.options[r.guessIndex]}
+                  {isHindi ? 'तुमने अंदाज़ा लगाया: ' : 'You guessed: '}{r.options[r.guessIndex]}
                 </p>
               )}
             </div>
@@ -142,7 +166,7 @@ export default function FriendshipResult() {
         to="/"
         className="inline-block mt-8 px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
       >
-        See more
+        {isHindi ? 'और देखें' : 'See more'}
       </Link>
     </div>
   )

@@ -30,67 +30,80 @@ import AdSlot from '../components/AdSlot'
 // a category filter, just one continuous scroll-through feed instead of
 // several homepage tabs) after Puzzles. Stories and Horoscope last —
 // longer-dwell, less share-driven formats.
+// Every array below carries both `label` (English) and `hi` (Hindi) —
+// read via the `pick()` helper further down, keyed off the active language
+// toggle. Found missing in a QA sweep (2026-08-20), fixed on direct
+// request (2026-09-09): these chip/tab labels stayed English even in
+// Hindi mode, unlike the actual quiz/post/etc. content they filter, which
+// already correctly follows its own `.language` field.
 const TABS = [
-  { key: 'quizzes', label: 'Quizzes', emoji: '🎯' },
-  { key: 'games', label: 'Games', emoji: '🎮' },
-  { key: 'friendship', label: 'Friendship Quiz', emoji: '🤝' },
-  { key: 'puzzles', label: 'Puzzles', emoji: '🧩' },
-  { key: 'posts', label: 'Posts', emoji: '💬' },
-  { key: 'stories', label: 'Stories', emoji: '📖' },
-  { key: 'horoscope', label: 'Horoscope', emoji: '🔮' },
+  { key: 'quizzes', label: 'Quizzes', hi: 'क्विज़', emoji: '🎯' },
+  { key: 'games', label: 'Games', hi: 'गेम्स', emoji: '🎮' },
+  { key: 'friendship', label: 'Friendship Quiz', hi: 'फ्रेंडशिप क्विज़', emoji: '🤝' },
+  { key: 'puzzles', label: 'Puzzles', hi: 'पहेलियां', emoji: '🧩' },
+  { key: 'posts', label: 'Posts', hi: 'पोस्ट्स', emoji: '💬' },
+  { key: 'stories', label: 'Stories', hi: 'कहानियां', emoji: '📖' },
+  { key: 'horoscope', label: 'Horoscope', hi: 'राशिफल', emoji: '🔮' },
 ]
 
 const PUZZLE_DIFFICULTIES = [
-  { key: 'all', label: 'All' },
-  { key: 'easy', label: 'Warm-Up', emoji: '🟢' },
-  { key: 'medium', label: 'Challenge', emoji: '🟡' },
-  { key: 'hard', label: 'Brain Buster', emoji: '🔴' },
+  { key: 'all', label: 'All', hi: 'सभी' },
+  { key: 'easy', label: 'Warm-Up', hi: 'वॉर्म-अप', emoji: '🟢' },
+  { key: 'medium', label: 'Challenge', hi: 'चैलेंज', emoji: '🟡' },
+  { key: 'hard', label: 'Brain Buster', hi: 'ब्रेन बस्टर', emoji: '🔴' },
 ]
 
 const POST_CATEGORIES = [
-  { key: 'all', label: 'All' },
-  { key: 'joke', label: 'Jokes', emoji: '😂' },
-  { key: 'funny-line', label: 'Funny Lines', emoji: '😜' },
-  { key: 'quote', label: 'Quotes', emoji: '💬' },
-  { key: 'motivational-quote', label: 'Motivational', emoji: '💪' },
+  { key: 'all', label: 'All', hi: 'सभी' },
+  { key: 'joke', label: 'Jokes', hi: 'चुटकुले', emoji: '😂' },
+  { key: 'funny-line', label: 'Funny Lines', hi: 'फनी लाइनें', emoji: '😜' },
+  { key: 'quote', label: 'Quotes', hi: 'कोट्स', emoji: '💬' },
+  { key: 'motivational-quote', label: 'Motivational', hi: 'मोटिवेशनल', emoji: '💪' },
 ]
 
 // Filters the static GAMES registry by its `players` field — client-side,
 // since games aren't database content (see registry.js's own comment).
 const GAME_CATEGORIES = [
-  { key: 'all', label: 'All' },
-  { key: 'single', label: 'Single Player', emoji: '🧑' },
-  { key: 'friend', label: '2 Player', emoji: '🤝' },
-  { key: 'multiplayer', label: 'Multiplayer', emoji: '👥' },
+  { key: 'all', label: 'All', hi: 'सभी' },
+  { key: 'single', label: 'Single Player', hi: 'सिंगल प्लेयर', emoji: '🧑' },
+  { key: 'friend', label: '2 Player', hi: '2 प्लेयर', emoji: '🤝' },
+  { key: 'multiplayer', label: 'Multiplayer', hi: 'मल्टीप्लेयर', emoji: '👥' },
 ]
 
 // Filters the fetched friendship-quiz list by its `mode` field — client-side,
 // same reasoning as GAME_CATEGORIES (a handful of items, not worth a
 // server round trip per filter click).
 const FRIENDSHIP_CATEGORIES = [
-  { key: 'all', label: 'All' },
-  { key: 'guess', label: 'Guess About Me', emoji: '🕵️' },
-  { key: 'compatibility', label: 'Compatibility', emoji: '💘' },
+  { key: 'all', label: 'All', hi: 'सभी' },
+  { key: 'guess', label: 'Guess About Me', hi: 'मुझे अंदाज़ा लगाओ', emoji: '🕵️' },
+  { key: 'compatibility', label: 'Compatibility', hi: 'मैच', emoji: '💘' },
 ]
 
 const QUIZ_CATEGORIES = [
-  { key: 'all', label: 'All' },
-  { key: 'beauty', label: 'Beauty', emoji: '💄' },
-  { key: 'entertainment', label: 'Bollywood', emoji: '🎬' },
-  { key: 'kpop', label: 'K-pop', emoji: '🎤' },
-  { key: 'lifestyle', label: 'Lifestyle', emoji: '✨' },
-  { key: 'fun', label: 'Fun & Random', emoji: '🎉' },
+  { key: 'all', label: 'All', hi: 'सभी' },
+  { key: 'beauty', label: 'Beauty', hi: 'ब्यूटी', emoji: '💄' },
+  { key: 'entertainment', label: 'Bollywood', hi: 'बॉलीवुड', emoji: '🎬' },
+  { key: 'kpop', label: 'K-pop', hi: 'K-pop', emoji: '🎤' },
+  { key: 'lifestyle', label: 'Lifestyle', hi: 'लाइफस्टाइल', emoji: '✨' },
+  { key: 'fun', label: 'Fun & Random', hi: 'मज़ेदार', emoji: '🎉' },
 ]
 
 const STORY_CATEGORIES = [
-  { key: 'all', label: 'All' },
-  { key: 'horror', label: 'Horror', emoji: '👻' },
-  { key: 'comedy', label: 'Comedy', emoji: '😂' },
-  { key: 'romance', label: 'Romance', emoji: '💕' },
-  { key: 'mystery', label: 'Mystery', emoji: '🕵️' },
-  { key: 'moral', label: 'Moral Tales', emoji: '📚' },
-  { key: 'motivational', label: 'Motivational', emoji: '💪' },
+  { key: 'all', label: 'All', hi: 'सभी' },
+  { key: 'horror', label: 'Horror', hi: 'हॉरर', emoji: '👻' },
+  { key: 'comedy', label: 'Comedy', hi: 'कॉमेडी', emoji: '😂' },
+  { key: 'romance', label: 'Romance', hi: 'रोमांस', emoji: '💕' },
+  { key: 'mystery', label: 'Mystery', hi: 'मिस्ट्री', emoji: '🕵️' },
+  { key: 'moral', label: 'Moral Tales', hi: 'नैतिक कहानियां', emoji: '📚' },
+  { key: 'motivational', label: 'Motivational', hi: 'मोटिवेशनल', emoji: '💪' },
 ]
+
+// Reads whichever language's label an item in one of the arrays above
+// should show, falling back to English for anything other than 'hi' —
+// same default-to-English convention every other language check here uses.
+function pick(item, language) {
+  return language === 'hi' && item.hi ? item.hi : item.label
+}
 
 // What "popularity" means per tab, for the Trending sort — quizzes/
 // friendship quizzes/games all have a real completion count; posts (jokes/
@@ -423,7 +436,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 py-2 sm:py-3 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-1 sm:gap-4 text-center sm:text-left">
           <div className="min-w-0">
             <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white/80">
-              Where Fun Goes Viral
+              {language === 'hi' ? 'जहां मस्ती वायरल होती है' : 'Where Fun Goes Viral'}
             </p>
             {/* Leads with the benefit ("why stay"), not an inventory of
                 content types — the previous heading just listed what Twegle
@@ -432,14 +445,18 @@ export default function Home() {
                 useDocumentMeta.js) for SEO/link-preview purposes, so this
                 change doesn't cost anything there. */}
             <h1 className="text-base sm:text-lg font-extrabold text-white">
-              Your Daily Dose of Fun — Play, Laugh &amp; Discover Something New
+              {language === 'hi'
+                ? 'आपकी रोज़ की मस्ती की डोज़ — खेलो, हंसो और कुछ नया खोजो'
+                : 'Your Daily Dose of Fun — Play, Laugh & Discover Something New'}
             </h1>
             {/* Hidden below `sm` per direct feedback — on a phone this line
                 just added height under an already-descriptive heading;
                 content types still get their own mention in meta
                 descriptions for SEO, so nothing is lost by dropping it here. */}
             <p className="hidden sm:block text-white/90 text-[11px] sm:text-sm">
-              Quizzes, puzzles, games, jokes &amp; more — no sign up, just pick something and go.
+              {language === 'hi'
+                ? 'क्विज़, पहेलियां, गेम्स, चुटकुले और भी बहुत कुछ — कोई साइन अप नहीं, बस कुछ चुनो और शुरू करो।'
+                : 'Quizzes, puzzles, games, jokes & more — no sign up, just pick something and go.'}
             </p>
           </div>
           {/* Hidden below `sm` — on a phone this was extra stacked lines
@@ -448,10 +465,17 @@ export default function Home() {
               not something a mobile visitor needs before scrolling. */}
           <div className="hidden sm:flex flex-col gap-y-1 text-white/80 text-xs sm:text-sm font-medium shrink-0">
             <div className="whitespace-nowrap">
-              🎮 {GAMES.length} games &nbsp; 🎯 {stats.quizzes ?? '24'} quizzes &nbsp; 💬 {stats.posts ?? '85'}+ jokes &amp; quotes
+              {language === 'hi' ? (
+                <>🎮 {GAMES.length} गेम्स &nbsp; 🎯 {stats.quizzes ?? '24'} क्विज़ &nbsp; 💬 {stats.posts ?? '85'}+ चुटकुले और कोट्स</>
+              ) : (
+                <>🎮 {GAMES.length} games &nbsp; 🎯 {stats.quizzes ?? '24'} quizzes &nbsp; 💬 {stats.posts ?? '85'}+ jokes &amp; quotes</>
+              )}
             </div>
             <div className="whitespace-nowrap">
-              🌐 English &amp; हिंदी{playsToday > 0 && <> &nbsp; 🔥 {playsToday} played today</>}
+              🌐 English &amp; हिंदी
+              {playsToday > 0 && (
+                <> &nbsp; 🔥 {playsToday} {language === 'hi' ? 'ने आज खेला' : 'played today'}</>
+              )}
             </div>
           </div>
         </div>
@@ -508,7 +532,7 @@ export default function Home() {
                 sortMode === 'newest' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
-              🆕 Newest
+              🆕 {language === 'hi' ? 'नया' : 'Newest'}
             </button>
             <button
               onClick={() => setSortMode('trending')}
@@ -516,7 +540,7 @@ export default function Home() {
                 sortMode === 'trending' ? 'bg-white dark:bg-gray-700 shadow text-gray-900 dark:text-gray-100' : 'text-gray-500 dark:text-gray-400'
               }`}
             >
-              🔥 Trending
+              🔥 {language === 'hi' ? 'ट्रेंडिंग' : 'Trending'}
             </button>
           </div>
         </div>
@@ -539,7 +563,7 @@ export default function Home() {
                   : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-300 dark:hover:border-violet-500'
               }`}
             >
-              {tab.emoji} {tab.label}
+              {tab.emoji} {pick(tab, language)}
             </button>
           ))}
         </div>
@@ -556,7 +580,7 @@ export default function Home() {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
-                {cat.emoji} {cat.label}
+                {cat.emoji} {pick(cat, language)}
               </button>
             ))}
           </div>
@@ -574,7 +598,7 @@ export default function Home() {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
-                {cat.emoji} {cat.label}
+                {cat.emoji} {pick(cat, language)}
               </button>
             ))}
           </div>
@@ -592,7 +616,7 @@ export default function Home() {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
-                {cat.emoji} {cat.label}
+                {cat.emoji} {pick(cat, language)}
               </button>
             ))}
           </div>
@@ -610,7 +634,7 @@ export default function Home() {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
-                {diff.emoji} {diff.label}
+                {diff.emoji} {pick(diff, language)}
               </button>
             ))}
           </div>
@@ -628,7 +652,7 @@ export default function Home() {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
-                {cat.emoji} {cat.label}
+                {cat.emoji} {pick(cat, language)}
               </button>
             ))}
           </div>
@@ -646,7 +670,7 @@ export default function Home() {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
                 }`}
               >
-                {cat.emoji} {cat.label}
+                {cat.emoji} {pick(cat, language)}
               </button>
             ))}
           </div>
@@ -657,7 +681,9 @@ export default function Home() {
       <div>
       {error && (
         <p className="text-center text-red-500 dark:text-red-400">
-          Couldn't load this right now. Please try again shortly.
+          {language === 'hi'
+            ? 'अभी लोड नहीं हो पाया। कृपया थोड़ी देर बाद कोशिश करें।'
+            : "Couldn't load this right now. Please try again shortly."}
         </p>
       )}
 
@@ -671,7 +697,9 @@ export default function Home() {
 
       {items && items.length === 0 && (
         <p className="text-center text-gray-400 dark:text-gray-500">
-          Nothing here yet — check back soon, or try a different category/language.
+          {language === 'hi'
+            ? 'अभी यहां कुछ नहीं है — थोड़ी देर बाद देखें, या कोई और कैटेगरी आज़माएं।'
+            : 'Nothing here yet — check back soon, or try a different category/language.'}
         </p>
       )}
 

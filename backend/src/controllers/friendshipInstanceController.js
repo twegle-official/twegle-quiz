@@ -39,6 +39,7 @@ function buildAttemptResult({ attempt, instance, quiz }) {
     subjectName: instance.subjectName,
     quizTitle: quiz.title,
     quizEmoji: quiz.emoji,
+    quizLanguage: quiz.language,
     gradient: quiz.gradient,
     guesserName: attempt.guesserName,
     score: attempt.score,
@@ -97,6 +98,7 @@ export async function getInstanceForPlay(req, res) {
     subjectName: instance.subjectName,
     quizTitle: quiz.title,
     quizEmoji: quiz.emoji,
+    quizLanguage: quiz.language,
     gradient: quiz.gradient,
     questions: quiz.questions.map((q) => ({ text: q.text, options: q.options })),
   })

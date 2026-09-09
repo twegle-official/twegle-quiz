@@ -49,8 +49,16 @@ function validateAnswerIndices(answers, questions) {
 // by default (not romance-only framing) since the site's audience is
 // 8-18; an admin can still write romance-flavored question content for a
 // "couple quiz" template if they want that angle, this copy just doesn't
-// assume it.
-function verdictFor(percent) {
+// assume it. Follows the quiz's own `language`, same as every other
+// server-computed string sent back for a Hindi-language template.
+function verdictFor(percent, language) {
+  if (language === 'hi') {
+    if (percent >= 80) return 'बेस्ट फ्रेंड्स वाली फीलिंग!'
+    if (percent >= 60) return 'बढ़िया मैच!'
+    if (percent >= 40) return 'काफी मिलते-जुलते हो'
+    if (percent >= 20) return 'बिल्कुल अलग, पर कोई बात नहीं!'
+    return 'दोनों एक-दूसरे से बिल्कुल अलग!'
+  }
   if (percent >= 80) return 'Best friends vibes!'
   if (percent >= 60) return 'Great match!'
   if (percent >= 40) return 'Pretty compatible'
@@ -73,6 +81,7 @@ function sessionPayload(quiz, session) {
     quizSlug: quiz.slug,
     quizTitle: quiz.title,
     quizEmoji: quiz.emoji,
+    quizLanguage: quiz.language,
     gradient: quiz.gradient,
     personAName: session.personAName,
     questions: quiz.questions.map((q) => ({ text: q.text, options: q.options })),
@@ -87,7 +96,7 @@ function sessionPayload(quiz, session) {
     ...base,
     personBName: session.personBName,
     percent,
-    verdict: verdictFor(percent),
+    verdict: verdictFor(percent, quiz.language),
     breakdown: quiz.questions.map((q, i) => ({
       text: q.text,
       personAAnswer: q.options[session.personAAnswers[i]],

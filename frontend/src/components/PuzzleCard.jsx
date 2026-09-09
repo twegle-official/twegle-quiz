@@ -2,10 +2,7 @@ import { Link } from 'react-router-dom'
 import { getPuzzleShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
 import { hasRevealedPuzzle } from '../utils/badges'
-import { ctaLabel } from '../utils/ctaLabels'
-
-// The friendly display name shown for each difficulty level.
-const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
+import { ctaLabel, difficultyLabel } from '../utils/ctaLabels'
 
 // A single colorful card for one puzzle — used in the puzzle grids/lists.
 export default function PuzzleCard({ puzzle, index = 0 }) {
@@ -60,7 +57,7 @@ export default function PuzzleCard({ puzzle, index = 0 }) {
           {ctaLabel('solveIt', puzzle.language)}
         </span>
         <span className="whitespace-nowrap text-xs text-white/80 font-medium">
-          {DIFFICULTY_LABEL[puzzle.difficulty] || 'Warm-Up'}
+          {difficultyLabel(puzzle.difficulty, puzzle.language)}
         </span>
       </div>
     </Link>

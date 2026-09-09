@@ -27,3 +27,25 @@ const LABELS = {
 export function ctaLabel(key, language) {
   return LABELS[key][language === 'hi' ? 'hi' : 'en']
 }
+
+// The friendly display name for each puzzle difficulty — was duplicated
+// as an English-only `DIFFICULTY_LABEL` object in both PuzzleCard.jsx and
+// PuzzleView.jsx; centralized here so both stay in sync and both can
+// follow the language toggle.
+const DIFFICULTY_LABELS = {
+  easy: { en: 'Warm-Up', hi: 'वॉर्म-अप' },
+  medium: { en: 'Challenge', hi: 'चैलेंज' },
+  hard: { en: 'Brain Buster', hi: 'ब्रेन बस्टर' },
+}
+
+export function difficultyLabel(difficulty, language) {
+  const entry = DIFFICULTY_LABELS[difficulty] || DIFFICULTY_LABELS.easy
+  return language === 'hi' ? entry.hi : entry.en
+}
+
+// General-purpose reader for any `{ label, hi }`-shaped object (category
+// style dictionaries, homepage filter chips, etc.) — falls back to
+// `label` (English) whenever `hi` is missing or the language isn't 'hi'.
+export function pickLabel(item, language) {
+  return language === 'hi' && item?.hi ? item.hi : item?.label
+}

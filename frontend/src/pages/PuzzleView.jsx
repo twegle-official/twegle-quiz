@@ -13,9 +13,9 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { pickPuzzleOfTheDay, recordPuzzleStreakCompletion } from '../utils/dailyQuiz'
 import { recordPuzzleRevealed } from '../utils/badges'
 import { recordRecentlyViewed } from '../utils/recentlyViewed'
+import { difficultyLabel } from '../utils/ctaLabels'
 
 const SUGGESTION_COUNT = 4
-const DIFFICULTY_LABEL = { easy: 'Warm-Up', medium: 'Challenge', hard: 'Brain Buster' }
 
 // Shows a single puzzle: the question, a "reveal answer" button, sharing,
 // and (if it's today's daily puzzle) streak tracking.
@@ -114,7 +114,7 @@ export default function PuzzleView() {
       >
         <div className="text-6xl mb-4">{puzzle.emoji || '🧩'}</div>
         <p className="text-xs font-bold uppercase tracking-wide text-white/80 mb-2">
-          {DIFFICULTY_LABEL[puzzle.difficulty] || 'Warm-Up'} Puzzle
+          {difficultyLabel(puzzle.difficulty, puzzle.language)} {puzzle.language === 'hi' ? 'पहेली' : 'Puzzle'}
         </p>
         <h1 className="text-2xl font-bold leading-snug">{puzzle.question}</h1>
       </div>
@@ -134,11 +134,13 @@ export default function PuzzleView() {
             onClick={handleReveal}
             className="px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
           >
-            🔍 Reveal Answer
+            🔍 {puzzle.language === 'hi' ? 'जवाब देखें' : 'Reveal Answer'}
           </button>
         ) : (
           <div className="text-left bg-white dark:bg-gray-800 rounded-2xl shadow-sm p-6">
-            <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">Answer</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">
+              {puzzle.language === 'hi' ? 'जवाब' : 'Answer'}
+            </p>
             <p className="text-gray-800 dark:text-gray-200 leading-relaxed">{puzzle.answer}</p>
           </div>
         )}
@@ -146,15 +148,19 @@ export default function PuzzleView() {
 
       {revealed && isDailyPuzzle && dailyStreak?.count > 0 && (
         <p className="mt-4 text-sm font-semibold text-violet-600 dark:text-violet-400">
-          🔥 {dailyStreak.count}-day streak!
+          🔥 {puzzle.language === 'hi' ? `${dailyStreak.count} दिन की स्ट्रीक!` : `${dailyStreak.count}-day streak!`}
         </p>
       )}
 
       <div className="mt-6">
         <ShareButtons
-          title="Can you solve this?"
+          title={puzzle.language === 'hi' ? 'क्या तुम इसे सुलझा सकते हो?' : 'Can you solve this?'}
           url={shareUrl}
-          shareText={`${puzzle.question} — try it on Twegle!`}
+          shareText={
+            puzzle.language === 'hi'
+              ? `${puzzle.question} — Twegle पर आज़माओ!`
+              : `${puzzle.question} — try it on Twegle!`
+          }
           onShare={() => !previewToken && recordEngagement('puzzle', puzzle._id, 'share')}
         />
       </div>
@@ -166,7 +172,9 @@ export default function PuzzleView() {
       {/* "You might also like" — a few other suggested puzzles */}
       {suggestions.length > 0 && (
         <div className="mt-10 text-left">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">You might also like</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4 text-center">
+            {puzzle.language === 'hi' ? 'आपको ये भी पसंद आ सकते हैं' : 'You might also like'}
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {suggestions.map((p, i) => (
               <PuzzleCard key={p._id} puzzle={p} index={i} />
@@ -181,7 +189,7 @@ export default function PuzzleView() {
         to="/"
         className="inline-block mt-8 px-5 py-2.5 rounded-full bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-sm font-semibold hover:bg-gray-700 dark:hover:bg-gray-300"
       >
-        See more
+        {puzzle.language === 'hi' ? 'और देखें' : 'See more'}
       </Link>
 
       <div className="mt-6">

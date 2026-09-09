@@ -1038,6 +1038,63 @@ so its CTA just points at that. Deliberately left `PuzzleCard`'s
 same English-only-hardcoded-dictionary bug, but outside this fix's
 originally-reported scope.
 
+## Hindi localization sweep, Phase 1 of 2 (2026-09-09)
+
+Follow-up to the CTA fix above: the owner found the homepage tab names,
+category chips, and "New"/"Popular" tile badges also stayed hardcoded in
+English in Hindi mode, then asked for a full site-wide recheck. An
+Explore-agent inventory split every remaining hardcoded-English string
+into two groups by whether a language signal was already available.
+**Phase 1** (this entry) covers everywhere it was: `Home.jsx`'s own
+`language` state, or a fetched item's own `.language` field. **Phase 2**
+(deferred, not started) covers Header/Footer/`Game.jsx`'s own
+chrome/Search/Browse — none of these have any language signal today,
+since there's no global language-preference mechanism anywhere in the
+app (`language` only ever exists as `Home.jsx`'s own URL param, or as
+each fetched item's own field).
+
+Phase 1 changes:
+- `Home.jsx`: every `TABS`/category/`PUZZLE_DIFFICULTIES` array entry
+  gained an `hi` field, rendered through a new local `pick(item,
+  language)` helper. Also translated the sort toggle, hero copy, stats
+  row, and empty/error states.
+- `utils/engagementLabel.js`: now takes a `language` param (previously
+  none at all) so the New/Popular badge itself follows the toggle, not
+  just the count logic behind it.
+- `utils/ctaLabels.js`: gained `difficultyLabel(difficulty, language)`
+  (de-duplicated out of `PuzzleCard.jsx` and `PuzzleView.jsx`, which each
+  had their own copy of the same `DIFFICULTY_LABEL` object) and
+  `pickLabel(item, language)` (the same `{label, hi}` pattern as
+  `Home.jsx`'s `pick`, exported for reuse by card/detail components).
+- `storyStyles.js` / `postStyles.js`: `STORY_CATEGORY_STYLE` /
+  `POST_CATEGORY_STYLE` entries gained `hi` fields.
+- `Quiz.jsx`, `Result.jsx`, `PuzzleView.jsx`, `StoryView.jsx`,
+  `PostView.jsx`: every remaining hardcoded string translated, gated on
+  the page's own already-fetched item `.language` field (share buttons,
+  compare/battle forms, streak messages, "you might also like," etc.) —
+  pure frontend fixes, no backend changes needed since these items
+  already carried `.language`.
+- Friendship Quiz + Compatibility flows needed one backend change first
+  (see `BACKEND.md`) since neither response ever included a `language`
+  field. `FriendshipSetup.jsx`, `FriendshipPlay.jsx`,
+  `FriendshipResult.jsx`, `CompatibilityPlay.jsx`,
+  `CompatibilityResult.jsx` all translated against the new
+  `quizLanguage` field once it existed.
+
+Verified end-to-end in the browser: homepage in Hindi mode across all 7
+tabs/category chips/badges; the full guess-mode Friendship Quiz flow via
+real UI interaction against a real seeded Hindi template; the
+Compatibility flow (setup, play, "still waiting," joined result,
+including the new Hindi verdict copy) via a temporary local-dev-only test
+template, created and fully cleaned up afterward — no compatibility-mode
+template exists yet in either language on production, so this was the
+only way to exercise that flow's copy at all.
+
+Phase 2 is intentionally not started — it needs a real design decision
+(global language preference: URL param on every route? `localStorage`?
+account-level setting?) before any of Header/Footer/Search/Browse/
+`Game.jsx` chrome can follow the toggle at all.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:

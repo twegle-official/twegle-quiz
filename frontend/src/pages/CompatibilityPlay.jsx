@@ -62,6 +62,7 @@ export default function CompatibilityPlay() {
     )
   }
 
+  const isHindi = session.quizLanguage === 'hi'
   const allAnswered = answers.every((a) => a !== null)
 
   // Submits person B's name and real answers, then goes to the results page.
@@ -85,9 +86,15 @@ export default function CompatibilityPlay() {
       <div className="text-center mb-8">
         <div className="text-5xl mb-3">{session.quizEmoji}</div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-          How compatible are you with {session.personAName}?
+          {isHindi
+            ? `${session.personAName} के साथ तुम कितने कम्पैटिबल हो?`
+            : `How compatible are you with ${session.personAName}?`}
         </h1>
-        <p className="text-gray-500 dark:text-gray-400">Answer for real — you'll both find out your match right after.</p>
+        <p className="text-gray-500 dark:text-gray-400">
+          {isHindi
+            ? 'असली जवाब दो — तुम दोनों को तुरंत बाद अपना मैच पता चल जाएगा।'
+            : "Answer for real — you'll both find out your match right after."}
+        </p>
       </div>
 
       {error && (
@@ -96,12 +103,14 @@ export default function CompatibilityPlay() {
 
       <form onSubmit={handleSubmit}>
         <div className="mb-8">
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Your name</label>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+            {isHindi ? 'आपका नाम' : 'Your name'}
+          </label>
           <input
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Priya"
+            placeholder={isHindi ? 'जैसे प्रिया' : 'e.g. Priya'}
             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl"
           />
         </div>
@@ -139,7 +148,9 @@ export default function CompatibilityPlay() {
           disabled={!name.trim() || !allAnswered || submitting}
           className="mt-8 w-full px-5 py-3 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white font-semibold hover:opacity-90 disabled:opacity-40"
         >
-          {submitting ? 'Finding your match...' : 'See Our Compatibility'}
+          {submitting
+            ? isHindi ? 'तुम्हारा मैच खोजा जा रहा है...' : 'Finding your match...'
+            : isHindi ? 'हमारी कम्पैटिबिलिटी देखें' : 'See Our Compatibility'}
         </button>
       </form>
     </div>

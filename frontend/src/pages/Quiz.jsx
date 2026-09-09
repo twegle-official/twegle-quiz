@@ -188,7 +188,7 @@ export default function Quiz() {
           for a sponsored quiz, unlike the tile badge which is easy to miss. */}
       {quiz.sponsor?.name && (
         <p className="text-xs font-medium text-gray-400 dark:text-gray-500 mb-4">
-          ✨ Sponsored by{' '}
+          ✨ {quiz.language === 'hi' ? 'स्पॉन्सर्ड बाय' : 'Sponsored by'}{' '}
           {quiz.sponsor.url ? (
             <a href={quiz.sponsor.url} target="_blank" rel="noopener noreferrer" className="text-violet-600 dark:text-violet-400 hover:underline">
               {quiz.sponsor.logo} {quiz.sponsor.name}
@@ -206,7 +206,9 @@ export default function Quiz() {
         <div className="mb-6 max-w-xs mx-auto text-center">
           {showBattleForm ? (
             <form onSubmit={handleBattleSubmit} className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 text-left">
-              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">🆚 Battle a friend live</p>
+              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">
+                🆚 {quiz.language === 'hi' ? 'दोस्त को लाइव चैलेंज करो' : 'Battle a friend live'}
+              </p>
               {battleError && (
                 <p className="text-xs text-red-500 bg-red-50 dark:bg-red-950/40 rounded-lg px-3 py-2 mb-3">{battleError}</p>
               )}
@@ -215,7 +217,7 @@ export default function Quiz() {
                 autoFocus
                 value={battleName}
                 onChange={(e) => setBattleName(e.target.value)}
-                placeholder="Your name"
+                placeholder={quiz.language === 'hi' ? 'आपका नाम' : 'Your name'}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-xl mb-3 text-sm"
               />
               <button
@@ -223,7 +225,9 @@ export default function Quiz() {
                 disabled={!battleName.trim() || battleSubmitting}
                 className="w-full px-4 py-2 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90 disabled:opacity-40"
               >
-                {battleSubmitting ? 'Creating your battle...' : 'Get My Battle Link'}
+                {battleSubmitting
+                  ? quiz.language === 'hi' ? 'बैटल बन रहा है...' : 'Creating your battle...'
+                  : quiz.language === 'hi' ? 'मेरा बैटल लिंक पाओ' : 'Get My Battle Link'}
               </button>
             </form>
           ) : (
@@ -231,7 +235,7 @@ export default function Quiz() {
               onClick={() => setShowBattleForm(true)}
               className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
             >
-              🆚 Battle a friend live
+              🆚 {quiz.language === 'hi' ? 'दोस्त को लाइव चैलेंज करो' : 'Battle a friend live'}
             </button>
           )}
         </div>
@@ -241,7 +245,9 @@ export default function Quiz() {
       {/* The current question and its clickable answer buttons */}
       <div key={questionIndex} className="animate-fade-slide-in">
         <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">
-          Question {questionIndex + 1} of {quiz.questions.length}
+          {quiz.language === 'hi'
+            ? `सवाल ${questionIndex + 1} / ${quiz.questions.length}`
+            : `Question ${questionIndex + 1} of ${quiz.questions.length}`}
         </p>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">{question.text}</h1>
         <div className="flex flex-col gap-3">
