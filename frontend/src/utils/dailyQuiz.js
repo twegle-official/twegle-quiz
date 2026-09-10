@@ -8,6 +8,7 @@
 // Logged-in visitors additionally get both streaks synced to their account
 // server-side — see statsSync.js.
 import { pushLocalStatsToServer } from './statsSync'
+import { scopedKey } from './accountScope'
 
 // Turns a Date into a "YYYY-MM-DD" string, so dates can be compared as text.
 function dateKey(date) {
@@ -59,7 +60,7 @@ export const PUZZLE_STREAK_KEY = 'dailyPuzzleStreak'
 function readStreak(key) {
   let streak
   try {
-    streak = JSON.parse(localStorage.getItem(key)) || { count: 0, lastDate: null }
+    streak = JSON.parse(localStorage.getItem(scopedKey(key))) || { count: 0, lastDate: null }
   } catch {
     streak = { count: 0, lastDate: null }
   }
@@ -109,7 +110,7 @@ function recordStreak(key, finishedId, todaysId) {
 
   const count = current.lastDate === previousDateKey(today) ? current.count + 1 : 1
   const updated = { count, lastDate: today }
-  localStorage.setItem(key, JSON.stringify(updated))
+  localStorage.setItem(scopedKey(key), JSON.stringify(updated))
   pushLocalStatsToServer()
   return updated
 }
@@ -142,10 +143,11 @@ export function isStreakAtRisk(streak) {
 }
 
 // Wipes this browser's local streak progress — called on logout alongside
-// badges.js's clearLocalStats(), for the same reason: without this, a
-// logged-out account's streaks kept showing (and could get merged into
-// whichever account logged in next) until something overwrote them.
+// badges.js's clearLocalStats() (before 'userSession' itself is cleared, so
+// scopedKey() below still resolves to the account logging out), for the
+// same reason: without this, a logged-out account's streaks kept showing
+// until something overwrote them.
 export function clearLocalStreaks() {
-  localStorage.removeItem(QUIZ_STREAK_KEY)
-  localStorage.removeItem(PUZZLE_STREAK_KEY)
+  localStorage.removeItem(scopedKey(QUIZ_STREAK_KEY))
+  localStorage.removeItem(scopedKey(PUZZLE_STREAK_KEY))
 }

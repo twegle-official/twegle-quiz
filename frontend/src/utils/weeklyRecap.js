@@ -5,6 +5,8 @@
 // just enough day-level granularity for that, without turning into a
 // second parallel stats system: one small tally object per calendar day,
 // pruned to the last 14 days so it never grows unbounded.
+import { scopedKey } from './accountScope'
+
 export const DAILY_LOG_KEY = 'twegleDailyActivity'
 const RETENTION_DAYS = 14
 const KINDS = ['games', 'quizzes', 'puzzles', 'reactions', 'shares']
@@ -15,7 +17,7 @@ function dayKey(date) {
 
 function readLog() {
   try {
-    return JSON.parse(localStorage.getItem(DAILY_LOG_KEY)) || {}
+    return JSON.parse(localStorage.getItem(scopedKey(DAILY_LOG_KEY))) || {}
   } catch {
     return {}
   }
@@ -38,7 +40,7 @@ export function recordDailyActivity(kind) {
   const key = dayKey(new Date())
   if (!log[key]) log[key] = {}
   log[key][kind] = (log[key][kind] || 0) + 1
-  localStorage.setItem(DAILY_LOG_KEY, JSON.stringify(log))
+  localStorage.setItem(scopedKey(DAILY_LOG_KEY), JSON.stringify(log))
 }
 
 // Adds up this past week's activity so it can be shown on the recap page.
@@ -60,9 +62,10 @@ export function getWeekSummary() {
 
 // Wipes this browser's local daily-activity log — called on logout
 // alongside badges.js's clearLocalStats() and dailyQuiz.js's
-// clearLocalStreaks(), for the same reason: "This week / Your Twegle
-// Wrapped" is per-account history and shouldn't keep showing (or leak into
-// a different account) after logging out.
+// clearLocalStreaks() (before 'userSession' itself is cleared, so
+// scopedKey() below still resolves to the account logging out), for the
+// same reason: "This week / Your Twegle Wrapped" is per-account history and
+// shouldn't keep showing after logging out.
 export function clearDailyActivity() {
-  localStorage.removeItem(DAILY_LOG_KEY)
+  localStorage.removeItem(scopedKey(DAILY_LOG_KEY))
 }

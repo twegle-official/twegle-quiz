@@ -651,15 +651,13 @@ fields explicitly added to its merge list — that function only passes
 through fields it names, so without this a real server-side referral credit
 would never have survived into this page's local-storage-only view.
 
-**Real bug found during verification, not fixed as part of this task**:
-the `twegleStats` localStorage key is global, not scoped per account — two
-different accounts logged into two tabs of the *same* browser at once leak
-cached stats into each other via the `Math.max`/OR merge above, since each
-account's 20-second background sync reads/writes that same shared key. The
-server-authoritative referral fields self-heal on the next clean login
-(confirmed directly against the database); every other stat field has no
-such protection. Narrow trigger, doesn't affect the realistic referrer/
-friend-on-separate-devices case — logged to `PENDING_TASKS.md`.
+**Real bug found during verification** (2026-08-20): the `twegleStats`
+localStorage key is global, not scoped per account — two different
+accounts logged into two tabs of the *same* browser leak cached stats into
+each other via the `Math.max`/OR merge above, since each account's
+20-second background sync reads/writes that same shared key. **Fixed
+2026-09-10** — see the "Account-scoped local stats" section below for the
+full fix; kept this note as the original find.
 
 ## Skydrift Isles (2026-08-20)
 
@@ -1094,6 +1092,73 @@ Phase 2 is intentionally not started — it needs a real design decision
 (global language preference: URL param on every route? `localStorage`?
 account-level setting?) before any of Header/Footer/Search/Browse/
 `Game.jsx` chrome can follow the toggle at all.
+
+## Account-scoped local stats (2026-09-10)
+
+Fixed the cross-account stat leak found during Referral rewards
+verification (2026-08-20, noted above): `twegleStats` and the other
+synced keys (`dailyQuizStreak`/`dailyPuzzleStreak`/`twegleBadgesSeen`/
+`twegleLevelSeen`/`twegleDailyActivity`) were single global localStorage
+keys — any two accounts ever logged into the same browser (not just at
+the exact same instant) shared the same bucket and could inflate each
+other's numbers via `statsSync.js`'s `Math.max`/OR merge.
+
+New `utils/accountScope.js` exports `scopedKey(baseKey)`: reads the
+logged-in account's id straight out of `userSession` in localStorage
+(same trick `statsSync.js`'s own `getToken()` already used, rather than
+threading the session through every plain-utility call site) and returns
+`<baseKey>:<accountId>` for a logged-in visitor, or the bare key
+unchanged for a guest. Every localStorage read/write in `badges.js`,
+`dailyQuiz.js`, `weeklyRecap.js`, and `statsSync.js` now goes through it.
+
+Two follow-on issues surfaced while wiring this in, both fixed in the
+same pass:
+- `syncStatsOnLogin()` runs *after* `userSession` already holds the new
+  account, so a naive scoped read would have broken "play as a guest,
+  then sign up — that progress carries into the new account," since it'd
+  only ever see the (empty) new account's own bucket. Split that one-time
+  migration into a new `claimGuestProgress(token)` — reads the bare guest
+  bucket once, merges it with the account's server-side copy, writes the
+  result into the account's own scoped bucket, and clears the guest
+  bucket — called explicitly from `UserAuthContext.jsx`'s `login()`/
+  `signup()` (awaited, so it finishes before the mount effect's ongoing
+  sync runs against the same bucket). The regular `syncStatsOnLogin()`
+  (20s poll + visibilitychange + mount) never touches the guest bucket at
+  all anymore, on purpose — otherwise a *different*, still-guest tab open
+  on the same browser would keep having its in-progress local progress
+  silently wiped by another tab's periodic sync.
+- `UserAuthContext.jsx`'s `logout()` removed `userSession` *before*
+  calling `clearLocalStats()`/`clearLocalStreaks()`/`clearDailyActivity()`
+  — since those now resolve their key via `scopedKey()`, clearing after
+  removing the session would have wiped the *guest* bucket instead of the
+  just-logged-out account's own bucket, leaving that account's local copy
+  behind. Reordered to clear first, then remove the session.
+
+Verified end-to-end in the browser, not just by reading the code: seeded
+guest stats, signed up a real test account, confirmed the guest data
+landed in that account's own `twegleStats:<id>` key and the bare guest
+key was cleared afterward; seeded fresh guest data again and signed up a
+*second* real test account on the same browser without logging the first
+one out — confirmed account 2's scoped bucket held only its own data,
+account 1's scoped bucket was completely untouched, and the server-side
+copy (fetched with account 2's own token) matched exactly; logged account
+2 out and confirmed its scoped bucket was correctly removed. Both test
+accounts deleted from the dev database afterward.
+
+**Residual limitation, disclosed rather than hidden**: two accounts
+genuinely open in two tabs at the *exact same moment* still share one
+`userSession` value — that's inherent to localStorage being one shared
+store per browser origin, not per tab, and no per-account namespacing
+scheme changes that. A periodic sync firing from one tab a few seconds
+after another tab has switched `userSession` to a different account can
+still attribute that moment's read/write to the wrong account. This fix
+eliminates the actual realistic trigger (drift persisting across
+ordinary, non-simultaneous logins on a shared browser — the far more
+common case in practice) but a fully airtight fix for true
+same-instant multi-tab sessions would need a bigger architecture change
+(no local caching at all for logged-in visitors, server-only reads) —
+out of proportion to how narrow that specific edge is, so not attempted
+here.
 
 ## What's next
 

@@ -15,6 +15,7 @@ import { fetchStats, pushStats } from '../userApi'
 import { QUIZ_STREAK_KEY, PUZZLE_STREAK_KEY } from './dailyQuiz'
 import { STATS_KEY, SEEN_KEY } from './badges'
 import { DAILY_LOG_KEY } from './weeklyRecap'
+import { scopedKey } from './accountScope'
 
 function getToken() {
   try {
@@ -27,7 +28,7 @@ function getToken() {
 
 function readJSON(key, fallback) {
   try {
-    return JSON.parse(localStorage.getItem(key)) ?? fallback
+    return JSON.parse(localStorage.getItem(scopedKey(key))) ?? fallback
   } catch {
     return fallback
   }
@@ -44,11 +45,46 @@ function readLocalBlob() {
 }
 
 function writeLocalBlob(blob) {
-  if (blob.quizStreak) localStorage.setItem(QUIZ_STREAK_KEY, JSON.stringify(blob.quizStreak))
-  if (blob.puzzleStreak) localStorage.setItem(PUZZLE_STREAK_KEY, JSON.stringify(blob.puzzleStreak))
-  if (blob.stats) localStorage.setItem(STATS_KEY, JSON.stringify(blob.stats))
-  if (blob.badgesSeen) localStorage.setItem(SEEN_KEY, JSON.stringify(blob.badgesSeen))
-  if (blob.dailyActivity) localStorage.setItem(DAILY_LOG_KEY, JSON.stringify(blob.dailyActivity))
+  if (blob.quizStreak) localStorage.setItem(scopedKey(QUIZ_STREAK_KEY), JSON.stringify(blob.quizStreak))
+  if (blob.puzzleStreak) localStorage.setItem(scopedKey(PUZZLE_STREAK_KEY), JSON.stringify(blob.puzzleStreak))
+  if (blob.stats) localStorage.setItem(scopedKey(STATS_KEY), JSON.stringify(blob.stats))
+  if (blob.badgesSeen) localStorage.setItem(scopedKey(SEEN_KEY), JSON.stringify(blob.badgesSeen))
+  if (blob.dailyActivity) localStorage.setItem(scopedKey(DAILY_LOG_KEY), JSON.stringify(blob.dailyActivity))
+}
+
+// Reads the *un-scoped* (guest) bucket directly, ignoring whatever account
+// is currently logged in — only ever used by syncStatsOnLogin() below, to
+// pick up progress made before this login/signup happened (when there was
+// no account yet, so every write went to the bare keys). Deliberately
+// bypasses scopedKey() here, unlike every other read in this file.
+function readBareBlob() {
+  function bareJSON(key, fallback) {
+    try {
+      return JSON.parse(localStorage.getItem(key)) ?? fallback
+    } catch {
+      return fallback
+    }
+  }
+  return {
+    quizStreak: bareJSON(QUIZ_STREAK_KEY, { count: 0, lastDate: null }),
+    puzzleStreak: bareJSON(PUZZLE_STREAK_KEY, { count: 0, lastDate: null }),
+    stats: bareJSON(STATS_KEY, {}),
+    badgesSeen: bareJSON(SEEN_KEY, []),
+    dailyActivity: bareJSON(DAILY_LOG_KEY, {}),
+  }
+}
+
+// Clears the un-scoped (guest) bucket once its contents have been folded
+// into an account — otherwise it would just sit there and get re-merged
+// (harmlessly, but pointlessly) into every future account that logs into
+// this same browser, rather than being "claimed" once by whichever account
+// synced it first.
+function clearBareBlob() {
+  localStorage.removeItem(QUIZ_STREAK_KEY)
+  localStorage.removeItem(PUZZLE_STREAK_KEY)
+  localStorage.removeItem(STATS_KEY)
+  localStorage.removeItem(SEEN_KEY)
+  localStorage.removeItem(DAILY_LOG_KEY)
 }
 
 // Combines two devices' streaks into one, keeping the most up-to-date one.
@@ -137,16 +173,54 @@ function normalizeServerBlob(serverBlob) {
   }
 }
 
-// Runs when someone logs in — combines this device's stats with the
-// account's stats from the server (so progress from both is kept), saves
-// the combined result locally, and sends it back up to the server too.
-// Called once when a session is available (see UserAuthContext.jsx) —
-// pulls the account's server-side copy, merges it with whatever this
-// browser already has locally so neither side loses progress, writes the
-// merged result back to localStorage (every existing read in
-// dailyQuiz.js/badges.js picks it up automatically), then pushes that same
-// merged result back up so both devices normalize to it right away instead
-// of waiting for the next local mutation.
+// Runs once, right after a fresh login/signup on this device (see
+// UserAuthContext.jsx's login()/signup(), called *before* the ongoing
+// syncStatsOnLogin below) — folds whatever was played as a guest on this
+// browser, before this account existed, into the account: merges the
+// un-scoped guest bucket with the account's server-side copy, saves the
+// result into the account's own scoped bucket, pushes it to the server,
+// then clears the guest bucket so it isn't merged in a second time (e.g.
+// by a future different account logging into this same browser later).
+//
+// Deliberately separate from the ongoing syncStatsOnLogin() below — that
+// one runs every 20s/visibility-change for as long as a session is open,
+// and must NOT touch the guest bucket each time: if a *different* tab on
+// this same browser is meanwhile browsing as a guest (not logged in), a
+// periodic clear here would keep wiping that tab's in-progress guest
+// progress before it ever gets a chance to be claimed by anything.
+export async function claimGuestProgress(token) {
+  let serverBlob = {}
+  try {
+    const data = await fetchStats(token)
+    serverBlob = normalizeServerBlob(data?.stats || {})
+  } catch {
+    return
+  }
+
+  const guestBlob = readBareBlob()
+  const merged = {
+    quizStreak: mergeStreak(guestBlob.quizStreak, serverBlob.quizStreak),
+    puzzleStreak: mergeStreak(guestBlob.puzzleStreak, serverBlob.puzzleStreak),
+    stats: mergeStats(guestBlob.stats, serverBlob.stats),
+    badgesSeen: [...new Set([...(guestBlob.badgesSeen || []), ...(serverBlob.badgesSeen || [])])],
+    dailyActivity: mergeDailyActivity(guestBlob.dailyActivity, serverBlob.dailyActivity),
+  }
+
+  writeLocalBlob(merged)
+  clearBareBlob()
+  pushStats(token, merged).catch(() => {})
+  window.dispatchEvent(new CustomEvent('twegle-stats-synced'))
+}
+
+// Runs on an ongoing basis while a session is open — combines this
+// account's own already-synced local bucket with its server-side copy (so
+// progress from both is kept, e.g. after playing on a second device),
+// writes the merged result back to this account's scoped local bucket
+// (every existing read in dailyQuiz.js/badges.js picks it up
+// automatically), then pushes that same merged result back up so both
+// devices normalize to it right away instead of waiting for the next local
+// mutation. Never touches the guest bucket — see claimGuestProgress() above
+// for the one-time migration that happens right after login/signup instead.
 export async function syncStatsOnLogin(token) {
   let serverBlob = {}
   try {

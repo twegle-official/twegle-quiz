@@ -8,6 +8,7 @@ import { pushLocalStatsToServer } from './statsSync'
 import { calculatePoints, getLevelInfo } from './levels'
 import { GAMES } from '../games/registry'
 import { recordDailyActivity } from './weeklyRecap'
+import { scopedKey } from './accountScope'
 
 export const STATS_KEY = 'twegleStats'
 export const SEEN_KEY = 'twegleBadgesSeen'
@@ -37,7 +38,7 @@ export function getStats() {
       skydriftTilesPlaced: 0,
       skydriftWindlingsCaught: 0,
       skydriftSkyEventsFound: 0,
-      ...JSON.parse(localStorage.getItem(STATS_KEY)),
+      ...JSON.parse(localStorage.getItem(scopedKey(STATS_KEY))),
     }
   } catch {
     return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false, skydriftTilesPlaced: 0, skydriftWindlingsCaught: 0, skydriftSkyEventsFound: 0 }
@@ -45,7 +46,7 @@ export function getStats() {
 }
 
 function saveStats(stats) {
-  localStorage.setItem(STATS_KEY, JSON.stringify(stats))
+  localStorage.setItem(scopedKey(STATS_KEY), JSON.stringify(stats))
 }
 
 export const BADGES = [
@@ -86,7 +87,7 @@ function unlockedIds(stats) {
 function notifyNewBadges(before, after) {
   let seen
   try {
-    seen = new Set(JSON.parse(localStorage.getItem(SEEN_KEY)) || [])
+    seen = new Set(JSON.parse(localStorage.getItem(scopedKey(SEEN_KEY))) || [])
   } catch {
     seen = new Set()
   }
@@ -94,7 +95,7 @@ function notifyNewBadges(before, after) {
   if (newlyUnlocked.length === 0) return
 
   for (const id of newlyUnlocked) seen.add(id)
-  localStorage.setItem(SEEN_KEY, JSON.stringify([...seen]))
+  localStorage.setItem(scopedKey(SEEN_KEY), JSON.stringify([...seen]))
 
   for (const id of newlyUnlocked) {
     const badge = BADGES.find((b) => b.id === id)
@@ -110,9 +111,9 @@ function checkLevelUp() {
   const stats = getStats()
   const points = calculatePoints(stats, getQuizStreak().count, getPuzzleStreak().count)
   const { index, level } = getLevelInfo(points)
-  const seen = parseInt(localStorage.getItem(LEVEL_SEEN_KEY), 10) || 0
+  const seen = parseInt(localStorage.getItem(scopedKey(LEVEL_SEEN_KEY)), 10) || 0
   if (index <= seen) return
-  localStorage.setItem(LEVEL_SEEN_KEY, String(index))
+  localStorage.setItem(scopedKey(LEVEL_SEEN_KEY), String(index))
   window.dispatchEvent(new CustomEvent('twegle-level-up', { detail: { index, level, points } }))
 }
 
@@ -260,17 +261,22 @@ export function getCurrentLevelInfo() {
 }
 
 // Wipes this browser's local badge/stats progress — called on logout (see
-// UserAuthContext.jsx) so the next login (a different account, or the same
+// UserAuthContext.jsx, which must call this *before* clearing 'userSession'
+// so scopedKey() below still resolves to the account that's logging out,
+// not the guest bucket) so the next login (a different account, or the same
 // one on a shared device) doesn't inherit whatever was left behind here via
 // statsSync.js's merge-on-login. Leaving these keys in place after logout
-// was the actual bug: this browser kept looking like the just-logged-out
+// was the original bug: this browser kept looking like the just-logged-out
 // account to every localStorage read (Badges.jsx, Account.jsx, the
 // "already attempted" tile marks) until something new happened to overwrite
-// them, and would even get merged into a completely different account that
-// logged in next. Deliberately doesn't touch dailyQuiz.js's streak keys —
-// see clearLocalStreaks() there, called alongside this one.
+// them. Since these keys are now namespaced per account (see
+// accountScope.js), a different account logging in next can no longer
+// inherit this one's data even without this call — but the call still
+// matters so this device doesn't keep looking locally logged-in as this
+// account right after logout. Deliberately doesn't touch dailyQuiz.js's
+// streak keys — see clearLocalStreaks() there, called alongside this one.
 export function clearLocalStats() {
-  localStorage.removeItem(STATS_KEY)
-  localStorage.removeItem(SEEN_KEY)
-  localStorage.removeItem(LEVEL_SEEN_KEY)
+  localStorage.removeItem(scopedKey(STATS_KEY))
+  localStorage.removeItem(scopedKey(SEEN_KEY))
+  localStorage.removeItem(scopedKey(LEVEL_SEEN_KEY))
 }

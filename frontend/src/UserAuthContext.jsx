@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { signupUser, loginUser, fetchCurrentUser } from './userApi'
-import { syncStatsOnLogin } from './utils/statsSync'
+import { syncStatsOnLogin, claimGuestProgress } from './utils/statsSync'
 import { clearLocalStats } from './utils/badges'
 import { clearLocalStreaks } from './utils/dailyQuiz'
 import { clearDailyActivity } from './utils/weeklyRecap'
@@ -87,7 +87,11 @@ export function UserAuthProvider({ children }) {
     clearStoredReferralCode()
     localStorage.setItem('userSession', JSON.stringify({ token: data.token, user: data.user }))
     setSession({ token: data.token, user: data.user })
-    syncStatsOnLogin(data.token)
+    // One-time guest-progress migration (see statsSync.js's
+    // claimGuestProgress) — awaited so it finishes writing into this
+    // account's own scoped bucket before the mount effect below's ongoing
+    // syncStatsOnLogin() runs against that same bucket.
+    await claimGuestProgress(data.token)
     return data.recoveryCode
   }
 
@@ -96,22 +100,28 @@ export function UserAuthProvider({ children }) {
     const data = await loginUser(username, password)
     localStorage.setItem('userSession', JSON.stringify(data))
     setSession(data)
-    syncStatsOnLogin(data.token)
+    // See signup()'s comment above — same one-time guest-progress migration.
+    await claimGuestProgress(data.token)
   }
 
   // Logs the visitor out on this device. Also wipes this browser's local
   // badge/streak progress — without this, it kept looking like the
   // just-logged-out account to every localStorage-driven read (Badges.jsx,
-  // Account.jsx, "already attempted" tile marks), and could even get
-  // merged into a completely different account that logged in next on the
-  // same device (see statsSync.js's merge-on-login). Dispatches the same
+  // Account.jsx, "already attempted" tile marks). Dispatches the same
   // event Home.jsx already listens for so anything still mounted picks up
   // the reset immediately rather than waiting for a full page reload.
+  //
+  // Order matters here: the three clear calls must run *before*
+  // 'userSession' is removed, since they go through scopedKey() (see
+  // accountScope.js), which reads 'userSession' to know which account's
+  // bucket to clear. Clearing it first would make them fall back to the
+  // guest bucket instead of this account's own — wiping the wrong data
+  // and leaving this account's own local copy behind.
   function logout() {
-    localStorage.removeItem('userSession')
     clearLocalStats()
     clearLocalStreaks()
     clearDailyActivity()
+    localStorage.removeItem('userSession')
     setSession(null)
     window.dispatchEvent(new CustomEvent('twegle-stats-synced'))
   }
