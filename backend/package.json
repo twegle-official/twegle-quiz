@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "seed:admin": "node src/scripts/seedAdmin.js",
     "seed:quizzes": "node src/scripts/seedQuizzes.js",
     "seed:friendship-quizzes": "node src/scripts/seedFriendshipQuizzes.js",
@@ -32,6 +34,8 @@
   },
   "devDependencies": {
     "mongodb-memory-server": "^11.2.0",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2",
+    "vitest": "^5.0.0"
   }
 }

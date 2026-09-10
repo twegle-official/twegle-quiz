@@ -749,6 +749,51 @@ backend/src/
   scripts/ensureFirstAdmin.js  auto-creates first admin on boot (see above)
 ```
 
+## Automated test suite (2026-09-10)
+
+`backend/tests/` — Vitest + Supertest, run with `npm test` (or `npm run
+test:watch` while iterating) from `backend/`. First automated tests in the
+project; everything before this was verified by hand each session (see
+`PENDING_TASKS.md`'s backlog entry for the full reasoning on why this was
+picked up first). Backend-only for now — a browser end-to-end suite is a
+separate, deliberately deferred follow-up item, not part of this pass.
+
+**Isolation, the whole point of this being safe to run anytime**: every
+test runs against a throwaway **in-memory** MongoDB
+(`mongodb-memory-server`, already a dependency for the local-dev-without-
+`MONGODB_URI` fallback — see `config/db.js`), spun up fresh in
+`tests/setup.js` with no `dbPath`. Nothing is written to disk and nothing
+survives past the test run, so this can never touch the real local dev
+database (`backend/.mongo-dev`), let alone production — confirmed
+directly by checking that database's files were untouched (identical
+modified-timestamp before/after) across a full test run.
+
+**`src/app.js` is new** — the plain Express app (every route + middleware,
+no socket.io, no db connection, no `listen()`), exported as `createApp()`.
+Split out of `src/server.js`, which previously did all of that in one
+file with nothing importable. `server.js` now just calls `createApp()`
+and does its socket/db/listen wiring exactly as before — a pure refactor,
+verified by running the real dev server afterward and hitting
+`/api/health`. Tests import `createApp()` directly and drive it with
+Supertest, so a test run never opens a real port either.
+
+Coverage, 21 tests across 3 files:
+- **`endUserAuth.test.js`** — signup (succeeds and returns a token +
+  recovery code, rejects a too-short password, rejects a duplicate
+  username) and login (succeeds, rejects a wrong password, rejects an
+  unknown username), plus `/api/users/me` working with a valid token and
+  401ing with none.
+- **`quiz.test.js`** — a published quiz appears in the public feed and a
+  draft one doesn't (both in the list and fetched directly by slug),
+  recording a play increments the play count on the next fetch, and a
+  malformed play request is rejected.
+- **`friendshipQuiz.test.js`** — person A submits real answers and gets a
+  shareable code; a friend opening that code never receives the real
+  answers; guesses are scored correctly for both a full and a partial
+  match (checked per question, not just the aggregate score); a scored
+  result can be re-fetched later by attempt id; an unknown instance code
+  404s.
+
 ## Known dev-environment quirks (for whoever runs this next)
 
 - **Stopping a background `npm run start`/`npm run dev` doesn't always kill the actual `node`/`mongod` process on Windows** — the wrapping shell dies but the child can survive and keep holding the port or the database lock. If a restart seems to "ignore" a code change, check `Get-NetTCPConnection -LocalPort 4000` (PowerShell) for a stale process still bound to the port, and kill it directly.
