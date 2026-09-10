@@ -11,6 +11,7 @@ import ZodiacCard from '../components/ZodiacCard'
 import PuzzleCard from '../components/PuzzleCard'
 import DailyQuizBanner from '../components/DailyQuizBanner'
 import PuzzleOfTheDayBanner from '../components/PuzzleOfTheDayBanner'
+import FestiveBanner from '../components/FestiveBanner'
 import RecentlyViewedRow from '../components/RecentlyViewedRow'
 import AdSlot from '../components/AdSlot'
 
@@ -480,6 +481,12 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Only present a few days a year, around a real festival — see
+          FestiveBanner.jsx/utils/festiveBanner.js. Completely absent
+          (renders null) the rest of the time, so it never costs the
+          "quick browsing" hero band any extra height on a normal day. */}
+      <FestiveBanner language={language} />
 
       {/* Row of recently-viewed content, shown just under the hero banner */}
       <RecentlyViewedRow />

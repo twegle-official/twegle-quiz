@@ -1160,6 +1160,38 @@ same-instant multi-tab sessions would need a bigger architecture change
 out of proportion to how narrow that specific edge is, so not attempted
 here.
 
+## Festive/seasonal homepage banner (2026-09-10)
+
+New `utils/festiveBanner.js` (pure date logic, no React) + `components/
+FestiveBanner.jsx` (the actual strip), rendered in `Home.jsx` right below
+the hero gradient band. Shows a slim, full-width celebratory banner for a
+few days around 8 real Indian calendar moments — New Year, Republic Day,
+Holi, Eid al-Fitr, Independence Day, Raksha Bandhan, Diwali, Christmas —
+and is a real `return null` (zero height, not just visually hidden) every
+other day of the year.
+
+`getActiveFestival(today)` checks today's date against each festival's
+per-year date entry (2026-2028 filled in; Holi/Eid/Raksha Bandhan/Diwali
+shift every year on the lunar calendar so they're hand-listed, not
+computed — New Year/Republic Day/Independence Day/Christmas are fixed and
+never need touching again) and returns the nearest one currently within
+its `LEAD_DAYS` (3) window before-or-on its date, or `null`. Exported with
+a `today` parameter specifically so it's easy to point at a fixed test
+date during verification without needing to fake the system clock.
+
+No festival currently has a matching quiz/post of its own (that's real
+content work, logged as a fast-follow in `PENDING_TASKS.md`), so every
+banner links to `/?tab=quizzes` for now rather than a specific piece of
+content.
+
+Verified in the browser: the date logic directly (several hand-picked
+dates via the console — 3-days-before, the day itself, the day after,
+and a plain fixed-date festival), then the actual rendered banner
+(colors, emoji, English/Hindi copy, the "N days to go" countdown line,
+mobile width, dark mode) by temporarily pointing the function's default
+argument at a test date, and finally confirmed it's correctly absent on
+today's real date before reverting that test override.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:
