@@ -1251,6 +1251,17 @@ fills half the last row, which reads fine) instead of a loose scatter
 of different-sized chips. Same compact height as before; re-verified
 Quizzes/Stories/dark mode after the change.
 
+**Second follow-up, reported with a screenshot**: the unselected pills
+looked washed out specifically in light mode — they had no border, just
+a flat `bg-gray-100` fill close enough to the white sidebar background to
+lose definition (the tab buttons above them already had a visible
+`border-gray-200` outline, which is why *those* read fine by comparison).
+Added a matching `border` to `CategoryChips`'s pills (`border-gray-200`
+unselected, `border-gray-900` for the active one so it doesn't show a
+mismatched edge against its own dark fill; dark-mode equivalents
+alongside). Re-verified both themes afterward — light mode pills now read
+as distinct shapes, dark mode unchanged/still fine.
+
 ## Embeddable mini-quiz widget (2026-09-11)
 
 New `pages/EmbedQuiz.jsx`, routed at `/embed/quiz/:quizId` — deliberately

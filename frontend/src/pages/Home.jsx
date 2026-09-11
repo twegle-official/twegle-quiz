@@ -124,10 +124,10 @@ function CategoryChips({ items, active, onSelect, language }) {
         <button
           key={item.key}
           onClick={() => onSelect(item.key)}
-          className={`px-2.5 py-1 rounded-full text-xs font-semibold text-center transition-colors ${
+          className={`px-2.5 py-1 rounded-full text-xs font-semibold text-center transition-colors border ${
             active === item.key
-              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
-              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 border-gray-900 dark:border-gray-100'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
           }`}
         >
           {item.emoji} {pick(item, language)}
