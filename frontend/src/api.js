@@ -461,6 +461,14 @@ export function getQuizIntroShareUrl(slug) {
   return `${API_URL}/share/quiz/${slug}`
 }
 
+// Unlike the share URLs above, this points at the frontend's own
+// `/embed/quiz/:slug` React route directly (see EmbedQuiz.jsx), not a
+// backend share-preview page — an `<iframe>` needs the real interactive
+// page, not a static crawler-facing redirect stub.
+export function getQuizEmbedUrl(slug) {
+  return `${window.location.origin}/embed/quiz/${slug}`
+}
+
 export function getPostShareUrl(id) {
   return `${API_URL}/share/post/${id}`
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams, useLocation, useSearchParams, Link } from 'react-router-dom'
-import { fetchQuizBySlug, joinQuizCompare, recordEngagement, createQuizBattle } from '../api'
+import { fetchQuizBySlug, joinQuizCompare, recordEngagement, createQuizBattle, getQuizEmbedUrl } from '../api'
 import ProgressBar from '../components/ProgressBar'
 import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
@@ -57,6 +57,10 @@ export default function Quiz() {
   const [battleName, setBattleName] = useState('')
   const [battleSubmitting, setBattleSubmitting] = useState(false)
   const [battleError, setBattleError] = useState('')
+  // "Embed this quiz" panel state — see the gated block near the bottom of
+  // the render, and EmbedQuiz.jsx for the page this snippet points to.
+  const [showEmbedPanel, setShowEmbedPanel] = useState(false)
+  const [embedCopied, setEmbedCopied] = useState(false)
 
   // Loads the quiz for this URL when the page first opens
   useEffect(() => {
@@ -167,6 +171,20 @@ export default function Quiz() {
     }
   }
 
+  // Copies the <iframe> embed snippet and shows "Copied!" for 2 seconds —
+  // same pattern ShareButtons.jsx's "Copy link" already uses.
+  async function handleCopyEmbed() {
+    const snippet = `<iframe src="${getQuizEmbedUrl(slug)}" width="400" height="560" style="border:none;max-width:100%;" title="${quiz.title} — a quiz from Twegle"></iframe>`
+    try {
+      await navigator.clipboard.writeText(snippet)
+      setEmbedCopied(true)
+      setTimeout(() => setEmbedCopied(false), 2000)
+    } catch {
+      // Clipboard permission denied/unsupported — the snippet is still
+      // shown in the textarea below for a manual select-and-copy.
+    }
+  }
+
   // Schema.org Quiz structured data — same JSON-LD pattern Home.jsx
   // (WebSite) and Faq.jsx (FAQPage) already use. Doesn't change anything
   // visible; it's purely for how a quiz link can be described in Google's
@@ -197,6 +215,48 @@ export default function Quiz() {
             <>{quiz.sponsor.logo} {quiz.sponsor.name}</>
           )}
         </p>
+      )}
+      {/* "Embed this quiz" — grabs a snippet for the bare-bones
+          `/embed/quiz/:slug` page (see EmbedQuiz.jsx), for pasting into a
+          blog/site. Shown for every quiz type (unlike Battle below, which
+          is trivia-only), only before any answer is picked. */}
+      {questionIndex === 0 && (
+        <div className="mb-6 max-w-xs mx-auto text-center">
+          {showEmbedPanel ? (
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-4 text-left">
+              <p className="font-semibold text-gray-900 dark:text-gray-100 mb-2 text-sm">
+                🔌 {quiz.language === 'hi' ? 'यह क्विज़ एम्बेड करें' : 'Embed this quiz'}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                {quiz.language === 'hi'
+                  ? 'इस कोड को अपनी वेबसाइट या ब्लॉग में पेस्ट करें — क्विज़ सीधे वहीं खेली जा सकेगी।'
+                  : 'Paste this on your own site or blog — the quiz plays right there, no visit to Twegle needed.'}
+              </p>
+              <textarea
+                readOnly
+                rows={3}
+                value={`<iframe src="${getQuizEmbedUrl(slug)}" width="400" height="560" style="border:none;max-width:100%;" title="${quiz.title} — a quiz from Twegle"></iframe>`}
+                onClick={(e) => e.target.select()}
+                className="w-full px-2.5 py-2 text-xs font-mono border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 rounded-lg mb-3 resize-none"
+              />
+              <button
+                onClick={handleCopyEmbed}
+                className="w-full px-4 py-2 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
+              >
+                {embedCopied
+                  ? quiz.language === 'hi' ? 'कॉपी हो गया!' : 'Copied!'
+                  : quiz.language === 'hi' ? 'कोड कॉपी करें' : 'Copy Embed Code'}
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setShowEmbedPanel(true)}
+              className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300"
+            >
+              🔌 {quiz.language === 'hi' ? 'यह क्विज़ एम्बेड करें' : 'Embed this quiz'}
+            </button>
+          )}
+        </div>
       )}
       {/* Only trivia quizzes have a real "correct" answer to race for —
           personality quizzes have nothing to win/lose, so racing wouldn't

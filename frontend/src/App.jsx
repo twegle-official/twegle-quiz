@@ -5,6 +5,7 @@ import Footer from './components/Footer'
 import ShareSidebar from './components/ShareSidebar'
 import Home from './pages/Home'
 import Quiz from './pages/Quiz'
+import EmbedQuiz from './pages/EmbedQuiz'
 import Result from './pages/Result'
 import Browse from './pages/Browse'
 import PostView from './pages/PostView'
@@ -194,6 +195,11 @@ export default function App() {
       <ScrollToTop />
       <CanonicalLink />
       <Routes>
+        {/* Deliberately outside PublicSite — an <iframe> embed needs the
+            bare quiz UI only, none of the site's own Header/Footer/
+            ShareSidebar chrome. See EmbedQuiz.jsx and Quiz.jsx's "Embed
+            this quiz" panel for where the link to here comes from. */}
+        <Route path="/embed/quiz/:quizId" element={<EmbedQuiz />} />
         <Route path="/admin/login" element={<Login />} />
         {/* Every other /admin/* route requires a logged-in admin — see ProtectedRoute.jsx */}
         <Route

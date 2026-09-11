@@ -1251,6 +1251,66 @@ fills half the last row, which reads fine) instead of a loose scatter
 of different-sized chips. Same compact height as before; re-verified
 Quizzes/Stories/dark mode after the change.
 
+## Embeddable mini-quiz widget (2026-09-11)
+
+New `pages/EmbedQuiz.jsx`, routed at `/embed/quiz/:quizId` — deliberately
+declared *outside* `PublicSite` in `App.jsx` (a sibling to `/admin` and
+the `/*` catch-all, not a child route under it), so it renders with none
+of the site's own `Header`/`Footer`/`ShareSidebar`. This is the page a
+third-party site's `<iframe>` actually loads.
+
+Re-implements `Quiz.jsx`'s scoring (`pickWinningResult`/
+`pickTriviaResult`) locally rather than importing it — this page is meant
+to stand completely alone, and a future change to the full quiz flow
+shouldn't have to think about an embed-page import breaking, matching
+this codebase's existing "self-contained over shared" calls elsewhere
+(e.g. every game's own duplicated room-code generator). Ends with an
+inline result screen (no `navigate()` to a separate `Result.jsx` — an
+embedded iframe should never redirect its own URL out from under
+whatever's embedding it) plus a "🔁 Try again" reset, and a persistent
+"🎯 Powered by Twegle" credit link at the bottom of every state
+(question view, result, even the not-found state) — `target="_top"` so
+clicking it breaks all the way out of the embedding page rather than
+trying to load twegle.in nested inside itself.
+
+**No backend change, no new response headers, nothing to unblock** —
+checked directly rather than assumed: neither `frontend/vercel.json` nor
+the Express backend (which never actually serves the page's HTML at all,
+only JSON — Vercel serves the static SPA shell for every route) sets an
+`X-Frame-Options` or CSP `frame-ancestors` restriction anywhere, so
+nothing was ever stopping this page from being embedded. Confirmed by
+fetching the embed page's own live response headers and finding neither
+present.
+
+**`pages/Quiz.jsx`** gained a "🔌 Embed this quiz" panel — shown for
+every quiz type (not gated to trivia, unlike the neighboring "Battle a
+friend live" toggle), only on the first question, following the exact
+same toggle-open-a-box UI pattern that block already established. Reveals
+a read-only `<textarea>` with a ready-to-paste `<iframe>` snippet plus a
+"Copy Embed Code" button, mirroring `ShareButtons.jsx`'s existing
+copy-to-clipboard-with-a-2-second-"Copied!"-state pattern exactly rather
+than inventing a second one. New `getQuizEmbedUrl()` in `api.js` builds
+the link — unlike every other `getXShareUrl()` helper there (which point
+at the backend's crawler-facing share-preview redirect pages), this one
+points at the frontend's own `/embed/quiz/:slug` route directly, since an
+iframe needs the real interactive page, not a static redirect stub.
+
+An embedded play still counts as a real view/play — same
+`recordEngagement`/`recordPlay` calls the full quiz page makes. No CORS
+wrinkle to work around: an iframe's document keeps twegle.in as its own
+origin no matter which page embeds it, so every existing API call just
+works unmodified.
+
+Verified in the browser: played a personality quiz through to its
+result and a trivia quiz through to its score-bearing result ("3/5"),
+confirmed the play was actually recorded server-side (not just that the
+UI looked right — checked the network request landed as `201` and the
+quiz's play count went up), confirmed Try Again resets to question 1
+cleanly, confirmed an unknown slug shows a clean not-found state (still
+with the credit link), confirmed dark mode, and confirmed via the embed
+page's own fetched response headers that nothing blocks it from being
+framed.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:
