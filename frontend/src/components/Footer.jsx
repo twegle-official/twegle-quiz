@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { LogoWithWordmark } from './Logo'
 import ShareButtons from './ShareButtons'
+import SurpriseMeButton from './SurpriseMeButton'
 import { useInstallPrompt } from '../utils/useInstallPrompt'
 import { useUserAuth } from '../UserAuthContext'
 
@@ -144,6 +145,14 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Explore</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
+            {/* The "🎲 Random content" backlog item — reuses SurpriseMeButton
+                (also shown desktop-only in Header.jsx) rather than a second
+                random-picking implementation. Footer is every-width, so this
+                is how a mobile visitor reaches it (the header instance is
+                hidden below `sm` to avoid crowding the search bar there). */}
+            <li>
+              <SurpriseMeButton className="flex hover:text-gray-900 dark:hover:text-gray-100" />
+            </li>
             <li><Link to="/" className="hover:text-gray-900 dark:hover:text-gray-100">All Quizzes</Link></li>
             <li><Link to="/?tab=puzzles" className="hover:text-gray-900 dark:hover:text-gray-100">Puzzles</Link></li>
             <li><Link to="/?tab=friendship" className="hover:text-gray-900 dark:hover:text-gray-100">Friendship Quiz</Link></li>

@@ -5,9 +5,15 @@ import ThemeToggle from './ThemeToggle'
 import SurpriseMeButton from './SurpriseMeButton'
 import { useUserAuth } from '../UserAuthContext'
 
-// Toggle to bring the Surprise Me icon back later without re-wiring
-// anything — see the render site below.
-const SHOW_SURPRISE_ME = false
+// Re-enabled 2026-09-11, desktop-only this time (see the `hidden sm:flex`
+// on the render site below) — the earlier always-on icon crowded the
+// search bar specifically on narrow mobile widths (the search column has
+// no fixed width, so it shrinks as the icon group grows); desktop has the
+// room to spare, and now also shows a "Surprise Me" text label alongside
+// the 🎲, fixing the other reason it was pulled (the icon alone "didn't
+// clearly read as Surprise Me" — see FRONTEND.md). Mobile visitors reach
+// the same feature via Footer.jsx instead, where width isn't a constraint.
+const SHOW_SURPRISE_ME = true
 
 // The top bar shown on every page: logo, search box, and account/theme icons.
 export default function Header() {
@@ -56,10 +62,11 @@ export default function Header() {
           </div>
         </form>
         <div className="flex items-center gap-2">
-          {/* Reported: crowds the search bar on mobile, and shouldn't be an
-              always-on icon anyway — keeping the component/feature intact
-              (see SurpriseMeButton.jsx), just not rendered here for now. */}
-          {SHOW_SURPRISE_ME && <SurpriseMeButton />}
+          {/* `hidden sm:flex` — see the SHOW_SURPRISE_ME comment above for why
+              this only shows from `sm` up. */}
+          {SHOW_SURPRISE_ME && (
+            <SurpriseMeButton className="hidden sm:flex text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-violet-600 dark:hover:text-violet-400 px-2.5 py-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 whitespace-nowrap" />
+          )}
           <ThemeToggle />
           <Link
             to="/badges"
