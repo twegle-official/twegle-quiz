@@ -106,20 +106,25 @@ function pick(item, language) {
   return language === 'hi' && item.hi ? item.hi : item.label
 }
 
-// The small pill-shaped category filter row — used for the desktop
-// sidebar's nested accordion (wraps onto 1-2 lines right under its own
-// tab, see the `lg:flex` block inside TABS.map() below), reusing the same
-// compact chip look the mobile category rows already have further down
-// (those stay untouched, still `lg:hidden` — see the "why two versions"
-// note there).
+// The small pill-shaped category filter grid — used for the desktop
+// sidebar's nested accordion (see the `lg:flex` block inside TABS.map()
+// below), reusing the same compact chip look the mobile category rows
+// already have further down (those stay untouched, still `lg:hidden` —
+// see the "why two versions" note there). A fixed 2-column grid rather
+// than free-flowing `flex-wrap` — reported as looking ragged/uneven
+// (a short pill like "All" left a big gap next to a longer neighbor,
+// and pills in different rows didn't line up) since flex-wrap sizes each
+// pill to its own text. Equal-width grid cells fix that: every pill in a
+// column shares the same width, so the whole block reads as a tidy
+// aligned grid instead of a loose scatter of different-sized chips.
 function CategoryChips({ items, active, onSelect, language }) {
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className="grid grid-cols-2 gap-1.5">
       {items.map((item) => (
         <button
           key={item.key}
           onClick={() => onSelect(item.key)}
-          className={`shrink-0 whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
+          className={`px-2.5 py-1 rounded-full text-xs font-semibold text-center transition-colors ${
             active === item.key
               ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
               : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'

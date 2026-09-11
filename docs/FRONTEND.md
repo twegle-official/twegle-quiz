@@ -1240,6 +1240,17 @@ one's chips and expands the new one's in place; Horoscope shows no
 chips; dark mode and Hindi both read correctly; mobile at 375px
 confirmed pixel-identical to before (still one shared row, no nesting).
 
+**Follow-up same day**: reported as looking ragged — `flex flex-wrap`
+sizes each pill to its own text, so a short pill ("All") left an
+awkward gap next to a longer neighbor, and pills across different rows
+didn't line up into any visible columns. Switched `CategoryChips`'s
+container from `flex flex-wrap` to a fixed `grid grid-cols-2`, so every
+pill in a column shares the same width — the block now reads as one
+tidy aligned grid (a lone 7th item on an odd count, e.g. Stories, just
+fills half the last row, which reads fine) instead of a loose scatter
+of different-sized chips. Same compact height as before; re-verified
+Quizzes/Stories/dark mode after the change.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:
