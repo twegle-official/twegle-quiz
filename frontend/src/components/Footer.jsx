@@ -159,7 +159,7 @@ export default function Footer() {
             </li>
             <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Achievements</Link></li>
             <li><Link to="/leaderboard" className="hover:text-gray-900 dark:hover:text-gray-100">🏅 Leaderboard</Link></li>
-            <li><Link to="/" className="hover:text-gray-900 dark:hover:text-gray-100">All Quizzes</Link></li>
+            <li><Link to="/" className="hover:text-gray-900 dark:hover:text-gray-100">Quizzes</Link></li>
             <li><Link to="/?tab=puzzles" className="hover:text-gray-900 dark:hover:text-gray-100">Puzzles</Link></li>
             <li><Link to="/?tab=friendship" className="hover:text-gray-900 dark:hover:text-gray-100">Friendship Quiz</Link></li>
             <li><Link to="/?tab=games" className="hover:text-gray-900 dark:hover:text-gray-100">Games</Link></li>

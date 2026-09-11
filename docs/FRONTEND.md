@@ -1193,6 +1193,53 @@ mobile width, dark mode) by temporarily pointing the function's default
 argument at a test date, and finally confirmed it's correctly absent on
 today's real date before reverting that test override.
 
+## Footer label fix: "All Quizzes" → "Quizzes" (2026-09-11)
+
+Found directly: every other item in the footer's Explore list matches its
+tab's name exactly (Puzzles, Games, Posts, ...) — "All Quizzes" was the
+one inconsistent label. One-word fix in `Footer.jsx`.
+
+## Desktop sidebar: categories nested under their own tab (2026-09-11)
+
+Direct request/idea from the owner, scoped to desktop only before
+building: on the homepage sidebar, a tab's category chips (Beauty/
+Bollywood/etc. for Quizzes, Single Player/2 Player/etc. for Games, ...)
+now expand in place directly under that tab's own button — an accordion,
+rather than always appearing once in a shared row after the entire tab
+list regardless of which tab is open.
+
+Scoping questions asked and answered before building: whether opening a
+tab with many categories (Stories has 7, the most of any tab) would push
+everything below it uncomfortably far down — confirmed it would with the
+old full-width-row desktop style, so the nested categories use small
+wrapped pills (`CategoryChips`, new) instead, same compact look mobile's
+categories already had. 6-7 categories wrap onto 2-3 short lines instead
+of stacking one-per-row, keeping the shift when switching tabs minor.
+Desktop-only by explicit request — mobile's tabs are a horizontally-
+scrolling strip with no "directly below this one tab" position to nest
+into, so mobile keeps the exact pre-existing behavior (unchanged
+pixel-for-pixel, verified directly): a single shared category row below
+the whole tab strip.
+
+Implementation: `TABS.map()` now returns a `Fragment` per tab (button +,
+only for the currently active tab, a `hidden lg:block` nested
+`CategoryChips` block) instead of just the button. A new
+`categoryConfigByTab` lookup (built after the existing per-tab category
+state/getters/setters) maps each tab key to its category array + active
+value + setter, so the render site doesn't need a 6-way conditional.
+Horoscope has no entry (it has no categories — a zodiac-sign grid
+instead), so nothing nests under it, correctly. The 6 pre-existing
+mobile category blocks are untouched apart from gaining `lg:hidden` and
+having their now-dead `lg:`-prefixed classes trimmed (harmless either
+way, since the whole block is hidden at that breakpoint).
+
+Verified in the browser: Quizzes (6 categories) and Stories (7, the
+worst case) both wrap into 2-3 short rows without pushing later tabs
+far down; clicking a different tab correctly collapses the previous
+one's chips and expands the new one's in place; Horoscope shows no
+chips; dark mode and Hindi both read correctly; mobile at 375px
+confirmed pixel-identical to before (still one shared row, no nesting).
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:

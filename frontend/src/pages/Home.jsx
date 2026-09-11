@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPuzzles, fetchPostReactionsBatch, setPostReaction, fetchTodayStats } from '../api'
 import { GAMES } from '../games/registry'
@@ -104,6 +104,32 @@ const STORY_CATEGORIES = [
 // same default-to-English convention every other language check here uses.
 function pick(item, language) {
   return language === 'hi' && item.hi ? item.hi : item.label
+}
+
+// The small pill-shaped category filter row — used for the desktop
+// sidebar's nested accordion (wraps onto 1-2 lines right under its own
+// tab, see the `lg:flex` block inside TABS.map() below), reusing the same
+// compact chip look the mobile category rows already have further down
+// (those stay untouched, still `lg:hidden` — see the "why two versions"
+// note there).
+function CategoryChips({ items, active, onSelect, language }) {
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {items.map((item) => (
+        <button
+          key={item.key}
+          onClick={() => onSelect(item.key)}
+          className={`shrink-0 whitespace-nowrap px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
+            active === item.key
+              ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+              : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+          }`}
+        >
+          {item.emoji} {pick(item, language)}
+        </button>
+      ))}
+    </div>
+  )
 }
 
 // What "popularity" means per tab, for the Trending sort — quizzes/
@@ -212,6 +238,18 @@ export default function Home() {
   const sortMode = getParam('sort', ['newest', 'trending'], 'newest')
   function setSortMode(mode) {
     setParam('sort', mode, 'newest')
+  }
+  // Feeds the desktop sidebar's nested category chips (see the `lg:flex`
+  // block inside the TABS.map() below) — one lookup table instead of
+  // repeating "which array/getter/setter belongs to which tab" 6 times.
+  // Horoscope has no entry since it has no categories to filter by.
+  const categoryConfigByTab = {
+    quizzes: { items: QUIZ_CATEGORIES, active: quizCategory, onSelect: setQuizCategory },
+    games: { items: GAME_CATEGORIES, active: gameCategory, onSelect: setGameCategory },
+    friendship: { items: FRIENDSHIP_CATEGORIES, active: friendshipCategory, onSelect: setFriendshipCategory },
+    puzzles: { items: PUZZLE_DIFFICULTIES, active: puzzleDifficulty, onSelect: setPuzzleDifficulty },
+    posts: { items: POST_CATEGORIES, active: postCategory, onSelect: setPostCategory },
+    stories: { items: STORY_CATEGORIES, active: storyCategory, onSelect: setStoryCategory },
   }
   // Tagged with the tab/language/category that produced it, so a render can
   // never show content fetched for a different filter while the real fetch
@@ -560,23 +598,48 @@ export default function Home() {
             true screen edge (matching the page's own px-4 gutter) without
             affecting where the pills themselves start. */}
         <div className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-1 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-2">
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`shrink-0 whitespace-nowrap px-5 py-2 lg:px-4 lg:py-1.5 rounded-full lg:rounded-lg text-sm font-semibold transition-colors lg:text-left ${
-                activeTab === tab.key
-                  ? 'bg-violet-600 text-white'
-                  : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-300 dark:hover:border-violet-500'
-              }`}
-            >
-              {tab.emoji} {pick(tab, language)}
-            </button>
-          ))}
+          {TABS.map((tab) => {
+            const categoryConfig = tab.key === activeTab ? categoryConfigByTab[tab.key] : null
+            return (
+              <Fragment key={tab.key}>
+                <button
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`shrink-0 whitespace-nowrap px-5 py-2 lg:px-4 lg:py-1.5 rounded-full lg:rounded-lg text-sm font-semibold transition-colors lg:text-left ${
+                    activeTab === tab.key
+                      ? 'bg-violet-600 text-white'
+                      : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:border-violet-300 dark:hover:border-violet-500'
+                  }`}
+                >
+                  {tab.emoji} {pick(tab, language)}
+                </button>
+                {/* Desktop only (`hidden lg:block`) — this tab's own category
+                    chips, expanded right underneath it, accordion-style.
+                    Mobile keeps the single shared row further down instead
+                    (see its own `lg:hidden` there) since there's no "directly
+                    below this one tab" in a horizontally-scrolling strip. */}
+                {categoryConfig && (
+                  <div className="hidden lg:block pl-1 pb-1">
+                    <CategoryChips
+                      items={categoryConfig.items}
+                      active={categoryConfig.active}
+                      onSelect={categoryConfig.onSelect}
+                      language={language}
+                    />
+                  </div>
+                )}
+              </Fragment>
+            )
+          })}
         </div>
 
+        {/* Mobile only from here down (`lg:hidden` on each block) — desktop
+            shows these same categories nested under their own tab instead,
+            see the `lg:flex` block inside TABS.map() above. Mobile keeps
+            this single shared row since its tabs are a horizontally-
+            scrolling strip with no "directly below this one tab" slot to
+            nest into. */}
         {activeTab === 'quizzes' && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+          <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 pt-2">
             {QUIZ_CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
@@ -594,7 +657,7 @@ export default function Home() {
         )}
 
         {activeTab === 'stories' && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+          <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 pt-2">
             {STORY_CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
@@ -612,7 +675,7 @@ export default function Home() {
         )}
 
         {activeTab === 'posts' && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+          <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 pt-2">
             {POST_CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
@@ -630,7 +693,7 @@ export default function Home() {
         )}
 
         {activeTab === 'puzzles' && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+          <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 pt-2">
             {PUZZLE_DIFFICULTIES.map((diff) => (
               <button
                 key={diff.key}
@@ -648,7 +711,7 @@ export default function Home() {
         )}
 
         {activeTab === 'games' && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+          <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 pt-2">
             {GAME_CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
@@ -666,7 +729,7 @@ export default function Home() {
         )}
 
         {activeTab === 'friendship' && (
-          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 lg:flex-col lg:flex-nowrap lg:overflow-visible lg:mx-0 lg:px-0 lg:pb-0 pt-2 lg:border-t lg:border-gray-100 dark:lg:border-gray-800 lg:pt-4">
+          <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 pt-2">
             {FRIENDSHIP_CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
