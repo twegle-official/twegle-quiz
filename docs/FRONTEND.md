@@ -1322,6 +1322,43 @@ with the credit link), confirmed dark mode, and confirmed via the embed
 page's own fetched response headers that nothing blocks it from being
 framed.
 
+## First-visit onboarding card (2026-09-11)
+
+New `ONBOARDING_SEEN_KEY` (`'twegleHomeOnboardingSeen'`) + `showOnboarding`
+state in `Home.jsx` — a one-time welcome card for a brand-new visitor,
+listing the 4 things easy to miss on first landing (Quizzes, Games,
+Puzzles, Daily streaks), dismissed with a single "Let's go!" button that
+writes the localStorage flag.
+
+Scoped via one direct question before building: a true step-by-step
+spotlight tour (a tooltip that visually tracks the real Quizzes/Games/
+Puzzles tabs, one at a time) vs. one simple card listing everything at
+once. Chose the card — it's the exact same pattern `SkydriftIsles.jsx`'s
+own onboarding already uses (see "Skydrift Isles" above), and a spotlight
+tour's real cost isn't the UI, it's keeping a tooltip correctly
+positioned next to a live DOM element across scrolling, window resizing,
+and a narrow phone screen with little room beside a tab — meaningfully
+more fragile for not much extra clarity over "here's what's here."
+
+One difference from Skydrift's version: `fixed inset-0` rather than
+`absolute inset-0`, since `Home.jsx` is a normal scrolling page (Skydrift
+Isles is a fixed-size canvas view) — the card needs to stay centered in
+the viewport regardless of scroll position, not relative to some
+ancestor element.
+
+"Shown once" is per-browser via localStorage, same explanation given
+directly to the owner before building: survives a plain "clear browsing
+history," but resets if the browser's cookies/site data are cleared (or
+a different device/browser, or a private/incognito window) — the same
+tradeoff every other one-time UI on the site already accepts (badge-seen
+tracking, the streak-reminder toast, Skydrift's own onboarding), not a
+stronger per-person guarantee.
+
+Verified in the browser: shows on a cleared localStorage (simulating a
+first-ever visit), dismissing correctly writes the flag and the card
+never reappears on reload, Hindi copy renders correctly, dark mode and a
+375px mobile viewport both read cleanly with the dimmed backdrop.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:

@@ -15,6 +15,8 @@ import FestiveBanner from '../components/FestiveBanner'
 import RecentlyViewedRow from '../components/RecentlyViewedRow'
 import AdSlot from '../components/AdSlot'
 
+const ONBOARDING_SEEN_KEY = 'twegleHomeOnboardingSeen'
+
 // Ordered by expected usage/revenue impact, most to least: Quizzes first
 // — biggest content library, the site's core brand identity, and the
 // strongest share loop (a solo quiz result is the easiest thing to
@@ -279,6 +281,22 @@ export default function Home() {
   const [allQuizzes, setAllQuizzes] = useState([])
   // Same reasoning, for the Puzzle of the Day banner.
   const [allPuzzles, setAllPuzzles] = useState([])
+  // Shown once per browser to a brand-new visitor — otherwise someone who
+  // lands here, takes one quiz, and leaves has no signal that Games/
+  // Puzzles/Stories/Horoscope (or daily streaks) even exist unless they
+  // happen to notice the sidebar tabs themselves. Same localStorage-gated,
+  // shown-once pattern as every other one-time UI on the site (e.g.
+  // SkydriftIsles.jsx's own onboarding card, badges.js's streak-reminder
+  // toast) — a single welcome card listing everything at once, not a
+  // step-by-step spotlight tour, matching Skydrift's own proven pattern
+  // rather than something more fragile against small screens/scrolling.
+  const [showOnboarding, setShowOnboarding] = useState(
+    () => localStorage.getItem(ONBOARDING_SEEN_KEY) !== 'true'
+  )
+  function dismissOnboarding() {
+    localStorage.setItem(ONBOARDING_SEEN_KEY, 'true')
+    setShowOnboarding(false)
+  }
   // Unused directly — exists purely to force a re-render. QuizCard/PuzzleCard
   // read their "already attempted" mark straight from localStorage at render
   // time (see hasCompletedQuiz/hasRevealedPuzzle in badges.js), with no
@@ -461,6 +479,49 @@ export default function Home() {
   return (
     <div>
       <script type="application/ld+json">{JSON.stringify(websiteSchema)}</script>
+      {/* First-visit welcome card — see the ONBOARDING_SEEN_KEY state above
+          for why this only ever shows once per browser. `fixed inset-0`
+          (not `absolute`, unlike SkydriftIsles.jsx's version) since this
+          page scrolls and the card needs to stay centered in the viewport
+          regardless of scroll position, not relative to some ancestor. */}
+      {showOnboarding && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="max-w-xs w-full rounded-2xl bg-white dark:bg-gray-800 p-5 text-center shadow-xl">
+            <div className="text-4xl mb-2">👋</div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
+              {language === 'hi' ? 'नए हो यहाँ?' : 'New here?'}
+            </h2>
+            <ul className="text-sm text-left text-gray-600 dark:text-gray-300 space-y-2 mb-4">
+              <li>
+                {language === 'hi'
+                  ? '🎯 क्विज़ — मज़ेदार पर्सनैलिटी और नॉलेज क्विज़, बस मज़े के लिए'
+                  : '🎯 Quizzes — quick personality & trivia quizzes, just for fun'}
+              </li>
+              <li>
+                {language === 'hi'
+                  ? '🎮 गेम्स — अकेले खेलो या दोस्त को लाइव चैलेंज करो'
+                  : '🎮 Games — play solo, or challenge a friend live'}
+              </li>
+              <li>
+                {language === 'hi'
+                  ? '🧩 पहेलियां — दिमागी पहेलियां, हर दिन एक नई'
+                  : '🧩 Puzzles — brain teasers, a new one to try every day'}
+              </li>
+              <li>
+                {language === 'hi'
+                  ? '🔥 डेली स्ट्रीक — रोज़ आओ और अपनी स्ट्रीक बनाए रखो'
+                  : '🔥 Daily streaks — come back each day and keep it going'}
+              </li>
+            </ul>
+            <button
+              onClick={dismissOnboarding}
+              className="w-full rounded-full bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold py-2"
+            >
+              {language === 'hi' ? 'चलो शुरू करते हैं!' : "Let's go!"}
+            </button>
+          </div>
+        </div>
+      )}
       {/* Banner shrunk further 2026-08-06 (py-4→py-3, h1 text-xl→text-lg on
           desktop — roughly a 20-25% height cut) per direct feedback that
           people come to browse quickly, and one extra row of real content
