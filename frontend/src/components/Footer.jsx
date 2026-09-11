@@ -145,6 +145,10 @@ export default function Footer() {
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Explore</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
+            {/* Grouped together at the top, ahead of the plain content-category
+                links below — these 3 are site features/actions ("things to
+                do"), not content to browse, so they read better as their own
+                cluster than scattered across (and after) the list. */}
             {/* The "🎲 Random content" backlog item — reuses SurpriseMeButton
                 (also shown desktop-only in Header.jsx) rather than a second
                 random-picking implementation. Footer is every-width, so this
@@ -153,6 +157,8 @@ export default function Footer() {
             <li>
               <SurpriseMeButton className="flex hover:text-gray-900 dark:hover:text-gray-100" />
             </li>
+            <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Achievements</Link></li>
+            <li><Link to="/leaderboard" className="hover:text-gray-900 dark:hover:text-gray-100">🏅 Leaderboard</Link></li>
             <li><Link to="/" className="hover:text-gray-900 dark:hover:text-gray-100">All Quizzes</Link></li>
             <li><Link to="/?tab=puzzles" className="hover:text-gray-900 dark:hover:text-gray-100">Puzzles</Link></li>
             <li><Link to="/?tab=friendship" className="hover:text-gray-900 dark:hover:text-gray-100">Friendship Quiz</Link></li>
@@ -164,8 +170,6 @@ export default function Footer() {
             <li><Link to="/browse/funny-lines" className="hover:text-gray-900 dark:hover:text-gray-100">Funny Lines</Link></li>
             <li><Link to="/browse/quotes" className="hover:text-gray-900 dark:hover:text-gray-100">Quotes</Link></li>
             <li><Link to="/browse/motivational-quotes" className="hover:text-gray-900 dark:hover:text-gray-100">Motivational Quotes</Link></li>
-            <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Achievements</Link></li>
-            <li><Link to="/leaderboard" className="hover:text-gray-900 dark:hover:text-gray-100">🏅 Leaderboard</Link></li>
           </ul>
         </div>
 
