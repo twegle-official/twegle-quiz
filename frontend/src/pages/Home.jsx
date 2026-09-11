@@ -66,7 +66,7 @@ const POST_CATEGORIES = [
 // since games aren't database content (see registry.js's own comment).
 const GAME_CATEGORIES = [
   { key: 'all', label: 'All', hi: 'सभी' },
-  { key: 'single', label: 'Single Player', hi: 'सिंगल प्लेयर', emoji: '🧑' },
+  { key: 'single', label: '1 Player', hi: '1 प्लेयर', emoji: '🧑' },
   { key: 'friend', label: '2 Player', hi: '2 प्लेयर', emoji: '🤝' },
   { key: 'multiplayer', label: 'Multiplayer', hi: 'मल्टीप्लेयर', emoji: '👥' },
 ]
@@ -86,7 +86,7 @@ const QUIZ_CATEGORIES = [
   { key: 'entertainment', label: 'Bollywood', hi: 'बॉलीवुड', emoji: '🎬' },
   { key: 'kpop', label: 'K-pop', hi: 'K-pop', emoji: '🎤' },
   { key: 'lifestyle', label: 'Lifestyle', hi: 'लाइफस्टाइल', emoji: '✨' },
-  { key: 'fun', label: 'Fun & Random', hi: 'मज़ेदार', emoji: '🎉' },
+  { key: 'fun', label: 'Fun', hi: 'मज़ेदार', emoji: '🎉' },
 ]
 
 const STORY_CATEGORIES = [
