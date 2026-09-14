@@ -42,9 +42,22 @@ export async function fetchGameLeaderboard(slug) {
   return data.entries
 }
 
-// Submits a score to a game's leaderboard.
-export async function submitGameScore(slug, nickname, value) {
-  return postJson(`/games/${slug}/leaderboard`, { nickname, value })
+// Submits a score to a game's leaderboard. `token` is optional — when
+// present (the submitter is logged in), the backend links this score to
+// their account, which is what makes them eligible for the weekly-champion
+// leaderboard below; a guest submission works exactly as before.
+export async function submitGameScore(slug, nickname, value, token) {
+  return postJson(`/games/${slug}/leaderboard`, { nickname, value }, token ? { Authorization: `Bearer ${token}` } : {})
+}
+
+// Loads this week's account-linked scores for a game, plus whoever was
+// crowned champion for the previous completed week (or null if nobody
+// qualified that week). Guest scores never appear here — see
+// GameScore.js's `endUser` field on the backend.
+export async function fetchWeeklyGameLeaderboard(slug) {
+  const res = await fetch(`${API_URL}/games/${slug}/leaderboard/weekly`)
+  if (!res.ok) return null
+  return res.json()
 }
 
 // Loads the site-wide "who has the most points" leaderboard.
@@ -212,10 +225,12 @@ export async function recordEngagement(contentType, contentId, action) {
 
 // Shared helper for every POST call below — sends JSON, parses the JSON
 // response, and throws an Error with the server's message if it failed.
-async function postJson(path, body) {
+// `extraHeaders` is optional — only submitGameScore uses it so far, to
+// attach an Authorization header for a logged-in submitter.
+async function postJson(path, body, extraHeaders = {}) {
   const res = await fetch(`${API_URL}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...extraHeaders },
     body: JSON.stringify(body),
   })
   const data = await res.json().catch(() => null)

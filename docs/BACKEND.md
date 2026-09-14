@@ -794,6 +794,58 @@ Coverage, 21 tests across 3 files:
   result can be re-fetched later by attempt id; an unknown instance code
   404s.
 
+## Weekly "Champion of the Week" leaderboard (2026-09-14)
+
+Per-game weekly leaderboards, account-linked only (both scoped via direct
+questions before building — see `PENDING_TASKS.md`'s full entry). Building
+this surfaced a real pre-existing gap: `GameScore` only ever stored a
+free-typed `nickname`, never an actual account reference, even for a
+logged-in submitter — nickname text alone can't prove identity (a guest
+can type anyone's display name), so it was never a safe basis for
+crowning a real account as "Champion."
+
+**`middleware/userAuth.js`** gained `optionalUserAuth` alongside the
+existing `requireUserAuth` — same token verification, but never rejects
+the request: `req.user` is the decoded payload when a valid, active
+account's token is present, `null` otherwise (missing token, invalid
+token, disabled account). Applied to `POST /api/games/:slug/leaderboard`
+so anonymous submission keeps working completely unchanged, while a
+logged-in submitter's score also gets linked.
+
+**`models/GameScore.js`** gained an optional `endUser` ref, set only when
+`req.user` was present at submission time. The all-time, nickname-based
+high-score table (`getLeaderboard`) is entirely unaffected — still every
+score ever submitted, guest or not.
+
+**`controllers/gameScoreController.js`**'s new `getWeeklyLeaderboard`
+computes "this week's top 10" and "last week's champion" as **live
+queries** filtering `GameScore.createdAt` against a Monday-00:00-UTC week
+boundary (new `startOfWeek()` helper) — not a stored/reset ranking. There
+is deliberately nothing to "reset" when a new week starts: last week's
+scores simply age out of the current week's date filter on their own,
+and the list starts empty. No cron job, no scheduled task — same
+"deterministic by date" pattern every other date-driven feature here
+already uses (Horoscope, Quiz/Puzzle of the Day, the frontend's festive
+banner), just applied via a Mongo date-range query instead of a
+client-side day-of-year index. Both `entries` and `lastWeekChampion` are
+populated from `EndUser` (`displayName`/`avatar` only) at read time, so a
+later name/avatar change reflects immediately rather than freezing
+whatever it was at submission.
+
+New `tests/weeklyLeaderboard.test.js` (6 tests) covers this: guest
+exclusion, account-linking, ranking order, a backdated past-week score
+correctly becoming `lastWeekChampion` instead of appearing in the live
+list, the `null` case, and the 404 for a game with no leaderboard.
+**One real gotcha hit writing that backdating test**: `GameScore
+.updateOne()` (the Mongoose model method) silently re-stamps `createdAt`
+back to "now" via its own `timestamps: true` middleware, even when
+`createdAt` is explicitly passed inside `$set` — confirmed directly (the
+first version of the test failed with the "backdated" score still
+showing up in the current week). Fixed by going through
+`GameScore.collection.updateOne()` (the raw MongoDB driver, bypassing
+Mongoose's update middleware entirely) instead — worth remembering for
+any future test that needs to backdate a timestamped document.
+
 ## Known dev-environment quirks (for whoever runs this next)
 
 - **Stopping a background `npm run start`/`npm run dev` doesn't always kill the actual `node`/`mongod` process on Windows** — the wrapping shell dies but the child can survive and keep holding the port or the database lock. If a restart seems to "ignore" a code change, check `Get-NetTCPConnection -LocalPort 4000` (PowerShell) for a stale process still bound to the port, and kill it directly.

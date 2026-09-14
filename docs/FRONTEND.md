@@ -1359,6 +1359,39 @@ first-ever visit), dismissing correctly writes the flag and the card
 never reappears on reload, Hindi copy renders correctly, dark mode and a
 375px mobile viewport both read cleanly with the dimmed backdrop.
 
+## Weekly Champion leaderboard tab (2026-09-14)
+
+`GameLeaderboard.jsx` gained an "All-Time / 🗓️ This Week" toggle — see
+`docs/BACKEND.md` for the backend side (the new account-linking and the
+weekly query). The weekly tab's data only fetches once someone actually
+opens it, not on every mount — no point loading it for the (likely
+majority of) visitors who never look past the default all-time view.
+
+When a previous week produced a qualifying champion, the weekly view
+leads with a gradient "🏆 Last Week's Champion" banner (avatar, name,
+their score, and its own `ShareButtons`) above the in-progress current
+week's list — reusing `ShareButtons` rather than building a second share
+mechanism. A guest can still view the weekly tab and see who's leading;
+they just can't appear on it themselves without logging in first (see
+`BACKEND.md` for why that's a hard requirement, not a soft one).
+
+`submitGameScore` now takes an optional `token` (`session?.token` from
+`useUserAuth()`) so a logged-in submission gets linked server-side, and a
+fresh submission re-fetches the weekly data too, but only if it was
+already loaded (why reload data nobody's looking at). `api.js`'s shared
+`postJson` helper gained an `extraHeaders` parameter to carry the
+Authorization header through — backward-compatible default (`{}`), so
+its ~20 other existing call sites needed no changes.
+
+Verified in the browser end-to-end, not just via the new backend tests:
+signed up a real test account, confirmed a guest submission and an
+account-linked submission via direct API calls landed correctly (guest
+invisible on the weekly view, account visible with avatar+name), then
+played a full real round of "Guess the Number" through the actual UI and
+confirmed the toggle, this week's list, and (after backdating one score
+into last week purely as test setup) the champion banner all render
+correctly — including in dark mode.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:

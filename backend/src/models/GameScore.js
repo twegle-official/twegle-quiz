@@ -10,6 +10,14 @@ const gameScoreSchema = new mongoose.Schema(
     gameSlug: { type: String, required: true }, // which game this score belongs to
     nickname: { type: String, required: true, trim: true, maxlength: 20 }, // the name the player typed in for the leaderboard
     value: { type: Number, required: true }, // the score/result value, meaning depends on the game
+    // Only set when the submitter was logged in at the moment of
+    // submission (see middleware/userAuth.js's optionalUserAuth) — never
+    // trusted from `nickname` alone, since that's free text a guest could
+    // type to match anyone's display name. Powers the weekly-champion
+    // leaderboard (gameScoreController.js's getWeeklyLeaderboard), which
+    // only ranks account-linked entries; the all-time nickname-based table
+    // above is completely unaffected and still open to guests.
+    endUser: { type: mongoose.Schema.Types.ObjectId, ref: 'EndUser', default: null },
   },
   { timestamps: true }
 )

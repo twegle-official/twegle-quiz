@@ -45,3 +45,34 @@ export async function requireUserAuth(req, res, next) {
     return res.status(401).json({ error: 'Invalid or expired token' })
   }
 }
+
+// A non-blocking variant for routes that work fine for a guest but should
+// still know *which account* made the request when one is logged in — e.g.
+// submitting a game score: anonymous submissions stay exactly as they are
+// today, but a logged-in submitter's account gets attached (see
+// gameScoreController.js's `endUser` field), which is what makes a
+// weekly-champion crowning possible without trusting a spoofable free-text
+// nickname as proof of identity. Missing/invalid/expired token, or a
+// disabled account, all just mean `req.user = null` and the request
+// continues as a guest — never a 401.
+export async function optionalUserAuth(req, res, next) {
+  const header = req.headers.authorization || ''
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null
+  req.user = null
+
+  if (!token) return next()
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET)
+    if (payload.type !== 'user') return next()
+    const user = await EndUser.findById(payload.id).select('status')
+    if (user && user.status !== 'disabled') {
+      req.user = payload
+    }
+  } catch {
+    // Invalid/expired token — falls through to the guest path below, same
+    // as a missing token; this route never needs to reject a request just
+    // because the token didn't check out.
+  }
+  next()
+}
