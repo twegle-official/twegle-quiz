@@ -32,6 +32,7 @@ import SnakeLadderMultiplayer from './pages/SnakeLadderMultiplayer'
 import ChessMultiplayer from './pages/ChessMultiplayer'
 import LudoMultiplayer from './pages/LudoMultiplayer'
 import SkydriftIsles from './pages/SkydriftIsles'
+import WordOfTheDay from './pages/WordOfTheDay'
 import Feedback from './pages/Feedback'
 import Badges from './pages/Badges'
 import Leaderboard from './pages/Leaderboard'
@@ -160,6 +161,8 @@ function PublicSite() {
           <Route path="/games/ludo/:code" element={<LudoMultiplayer />} />
           {/* Own dedicated page, bypasses Game.jsx entirely — see registry.js's requiresAccount comment */}
           <Route path="/games/skydrift-isles" element={<SkydriftIsles />} />
+          {/* Also its own dedicated page — see WordOfTheDay.jsx's own comment for why */}
+          <Route path="/games/word-of-the-day" element={<WordOfTheDay />} />
           <Route path="/post/:id" element={<PostView />} />
           <Route path="/story/:slug" element={<StoryView />} />
           <Route path="/puzzle/:id" element={<PuzzleView />} />

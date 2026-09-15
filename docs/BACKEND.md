@@ -846,6 +846,20 @@ showing up in the current week). Fixed by going through
 Mongoose's update middleware entirely) instead — worth remembering for
 any future test that needs to backdate a timestamped document.
 
+## "Word of the Day" leaderboard wiring (2026-09-15)
+
+The daily word-guessing game (see `docs/FRONTEND.md` for the full
+feature — it's almost entirely frontend) needed exactly two backend
+touches: `'word-of-the-day': { order: 'asc' }` added to
+`gameScoreController.js`'s `GAME_LEADERBOARDS` (fewer guesses to solve is
+better; a score is only ever submitted on a win, so every entry here is
+a genuine solve), which is all it took to get both an all-time and a
+weekly Champion leaderboard for free via the existing generic
+infrastructure — and bumping `utils/badges.js`'s hand-mirrored
+`GAMES_COUNT` (14 → 15) for the "Tried Every Game" badge, since the
+backend has no live games list to read a count from the way the frontend
+does.
+
 ## Known dev-environment quirks (for whoever runs this next)
 
 - **Stopping a background `npm run start`/`npm run dev` doesn't always kill the actual `node`/`mongod` process on Windows** — the wrapping shell dies but the child can survive and keep holding the port or the database lock. If a restart seems to "ignore" a code change, check `Get-NetTCPConnection -LocalPort 4000` (PowerShell) for a stale process still bound to the port, and kill it directly.

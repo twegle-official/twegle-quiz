@@ -11,6 +11,7 @@ import ZodiacCard from '../components/ZodiacCard'
 import PuzzleCard from '../components/PuzzleCard'
 import DailyQuizBanner from '../components/DailyQuizBanner'
 import PuzzleOfTheDayBanner from '../components/PuzzleOfTheDayBanner'
+import WordOfTheDayBanner from '../components/WordOfTheDayBanner'
 import FestiveBanner from '../components/FestiveBanner'
 import RecentlyViewedRow from '../components/RecentlyViewedRow'
 import AdSlot from '../components/AdSlot'
@@ -595,13 +596,22 @@ export default function Home() {
       {/* Row of recently-viewed content, shown just under the hero banner */}
       <RecentlyViewedRow />
 
-      {/* Side by side (not stacked) on every screen size, including mobile —
+      {/* Quiz/Puzzle stay side by side at every width, including mobile —
           each banner is a single compact row now (see DailyQuizBanner /
           PuzzleOfTheDayBanner), so a 2-column grid halves the vertical space
-          the pair takes versus stacking two full-width banners. */}
-      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 lg:pt-2 grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-2">
+          the pair takes versus stacking two full-width banners. Word of the
+          Day (added later) joins as a 3rd column from `sm` up, where
+          there's room for 3 across in one row — on mobile it deliberately
+          spans the full row below the other two instead of squeezing into
+          a 3-way split, since these banners' title text (a quiz's real
+          title, a puzzle's real question) needs more room than a third of
+          a phone screen reliably gives it. */}
+      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 lg:pt-2 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-2">
         <DailyQuizBanner quizzes={allQuizzes} />
         <PuzzleOfTheDayBanner puzzles={allPuzzles} />
+        <div className="col-span-2 sm:col-span-1">
+          <WordOfTheDayBanner />
+        </div>
       </div>
 
       <div className="max-w-6xl mx-auto px-4 pt-2 sm:pt-6 lg:pt-3 pb-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">

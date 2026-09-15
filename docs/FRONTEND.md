@@ -1392,6 +1392,91 @@ confirmed the toggle, this week's list, and (after backdating one score
 into last week purely as test setup) the champion banner all render
 correctly — including in dark mode.
 
+## "Word of the Day" — daily word-guessing game (2026-09-15)
+
+New `utils/wordOfTheDay.js` — a ~470-word curated list, a `getTodayWord()`
+picker (day-of-year-style deterministic index, same idea as
+`pickQuizOfTheDay`/`pickPuzzleOfTheDay` in `dailyQuiz.js`, just against a
+static list instead of fetched content), a fixed `LAUNCH_DATE` epoch
+giving the "Twegle Word #N" day counter, the standard Wordle color-scoring
+algorithm (`evaluateGuess` — two-pass, careful with duplicate letters:
+exact matches claimed first, then leftover letters checked against
+whatever's still unclaimed in the answer), today's-game persistence
+(`loadTodayState`/`saveTodayState`, date-keyed so a new day always starts
+clean with nothing to actively reset), and the spoiler-free 🟩/🟨/⬜
+share-text builder.
+
+**`pages/WordOfTheDay.jsx` is its own dedicated page**, not routed
+through `Game.jsx`'s generic per-slug wrapper — same call
+`SkydriftIsles.jsx` already made for a game whose mechanics don't fit
+that wrapper's assumptions. This game is once-per-day (persistent
+daily-lock state — reload resumes an in-progress or finished grid,
+there's no way to replay/re-peek at the same day's word), has no "vs the
+house"/"challenge a friend" framing to reuse, and needs its own
+spoiler-free share format instead of the wrapper's generic win/loss share
+text. Still listed normally in `games/registry.js` and shows up on the
+Games tab like any other game; its route in `App.jsx` (declared alongside
+Skydrift's own dedicated route) just takes priority over the generic
+`/games/:slug` catch-all — React Router ranks a literal path segment
+above a `:slug` param regardless of declaration order, same as how
+Skydrift's own route already worked.
+
+Supports both an on-screen keyboard (tap-friendly, colors update live
+from every past guess — `correct` > `present` > `absent` priority when a
+letter's appeared with different results across guesses) and a real
+physical keyboard via a `window` keydown listener, so there's no visible
+text `<input>` at all.
+
+**Streak only counts on an actual win** — a real difference from the
+Quiz/Puzzle streaks, which count on completion regardless of outcome
+(neither of those games has a genuine win/lose state, so "did you engage
+today" is the only thing that could be measured). New independent
+`WORD_STREAK_KEY` in `dailyQuiz.js`, and `statsSync.js` extended
+end-to-end (`readLocalBlob`/`writeLocalBlob`/`readBareBlob`/
+`clearBareBlob`/`normalizeServerBlob`/both merge call sites) so it syncs
+across devices exactly like the other two streaks — needed zero backend
+changes, since `EndUser.stats` is a schemaless `Mixed` blob that already
+passes through whatever's in it. **Deliberately not yet folded into
+`levels.js`'s points formula or the "7-Day Streak" badge threshold**
+(`utils/badges.js`) — both currently only look at quiz/puzzle streaks;
+disclosed as a real scope boundary for this pass rather than silently
+left inconsistent, since extending those touches the frontend *and*
+backend copies of the points formula.
+
+New `components/WordOfTheDayBanner.jsx` joins `DailyQuizBanner`/
+`PuzzleOfTheDayBanner` as a 3rd homepage banner (`Home.jsx`'s banner row
+went from a fixed `grid-cols-2` to `grid-cols-2 sm:grid-cols-3`, with the
+new banner spanning the full row on mobile via `col-span-2 sm:col-span-1`
+rather than squeezing into a 3-way split there — that row's other two
+banners show a real quiz title/puzzle question as their main line, which
+needs more room than a third of a phone screen reliably gives it). Can't
+show today's actual word as its headline the way the other two show
+their real content (that would spoil the game before it's even opened),
+so it shows the day number instead ("Twegle Word #N"). Same "🔥 [Name]
+Streak" eyebrow pattern as its two siblings — and, matching both of
+those exactly, hardcoded English rather than translated; this isn't a
+new gap, it's the same already-documented "no global language
+preference" limitation those two banners already had.
+
+Also plugs into the weekly Champion leaderboard (built the day before —
+see the entry above) for free: `'word-of-the-day': { order: 'asc' }`
+added to the backend's `GAME_LEADERBOARDS` gave it both an all-time and a
+weekly leaderboard automatically via the existing `GameLeaderboard.jsx`
+component, no new leaderboard code needed. A score is only ever submitted
+on a win.
+
+Verified in the browser end-to-end: played a full round through the real
+on-screen keyboard (not simulated state) and confirmed the color feedback
+was exactly correct against the actual day's word; confirmed the win
+screen, streak counter, and a real leaderboard submission all worked and
+showed up correctly afterward; reloaded and confirmed the "already played
+today" lock correctly resumes the finished grid read-only; directly
+verified the loss state's "out of tries, here's the word" screen;
+confirmed the share-text builder produces the correct spoiler-free emoji
+grid; checked dark mode and a 375px mobile viewport, including the new
+3-banner homepage row's mobile layout. Test leaderboard entry removed
+from the dev database afterward.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:

@@ -66,8 +66,11 @@ export const GAMES = [
   // canvas, backend routes/socket/model) is untouched and still fully
   // functional, just not listed here, so a visitor can't discover it from
   // the homepage. To bring it back, uncomment this entry and bump
-  // GAMES_COUNT back to 15 in both backend/src/utils/badges.js and
-  // frontend/src/utils/badges.js's "Tried Every Game" badge threshold.
+  // `GAMES_COUNT` in `backend/src/utils/badges.js` up by 1 (currently 15,
+  // for Word of the Day below — not tied to Skydrift specifically). The
+  // frontend's own "Tried Every Game" badge needs no manual bump — it
+  // already reads `GAMES.length` live, so it updates on its own the
+  // moment this entry is uncommented.
   // {
   //   slug: 'skydrift-isles',
   //   title: 'Skydrift Isles',
@@ -142,6 +145,18 @@ export const GAMES = [
     emoji: '🔨',
     gradient: 'from-violet-400 to-indigo-500',
     description: "Moles pop up fast — whack as many as you can in 20 seconds.",
+    players: ['single'],
+  },
+  // Own dedicated page (pages/WordOfTheDay.jsx), same "bypasses Game.jsx's
+  // generic wrapper" pattern the (currently hidden) Skydrift Isles entry
+  // above uses — see that page file's own comment for why. Its route in
+  // App.jsx takes priority over the generic `/games/:slug` catch-all.
+  {
+    slug: 'word-of-the-day',
+    title: 'Word of the Day',
+    emoji: '🟩',
+    gradient: 'from-green-500 to-emerald-600',
+    description: 'One word, 6 tries, a new one every day — same word for everyone.',
     players: ['single'],
   },
 ]

@@ -12,7 +12,7 @@
 // already in localStorage under 'userSession', so this stays consistent
 // with how those modules already access their own keys.
 import { fetchStats, pushStats } from '../userApi'
-import { QUIZ_STREAK_KEY, PUZZLE_STREAK_KEY } from './dailyQuiz'
+import { QUIZ_STREAK_KEY, PUZZLE_STREAK_KEY, WORD_STREAK_KEY } from './dailyQuiz'
 import { STATS_KEY, SEEN_KEY } from './badges'
 import { DAILY_LOG_KEY } from './weeklyRecap'
 import { scopedKey } from './accountScope'
@@ -38,6 +38,7 @@ function readLocalBlob() {
   return {
     quizStreak: readJSON(QUIZ_STREAK_KEY, { count: 0, lastDate: null }),
     puzzleStreak: readJSON(PUZZLE_STREAK_KEY, { count: 0, lastDate: null }),
+    wordStreak: readJSON(WORD_STREAK_KEY, { count: 0, lastDate: null }),
     stats: readJSON(STATS_KEY, {}),
     badgesSeen: readJSON(SEEN_KEY, []),
     dailyActivity: readJSON(DAILY_LOG_KEY, {}),
@@ -47,6 +48,7 @@ function readLocalBlob() {
 function writeLocalBlob(blob) {
   if (blob.quizStreak) localStorage.setItem(scopedKey(QUIZ_STREAK_KEY), JSON.stringify(blob.quizStreak))
   if (blob.puzzleStreak) localStorage.setItem(scopedKey(PUZZLE_STREAK_KEY), JSON.stringify(blob.puzzleStreak))
+  if (blob.wordStreak) localStorage.setItem(scopedKey(WORD_STREAK_KEY), JSON.stringify(blob.wordStreak))
   if (blob.stats) localStorage.setItem(scopedKey(STATS_KEY), JSON.stringify(blob.stats))
   if (blob.badgesSeen) localStorage.setItem(scopedKey(SEEN_KEY), JSON.stringify(blob.badgesSeen))
   if (blob.dailyActivity) localStorage.setItem(scopedKey(DAILY_LOG_KEY), JSON.stringify(blob.dailyActivity))
@@ -68,6 +70,7 @@ function readBareBlob() {
   return {
     quizStreak: bareJSON(QUIZ_STREAK_KEY, { count: 0, lastDate: null }),
     puzzleStreak: bareJSON(PUZZLE_STREAK_KEY, { count: 0, lastDate: null }),
+    wordStreak: bareJSON(WORD_STREAK_KEY, { count: 0, lastDate: null }),
     stats: bareJSON(STATS_KEY, {}),
     badgesSeen: bareJSON(SEEN_KEY, []),
     dailyActivity: bareJSON(DAILY_LOG_KEY, {}),
@@ -82,6 +85,7 @@ function readBareBlob() {
 function clearBareBlob() {
   localStorage.removeItem(QUIZ_STREAK_KEY)
   localStorage.removeItem(PUZZLE_STREAK_KEY)
+  localStorage.removeItem(WORD_STREAK_KEY)
   localStorage.removeItem(STATS_KEY)
   localStorage.removeItem(SEEN_KEY)
   localStorage.removeItem(DAILY_LOG_KEY)
@@ -167,6 +171,7 @@ function normalizeServerBlob(serverBlob) {
   return {
     quizStreak: serverBlob.quizStreak || serverBlob.streak,
     puzzleStreak: serverBlob.puzzleStreak,
+    wordStreak: serverBlob.wordStreak,
     stats: serverBlob.stats,
     badgesSeen: serverBlob.badgesSeen,
     dailyActivity: serverBlob.dailyActivity,
@@ -201,6 +206,7 @@ export async function claimGuestProgress(token) {
   const merged = {
     quizStreak: mergeStreak(guestBlob.quizStreak, serverBlob.quizStreak),
     puzzleStreak: mergeStreak(guestBlob.puzzleStreak, serverBlob.puzzleStreak),
+    wordStreak: mergeStreak(guestBlob.wordStreak, serverBlob.wordStreak),
     stats: mergeStats(guestBlob.stats, serverBlob.stats),
     badgesSeen: [...new Set([...(guestBlob.badgesSeen || []), ...(serverBlob.badgesSeen || [])])],
     dailyActivity: mergeDailyActivity(guestBlob.dailyActivity, serverBlob.dailyActivity),
@@ -234,6 +240,7 @@ export async function syncStatsOnLogin(token) {
   const merged = {
     quizStreak: mergeStreak(localBlob.quizStreak, serverBlob.quizStreak),
     puzzleStreak: mergeStreak(localBlob.puzzleStreak, serverBlob.puzzleStreak),
+    wordStreak: mergeStreak(localBlob.wordStreak, serverBlob.wordStreak),
     stats: mergeStats(localBlob.stats, serverBlob.stats),
     badgesSeen: [...new Set([...(localBlob.badgesSeen || []), ...(serverBlob.badgesSeen || [])])],
     dailyActivity: mergeDailyActivity(localBlob.dailyActivity, serverBlob.dailyActivity),

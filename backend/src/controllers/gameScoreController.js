@@ -28,6 +28,9 @@ export const GAME_LEADERBOARDS = {
   'guess-the-number': { order: 'asc' },
   'simon-says': { order: 'desc' },
   'whack-a-mole': { order: 'desc' },
+  // Fewer guesses to solve is better — a score is only ever submitted on a
+  // win (see WordOfTheDay.jsx), so every entry here is a genuine solve.
+  'word-of-the-day': { order: 'asc' },
 }
 
 // Gets the top 10 scores for one game, best-first — called when the leaderboard screen loads.

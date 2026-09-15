@@ -54,6 +54,13 @@ export function pickPuzzleOfTheDay(puzzles) {
 // came from a quiz vs a puzzle under the old shared counter.
 export const QUIZ_STREAK_KEY = 'dailyQuizStreak'
 export const PUZZLE_STREAK_KEY = 'dailyPuzzleStreak'
+// A 3rd independent streak, same pattern as the two above — added
+// alongside "Word of the Day" (see utils/wordOfTheDay.js). Deliberately
+// not yet folded into levels.js's calculatePoints() streak-weeks bonus or
+// badges.js's "7-Day Streak" badge threshold (both currently only look at
+// quiz/puzzle streaks) — a disclosed, deliberate scope boundary for this
+// pass, not an oversight; see FRONTEND.md.
+export const WORD_STREAK_KEY = 'dailyWordStreak'
 
 // Loads a streak (count + last completed date) from storage and resets it
 // to 0 if it's already broken.
@@ -93,6 +100,11 @@ export function getPuzzleStreak() {
   return readStreak(PUZZLE_STREAK_KEY)
 }
 
+// Returns the visitor's current Word of the Day streak (days in a row).
+export function getWordStreak() {
+  return readStreak(WORD_STREAK_KEY)
+}
+
 // Returns the day before the given "YYYY-MM-DD" date.
 function previousDateKey(todayKey) {
   const [y, m, d] = todayKey.split('-').map(Number)
@@ -129,6 +141,17 @@ export function recordPuzzleStreakCompletion(finishedId, todaysId) {
   return recordStreak(PUZZLE_STREAK_KEY, finishedId, todaysId)
 }
 
+// Called from WordOfTheDay.jsx, but only on an actual win — unlike the
+// quiz/puzzle streaks above (which count on completion regardless of
+// outcome, since neither of those games has a real win/lose state), a
+// Wordle-style streak is meaningless if it didn't require solving the
+// word. There's only ever one possible "today's word," so there's no
+// separate id to match — the two identical literals just satisfy
+// recordStreak()'s existing (finishedId, todaysId) signature.
+export function recordWordStreakCompletion() {
+  return recordStreak(WORD_STREAK_KEY, 'today', 'today')
+}
+
 // A streak is "at risk" when it's real (worth protecting — 1 day isn't much
 // to lose) and yesterday was the last day it was extended, meaning today is
 // the last chance before it resets to 0 tomorrow. Once today's already been
@@ -150,4 +173,5 @@ export function isStreakAtRisk(streak) {
 export function clearLocalStreaks() {
   localStorage.removeItem(scopedKey(QUIZ_STREAK_KEY))
   localStorage.removeItem(scopedKey(PUZZLE_STREAK_KEY))
+  localStorage.removeItem(scopedKey(WORD_STREAK_KEY))
 }
