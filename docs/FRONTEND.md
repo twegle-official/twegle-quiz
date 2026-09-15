@@ -1477,6 +1477,16 @@ grid; checked dark mode and a 375px mobile viewport, including the new
 3-banner homepage row's mobile layout. Test leaderboard entry removed
 from the dev database afterward.
 
+## Bookmarks / Favorites (2026-09-15)
+
+"Save a quiz/post/story to revisit later," tied to the account — see `docs/PENDING_TASKS.md`'s dated entry for the full backend/product reasoning. Frontend pieces:
+
+- **`userApi.js`** — 4 new thin wrappers (`fetchBookmarks`, `fetchBookmarkIds`, `addBookmark`, `removeBookmark`) following the file's existing `request({token, method, body})` convention.
+- **`components/BookmarkButton.jsx`** — a 🔖/📑 toggle taking `contentType`/`contentId` props. Checks `fetchBookmarkIds` on mount to know its initial state (not the full list — cheaper). Logged out, it renders a plain `<Link to="/login">` styled identically to the button rather than a toggle that would just fail — the same "guide a guest to log in" pattern other account-gated actions already use, not a new one. Dropped into `Quiz.jsx`/`PostView.jsx`/`StoryView.jsx`, each in a flex row alongside the existing `BackButton`.
+- **`pages/Bookmarks.jsx`** (`/bookmarks`) — "My Bookmarks," guest-redirects to `/login` via the same `useEffect` guard `Account.jsx`/`SkydriftIsles.jsx` already use (avoids React's cross-component-update warning from redirecting mid-render). Renders the fetched list with the site's existing `QuizCard`/`PostCard`/`StoryCard` picked by `contentType` — no new card UI. Linked from `Account.jsx` ("🔖 My Bookmarks →"), deliberately **not** added to the global footer (unlike My Achievements/Leaderboard) since those stay usable for a guest while this one hard-redirects — footer real estate for a guest-dead-end link isn't worth it.
+
+Verified end-to-end in the browser with a real test account: bookmarked a real quiz, post, and story through the actual UI, confirmed `/bookmarks` lists all three in save-order using their normal cards, confirmed removing a bookmark updates the button and the list, confirmed the guest states (login link on the button, redirect on the page), dark mode, and a 375px mobile viewport. Test account and its bookmarks removed from the dev database afterward.
+
 ## What's next
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:

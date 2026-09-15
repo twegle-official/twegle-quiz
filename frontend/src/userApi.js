@@ -72,3 +72,22 @@ export const fetchMySkydriftIsland = (token) => request('/skydrift/my-island', {
 // Joins a friend's Skydrift island by its invite code.
 export const joinSkydriftIsland = (token, code) =>
   request(`/skydrift/join/${code}`, { token, method: 'POST' })
+
+// Fetches every quiz/post/story this account has bookmarked, each with
+// enough of its own content to render a normal card — used by
+// pages/Bookmarks.jsx.
+export const fetchBookmarks = (token) => request('/users/me/bookmarks', { token })
+
+// Fetches just the {contentType, contentId} pairs this account has
+// bookmarked, with no content detail — used to light up a BookmarkButton
+// as "already saved" on any card/detail page without a heavier fetch.
+export const fetchBookmarkIds = (token) => request('/users/me/bookmark-ids', { token })
+
+// Saves a quiz/post/story for later. Safe to call on something already
+// bookmarked — the backend treats it as a no-op, not an error.
+export const addBookmark = (token, contentType, contentId) =>
+  request('/users/me/bookmarks', { token, method: 'POST', body: { contentType, contentId } })
+
+// Un-saves a bookmark.
+export const removeBookmark = (token, contentType, contentId) =>
+  request(`/users/me/bookmarks/${contentType}/${contentId}`, { token, method: 'DELETE' })

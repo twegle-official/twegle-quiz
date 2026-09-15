@@ -8,6 +8,7 @@ import CrossPromo from '../components/CrossPromo'
 import PostReactions from '../components/PostReactions'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
+import BookmarkButton from '../components/BookmarkButton'
 import PreviewBanner from '../components/PreviewBanner'
 import { POST_CATEGORY_STYLE } from '../postStyles'
 import { shareOrDownloadImage } from '../utils/shareImage'
@@ -122,7 +123,10 @@ export default function PostView() {
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       {previewToken && <PreviewBanner />}
-      <div className="text-left mb-4"><BackButton /></div>
+      <div className="flex items-center justify-between mb-4">
+        <BackButton />
+        <BookmarkButton contentType="post" contentId={post._id} />
+      </div>
       {/* Clearly disclosed, not hidden — the actual legal-disclosure moment
           for a sponsored post, unlike the tile badge which is easy to miss. */}
       {post.sponsor?.name && (

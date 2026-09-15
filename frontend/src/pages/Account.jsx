@@ -501,6 +501,12 @@ export default function Account() {
         >
           🏆 View my badges →
         </Link>
+        <Link
+          to="/bookmarks"
+          className="block mt-2 text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline"
+        >
+          🔖 My Bookmarks →
+        </Link>
       </div>
       </div>
     </div>

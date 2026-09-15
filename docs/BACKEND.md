@@ -860,11 +860,24 @@ infrastructure — and bumping `utils/badges.js`'s hand-mirrored
 backend has no live games list to read a count from the way the frontend
 does.
 
+## Bookmarks / Favorites (2026-09-15)
+
+New `Bookmark` model (`{ endUser, contentType: 'quiz'|'post'|'story', contentId }`) — see `docs/PENDING_TASKS.md`'s dated entry for the full reasoning (account-only by design, idempotent upsert, the polymorphic list-merge pattern, the `PostCard` field-selection gap caught before shipping). Mounted under the existing `endUserAuthRoutes.js` alongside `/me/stats`, not a new route file — these are conceptually just more "logged-in user's own stuff" endpoints:
+
+- `GET /api/users/me/bookmarks` — full list, newest-saved-first, each row's content merged in (`bookmarkController.js`'s `listBookmarks`)
+- `GET /api/users/me/bookmark-ids` — lightweight `{contentType, contentId}` pairs only, for a "is this saved" check without fetching full content on every card
+- `POST /api/users/me/bookmarks` — `{contentType, contentId}`, 404s if the target doesn't exist, idempotent upsert otherwise
+- `DELETE /api/users/me/bookmarks/:contentType/:contentId`
+
+All behind `requireUserAuth` (hard 401 for guests) — unlike the weekly leaderboard's `optionalUserAuth`, there's no guest behavior to preserve here.
+
 ## Known dev-environment quirks (for whoever runs this next)
 
 - **Stopping a background `npm run start`/`npm run dev` doesn't always kill the actual `node`/`mongod` process on Windows** — the wrapping shell dies but the child can survive and keep holding the port or the database lock. If a restart seems to "ignore" a code change, check `Get-NetTCPConnection -LocalPort 4000` (PowerShell) for a stale process still bound to the port, and kill it directly.
 - **`npm run start` does not auto-reload on file changes — only `npm run dev` (nodemon) does.** Hit this directly: a controller edit (the admin search/filter feature) silently had zero effect because the backend was running via `start`, not `dev`. If a backend code change doesn't seem to take effect, check which script is actually running before assuming the code is wrong — restart with `npm run dev` during active development.
 - The dev-only in-memory database fallback does not reliably persist data across separate process restarts (it's designed for ephemeral test runs, not as a lightweight persistent local database) — this is exactly why the auto-seed-on-boot approach exists. Not relevant anymore now that a real local MongoDB is configured, but worth knowing if `MONGODB_URI` is ever unset again.
+- **The backend's `PORT` and the frontend's `VITE_API_URL` can drift out of sync between each other's local `.env` files** (hit directly while verifying Bookmarks: backend defaulted to 4000, frontend's `.env` pointed at 5000) — every request from the app then fails with a plain "Failed to fetch," not an obviously-a-config-error message. If login/signup/any API call fails immediately in dev, check the two ports actually match before suspecting the code.
+- **The PWA service worker's runtime API cache (`twegle-api-cache`, registered even under `npm run dev` since `devOptions.enabled: true` in `vite.config.js`) can intercept and fail `fetch()` calls to single-item API routes** (e.g. `GET /api/quizzes/:slug`) while list routes on the same origin keep working — surfaced as `net::ERR_FAILED` in the browser console, with the page showing a false "That quiz/post doesn't exist." Direct browser navigation to the same API URL still works (bypasses the SW's fetch interception), which is the fastest way to confirm this is the cause rather than a real backend bug. Fix during a dev session: `(await navigator.serviceWorker.getRegistrations()).forEach(r => r.unregister())` plus clearing `caches` in the devtools console, then reload.
 
 ## What's next
 

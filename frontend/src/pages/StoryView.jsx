@@ -8,6 +8,7 @@ import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
 import ContentReactions from '../components/ContentReactions'
 import BackButton from '../components/BackButton'
+import BookmarkButton from '../components/BookmarkButton'
 import PreviewBanner from '../components/PreviewBanner'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { shuffleArray } from '../utils/shuffle'
@@ -142,7 +143,10 @@ export default function StoryView() {
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       {previewToken && <PreviewBanner />}
-      <div className="text-left mb-4"><BackButton /></div>
+      <div className="flex items-center justify-between mb-4">
+        <BackButton />
+        <BookmarkButton contentType="story" contentId={story._id} />
+      </div>
       <div
         className={`animate-pop-in rounded-3xl p-10 text-white shadow-lg bg-gradient-to-br ${style.gradient}`}
       >

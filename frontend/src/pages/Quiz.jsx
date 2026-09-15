@@ -3,6 +3,7 @@ import { useNavigate, useParams, useLocation, useSearchParams, Link } from 'reac
 import { fetchQuizBySlug, joinQuizCompare, recordEngagement, createQuizBattle, getQuizEmbedUrl } from '../api'
 import ProgressBar from '../components/ProgressBar'
 import BackButton from '../components/BackButton'
+import BookmarkButton from '../components/BookmarkButton'
 import PreviewBanner from '../components/PreviewBanner'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordRecentlyViewed } from '../utils/recentlyViewed'
@@ -201,7 +202,10 @@ export default function Quiz() {
     <div className="max-w-xl mx-auto px-4 py-10">
       <script type="application/ld+json">{JSON.stringify(quizSchema)}</script>
       {previewToken && <PreviewBanner />}
-      <BackButton className="mb-4" />
+      <div className="flex items-center justify-between mb-4">
+        <BackButton />
+        <BookmarkButton contentType="quiz" contentId={quiz._id} />
+      </div>
       {/* Clearly disclosed, not hidden — the actual legal-disclosure moment
           for a sponsored quiz, unlike the tile badge which is easy to miss. */}
       {quiz.sponsor?.name && (
