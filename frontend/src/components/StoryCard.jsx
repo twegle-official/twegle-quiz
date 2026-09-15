@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { STORY_CATEGORY_STYLE } from '../storyStyles'
 import { getStoryShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import TileBookmarkBadge from './TileBookmarkBadge'
 import { ctaLabel, pickLabel } from '../utils/ctaLabels'
 
 // A clickable story tile shown in lists of short stories — links through to
@@ -29,6 +30,7 @@ export default function StoryCard({ story, index = 0 }) {
             : `"${story.title}" — a ${style.label.toLowerCase()} story on Twegle!`
         }
       />
+      <TileBookmarkBadge contentType="story" contentId={story._id} />
 
       <div className="text-4xl mb-3">{story.emoji || style.emoji}</div>
       <h2 className="text-xl font-bold mb-1 pr-8">{story.title}</h2>

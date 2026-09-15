@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { POST_CATEGORY_STYLE } from '../postStyles'
 import { getPostShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import TileBookmarkBadge from './TileBookmarkBadge'
 import TileReactions from './TileReactions'
 
 // Builds the text used when someone shares this post (e.g. via WhatsApp).
@@ -32,6 +33,7 @@ export default function PostCard({ post, index = 0, reactionCounts, onReact }) {
       style={animationStyle}
     >
       {shareButton}
+      <TileBookmarkBadge contentType="post" contentId={post._id} />
       {/* Same top-left, no-added-height disclosure badge as QuizCard.jsx */}
       {post.sponsor?.name && (
         <span className="absolute top-3 left-3 px-2 py-0.5 rounded-full bg-white/20 text-[10px] font-semibold uppercase tracking-wide">

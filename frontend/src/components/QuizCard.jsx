@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { getQuizIntroShareUrl } from '../api'
 import TileShareButton from './TileShareButton'
+import TileBookmarkBadge from './TileBookmarkBadge'
 import { engagementLabel } from '../utils/engagementLabel'
 import { hasCompletedQuiz } from '../utils/badges'
 import { ctaLabel } from '../utils/ctaLabels'
@@ -29,6 +30,7 @@ export default function QuizCard({ quiz }) {
         shareUrl={getQuizIntroShareUrl(quiz.slug)}
         shareText={`Take the "${quiz.title}" quiz on Twegle!`}
       />
+      <TileBookmarkBadge contentType="quiz" contentId={quiz._id} />
 
       {/* Absolutely positioned top-left, opposite TileShareButton — a paid
           sponsorship must be clearly disclosed, but never add height to the

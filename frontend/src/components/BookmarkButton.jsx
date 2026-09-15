@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
-import { fetchBookmarkIds, addBookmark, removeBookmark } from '../userApi'
+import { useBookmarks } from '../BookmarkContext'
+import { addBookmark, removeBookmark } from '../userApi'
 
 // A small "save for later" toggle shown on a quiz/post/story's own detail
 // page — tied to the account (not localStorage, unlike "recently viewed"),
@@ -10,25 +11,12 @@ import { fetchBookmarkIds, addBookmark, removeBookmark } from '../userApi'
 // genuinely needs an account, there's nowhere anonymous to store it.
 export default function BookmarkButton({ contentType, contentId }) {
   const { session } = useUserAuth()
-  const [saved, setSaved] = useState(false)
+  // Shared state (see BookmarkContext.jsx) — reused by every tile's small
+  // saved-badge too, so toggling here updates those instantly rather than
+  // each keeping its own separate fetch.
+  const { isBookmarked, setBookmarked } = useBookmarks()
   const [loading, setLoading] = useState(false)
-
-  // Checks whether this item is already saved — a full list fetch rather
-  // than a dedicated "is this one bookmarked" endpoint, since a visitor
-  // realistically has a small handful of bookmarks, not thousands; not
-  // worth a second backend endpoint just to avoid this.
-  useEffect(() => {
-    if (!session) return
-    let cancelled = false
-    fetchBookmarkIds(session.token)
-      .then(({ bookmarks }) => {
-        if (!cancelled) setSaved(bookmarks.some((b) => b.contentType === contentType && b.contentId === contentId))
-      })
-      .catch(() => {})
-    return () => {
-      cancelled = true
-    }
-  }, [session, contentType, contentId])
+  const saved = isBookmarked(contentType, contentId)
 
   async function toggle() {
     if (loading) return
@@ -36,13 +24,13 @@ export default function BookmarkButton({ contentType, contentId }) {
     try {
       if (saved) {
         await removeBookmark(session.token, contentType, contentId)
-        setSaved(false)
+        setBookmarked(contentType, contentId, false)
       } else {
         await addBookmark(session.token, contentType, contentId)
-        setSaved(true)
+        setBookmarked(contentType, contentId, true)
       }
     } catch {
-      // Network hiccup — leave `saved` exactly as it was rather than
+      // Network hiccup — leave state exactly as it was rather than
       // guessing; the next tap just retries the same action.
     } finally {
       setLoading(false)

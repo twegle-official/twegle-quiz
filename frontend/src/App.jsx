@@ -47,6 +47,7 @@ import Account from './pages/Account'
 import Bookmarks from './pages/Bookmarks'
 import Profile from './pages/Profile'
 import { UserAuthProvider } from './UserAuthContext'
+import { BookmarkProvider } from './BookmarkContext'
 
 import { AuthProvider } from './admin/AuthContext'
 import ProtectedRoute from './admin/ProtectedRoute'
@@ -136,6 +137,7 @@ function PublicSite() {
 
   return (
     <UserAuthProvider>
+    <BookmarkProvider>
     <div className="min-h-screen flex flex-col bg-dot-pattern">
       <Header />
       <ShareSidebar />
@@ -187,6 +189,7 @@ function PublicSite() {
       <Footer />
       <BadgeToast />
     </div>
+    </BookmarkProvider>
     </UserAuthProvider>
   )
 }
