@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, changed, or removed on the site — for visitors or for admins — this file gets updated the same day, so it always describes what the app actually does *right now*. It is not a history of how things got built (see `APPLICATION_FLOW.md` for that). There is no code and no technical jargon here. If someone with zero computer background reads this from top to bottom, they should come away understanding exactly what Twegle does, what a visitor can do on it, and what an admin can do on it.
 
-**Last updated:** 7 September 2026 (latest — Compatibility Match added; also caught up two smaller things that had drifted stale since 20 August: the Games tab's "Multiplayer" filter and this file's own "Last updated" date).
+**Last updated:** 18 September 2026 (latest — Bookmarks/Favorites, a "Word of the Day" daily game, and a batch of site-polish features added since 7 September: a festive/seasonal homepage banner, the "🎲 Surprise Me" random-content button, a first-visit welcome card, an embeddable quiz widget, and a weekly "Champion of the Week" leaderboard per game).
 
 ---
 
@@ -36,15 +36,20 @@ The homepage is the hub. From here you can reach every kind of content on the si
 - **A sort switch** (Newest / Trending) — "Newest" shows what was added most recently; "Trending" shows what's currently the most popular.
 - **A search box** at the top of every page — type anything and it looks across quizzes, puzzles, posts, and friendship quizzes at once for a match.
 - **A hero banner** at the very top — the "Where Fun Goes Viral" tagline, plus a small stats strip showing how many games/quizzes/jokes are on the site right now and how many people played something today, and a small floating share panel on the side of the screen so you can share Twegle itself with a friend at any time, from any page.
+- **A "🎲 Surprise Me" button** — jumps straight to a completely random piece of content (any quiz, puzzle, game, post, or story). Lives in the header on a computer screen, and in the footer on every device — a quick way to discover something without browsing.
+- **A festive banner** — around real festivals (Diwali, Holi, Eid, Christmas, and others), a colorful banner appears a few days ahead with a small countdown ("2 days to go — Happy Diwali!"), then disappears again once the day has passed. It's simply not there the rest of the year.
 - **"Jump back in"** — a small row of pills just under the hero, showing the last few things you personally opened on this device (a quiz, a game, whatever), so you can pick up where you left off in one tap. Only shows up once you've actually visited something.
-- **Two daily banners** — one quiz and one puzzle are picked automatically each day (the same ones for every visitor, and they change every day at midnight). Finishing the quiz keeps your Quiz streak going, and revealing the puzzle keeps your Puzzle streak going — two separate streaks (explained below).
+- **Three daily banners** — a quiz, a puzzle, and a word (see "Word of the Day" under Games below) are each picked automatically once a day (the same ones for every visitor, and they change every day at midnight). Finishing the quiz keeps your Quiz streak going, revealing the puzzle keeps your Puzzle streak going, and solving the word keeps your Word streak going — three separate streaks (explained below).
 - **A dark mode switch** — a small button that flips the whole site between a light look and a dark look. Your choice is remembered the next time you visit.
+- **A one-time welcome card** — the very first time anyone opens the site on a given browser, a small card explains the basics (Quizzes, Games, Puzzles, daily streaks) with a "Let's go!" button. It never shows again after that, on that device.
 
 ## 1. Quizzes
 
 These are the heart of the site. Most are **personality quizzes** — fun questions like "What's Your Skincare Personality?" or "Which K-pop Idol Position Are You?" — where you answer a short series of questions (usually around 5) and land on a result that describes "you." A few are **right/wrong quizzes** — like "How Well Do You Know Bollywood?" — where there are actually right and wrong answers and you get a real score at the end.
 
 Before starting a right/wrong quiz, there's a **"🆚 Battle a friend live"** option — it creates a link to send a friend, and once they open it, you both race through the exact same questions at the same time. Whoever gets the most correct fastest wins; there's a "🔁 Battle Again" button to instantly rematch afterward, no new link needed. (Only right/wrong quizzes offer this — a personality quiz has no "correct" answer to race for.)
+
+Every quiz also has a **"🔌 Embed this quiz"** option — if you run your own website or blog, it gives you a ready-to-paste snippet that puts a small, playable version of that quiz right on your own page, with a "Powered by Twegle" credit.
 
 After finishing a quiz, on the result page you can:
 - **Share the result** — either as a plain link, or as a nicely designed image made just for that result (great for posting to an Instagram or WhatsApp Story).
@@ -62,7 +67,7 @@ Short riddles and brain-teasers. You see the question, and there's a "🔍 Revea
 
 ## 3. Friendship Quiz ("How well do you know me?") & Compatibility Match
 
-This tab actually holds two different games, told apart by a small badge on the card ("💘 Compatibility" vs. no badge for the original one), and filterable via chips ("All" / "🕵️ Guess About Me" / "💘 Compatibility") the same way the Games tab can be filtered by Single Player/2 Player/Multiplayer:
+This tab actually holds two different games, told apart by a small badge on the card ("💘 Compatibility" vs. no badge for the original one), and filterable via chips ("All" / "🕵️ Guess About Me" / "💘 Compatibility") the same way the Games tab can be filtered by 1 Player/2 Player/Multiplayer:
 
 - **The original "guess about me" game**: built for two (or more) people. One person picks a topic and answers a set of questions about themselves — favorite food, biggest fear, that kind of thing — and gets a shareable link when done. Anyone who opens that link becomes a "guesser": they try to predict what the first person answered, without ever seeing the real answers first. Once a guesser submits their guesses, they see their own score (like "6 out of 8 correct"), a full breakdown of which guesses were right or wrong, and a button to reshare the *same original link* so even more friends can take a turn guessing. One person's setup can be reused by as many friends as want to try it.
 - **Compatibility Match** (added 7 September 2026): built for exactly two people. Person A answers a set of questions for real, gets a link, and sends it to one other person. Person B opens the link and answers the *same* questions for real too — not guessing. Once both have answered, both people see a "% compatible" score and a friendly verdict ("Best friends vibes!" down to "Couldn't be more different!"), plus a breakdown of which answers matched. Whoever hasn't answered yet sees a "still waiting" screen until the other person finishes.
@@ -76,7 +81,7 @@ Four simple, quick-to-read content types, shown together in one "Posts" tab (wit
 
 ## 5. Games
 
-**13 small games**, all playable instantly in the browser — nothing to download. Every game can be played solo against the computer; five of them can also be played **live, in real time, against a friend** (both screens update instantly, no waiting or refreshing) via a shareable link:
+**14 small games**, all playable instantly in the browser — nothing to download. Every game can be played solo against the computer (except Word of the Day, its own once-a-day thing — see below); five of them can also be played **live, in real time, against a friend** (both screens update instantly, no waiting or refreshing) via a shareable link:
 
 | Game | Solo vs. computer | Live with friends |
 |---|---|---|
@@ -93,6 +98,11 @@ Four simple, quick-to-read content types, shown together in one "Posts" tab (wit
 | Sudoku | Yes | — |
 | Simon Says | Yes | — |
 | Whack-a-Mole | Yes | — |
+| **Word of the Day** | Once per day (see below) | — |
+
+### Word of the Day
+
+A Wordle-style daily word game: everyone gets the same secret 5-letter word each day, and 6 tries to guess it — each guess colors every letter green (right letter, right spot), yellow (right letter, wrong spot), or gray (not in the word). It's deliberately **once a day, not endlessly replayable** — that scarcity is the whole point of a daily game like this, the same reason the real Wordle works the way it does. Opening it again later the same day (after you've already played) clearly says so and shows exactly how that round went, rather than pretending it's a fresh game. Solving it keeps your own **Word streak** going (see below), and it has its own leaderboard (fewest guesses wins) alongside every other scoring game.
 
 A few things worth knowing about the live games:
 - Starting a live match gives you a link to send a friend (or up to 3 friends, for Ludo) — whoever opens it joins the same match, and every move appears on both screens instantly.
@@ -101,7 +111,7 @@ A few things worth knowing about the live games:
 - Dice rolls (Snake and Ladder, Ludo) have a little tumble/settle animation, and on the Snake and Ladder board every snake and ladder is now drawn as a connecting line/curve, not just a lone icon, so it's obvious at a glance where you'll end up if you land on one.
 - Winning or losing a live match plays a short sound, and unlocking a badge, leveling up, or a perfect right/wrong-quiz score sets off a small confetti burst — all of this respects your device's "reduce motion" setting if you have it turned on.
 
-On the Games tab you can filter by **Single Player**, **2 Player**, or **Multiplayer** (3-4 players at once, live — currently just Ludo) to only see games of that kind. There are also two separate leaderboards for games: each game with a leaderboard (2048, Memory Match, Word Guess, Guess the Number, Simon Says, Whack-a-Mole) has its own top-scores list you can add your name to after finishing a round, and separately there's one site-wide **Global Leaderboard** (see "Achievements" below) ranking accounts by their overall level/points across everything on the site, not just games.
+On the Games tab you can filter by **1 Player**, **2 Player**, or **Multiplayer** (3-4 players at once, live — currently just Ludo) to only see games of that kind. Every game with a leaderboard (2048, Memory Match, Word Guess, Guess the Number, Simon Says, Whack-a-Mole, Word of the Day) shows **two views**: an **All-Time** top-scores list, and a **🗓️ This Week** view — the current week's scores plus a "🏆 Last Week's Champion" callout for whoever topped that game the week before. Only a free account's scores count toward the weekly view (a guest can still add their name to the all-time list). Separately from all of that, there's one site-wide **Global Leaderboard** (see "Achievements" below) ranking accounts by their overall level/points across everything on the site, not just games.
 
 ## 6. Stories
 
@@ -113,7 +123,7 @@ All 12 zodiac signs, each with a horoscope for Today, This Week, This Month, or 
 
 ## Daily streaks — come back every day
 
-There are two separate streaks, one for quizzes and one for puzzles — finishing the daily quiz keeps your **Quiz streak** going, and revealing the daily puzzle keeps your **Puzzle streak** going. Each shows its own "how many days in a row" counter (like popular word games do), right on its own homepage banner. They're tracked independently on purpose — you might only ever do one of the two, and each still gets its own honest count rather than being lumped into one shared number. It's a light nudge to come back tomorrow, nothing more — there's no penalty for missing a day, a streak just goes back to zero and you can start it again anytime.
+There are three separate streaks — quiz, puzzle, and word: finishing the daily quiz keeps your **Quiz streak** going, revealing the daily puzzle keeps your **Puzzle streak** going, and actually *solving* the daily word (not just playing it) keeps your **Word streak** going. Each shows its own "how many days in a row" counter (like popular word games do), right on its own homepage banner. They're tracked independently on purpose — you might only ever do one or two of the three, and each still gets its own honest count rather than being lumped into one shared number. It's a light nudge to come back tomorrow, nothing more — there's no penalty for missing a day, a streak just goes back to zero and you can start it again anytime.
 
 If a streak of yours is about to expire (you kept it going yesterday but haven't played yet today), a small "don't lose it" reminder pops up once, the first time you open the site that day — a gentle nudge, not a nag, and it never shows more than once per day.
 
@@ -136,6 +146,10 @@ You don't have to go to My Account every time, either — the "Share Twegle" ico
 ## Your own public profile page (optional)
 
 If you have a free account (see below), you can turn on a **public profile page** — a shareable page at `twegle.in/u/<yourhandle>` that shows off your avatar, level, unlocked bonus badges, both streaks, and the quizzes you've recently completed. It's entirely opt-in: your profile doesn't exist at any address until you specifically pick a public handle and switch on "Make my profile public" in My Account — nothing changes for anyone who doesn't do that. Anyone with the link can view it, no account or login needed on their end, and it has its own Share button just like everything else on the site. Turning sharing back off makes the page disappear again — from the outside, a profile that was never made public and one that's been switched back off look exactly the same (a plain "not found" message), so there's no way to tell the difference.
+
+## Bookmarks — save things to come back to later
+
+If you have a free account, a small 🔖 icon appears on any quiz, post, or story you open — tap it to save that item to **My Bookmarks** (reachable from My Account). Everything you've saved shows up there, newest-first, using the exact same cards you'd see anywhere else on the site. Anywhere a bookmarked item is listed elsewhere on the site — the homepage, search results, "you might also like" — that same 🔖 icon quietly appears on its tile too, so you can tell at a glance what you've already saved. Logged-out visitors see the same 🔖 icon, but tapping it takes them to the login page instead of saving anything — saving genuinely needs an account, since the whole point is that it follows you across devices.
 
 ## Sharing — how things spread
 
@@ -184,10 +198,11 @@ Here's exactly what that involves:
 ### What actually syncs across your devices once you're logged in
 
 If you're logged into the same account on, say, your phone and your laptop, these automatically stay in sync between them:
-1. Your **Quiz streak** and **Puzzle streak** counts (tracked separately).
+1. Your **Quiz**, **Puzzle**, and **Word** streak counts (tracked separately).
 2. Your **level/points progress** and **unlocked badges**.
 3. Your **"already played" history** — the small green checkmarks on quiz and puzzle tiles.
 4. Your **this-week activity**, so "Your Twegle Wrapped" reflects everything you did across every device, not just the one you're currently on.
+5. Your **Bookmarks** (see below).
 
 This sync happens **automatically in the background**, with no button to press. If you do something on your phone and then look at an already-open tab on your laptop, it picks up the change within about 20 seconds on its own — you never need to manually refresh the page or clear anything for it to catch up.
 
@@ -269,6 +284,6 @@ Just like the public site, the entire admin panel has its own dark mode toggle, 
 
 # The short version
 
-**If you're a visitor:** open the site, no login needed, pick whatever looks fun — a quiz, a puzzle, a game (13 of them, 5 playable live with friends), a story, a horoscope — enjoy it, and share it with a friend if you want to. If you'd like your progress to follow you across your phone and computer, or a public profile page to show off your level and badges, you can optionally create a free account with just a username and password. That's the entire experience, repeated across many different kinds of content, all designed to be quick to enjoy and easy to pass along.
+**If you're a visitor:** open the site, no login needed, pick whatever looks fun — a quiz, a puzzle, a game (14 of them, 5 playable live with friends), a story, a horoscope — enjoy it, and share it with a friend if you want to. If you'd like your progress to follow you across your phone and computer, a place to save things you want to revisit, or a public profile page to show off your level and badges, you can optionally create a free account with just a username and password. That's the entire experience, repeated across many different kinds of content, all designed to be quick to enjoy and easy to pass along.
 
 **If you're an admin:** log in, create and manage content through the admin panel (one at a time or in bulk), keep an eye on what's performing well through Analytics, the freshness flags, and the account-retention numbers, and handle whatever feedback or reports come in from visitors.
