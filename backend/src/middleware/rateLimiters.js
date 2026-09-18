@@ -185,6 +185,19 @@ export const skydriftLimiter = rateLimit({
   message: { error: 'Too many requests. Please slow down.' },
 })
 
+// Applied to Adventure World's account-gated progress actions (entering a
+// location, completing a challenge, claiming the daily treasure) — the
+// public browsing endpoints (worlds/locations/challenges lists) are
+// unauthenticated reads and don't need one, same as every other public
+// content list on the site.
+export const adventureLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many requests. Please slow down.' },
+})
+
 // Applied to creating/joining a Live Quiz Battle over REST — answering each
 // question happens over the socket, not REST (see realtime/quizBattleSocket.js),
 // same reasoning as connectFourLimiter.
