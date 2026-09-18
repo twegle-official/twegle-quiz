@@ -9,7 +9,7 @@ import { scopedKey } from './accountScope'
 
 export const DAILY_LOG_KEY = 'twegleDailyActivity'
 const RETENTION_DAYS = 14
-const KINDS = ['games', 'quizzes', 'puzzles', 'detective', 'reactions', 'shares']
+const KINDS = ['games', 'quizzes', 'puzzles', 'detective', 'adventure', 'reactions', 'shares']
 
 function dayKey(date) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`

@@ -13,6 +13,7 @@ import {
 import BackButton from '../components/BackButton'
 import AdventureAnswerChallenge from '../components/AdventureAnswerChallenge'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { recordAdventureChallengeCompleted } from '../utils/badges'
 
 // Reused content types (quiz/puzzle/game) open the real existing page in a
 // new tab — Adventure never re-implements an existing game — and the
@@ -80,10 +81,9 @@ export default function AdventureLocationView() {
 
   async function markComplete(challengeId, score) {
     const data = await completeAdventureChallenge(session.token, challengeId, score)
-    if (!data.alreadyCompleted && data.collectibleAwarded) {
-      setCelebration({ collectibleAwarded: data.collectibleAwarded, newlyUnlockedWorlds: data.newlyUnlockedWorlds, newlyUnlockedLocations: data.newlyUnlockedLocations })
-    } else if (!data.alreadyCompleted && (data.newlyUnlockedWorlds?.length || data.newlyUnlockedLocations?.length)) {
-      setCelebration({ newlyUnlockedWorlds: data.newlyUnlockedWorlds, newlyUnlockedLocations: data.newlyUnlockedLocations })
+    if (!data.alreadyCompleted) recordAdventureChallengeCompleted(challengeId, data.rewardPoints || 0)
+    if (!data.alreadyCompleted) {
+      setCelebration({ rewardPoints: data.rewardPoints, collectibleAwarded: data.collectibleAwarded, newlyUnlockedWorlds: data.newlyUnlockedWorlds, newlyUnlockedLocations: data.newlyUnlockedLocations })
     }
     setOpenChallenge(null)
     await load()
@@ -111,9 +111,10 @@ export default function AdventureLocationView() {
 
       {celebration && (
         <div className="rounded-2xl bg-gradient-to-r from-green-400 to-emerald-500 text-white p-4 mb-6 text-center">
-          {celebration.collectibleAwarded && (
-            <p className="font-bold mb-1">🎉 +{celebration.collectibleAwarded.count} {celebration.collectibleAwarded.key}!</p>
-          )}
+          <p className="font-bold mb-1">
+            🎉 Challenge complete!{celebration.rewardPoints > 0 && ` +${celebration.rewardPoints} points`}
+            {celebration.collectibleAwarded && ` +${celebration.collectibleAwarded.count} ${celebration.collectibleAwarded.key}`}
+          </p>
           {(celebration.newlyUnlockedWorlds?.length > 0 || celebration.newlyUnlockedLocations?.length > 0) && (
             <p className="text-sm">🔓 New area unlocked — check the map!</p>
           )}

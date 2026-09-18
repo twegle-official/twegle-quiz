@@ -103,8 +103,12 @@ describe('adventure world', () => {
     expect(res.body.newlyUnlockedWorlds).toEqual(['mystery-school'])
     expect(res.body.newlyUnlockedLocations).toEqual(['library'])
     expect(res.body.progress.collectibles.find((c) => c.key === 'star').count).toBe(5)
+    // quizChallenge never had its own rewardPoints set (still 0, the
+    // model's default), so the response falls back to the flat default.
+    expect(res.body.rewardPoints).toBe(4)
 
-    // Completing the same challenge again is a no-op, not a double award.
+    // Completing the same challenge again is a no-op, not a double award —
+    // rewardPoints is 0 the second time too, so a client can't re-farm points.
     const again = await request(app)
       .post(`/api/adventure/challenges/${quizChallenge._id}/complete`)
       .set('Authorization', `Bearer ${token}`)
@@ -112,6 +116,28 @@ describe('adventure world', () => {
     expect(again.body.alreadyCompleted).toBe(true)
     expect(again.body.collectibleAwarded).toBeNull()
     expect(again.body.progress.collectibles.find((c) => c.key === 'star').count).toBe(5)
+    expect(again.body.rewardPoints).toBe(0)
+  })
+
+  it("completing a challenge with its own rewardPoints set awards that amount instead of the flat default", async () => {
+    const { square } = await seedWorldChain()
+    const token = await signup('explorerpoints')
+    await request(app).get('/api/adventure/me/progress').set('Authorization', `Bearer ${token}`)
+    const challenge = await AdventureChallenge.create({
+      location: square._id,
+      title: 'Bonus Round',
+      type: 'guess',
+      payload: { question: 'q', options: ['a', 'b'], correctIndex: 0 },
+      rewardPoints: 20,
+      status: 'published',
+    })
+
+    const res = await request(app)
+      .post(`/api/adventure/challenges/${challenge._id}/complete`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({})
+    expect(res.status).toBe(200)
+    expect(res.body.rewardPoints).toBe(20)
   })
 
   it('rejects completing a challenge whose location is not unlocked yet', async () => {

@@ -18,6 +18,7 @@ export const POINTS_PER_SKYDRIFT_TILE = 1 // per decoration placed on a Skydrift
 export const POINTS_PER_SKYDRIFT_WINDLING = 4 // per Windling caught
 export const POINTS_PER_SKY_EVENT = 20 // per Sky Event discovered — the real milestone reward, uncapped (only 5 exist)
 export const POINTS_PER_DETECTIVE_CASE = 15 // per Twegle Detective case solved — uncapped, same reasoning as quizzes (naturally limited by how many cases exist)
+export const POINTS_PER_ADVENTURE_CHALLENGE = 4 // fallback used when a challenge's own rewardPoints is unset (0) — most challenges award their own admin-set rewardPoints instead (summed into stats.adventurePointsEarned), same "naturally limited by content" reasoning as quizzes/detective cases
 
 // Quizzes/puzzles are naturally capped by how much content exists, and
 // shares are deliberately uncapped (that's the one behavior actually worth
@@ -76,7 +77,8 @@ export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
     skydriftTiles * POINTS_PER_SKYDRIFT_TILE +
     skydriftWindlings * POINTS_PER_SKYDRIFT_WINDLING +
     skydriftSkyEvents * POINTS_PER_SKY_EVENT +
-    (stats.detectiveCasesSolved?.length || 0) * POINTS_PER_DETECTIVE_CASE
+    (stats.detectiveCasesSolved?.length || 0) * POINTS_PER_DETECTIVE_CASE +
+    (stats.adventurePointsEarned || 0)
   )
 }
 

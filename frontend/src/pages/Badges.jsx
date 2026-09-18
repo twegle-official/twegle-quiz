@@ -68,6 +68,7 @@ export default function Badges() {
         weekSummary.quizzes > 0 && `🎯 ${weekSummary.quizzes} quiz${weekSummary.quizzes === 1 ? '' : 'zes'} taken`,
         weekSummary.puzzles > 0 && `🧩 ${weekSummary.puzzles} puzzle${weekSummary.puzzles === 1 ? '' : 's'} solved`,
         weekSummary.detective > 0 && `🕵️ ${weekSummary.detective} mystery case${weekSummary.detective === 1 ? '' : 's'} solved`,
+        weekSummary.adventure > 0 && `🗺️ ${weekSummary.adventure} Adventure World challenge${weekSummary.adventure === 1 ? '' : 's'} completed`,
         weekSummary.reactions > 0 && `😍 ${weekSummary.reactions} reaction${weekSummary.reactions === 1 ? '' : 's'} given`,
         weekSummary.shares > 0 && `📣 ${weekSummary.shares} thing${weekSummary.shares === 1 ? '' : 's'} shared`,
       ].filter(Boolean)
@@ -140,6 +141,7 @@ export default function Badges() {
             {weekSummary.quizzes > 0 && <span>🎯 {weekSummary.quizzes} quizzes</span>}
             {weekSummary.puzzles > 0 && <span>🧩 {weekSummary.puzzles} puzzles</span>}
             {weekSummary.detective > 0 && <span>🕵️ {weekSummary.detective} mysteries</span>}
+            {weekSummary.adventure > 0 && <span>🗺️ {weekSummary.adventure} adventure challenges</span>}
             {weekSummary.reactions > 0 && <span>😍 {weekSummary.reactions} reactions</span>}
             {weekSummary.shares > 0 && <span>📣 {weekSummary.shares} shares</span>}
           </div>

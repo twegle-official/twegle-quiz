@@ -5,6 +5,7 @@ import AdventureCollectible from '../models/AdventureCollectible.js'
 import AdventureCharacter from '../models/AdventureCharacter.js'
 import AdventureProgress from '../models/AdventureProgress.js'
 import { evaluateUnlocks } from '../utils/adventureUnlocks.js'
+import { POINTS_PER_ADVENTURE_CHALLENGE } from '../utils/levels.js'
 
 // Same "published, and either no publishAt or it's already passed" rule
 // used by every other public list endpoint (scheduled-publishing support).
@@ -216,7 +217,12 @@ export async function completeChallenge(req, res) {
   const { newlyUnlockedWorlds, newlyUnlockedLocations } = await evaluateUnlocks(progress)
   await progress.save()
 
-  res.json({ progress, alreadyCompleted, collectibleAwarded, newlyUnlockedWorlds, newlyUnlockedLocations })
+  // Falls back to the flat default when a challenge hasn't had its own
+  // rewardPoints set by an admin (still 0, the model's default) — otherwise
+  // every challenge seeded before this field was actually wired up would
+  // silently award nothing at all.
+  const rewardPoints = challenge.rewardPoints > 0 ? challenge.rewardPoints : POINTS_PER_ADVENTURE_CHALLENGE
+  res.json({ progress, alreadyCompleted, collectibleAwarded, newlyUnlockedWorlds, newlyUnlockedLocations, rewardPoints: alreadyCompleted ? 0 : rewardPoints })
 }
 
 const DAILY_TREASURE_COLLECTIBLE_KEY = 'gem' // MVP simplification: every daily treasure is a fixed reward — see docs/BACKEND.md's Phase 2 entry for why, and how to make this admin-configurable later

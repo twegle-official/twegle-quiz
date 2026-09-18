@@ -130,6 +130,12 @@ function mergeStats(a = {}, b = {}) {
     skydriftTilesPlaced: Math.max(a.skydriftTilesPlaced || 0, b.skydriftTilesPlaced || 0),
     skydriftWindlingsCaught: Math.max(a.skydriftWindlingsCaught || 0, b.skydriftWindlingsCaught || 0),
     skydriftSkyEventsFound: Math.max(a.skydriftSkyEventsFound || 0, b.skydriftSkyEventsFound || 0),
+    detectiveCasesSolved: [...new Set([...(a.detectiveCasesSolved || []), ...(b.detectiveCasesSolved || [])])],
+    detectiveScores: { ...a.detectiveScores, ...Object.fromEntries(Object.entries(b.detectiveScores || {}).map(([slug, score]) => [slug, Math.max(a.detectiveScores?.[slug] || 0, score || 0)])) },
+    detectivePerfectInvestigations: Math.max(a.detectivePerfectInvestigations || 0, b.detectivePerfectInvestigations || 0),
+    detectiveMasterCasesSolved: Math.max(a.detectiveMasterCasesSolved || 0, b.detectiveMasterCasesSolved || 0),
+    adventureChallengesCompleted: [...new Set([...(a.adventureChallengesCompleted || []), ...(b.adventureChallengesCompleted || [])])],
+    adventurePointsEarned: Math.max(a.adventurePointsEarned || 0, b.adventurePointsEarned || 0),
   }
 }
 

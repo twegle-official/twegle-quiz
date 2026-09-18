@@ -42,10 +42,12 @@ export function getStats() {
       detectiveScores: {}, // { [caseSlug]: bestScore } — for "replay shows your best score"
       detectivePerfectInvestigations: 0, // every clue found + correct suspect + every deduction correct, in one attempt
       detectiveMasterCasesSolved: 0,
+      adventureChallengesCompleted: [], // challenge ids — mirrors detectiveCasesSolved's "already attempted" tracking
+      adventurePointsEarned: 0, // running sum of each completed challenge's own rewardPoints (see completeChallenge in adventureController.js) — a per-item variable amount, unlike every other flat-rate stat here, so it's pre-summed rather than a count levels.js multiplies
       ...JSON.parse(localStorage.getItem(scopedKey(STATS_KEY))),
     }
   } catch {
-    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false, skydriftTilesPlaced: 0, skydriftWindlingsCaught: 0, skydriftSkyEventsFound: 0, detectiveCasesSolved: [], detectiveScores: {}, detectivePerfectInvestigations: 0, detectiveMasterCasesSolved: 0 }
+    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false, skydriftTilesPlaced: 0, skydriftWindlingsCaught: 0, skydriftSkyEventsFound: 0, detectiveCasesSolved: [], detectiveScores: {}, detectivePerfectInvestigations: 0, detectiveMasterCasesSolved: 0, adventureChallengesCompleted: [], adventurePointsEarned: 0 }
   }
 }
 
@@ -87,6 +89,8 @@ export const BADGES = [
   { id: 'clue-hunter', emoji: '🔎', label: 'Clue Hunter', description: 'Solve 3 different Twegle Detective cases.', check: (s) => (s.detectiveCasesSolved || []).length >= 3, progress: (s) => `${Math.min(s.detectiveCasesSolved.length, 3)}/3` },
   { id: 'master-detective', emoji: '🧠', label: 'Master Detective', description: 'Correctly solve a Master-difficulty case.', check: (s) => (s.detectiveMasterCasesSolved || 0) >= 1, progress: (s) => `${Math.min(s.detectiveMasterCasesSolved || 0, 1)}/1` },
   { id: 'perfect-investigation', emoji: '🏆', label: 'Perfect Investigation', description: 'Solve a case with every clue found, the right suspect, and every deduction correct.', check: (s) => (s.detectivePerfectInvestigations || 0) >= 1, progress: (s) => `${Math.min(s.detectivePerfectInvestigations || 0, 1)}/1` },
+  { id: 'first-steps', emoji: '🗺️', label: 'First Steps', description: 'Complete your first Adventure World challenge.', check: (s) => (s.adventureChallengesCompleted || []).length >= 1, progress: (s) => `${Math.min((s.adventureChallengesCompleted || []).length, 1)}/1` },
+  { id: 'adventure-explorer', emoji: '🧭', label: 'Adventure Explorer', description: 'Complete 10 Adventure World challenges.', check: (s) => (s.adventureChallengesCompleted || []).length >= 10, progress: (s) => `${Math.min((s.adventureChallengesCompleted || []).length, 10)}/10` },
 ]
 
 function unlockedIds(stats) {
@@ -207,6 +211,24 @@ export function recordDetectiveCaseSolved({ slug, difficulty, score, cluesFound,
     }
     if (correctSuspect && cluesFound >= totalClues && deductionsCorrectCount >= totalDeductions) {
       s.detectivePerfectInvestigations = (s.detectivePerfectInvestigations || 0) + 1
+    }
+  })
+}
+
+// Call this once a visitor's Adventure World challenge completion is
+// confirmed by the server (see AdventureLocationView.jsx's markComplete) —
+// records it as completed (only once, same "already attempted" tracking as
+// recordDetectiveCaseSolved), adds the server-reported rewardPoints for this
+// completion to the running total, and checks for new badges/levels.
+export function recordAdventureChallengeCompleted(challengeId, rewardPoints = 0) {
+  // See recordGamePlayed's comment — recorded before update() so this
+  // action's daily tally is included in the immediate push, not just the
+  // next one.
+  recordDailyActivity('adventure')
+  update((s) => {
+    if (!s.adventureChallengesCompleted.includes(challengeId)) {
+      s.adventureChallengesCompleted.push(challengeId)
+      s.adventurePointsEarned = (s.adventurePointsEarned || 0) + rewardPoints
     }
   })
 }
