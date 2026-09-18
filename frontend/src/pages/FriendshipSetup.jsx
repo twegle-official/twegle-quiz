@@ -49,6 +49,18 @@ export default function FriendshipSetup() {
 
   useDocumentMeta(quiz?.title, quiz?.description)
 
+  // The setup form can be long (name + every question), so by the time
+  // someone submits it they're scrolled well down the page — without this,
+  // the "Your link is ready!" screen renders off-screen below the fold and
+  // easily gets missed or mistaken for a different share prompt entirely.
+  // An instant jump rather than `behavior: 'smooth'` — the switch to this
+  // much shorter screen collapses the page's scrollable height at the same
+  // moment, and a smooth scroll started right then gets clamped to
+  // wherever that new (shorter) max happens to land, short of the top.
+  useEffect(() => {
+    if (code) window.scrollTo(0, 0)
+  }, [code])
+
   if (notFound) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
@@ -90,6 +102,11 @@ export default function FriendshipSetup() {
               ? 'इसे किसी दोस्त को भेजो और देखो वो तुम्हें कितना जानता है। कोई भी इसे खोलकर जवाब दे सकता है — जितने चाहो उतने लोगों को भेजो।'
               : 'Send this to a friend and see how well they know you. Anyone who opens it can take a guess — send it to as many people as you like.'}
         </p>
+        {/* Distinct rose/pink styling + more specific labels than the
+            default violet/green/gray "invite a friend to Twegle" buttons
+            used everywhere else (Account page, footer, quiz results) —
+            otherwise this invite-link screen and that generic one look
+            identical and are easy to mix up. */}
         <ShareButtons
           title={
             isCompatibility
@@ -107,6 +124,17 @@ export default function FriendshipSetup() {
                 : `How well do you actually know ${subjectName}? Take the quiz and find out!`
           }
           onShare={() => recordEngagement('friendshipQuiz', quiz._id, 'share')}
+          labels={{
+            native: isHindi ? 'इनवाइट भेजें' : 'Send Invite',
+            whatsapp: isHindi ? 'व्हाट्सएप पर भेजें' : 'Send on WhatsApp',
+            copy: isHindi ? 'इनवाइट लिंक कॉपी करें' : 'Copy Invite Link',
+            copied: isHindi ? 'कॉपी हो गया!' : 'Copied!',
+          }}
+          buttonClassNames={{
+            native: 'px-4 py-2 rounded-full bg-rose-600 text-white text-sm font-semibold hover:bg-rose-700',
+            whatsapp: 'px-4 py-2 rounded-full bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700',
+            copy: 'px-4 py-2 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300 text-sm font-semibold hover:bg-rose-200 dark:hover:bg-rose-900',
+          }}
         />
         {isCompatibility && (
           <Link
