@@ -63,6 +63,7 @@ Twegle-Quiz/
 │       ├── api.js            Fetch wrappers for the public site's API calls
 │       ├── userApi.js        Fetch wrappers for end-user account API calls
 │       ├── UserAuthContext.jsx  End-user session state, available app-wide
+│       ├── BookmarkContext.jsx  Shared saved-item id set, nested inside UserAuthContext
 │       ├── pages/            One file per public route
 │       ├── components/       Shared UI pieces (cards, banners, buttons, header/footer)
 │       ├── games/            Each game's own board/logic component
@@ -225,6 +226,11 @@ localStorage keys for their sessions (`userSession` vs `adminSession`).
   current end-user session (or `null` for a guest) plus
   `login`/`signup`/`logout`. Every other feature's state is local to the
   page/component that needs it — there's no app-wide store.
+- **`BookmarkContext.jsx`** nests just inside `UserAuthContext` (it reads
+  `session`) and holds one shared saved-item id set per session, so a
+  tile's small saved-badge and a detail page's bookmark toggle both read
+  from — and write back to — the same place instead of each doing their
+  own fetch.
 - **`localStorage`** is where anonymous (and cached logged-in) progress
   lives: quiz/puzzle daily streaks (`utils/dailyQuiz.js`), badge/points
   progress (`utils/badges.js`), a rolling daily-activity log for the
@@ -244,6 +250,10 @@ index client-side — no scheduled job, no server state:
   server-side, combining a per-sign trait with a per-period action.
 - **Festive banner** (`utils/festiveBanner.js`) — a fixed lunar/solar
   festival calendar checked against today's date, rather than a rotation.
+- **Word of the Day** (`utils/wordOfTheDay.js`) — same day-of-year-index
+  idea as Quiz/Puzzle of the Day, applied to a static curated word list
+  instead of fetched content; a fixed launch-date epoch also derives the
+  "Twegle Word #N" day counter used in its share text.
 
 All three are just pure functions of `new Date()` — reloading the page
 never shows different "today" content, and nothing needs to run
@@ -284,6 +294,10 @@ detail.
 **Content engagement/analytics**
 `PlaySession` (quiz play + result), `PostEngagement`, `Engagement`
 (generic view/share counters), `Reaction`, `Feedback`
+
+**Account-saved content**
+`Bookmark` (`{endUser, contentType, contentId}` — quiz/post/story saved
+to revisit later; idempotent upsert on a unique compound index)
 
 **Two-person features** (each with its own session model, despite similar
 shapes — see `docs/BACKEND.md`'s Compatibility entry for why they aren't
