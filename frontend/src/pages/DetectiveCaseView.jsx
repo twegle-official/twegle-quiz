@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { fetchDetectiveCaseBySlug, solveDetectiveCase, getDetectiveShareUrl, recordEngagement } from '../api'
+import { fetchDetectiveCaseBySlug, solveDetectiveCase, fetchDetectiveLeaderboard, getDetectiveShareUrl, recordEngagement } from '../api'
+import { useUserAuth } from '../UserAuthContext'
 import { recordDetectiveCaseSolved } from '../utils/badges'
 import { recordRecentlyViewed } from '../utils/recentlyViewed'
 import { difficultyLabel, DETECTIVE_DIFFICULTY_META } from '../utils/detectiveDifficulty'
@@ -32,6 +33,7 @@ export default function DetectiveCaseView() {
   const { slug } = useParams()
   const [searchParams] = useSearchParams()
   const previewToken = searchParams.get('preview')
+  const { session } = useUserAuth() // logged-in user, if any — only their solve gets a leaderboard entry
 
   const [detectiveCase, setCase] = useState(null)
   const [notFound, setNotFound] = useState(false)
@@ -45,6 +47,7 @@ export default function DetectiveCaseView() {
   const [deductionAnswers, setDeductionAnswers] = useState([])
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState(null)
+  const [leaderboard, setLeaderboard] = useState(null)
   const viewedRef = useRef(false)
 
   useEffect(() => {
@@ -110,12 +113,16 @@ export default function DetectiveCaseView() {
     if (!chosenSuspectKey || !allDeductionsAnswered || submitting) return
     setSubmitting(true)
     try {
-      const data = await solveDetectiveCase(slug, {
-        chosenSuspectKey,
-        deductionAnswers,
-        cluesFoundCount: discoveredClues.size,
-        hintsUsed: revealedHints,
-      })
+      const data = await solveDetectiveCase(
+        slug,
+        {
+          chosenSuspectKey,
+          deductionAnswers,
+          cluesFoundCount: discoveredClues.size,
+          hintsUsed: revealedHints,
+        },
+        session?.token
+      )
       recordDetectiveCaseSolved({
         slug,
         difficulty: detectiveCase.difficulty,
@@ -129,6 +136,10 @@ export default function DetectiveCaseView() {
       recordEngagement('detectiveCase', detectiveCase._id, 'share') // reuses the existing "share"-style completion signal — see WordOfTheDay's own recordEngagement call pattern
       setResult(data)
       setPhase('result')
+      // Best-effort — a logged-in solve just landed on the leaderboard, so
+      // refetch it for the reveal screen; a guest's own solve never appears
+      // here, but the board itself (other players' scores) still does.
+      fetchDetectiveLeaderboard(slug).then(setLeaderboard).catch(() => {})
     } catch {
       // Network hiccup — leave the player on the deduction screen to retry
     } finally {
@@ -146,6 +157,7 @@ export default function DetectiveCaseView() {
     setChosenSuspectKey(null)
     setDeductionAnswers([])
     setResult(null)
+    setLeaderboard(null)
   }
 
   if (notFound) {
@@ -475,6 +487,37 @@ export default function DetectiveCaseView() {
               <p className="text-xs text-gray-500 dark:text-gray-400">{isHindi ? 'सही निष्कर्ष' : 'Deductions correct'}</p>
             </div>
           </div>
+
+          {/* A guest's own solve is never recorded (see api.js's
+              solveDetectiveCase), but the board itself — other logged-in
+              players' scores — is still worth showing them, alongside a
+              nudge to log in next time. */}
+          {leaderboard && leaderboard.length > 0 && (
+            <div className="text-left bg-gray-50 dark:bg-gray-800 rounded-2xl p-5 mb-6">
+              <p className="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400 mb-3">
+                🏆 {isHindi ? 'इस केस के टॉप डिटेक्टिव' : "This case's top detectives"}
+              </p>
+              <ul className="space-y-2">
+                {leaderboard.map((entry, i) => (
+                  <li key={entry._id} className="flex items-center gap-3 text-sm">
+                    <span className="text-gray-400 dark:text-gray-500 font-medium w-4 shrink-0">{i + 1}</span>
+                    <span className="shrink-0">{entry.endUser.avatar || '👤'}</span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200 truncate flex-1">{entry.endUser.displayName}</span>
+                    <span className="text-gray-500 dark:text-gray-400 shrink-0">{entry.score}</span>
+                  </li>
+                ))}
+              </ul>
+              {!session && (
+                <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
+                  {isHindi ? (
+                    <>अपना स्कोर लीडरबोर्ड पर दिखाने के लिए <Link to="/login" className="text-violet-600 dark:text-violet-400 hover:underline">लॉग इन करें</Link>।</>
+                  ) : (
+                    <><Link to="/login" className="text-violet-600 dark:text-violet-400 hover:underline">Log in</Link> to put your score on the leaderboard.</>
+                  )}
+                </p>
+              )}
+            </div>
+          )}
 
           <ShareButtons
             title={detectiveCase.title}

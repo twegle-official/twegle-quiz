@@ -1,4 +1,5 @@
 import DetectiveCase, { DETECTIVE_DIFFICULTIES } from '../models/DetectiveCase.js'
+import DetectiveSolve from '../models/DetectiveSolve.js'
 import { parsePublishAt } from '../utils/validators.js'
 import { logActivity } from '../utils/activityLog.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
@@ -269,6 +270,24 @@ export async function solveDetectiveCase(req, res) {
   const hintPenalty = Math.min(hints * 30, 150)
   const score = Math.max(0, suspectPoints + deductionPoints + cluePoints - hintPenalty)
 
+  // req.user is set by middleware/userAuth.js's optionalUserAuth — present
+  // only when the solver was logged in. Only their best score per case is
+  // kept (see DetectiveSolve.js), so replaying a solved case doesn't grow
+  // the collection or bump a worse score over a better one. A guest solve
+  // is never recorded — same "accounts-only ranking" call the weekly game
+  // leaderboard already made, and there's no nickname field here to
+  // attribute a guest row to anyway.
+  if (req.user) {
+    const existing = await DetectiveSolve.findOne({ detectiveCase: detectiveCase._id, endUser: req.user.id })
+    if (!existing || score > existing.score) {
+      await DetectiveSolve.findOneAndUpdate(
+        { detectiveCase: detectiveCase._id, endUser: req.user.id },
+        { score, cluesFound, totalClues, correctSuspect, deductionsCorrectCount, totalDeductions: detectiveCase.deductionQuestions.length },
+        { upsert: true }
+      )
+    }
+  }
+
   res.json({
     correctSuspect,
     deductionResults,
@@ -284,4 +303,23 @@ export async function solveDetectiveCase(req, res) {
     totalDeductions: detectiveCase.deductionQuestions.length,
     hintsUsed: hints,
   })
+}
+
+// Top 10 best scores for one case, best-first — called when a solved case's
+// reveal screen loads its leaderboard. Works for any case, including one
+// created five minutes ago, since it queries by the case's own id rather
+// than a hardcoded per-case config (see DetectiveSolve.js's own comment).
+export async function getDetectiveCaseLeaderboard(req, res) {
+  const detectiveCase = await DetectiveCase.findOne({ slug: req.params.slug, status: 'published' }).select('_id')
+  if (!detectiveCase) return res.status(404).json({ error: 'Case not found' })
+
+  const entries = await DetectiveSolve.find({ detectiveCase: detectiveCase._id })
+    .sort({ score: -1 })
+    .limit(10)
+    .populate('endUser', 'displayName avatar')
+
+  // A deleted/since-cleaned-up account leaves `endUser` unpopulated (`null`
+  // after populate, even though the field itself was set) — same filter the
+  // weekly game leaderboard already applies for the same reason.
+  res.json({ entries: entries.filter((e) => e.endUser) })
 }

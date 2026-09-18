@@ -173,14 +173,26 @@ export async function fetchDetectiveCaseBySlug(slug, previewToken) {
 // Submits a player's final accusation + deduction answers, and gets back
 // whether they were right plus the full reveal — the server-verified part
 // of the investigation, see backend/src/controllers/detectiveController.js.
-export async function solveDetectiveCase(slug, { chosenSuspectKey, deductionAnswers, cluesFoundCount, hintsUsed }) {
+// `token` is optional — when present (the solver is logged in), the backend
+// records this as their best score for the case's leaderboard; a guest
+// solve works exactly as before, just without a leaderboard entry.
+export async function solveDetectiveCase(slug, { chosenSuspectKey, deductionAnswers, cluesFoundCount, hintsUsed }, token) {
   const res = await fetch(`${API_URL}/detective/${slug}/solve`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify({ chosenSuspectKey, deductionAnswers, cluesFoundCount, hintsUsed }),
   })
   if (!res.ok) throw new Error('Failed to check your deduction')
   return res.json()
+}
+
+// Loads the top 10 best scores for one case, best-first — guest solves
+// never appear here, see DetectiveSolve.js on the backend for why.
+export async function fetchDetectiveLeaderboard(slug) {
+  const res = await fetch(`${API_URL}/detective/${slug}/leaderboard`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.entries
 }
 
 export async function fetchPostById(id, previewToken) {

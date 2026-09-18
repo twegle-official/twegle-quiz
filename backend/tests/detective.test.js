@@ -4,10 +4,19 @@ import { createApp } from '../src/app.js'
 import DetectiveCase from '../src/models/DetectiveCase.js'
 
 // Covers the public Twegle Detective flow: browsing published cases,
-// opening one by slug without the solution leaking, and checking a final
-// accusation server-side. See detectiveController.js for the behavior
-// under test.
+// opening one by slug without the solution leaking, checking a final
+// accusation server-side, and the per-case leaderboard it feeds. See
+// detectiveController.js for the behavior under test.
 const app = createApp()
+
+async function signup(username) {
+  const res = await request(app).post('/api/users/signup').send({
+    username,
+    password: 'correct-horse',
+    displayName: username,
+  })
+  return res.body.token
+}
 
 async function seedCase(overrides = {}) {
   return DetectiveCase.create({
@@ -108,6 +117,59 @@ describe('detective', () => {
     const res = await request(app)
       .post('/api/detective/no-such-case/solve')
       .send({ chosenSuspectKey: 'mia', deductionAnswers: [0] })
+    expect(res.status).toBe(404)
+  })
+
+  it('records a leaderboard entry for a logged-in solve, but not a guest one', async () => {
+    await seedCase()
+    const token = await signup('sleuth1')
+
+    await request(app)
+      .post('/api/detective/the-missing-trophy/solve')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ chosenSuspectKey: 'mia', deductionAnswers: [0], cluesFoundCount: 3, hintsUsed: 0 })
+    // A guest solve right after — should never show up on the board.
+    await request(app)
+      .post('/api/detective/the-missing-trophy/solve')
+      .send({ chosenSuspectKey: 'alex', deductionAnswers: [1], cluesFoundCount: 1, hintsUsed: 0 })
+
+    const res = await request(app).get('/api/detective/the-missing-trophy/leaderboard')
+    expect(res.status).toBe(200)
+    expect(res.body.entries).toHaveLength(1)
+    expect(res.body.entries[0].endUser.displayName).toBe('sleuth1')
+    expect(res.body.entries[0].score).toBe(800)
+  })
+
+  it('keeps only the best score when the same account solves a case again', async () => {
+    await seedCase()
+    const token = await signup('sleuth2')
+
+    // First solve: wrong suspect, lower score.
+    await request(app)
+      .post('/api/detective/the-missing-trophy/solve')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ chosenSuspectKey: 'alex', deductionAnswers: [1], cluesFoundCount: 1, hintsUsed: 0 })
+    // Second solve: right suspect, higher score.
+    await request(app)
+      .post('/api/detective/the-missing-trophy/solve')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ chosenSuspectKey: 'mia', deductionAnswers: [0], cluesFoundCount: 3, hintsUsed: 0 })
+
+    const res = await request(app).get('/api/detective/the-missing-trophy/leaderboard')
+    expect(res.body.entries).toHaveLength(1) // one row per account, not one per attempt
+    expect(res.body.entries[0].score).toBe(800)
+
+    // A worse third solve shouldn't overwrite the best score.
+    await request(app)
+      .post('/api/detective/the-missing-trophy/solve')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ chosenSuspectKey: 'ryan', deductionAnswers: [2], cluesFoundCount: 0, hintsUsed: 0 })
+    const after = await request(app).get('/api/detective/the-missing-trophy/leaderboard')
+    expect(after.body.entries[0].score).toBe(800)
+  })
+
+  it('404s a leaderboard request for a nonexistent case', async () => {
+    const res = await request(app).get('/api/detective/no-such-case/leaderboard')
     expect(res.status).toBe(404)
   })
 })
