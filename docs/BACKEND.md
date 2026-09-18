@@ -956,6 +956,14 @@ Picked to go next over Phase 3 (frontend) — without real content to create, th
 
 Not yet built: Phase 3, the actual player-facing frontend (map, avatar, playing through a challenge) — is next.
 
+## Twegle Adventure World — Phase 3: a real backend fix found while building the frontend (2026-09-18)
+
+The frontend work itself is `docs/FRONTEND.md`'s entry; this is the one backend change Phase 3 needed.
+
+- **`adventureController.js`** — `listChallenges` was sending every challenge's full `payload` (a `guess`/`code-breaker`/`quick-brain` challenge's real answer) to any visitor just browsing a location's challenge list, before they'd attempted anything. Fixed the same way `Puzzle.js`'s own `listPublishedPuzzles`/single-puzzle-fetch split already handles its `answer` field: `payload` removed from the `.select()` in `listChallenges`, and a new `getChallenge` (`GET /:id`) added that includes it — called only once a player actually opens that specific challenge to play it. Same "not a real security boundary, just keeps the answer out of casual browsing" trust level Puzzle's own reveal-on-demand already accepts.
+- New test in `adventure.test.js` confirms the split directly (list excludes `payload`, single-item fetch includes it).
+- Verified live on production with a real, since-deleted test account and a real seeded 2-world demo — see `docs/PENDING_TASKS.md`'s dated entry for the full playthrough (every award, the unlock chain firing in one response, and the Progress page's final numbers all confirmed correct).
+
 ## What's next
 
 - The admin panel frontend and the public-site API wiring are both done — see `FRONTEND.md`.
