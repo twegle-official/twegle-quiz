@@ -10,7 +10,7 @@ import DetectiveCase from '../models/DetectiveCase.js'
 
 dotenv.config()
 
-const cases = [
+export const cases = [
   {
     title: 'The Missing Trophy',
     slug: 'the-missing-trophy',
@@ -140,7 +140,14 @@ async function run() {
   console.log('Done.')
 }
 
-run().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+// Only auto-runs when executed directly (`node seedDetectiveCases.js`) —
+// guarded so this file can also be imported just for its `cases` export
+// (e.g. to seed production over the live admin API instead of a direct
+// Mongoose connection, when direct DB access isn't reachable from this
+// machine).
+if (import.meta.url === `file://${process.argv[1]}`.replace(/\\/g, '/')) {
+  run().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}

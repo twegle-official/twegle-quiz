@@ -147,7 +147,7 @@ export default function DetectiveCaseView() {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <p className="text-gray-600 dark:text-gray-400 mb-4">That case doesn't exist.</p>
-        <Link to="/detective" className="text-violet-600 font-semibold">Back to Detective</Link>
+        <Link to="/?tab=detective" className="text-violet-600 font-semibold">Back to Detective</Link>
       </div>
     )
   }
@@ -186,6 +186,23 @@ export default function DetectiveCaseView() {
           >
             {isHindi ? 'जांच शुरू करें' : 'Start Investigation'}
           </button>
+
+          {/* Previously the only way to share a case was the reveal screen
+              after solving it, or the small tile icon on the browse grid —
+              easy to miss if a visitor lands here straight from a shared
+              link. Added here too so "send this to a friend" is available
+              before investigating, not just after. */}
+          <div className="mt-6">
+            <ShareButtons
+              title={detectiveCase.title}
+              url={getDetectiveShareUrl(detectiveCase.slug)}
+              shareText={
+                isHindi
+                  ? `🕵️ क्या तुम "${detectiveCase.title}" रहस्य सुलझा सकते हो? Twegle Detective पर कोशिश करो!`
+                  : `🕵️ Can you solve "${detectiveCase.title}"? Try Twegle Detective!`
+              }
+            />
+          </div>
         </div>
       )}
 
@@ -329,7 +346,13 @@ export default function DetectiveCaseView() {
             </div>
           )}
 
-          <div className="mt-6 sticky bottom-4">
+          {/* Deliberately not `sticky` — on a phone that overlapped the
+              content list above it (nothing pushes the last card up out of
+              the way when a sticky element floats on top of the normal
+              document flow), so this is a plain in-flow button instead:
+              scroll a little further and tap it, same as every other
+              bottom-of-page button on the site. */}
+          <div className="mt-6">
             <button
               onClick={startDeduction}
               disabled={!allCluesFound}
@@ -462,7 +485,7 @@ export default function DetectiveCaseView() {
             <button onClick={investigateAgain} className="text-sm font-semibold text-amber-600 dark:text-amber-400 hover:underline">
               🔁 {isHindi ? 'फिर से जांच करें' : 'Investigate Again'}
             </button>
-            <Link to="/detective" className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline">
+            <Link to="/?tab=detective" className="text-sm font-semibold text-violet-600 dark:text-violet-400 hover:underline">
               {isHindi ? 'और केस देखें →' : 'More cases →'}
             </Link>
           </div>

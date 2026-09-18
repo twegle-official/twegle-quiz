@@ -25,22 +25,19 @@ export default function TodaysMysteryBanner({ language }) {
   const isHindi = language === 'hi'
 
   return (
-    <div className="max-w-6xl mx-auto px-4 mb-3 sm:mb-4">
+    <div className="max-w-6xl mx-auto px-4 mt-3 mb-3 sm:mt-4 sm:mb-4">
       <Link
         to={`/detective/${todaysCase.slug}`}
-        className="flex items-center gap-4 rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 text-white px-5 py-4 hover:opacity-95 transition-opacity border border-amber-500/20"
+        className="flex items-center gap-3 rounded-xl bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 text-white px-3.5 py-2.5 sm:px-4 sm:py-3 hover:opacity-95 transition-opacity border border-amber-500/20"
       >
-        <span className="text-4xl shrink-0">{todaysCase.emoji || '🕵️'}</span>
+        <span className="text-2xl sm:text-3xl shrink-0">{todaysCase.emoji || '🕵️'}</span>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wide text-amber-300">
-            🕵️ {isHindi ? 'आज का रहस्य' : "Today's Mystery"}
+          <p className="text-[9px] sm:text-[11px] font-bold uppercase tracking-wide text-amber-300 truncate">
+            🕵️ {isHindi ? 'आज का रहस्य' : "Today's Mystery"} · {diff.stars} {difficultyLabel(todaysCase.difficulty, isHindi ? 'hi' : 'en')}
           </p>
-          <p className="text-base sm:text-lg font-bold truncate">{todaysCase.title}</p>
-          <p className="text-xs text-white/70 truncate">
-            {diff.stars} {difficultyLabel(todaysCase.difficulty, isHindi ? 'hi' : 'en')} · {isHindi ? 'क्या तुम केस सुलझा सकते हो?' : 'Can you solve the case?'}
-          </p>
+          <p className="text-sm sm:text-base font-bold truncate">{todaysCase.title}</p>
         </div>
-        <span className="shrink-0 text-xs sm:text-sm font-bold bg-amber-500 text-slate-900 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 whitespace-nowrap">
+        <span className="shrink-0 text-[10px] sm:text-xs font-bold bg-amber-500 text-slate-900 rounded-full px-2.5 py-1.5 sm:px-3 sm:py-2 whitespace-nowrap">
           {isHindi ? 'जांच करें →' : 'Investigate →'}
         </span>
       </Link>

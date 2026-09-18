@@ -45,7 +45,6 @@ import UserLogin from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
 import Account from './pages/Account'
 import Bookmarks from './pages/Bookmarks'
-import DetectiveHub from './pages/DetectiveHub'
 import DetectiveCaseView from './pages/DetectiveCaseView'
 import Profile from './pages/Profile'
 import { UserAuthProvider } from './UserAuthContext'
@@ -153,7 +152,10 @@ function PublicSite() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account" element={<Account />} />
           <Route path="/bookmarks" element={<Bookmarks />} />
-          <Route path="/detective" element={<DetectiveHub />} />
+          {/* Retired as a standalone hub — Detective now lives as a tab on
+              the homepage, same as Quizzes/Puzzles (see Home.jsx), so an
+              old bookmark or link to /detective just lands there instead. */}
+          <Route path="/detective" element={<Navigate to="/?tab=detective" replace />} />
           <Route path="/detective/:slug" element={<DetectiveCaseView />} />
           <Route path="/u/:handle" element={<Profile />} />
           <Route path="/quiz/:quizId" element={<Quiz />} />

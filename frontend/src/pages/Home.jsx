@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPuzzles, fetchPostReactionsBatch, setPostReaction, fetchTodayStats } from '../api'
+import { fetchQuizzes, fetchPosts, fetchFriendshipQuizzes, fetchGameCounts, fetchStories, fetchZodiacSigns, fetchPuzzles, fetchDetectiveCases, fetchPostReactionsBatch, setPostReaction, fetchTodayStats } from '../api'
 import { GAMES } from '../games/registry'
 import QuizCard from '../components/QuizCard'
 import FriendshipQuizCard from '../components/FriendshipQuizCard'
@@ -9,6 +9,7 @@ import GameCard from '../components/GameCard'
 import StoryCard from '../components/StoryCard'
 import ZodiacCard from '../components/ZodiacCard'
 import PuzzleCard from '../components/PuzzleCard'
+import DetectiveCard from '../components/DetectiveCard'
 import DailyQuizBanner from '../components/DailyQuizBanner'
 import PuzzleOfTheDayBanner from '../components/PuzzleOfTheDayBanner'
 import WordOfTheDayBanner from '../components/WordOfTheDayBanner'
@@ -44,6 +45,7 @@ const ONBOARDING_SEEN_KEY = 'twegleHomeOnboardingSeen'
 const TABS = [
   { key: 'quizzes', label: 'Quizzes', hi: 'क्विज़', emoji: '🎯' },
   { key: 'games', label: 'Games', hi: 'गेम्स', emoji: '🎮' },
+  { key: 'detective', label: 'Detective', hi: 'जासूस', emoji: '🕵️' },
   { key: 'friendship', label: 'Friendship Quiz', hi: 'फ्रेंडशिप क्विज़', emoji: '🤝' },
   { key: 'puzzles', label: 'Puzzles', hi: 'पहेलियां', emoji: '🧩' },
   { key: 'posts', label: 'Posts', hi: 'पोस्ट्स', emoji: '💬' },
@@ -56,6 +58,15 @@ const PUZZLE_DIFFICULTIES = [
   { key: 'easy', label: 'Warm-Up', hi: 'वॉर्म-अप', emoji: '🟢' },
   { key: 'medium', label: 'Challenge', hi: 'चैलेंज', emoji: '🟡' },
   { key: 'hard', label: 'Brain Buster', hi: 'ब्रेन बस्टर', emoji: '🔴' },
+]
+
+// Same shape/reasoning as PUZZLE_DIFFICULTIES above — filters the fetched
+// Detective case list by difficulty, server-side (see the fetcher below).
+const DETECTIVE_DIFFICULTIES = [
+  { key: 'all', label: 'All', hi: 'सभी' },
+  { key: 'rookie', label: 'Rookie', hi: 'नौसिखिया', emoji: '⭐' },
+  { key: 'junior', label: 'Junior', hi: 'जूनियर', emoji: '⭐⭐' },
+  { key: 'master', label: 'Master', hi: 'मास्टर', emoji: '⭐⭐⭐' },
 ]
 
 const POST_CATEGORIES = [
@@ -235,6 +246,10 @@ export default function Home() {
   function setPuzzleDifficulty(cat) {
     setParam('pzcat', cat, 'all')
   }
+  const detectiveDifficulty = getParam('dcat', DETECTIVE_DIFFICULTIES.map((c) => c.key), 'all')
+  function setDetectiveDifficulty(cat) {
+    setParam('dcat', cat, 'all')
+  }
   const gameCategory = getParam('gcat', GAME_CATEGORIES.map((c) => c.key), 'all')
   function setGameCategory(cat) {
     setParam('gcat', cat, 'all')
@@ -257,6 +272,7 @@ export default function Home() {
     games: { items: GAME_CATEGORIES, active: gameCategory, onSelect: setGameCategory },
     friendship: { items: FRIENDSHIP_CATEGORIES, active: friendshipCategory, onSelect: setFriendshipCategory },
     puzzles: { items: PUZZLE_DIFFICULTIES, active: puzzleDifficulty, onSelect: setPuzzleDifficulty },
+    detective: { items: DETECTIVE_DIFFICULTIES, active: detectiveDifficulty, onSelect: setDetectiveDifficulty },
     posts: { items: POST_CATEGORIES, active: postCategory, onSelect: setPostCategory },
     stories: { items: STORY_CATEGORIES, active: storyCategory, onSelect: setStoryCategory },
   }
@@ -330,7 +346,7 @@ export default function Home() {
   // together from the top — rather than a different spot each time.
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, gameCategory, friendshipCategory, sortMode])
+  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, detectiveDifficulty, gameCategory, friendshipCategory, sortMode])
 
   // Fetches today's "N played today" count for the hero stats band.
   useEffect(() => {
@@ -384,6 +400,8 @@ export default function Home() {
         ? postCategory
         : activeTab === 'puzzles'
         ? puzzleDifficulty
+        : activeTab === 'detective'
+        ? detectiveDifficulty
         : 'all'
 
     const fetcher =
@@ -399,6 +417,8 @@ export default function Home() {
         ? fetchZodiacSigns(language)
         : activeTab === 'puzzles'
         ? fetchPuzzles(language, puzzleDifficulty === 'all' ? undefined : puzzleDifficulty)
+        : activeTab === 'detective'
+        ? fetchDetectiveCases(language, detectiveDifficulty === 'all' ? undefined : detectiveDifficulty)
         : fetchPosts(postCategory === 'all' ? undefined : postCategory, language)
     fetcher
       .then((data) => {
@@ -411,7 +431,7 @@ export default function Home() {
     return () => {
       cancelled = true
     }
-  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty])
+  }, [activeTab, language, quizCategory, storyCategory, postCategory, puzzleDifficulty, detectiveDifficulty])
 
   const activeCategory =
     activeTab === 'quizzes'
@@ -422,6 +442,8 @@ export default function Home() {
       ? postCategory
       : activeTab === 'puzzles'
       ? puzzleDifficulty
+      : activeTab === 'detective'
+      ? detectiveDifficulty
       : 'all'
 
   const items =
@@ -594,12 +616,15 @@ export default function Home() {
           "quick browsing" hero band any extra height on a normal day. */}
       <FestiveBanner language={language} />
 
+      {/* Row of recently-viewed content, shown just under the hero banner —
+          ahead of Today's Mystery below (reordered on direct feedback: a
+          returning visitor's own "pick up where you left off" row reads as
+          more personally relevant than a promo for a specific feature). */}
+      <RecentlyViewedRow />
+
       {/* A bigger, standalone banner (not part of the small Quiz/Puzzle/
           Word grid below) — see TodaysMysteryBanner.jsx for why. */}
       <TodaysMysteryBanner language={language} />
-
-      {/* Row of recently-viewed content, shown just under the hero banner */}
-      <RecentlyViewedRow />
 
       {/* Quiz/Puzzle stay side by side at every width, including mobile —
           each banner is a single compact row now (see DailyQuizBanner /
@@ -791,6 +816,24 @@ export default function Home() {
           </div>
         )}
 
+        {activeTab === 'detective' && (
+          <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 pt-2">
+            {DETECTIVE_DIFFICULTIES.map((diff) => (
+              <button
+                key={diff.key}
+                onClick={() => setDetectiveDifficulty(diff.key)}
+                className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full lg:rounded-lg text-xs font-semibold transition-colors lg:text-left ${
+                  detectiveDifficulty === diff.key
+                    ? 'bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                }`}
+              >
+                {diff.emoji} {pick(diff, language)}
+              </button>
+            ))}
+          </div>
+        )}
+
         {activeTab === 'games' && (
           <div className="lg:hidden flex gap-2 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1 pt-2">
             {GAME_CATEGORIES.map((cat) => (
@@ -930,6 +973,14 @@ export default function Home() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {displayedItems.map((puzzle, i) => (
             <PuzzleCard key={puzzle._id} puzzle={puzzle} index={i} />
+          ))}
+        </div>
+      )}
+
+      {displayedItems && displayedItems.length > 0 && activeTab === 'detective' && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {displayedItems.map((detectiveCase, i) => (
+            <DetectiveCard key={detectiveCase.slug} detectiveCase={detectiveCase} index={i} />
           ))}
         </div>
       )}
