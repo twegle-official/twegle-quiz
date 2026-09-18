@@ -254,6 +254,10 @@ index client-side — no scheduled job, no server state:
   idea as Quiz/Puzzle of the Day, applied to a static curated word list
   instead of fetched content; a fixed launch-date epoch also derives the
   "Twegle Word #N" day counter used in its share text.
+- **Today's Mystery** (`utils/detectiveProgress.js`'s `pickCaseOfTheDay()`)
+  — identical day-of-year-index pick over the fetched, published
+  `DetectiveCase` list, used by both the homepage banner and the Detective
+  hub page so they always agree on which case is "today's."
 
 All three are just pure functions of `new Date()` — reloading the page
 never shows different "today" content, and nothing needs to run
@@ -289,7 +293,7 @@ Grouped by domain — see each model file's own comments for full field
 detail.
 
 **Content (admin-authored, `status`/`language`/`publishAt` on all of them)**
-`Quiz`, `Post`, `Puzzle`, `Story`, `FriendshipQuiz`
+`Quiz`, `Post`, `Puzzle`, `Story`, `FriendshipQuiz`, `DetectiveCase` (a mystery — suspects/clues/deduction questions/solution nested in one document; no separate session model, unlike the two-person features below — see `docs/BACKEND.md`'s Detective entry for why)
 
 **Content engagement/analytics**
 `PlaySession` (quiz play + result), `PostEngagement`, `Engagement`

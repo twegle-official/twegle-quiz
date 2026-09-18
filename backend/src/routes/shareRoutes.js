@@ -7,6 +7,7 @@ import {
   sharePost,
   shareStory,
   sharePuzzle,
+  shareDetectiveCase,
   shareFriendshipInstance,
   shareFriendshipAttempt,
   shareQuizCompare,
@@ -34,6 +35,7 @@ router.get('/friendship-quiz/:slug', shareFriendshipQuizIntro) // build the shar
 router.get('/post/:id', sharePost) // build the shareable preview page for a post
 router.get('/story/:slug', shareStory) // build the shareable preview page for a story
 router.get('/puzzle/:id', sharePuzzle) // build the shareable preview page for a puzzle
+router.get('/detective/:slug', shareDetectiveCase) // build the shareable preview page for a Detective case
 router.get('/friendship/:code', shareFriendshipInstance) // build the shareable preview page for a friendship quiz instance
 router.get('/friendship-result/:id', shareFriendshipAttempt) // build the shareable preview page for a friendship quiz attempt/result
 router.get('/quiz-compare/:code', shareQuizCompare) // build the shareable preview page comparing two quiz results

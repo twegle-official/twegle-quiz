@@ -2,7 +2,7 @@
 
 **This is a living document.** Every time something is added, changed, or removed on the site — for visitors or for admins — this file gets updated the same day, so it always describes what the app actually does *right now*. It is not a history of how things got built (see `APPLICATION_FLOW.md` for that). There is no code and no technical jargon here. If someone with zero computer background reads this from top to bottom, they should come away understanding exactly what Twegle does, what a visitor can do on it, and what an admin can do on it.
 
-**Last updated:** 18 September 2026 (latest — Bookmarks/Favorites, a "Word of the Day" daily game, and a batch of site-polish features added since 7 September: a festive/seasonal homepage banner, the "🎲 Surprise Me" random-content button, a first-visit welcome card, an embeddable quiz widget, and a weekly "Champion of the Week" leaderboard per game).
+**Last updated:** 18 September 2026 (latest — **Twegle Detective**, a brand-new mini detective-adventure game/content type: investigate a case, discover clues, question suspects, and solve it. Also added since 7 September: Bookmarks/Favorites, a "Word of the Day" daily game, a festive/seasonal homepage banner, the "🎲 Surprise Me" random-content button, a first-visit welcome card, an embeddable quiz widget, and a weekly "Champion of the Week" leaderboard per game).
 
 ---
 
@@ -121,6 +121,23 @@ Original short stories, sorted into 6 categories: Horror, Comedy, Romance, Myste
 
 All 12 zodiac signs, each with a horoscope for Today, This Week, This Month, or This Year. The horoscopes are written to be funny and India-specific (think family WhatsApp groups, "shaadi kab karoge," chai stalls) rather than serious astrology — a small disclaimer makes clear this is just for fun. The text for a given sign and period is the same for everyone reading it that day, and it changes automatically as the date changes — nobody has to write new horoscopes every single day.
 
+## 8. Twegle Detective (Daily Mystery)
+
+A mini detective adventure, built especially for a younger crowd (roughly 8-14) who want something that feels less like "another quiz" and more like actually solving a case. Every case has a story, a handful of suspects, and pieces of evidence to discover — you're the detective.
+
+Opening a case shows the story first — a title, an illustration-style emoji, a difficulty (⭐ Rookie, ⭐⭐ Junior, or ⭐⭐⭐ Master), how long it takes, and the setup — then a "Start Investigation" button.
+
+Once you start, you can explore in any order:
+- **👤 Suspects** — everyone's name, role, and their own statement about what happened.
+- **🔎 Evidence** — clues you can tap to investigate. Not everything is available right away: some evidence only becomes discoverable once you've found something else first, so the case unfolds a piece at a time instead of dumping everything on you at once.
+- **📝 Detective Notes** — a simple board where you can mark each suspect (tap to cycle through a colored dot) and see a running list of everything you've found so far. There's also an optional hint or two if you get stuck.
+
+Once you've found every piece of evidence, you're asked **"Who do you think did it?"** — pick a suspect, then answer a couple of follow-up questions about their motive and which clue actually proves it, so a correct guess can't just be a lucky pick. Submitting shows the reveal: whether you got it right, the full explanation of who did it and why, which clues proved it, and a **🕵️ Detective Score** based on how many clues you found, whether you got the right suspect, and how many of the follow-up questions you answered correctly (being fast isn't rewarded — carefully solving the mystery is what counts). You can share your result (never the actual answer, so a friend can try the same case fresh) and investigate the case again any time — your best score is remembered.
+
+The homepage has its own **"🕵️ Today's Mystery"** banner — a new case is automatically featured each day, the same one for everyone, alongside the daily quiz/puzzle/word banners. Every past case stays available on the **Twegle Detective** page too, filterable by difficulty, so there's always more than just today's to work through.
+
+Solving cases counts toward your overall level/points, and there are 5 dedicated badges to earn: 🔍 First Case, 🕵️ 5 Cases Solved, 🔎 Clue Hunter, 🧠 Master Detective (solve a Master-difficulty case), and 🏆 Perfect Investigation (find every clue, get the right suspect, and answer every follow-up question correctly, all in one go).
+
 ## Daily streaks — come back every day
 
 There are three separate streaks — quiz, puzzle, and word: finishing the daily quiz keeps your **Quiz streak** going, revealing the daily puzzle keeps your **Puzzle streak** going, and actually *solving* the daily word (not just playing it) keeps your **Word streak** going. Each shows its own "how many days in a row" counter (like popular word games do), right on its own homepage banner. They're tracked independently on purpose — you might only ever do one or two of the three, and each still gets its own honest count rather than being lumped into one shared number. It's a light nudge to come back tomorrow, nothing more — there's no penalty for missing a day, a streak just goes back to zero and you can start it again anytime.
@@ -232,7 +249,7 @@ The very first screen after logging in (and reachable any time by tapping the lo
 
 ## Managing content
 
-Five different types of content each have their own dedicated page in the admin panel: **Quizzes**, **Puzzles**, **Posts** (jokes/funny lines/quotes/motivational quotes), **Stories**, and **Friendship Quizzes**. On every one of these pages, an admin with the right role can:
+Six different types of content each have their own dedicated page in the admin panel: **Quizzes**, **Puzzles**, **Posts** (jokes/funny lines/quotes/motivational quotes), **Stories**, **Friendship Quizzes**, and **Detective Cases**. On every one of these pages, an admin with the right role can:
 
 - **Search and filter** the list — by category, by language, or by whether it's Published or still a Draft.
 - **Create something new** through a dedicated form built for that content type.
@@ -241,6 +258,8 @@ Five different types of content each have their own dedicated page in the admin 
 - **Schedule** something to automatically go live at a chosen future date and time, instead of publishing it right away.
 - **Select several items at once** (a checkbox on each row, or "select all on this page") and **publish, unpublish, or delete them all in one action** instead of one at a time.
 - **Mark a Quiz or Post as sponsored** — when a brand pays to have something featured, an admin can fill in the sponsor's name, a logo emoji, and an optional link. That quiz or post then shows a clear "✨ Sponsored" label on its tile and a "Sponsored by..." line on the actual page — always openly disclosed, never hidden, and it doesn't get any special boost in ranking, just the label.
+
+Building a **Detective Case** works a little differently, since there's more to write than a question and answer: the form has its own sections for the story/intro, a list of suspects (each with a name, role, description, and their own statement), a list of clues (each with a description and, optionally, which other clues need to be found first before it becomes available), one or more follow-up "deduction" questions asked after picking a suspect, optional hints, and finally the actual solution (who did it, why, and which clues prove it). No developer involvement is needed to add a new case — it's all filled in through this one form, the same as every other content type.
 
 ## Quick Add
 
@@ -284,6 +303,6 @@ Just like the public site, the entire admin panel has its own dark mode toggle, 
 
 # The short version
 
-**If you're a visitor:** open the site, no login needed, pick whatever looks fun — a quiz, a puzzle, a game (14 of them, 5 playable live with friends), a story, a horoscope — enjoy it, and share it with a friend if you want to. If you'd like your progress to follow you across your phone and computer, a place to save things you want to revisit, or a public profile page to show off your level and badges, you can optionally create a free account with just a username and password. That's the entire experience, repeated across many different kinds of content, all designed to be quick to enjoy and easy to pass along.
+**If you're a visitor:** open the site, no login needed, pick whatever looks fun — a quiz, a puzzle, a game (14 of them, 5 playable live with friends), a mystery to investigate, a story, a horoscope — enjoy it, and share it with a friend if you want to. If you'd like your progress to follow you across your phone and computer, a place to save things you want to revisit, or a public profile page to show off your level and badges, you can optionally create a free account with just a username and password. That's the entire experience, repeated across many different kinds of content, all designed to be quick to enjoy and easy to pass along.
 
 **If you're an admin:** log in, create and manage content through the admin panel (one at a time or in bulk), keep an eye on what's performing well through Analytics, the freshness flags, and the account-retention numbers, and handle whatever feedback or reports come in from visitors.

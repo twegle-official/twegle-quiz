@@ -16,6 +16,7 @@ export const POINTS_PER_REFERRAL_SIGNUP = 15 // one-time, for signing up through
 export const POINTS_PER_SKYDRIFT_TILE = 1 // per decoration placed on a Skydrift island
 export const POINTS_PER_SKYDRIFT_WINDLING = 4 // per Windling caught
 export const POINTS_PER_SKY_EVENT = 20 // per Sky Event discovered — the real milestone reward, uncapped (only 5 exist)
+export const POINTS_PER_DETECTIVE_CASE = 15 // per Twegle Detective case solved — uncapped, same reasoning as quizzes (naturally limited by how many cases exist)
 
 // Quizzes/puzzles are naturally capped by how much content exists, and
 // shares are deliberately uncapped (that's the one behavior actually worth
@@ -73,7 +74,8 @@ export function calculatePoints(stats, quizStreakCount, puzzleStreakCount) {
     (stats.referralSignupBonus ? POINTS_PER_REFERRAL_SIGNUP : 0) +
     skydriftTiles * POINTS_PER_SKYDRIFT_TILE +
     skydriftWindlings * POINTS_PER_SKYDRIFT_WINDLING +
-    skydriftSkyEvents * POINTS_PER_SKY_EVENT
+    skydriftSkyEvents * POINTS_PER_SKY_EVENT +
+    (stats.detectiveCasesSolved?.length || 0) * POINTS_PER_DETECTIVE_CASE
   )
 }
 

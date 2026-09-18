@@ -38,10 +38,14 @@ export function getStats() {
       skydriftTilesPlaced: 0,
       skydriftWindlingsCaught: 0,
       skydriftSkyEventsFound: 0,
+      detectiveCasesSolved: [], // case slugs — mirrors quizzesCompleted's "already attempted" tracking
+      detectiveScores: {}, // { [caseSlug]: bestScore } — for "replay shows your best score"
+      detectivePerfectInvestigations: 0, // every clue found + correct suspect + every deduction correct, in one attempt
+      detectiveMasterCasesSolved: 0,
       ...JSON.parse(localStorage.getItem(scopedKey(STATS_KEY))),
     }
   } catch {
-    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false, skydriftTilesPlaced: 0, skydriftWindlingsCaught: 0, skydriftSkyEventsFound: 0 }
+    return { gamesPlayed: {}, gameWins: 0, quizzesCompleted: [], puzzlesRevealed: [], reactionsGiven: 0, sharesGiven: 0, perfectTrivia: false, referralsGiven: 0, referralSignupBonus: false, skydriftTilesPlaced: 0, skydriftWindlingsCaught: 0, skydriftSkyEventsFound: 0, detectiveCasesSolved: [], detectiveScores: {}, detectivePerfectInvestigations: 0, detectiveMasterCasesSolved: 0 }
   }
 }
 
@@ -78,6 +82,11 @@ export const BADGES = [
   { id: 'windling-whisperer', emoji: '🌤️', label: 'Windling Whisperer', description: 'Catch your first Windling on Skydrift Isles.', check: (s) => (s.skydriftWindlingsCaught || 0) >= 1, progress: (s) => `${Math.min(s.skydriftWindlingsCaught || 0, 1)}/1` },
   { id: 'island-architect', emoji: '🏝️', label: 'Island Architect', description: 'Place 25 decorations on a Skydrift island.', check: (s) => (s.skydriftTilesPlaced || 0) >= 25, progress: (s) => `${Math.min(s.skydriftTilesPlaced || 0, 25)}/25` },
   { id: 'sky-whisperer', emoji: '🔮', label: 'Sky Whisperer', description: 'Discover a Sky Event by bringing two different Windlings together.', check: (s) => (s.skydriftSkyEventsFound || 0) >= 1, progress: (s) => `${Math.min(s.skydriftSkyEventsFound || 0, 1)}/1` },
+  { id: 'first-case', emoji: '🔍', label: 'First Case', description: 'Solve your first Twegle Detective mystery.', check: (s) => s.detectiveCasesSolved.length >= 1, progress: (s) => `${Math.min(s.detectiveCasesSolved.length, 1)}/1` },
+  { id: 'five-cases', emoji: '🕵️', label: '5 Cases Solved', description: 'Solve 5 different Twegle Detective cases.', check: (s) => s.detectiveCasesSolved.length >= 5, progress: (s) => `${Math.min(s.detectiveCasesSolved.length, 5)}/5` },
+  { id: 'clue-hunter', emoji: '🔎', label: 'Clue Hunter', description: 'Solve 3 different Twegle Detective cases.', check: (s) => (s.detectiveCasesSolved || []).length >= 3, progress: (s) => `${Math.min(s.detectiveCasesSolved.length, 3)}/3` },
+  { id: 'master-detective', emoji: '🧠', label: 'Master Detective', description: 'Correctly solve a Master-difficulty case.', check: (s) => (s.detectiveMasterCasesSolved || 0) >= 1, progress: (s) => `${Math.min(s.detectiveMasterCasesSolved || 0, 1)}/1` },
+  { id: 'perfect-investigation', emoji: '🏆', label: 'Perfect Investigation', description: 'Solve a case with every clue found, the right suspect, and every deduction correct.', check: (s) => (s.detectivePerfectInvestigations || 0) >= 1, progress: (s) => `${Math.min(s.detectivePerfectInvestigations || 0, 1)}/1` },
 ]
 
 function unlockedIds(stats) {
@@ -177,6 +186,35 @@ export function hasCompletedQuiz(slug) {
 // True/false — has this visitor already revealed this puzzle's answer?
 export function hasRevealedPuzzle(puzzleId) {
   return getStats().puzzlesRevealed.includes(puzzleId)
+}
+
+// Call this once a visitor finishes a Twegle Detective case's final
+// deduction (right or wrong) — records it as solved (for replay/"already
+// attempted" tracking, same as recordQuizCompleted), keeps the best score
+// seen for that case, and checks the two harder badges that need to know
+// *how* it was solved (a Master-difficulty correct solve, or a flawless
+// run) rather than just whether it was solved at all.
+export function recordDetectiveCaseSolved({ slug, difficulty, score, cluesFound, totalClues, correctSuspect, deductionsCorrectCount, totalDeductions }) {
+  update((s) => {
+    if (!s.detectiveCasesSolved.includes(slug)) s.detectiveCasesSolved.push(slug)
+    s.detectiveScores[slug] = Math.max(s.detectiveScores[slug] || 0, score)
+    if (correctSuspect && difficulty === 'master') {
+      s.detectiveMasterCasesSolved = (s.detectiveMasterCasesSolved || 0) + 1
+    }
+    if (correctSuspect && cluesFound >= totalClues && deductionsCorrectCount >= totalDeductions) {
+      s.detectivePerfectInvestigations = (s.detectivePerfectInvestigations || 0) + 1
+    }
+  })
+}
+
+// Cheap lookups for DetectiveCard/DetectiveHub — has this case been solved
+// before, and what's the best score so far (both null if never attempted).
+export function getDetectiveCaseProgress(slug) {
+  const stats = getStats()
+  return {
+    solved: stats.detectiveCasesSolved.includes(slug),
+    bestScore: stats.detectiveScores[slug] ?? null,
+  }
 }
 
 // Call this when a visitor gets every answer right on a right-or-wrong

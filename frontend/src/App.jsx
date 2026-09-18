@@ -45,6 +45,8 @@ import UserLogin from './pages/Login'
 import ForgotPassword from './pages/ForgotPassword'
 import Account from './pages/Account'
 import Bookmarks from './pages/Bookmarks'
+import DetectiveHub from './pages/DetectiveHub'
+import DetectiveCaseView from './pages/DetectiveCaseView'
 import Profile from './pages/Profile'
 import { UserAuthProvider } from './UserAuthContext'
 import { BookmarkProvider } from './BookmarkContext'
@@ -66,6 +68,8 @@ import PuzzleList from './admin/pages/PuzzleList'
 import PuzzleForm from './admin/pages/PuzzleForm'
 import FriendshipQuizList from './admin/pages/FriendshipQuizList'
 import FriendshipQuizForm from './admin/pages/FriendshipQuizForm'
+import DetectiveCaseList from './admin/pages/DetectiveCaseList'
+import DetectiveCaseForm from './admin/pages/DetectiveCaseForm'
 import Analytics from './admin/pages/Analytics'
 import Activity from './admin/pages/Activity'
 import Admins from './admin/pages/Admins'
@@ -149,6 +153,8 @@ function PublicSite() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/account" element={<Account />} />
           <Route path="/bookmarks" element={<Bookmarks />} />
+          <Route path="/detective" element={<DetectiveHub />} />
+          <Route path="/detective/:slug" element={<DetectiveCaseView />} />
           <Route path="/u/:handle" element={<Profile />} />
           <Route path="/quiz/:quizId" element={<Quiz />} />
           <Route path="/quiz/:quizId/vs/:code" element={<CompareInvite />} />
@@ -318,6 +324,23 @@ export default function App() {
             element={
               <ProtectedRoute roles={['superadmin', 'editor']}>
                 <FriendshipQuizForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="detective" element={<DetectiveCaseList />} />
+          <Route
+            path="detective/new"
+            element={
+              <ProtectedRoute roles={['superadmin', 'editor']}>
+                <DetectiveCaseForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="detective/:id/edit"
+            element={
+              <ProtectedRoute roles={['superadmin', 'editor']}>
+                <DetectiveCaseForm />
               </ProtectedRoute>
             }
           />

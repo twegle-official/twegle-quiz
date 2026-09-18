@@ -117,6 +117,17 @@ export const updateFriendshipQuiz = (token, id, payload) =>
 export const deleteFriendshipQuiz = (token, id) =>
   request(`/admin/friendship-quizzes/${id}`, { token, method: 'DELETE' })
 
+export const listDetectiveCasesAdmin = (token, params) =>
+  request(`/admin/detective${toQueryString(params)}`, { token })
+export const getDetectiveCaseAdmin = (token, id) =>
+  request(`/admin/detective/${id}`, { token })
+export const createDetectiveCase = (token, payload) =>
+  request('/admin/detective', { token, method: 'POST', body: payload })
+export const updateDetectiveCase = (token, id, payload) =>
+  request(`/admin/detective/${id}`, { token, method: 'PUT', body: payload })
+export const deleteDetectiveCase = (token, id) =>
+  request(`/admin/detective/${id}`, { token, method: 'DELETE' })
+
 // Activity: the log of recent admin actions shown on the Activity page
 export const fetchActivityLog = (token, params) =>
   request(`/admin/activity${toQueryString(params)}`, { token })

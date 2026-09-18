@@ -13,6 +13,7 @@ import DailyQuizBanner from '../components/DailyQuizBanner'
 import PuzzleOfTheDayBanner from '../components/PuzzleOfTheDayBanner'
 import WordOfTheDayBanner from '../components/WordOfTheDayBanner'
 import FestiveBanner from '../components/FestiveBanner'
+import TodaysMysteryBanner from '../components/TodaysMysteryBanner'
 import RecentlyViewedRow from '../components/RecentlyViewedRow'
 import AdSlot from '../components/AdSlot'
 
@@ -592,6 +593,10 @@ export default function Home() {
           (renders null) the rest of the time, so it never costs the
           "quick browsing" hero band any extra height on a normal day. */}
       <FestiveBanner language={language} />
+
+      {/* A bigger, standalone banner (not part of the small Quiz/Puzzle/
+          Word grid below) — see TodaysMysteryBanner.jsx for why. */}
+      <TodaysMysteryBanner language={language} />
 
       {/* Row of recently-viewed content, shown just under the hero banner */}
       <RecentlyViewedRow />

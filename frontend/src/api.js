@@ -150,6 +150,39 @@ export async function fetchPuzzleById(id, previewToken) {
   return data.puzzle
 }
 
+// Loads published Detective cases.
+export async function fetchDetectiveCases(language, difficulty) {
+  const params = new URLSearchParams()
+  if (language) params.set('language', language)
+  if (difficulty) params.set('difficulty', difficulty)
+  const qs = params.toString() ? `?${params.toString()}` : ''
+  const res = await fetch(`${API_URL}/detective${qs}`)
+  if (!res.ok) throw new Error('Failed to load cases')
+  const data = await res.json()
+  return data.cases
+}
+
+export async function fetchDetectiveCaseBySlug(slug, previewToken) {
+  const qs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
+  const res = await fetch(`${API_URL}/detective/${slug}${qs}`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.case
+}
+
+// Submits a player's final accusation + deduction answers, and gets back
+// whether they were right plus the full reveal — the server-verified part
+// of the investigation, see backend/src/controllers/detectiveController.js.
+export async function solveDetectiveCase(slug, { chosenSuspectKey, deductionAnswers, cluesFoundCount, hintsUsed }) {
+  const res = await fetch(`${API_URL}/detective/${slug}/solve`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chosenSuspectKey, deductionAnswers, cluesFoundCount, hintsUsed }),
+  })
+  if (!res.ok) throw new Error('Failed to check your deduction')
+  return res.json()
+}
+
 export async function fetchPostById(id, previewToken) {
   const qs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
   const res = await fetch(`${API_URL}/posts/${id}${qs}`)
@@ -490,6 +523,10 @@ export function getPostShareUrl(id) {
 
 export function getStoryShareUrl(slug) {
   return `${API_URL}/share/story/${slug}`
+}
+
+export function getDetectiveShareUrl(slug) {
+  return `${API_URL}/share/detective/${slug}`
 }
 
 export function getPuzzleShareUrl(id) {

@@ -4,11 +4,12 @@ import Quiz from '../models/Quiz.js'
 import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
+import DetectiveCase from '../models/DetectiveCase.js'
 import { GAME_SLUGS } from './gameController.js'
 import { ZODIAC_KEYS } from '../data/zodiacSigns.js'
 
-const CONTENT_TYPES = ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope', 'puzzle'] // the kinds of content people can view or share
-const MODEL_BY_TYPE = { quiz: Quiz, friendshipQuiz: FriendshipQuiz, story: Story, puzzle: Puzzle } // which database table to check for each content type
+const CONTENT_TYPES = ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope', 'puzzle', 'detectiveCase'] // the kinds of content people can view or share
+const MODEL_BY_TYPE = { quiz: Quiz, friendshipQuiz: FriendshipQuiz, story: Story, puzzle: Puzzle, detectiveCase: DetectiveCase } // which database table to check for each content type
 
 // Confirms the referenced content is real (and published, where that
 // applies) before recording an engagement against it — same reasoning as
