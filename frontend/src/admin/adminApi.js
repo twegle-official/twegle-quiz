@@ -128,6 +128,39 @@ export const updateDetectiveCase = (token, id, payload) =>
 export const deleteDetectiveCase = (token, id) =>
   request(`/admin/detective/${id}`, { token, method: 'DELETE' })
 
+// Twegle Adventure World — 5 near-identical CRUD quintets (worlds,
+// locations, challenges, collectibles, characters), same shape as every
+// other content type above.
+export const listAdventureWorldsAdmin = (token, params) => request(`/admin/adventure/worlds${toQueryString(params)}`, { token })
+export const getAdventureWorldAdmin = (token, id) => request(`/admin/adventure/worlds/${id}`, { token })
+export const createAdventureWorld = (token, payload) => request('/admin/adventure/worlds', { token, method: 'POST', body: payload })
+export const updateAdventureWorld = (token, id, payload) => request(`/admin/adventure/worlds/${id}`, { token, method: 'PUT', body: payload })
+export const deleteAdventureWorld = (token, id) => request(`/admin/adventure/worlds/${id}`, { token, method: 'DELETE' })
+
+export const listAdventureLocationsAdmin = (token, params) => request(`/admin/adventure/locations${toQueryString(params)}`, { token })
+export const getAdventureLocationAdmin = (token, id) => request(`/admin/adventure/locations/${id}`, { token })
+export const createAdventureLocation = (token, payload) => request('/admin/adventure/locations', { token, method: 'POST', body: payload })
+export const updateAdventureLocation = (token, id, payload) => request(`/admin/adventure/locations/${id}`, { token, method: 'PUT', body: payload })
+export const deleteAdventureLocation = (token, id) => request(`/admin/adventure/locations/${id}`, { token, method: 'DELETE' })
+
+export const listAdventureChallengesAdmin = (token, params) => request(`/admin/adventure/challenges${toQueryString(params)}`, { token })
+export const getAdventureChallengeAdmin = (token, id) => request(`/admin/adventure/challenges/${id}`, { token })
+export const createAdventureChallenge = (token, payload) => request('/admin/adventure/challenges', { token, method: 'POST', body: payload })
+export const updateAdventureChallenge = (token, id, payload) => request(`/admin/adventure/challenges/${id}`, { token, method: 'PUT', body: payload })
+export const deleteAdventureChallenge = (token, id) => request(`/admin/adventure/challenges/${id}`, { token, method: 'DELETE' })
+
+export const listAdventureCollectiblesAdmin = (token, params) => request(`/admin/adventure/collectibles${toQueryString(params)}`, { token })
+export const getAdventureCollectibleAdmin = (token, id) => request(`/admin/adventure/collectibles/${id}`, { token })
+export const createAdventureCollectible = (token, payload) => request('/admin/adventure/collectibles', { token, method: 'POST', body: payload })
+export const updateAdventureCollectible = (token, id, payload) => request(`/admin/adventure/collectibles/${id}`, { token, method: 'PUT', body: payload })
+export const deleteAdventureCollectible = (token, id) => request(`/admin/adventure/collectibles/${id}`, { token, method: 'DELETE' })
+
+export const listAdventureCharactersAdmin = (token, params) => request(`/admin/adventure/characters${toQueryString(params)}`, { token })
+export const getAdventureCharacterAdmin = (token, id) => request(`/admin/adventure/characters/${id}`, { token })
+export const createAdventureCharacter = (token, payload) => request('/admin/adventure/characters', { token, method: 'POST', body: payload })
+export const updateAdventureCharacter = (token, id, payload) => request(`/admin/adventure/characters/${id}`, { token, method: 'PUT', body: payload })
+export const deleteAdventureCharacter = (token, id) => request(`/admin/adventure/characters/${id}`, { token, method: 'DELETE' })
+
 // Uploads a real image file to Cloudinary and returns its URL. Doesn't go
 // through request() above — that helper always sends JSON, but a file
 // upload needs `multipart/form-data`, which the browser sets correctly on

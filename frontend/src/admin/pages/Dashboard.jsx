@@ -36,6 +36,12 @@ const RESOURCE_LABELS = {
   story: 'Story',
   puzzle: 'Puzzle',
   endUser: 'End User',
+  detectiveCase: 'Detective Case',
+  adventureWorld: 'Adventure World',
+  adventureLocation: 'Adventure Location',
+  adventureChallenge: 'Adventure Challenge',
+  adventureCollectible: 'Adventure Collectible',
+  adventureCharacter: 'Adventure Character',
 }
 
 const ACTION_STYLE = {

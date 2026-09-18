@@ -55,6 +55,7 @@ import adminDigestRoutes from './routes/adminDigestRoutes.js'
 import adminDashboardRoutes from './routes/adminDashboardRoutes.js'
 import adminEndUserRoutes from './routes/adminEndUserRoutes.js'
 import adventureRoutes from './routes/adventureRoutes.js'
+import adminAdventureRoutes from './routes/adminAdventureRoutes.js'
 import leaderboardRoutes from './routes/leaderboardRoutes.js'
 import reactionRoutes from './routes/reactionRoutes.js'
 import statsRoutes from './routes/statsRoutes.js'
@@ -140,6 +141,7 @@ export function createApp() {
   app.use('/api/admin/dashboard', adminDashboardRoutes)
   app.use('/api/admin/end-users', adminEndUserRoutes)
   app.use('/api/adventure', adventureRoutes)
+  app.use('/api/admin/adventure', adminAdventureRoutes)
 
   // Keep error handler last — catches anything thrown/rejected in the routes above.
   app.use((err, req, res, next) => {

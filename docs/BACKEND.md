@@ -945,6 +945,17 @@ Still no admin UI or frontend — see `docs/PENDING_TASKS.md`'s dated entry for 
 
 Not yet built: an admin UI to actually author real worlds/locations/challenges (Phase 5), and the frontend that plays through any of this (Phase 3) — right now the only way to exercise these endpoints is `adventure.test.js`'s own seeded fixtures or raw API calls.
 
+## Twegle Adventure World — Phase 5: admin CRUD (2026-09-18)
+
+Picked to go next over Phase 3 (frontend) — without real content to create, there was nothing to build a player-facing frontend against beyond the test suite's own throwaway fixtures. See `docs/FRONTEND.md`'s matching entry for the admin UI these serve.
+
+- **`controllers/adminAdventureController.js`** — one file housing all 5 content types' admin CRUD (list/get/create/update/delete each), rather than 5 near-identical files — each quintet is short and does no field validation beyond what Mongoose's own schema enforces (same depth every other admin controller already stops at), so splitting them apart would just duplicate the same shape 5 times. `AdventureCollectible`'s create/update catch a duplicate-`key` Mongo error (code `11000`) and turn it into a normal `400` with a readable message, rather than letting a raw driver error reach the frontend.
+- **`routes/adminAdventureRoutes.js`** — same `requireAuth` + `requireRole('superadmin'|'editor'|'analyst')` read, `requireRole('superadmin'|'editor')` write split every other admin content route already follows, mounted at `/api/admin/adventure/{worlds,locations,challenges,collectibles,characters}`.
+- **Found and fixed a real, unrelated bug**: `models/ActivityLog.js`'s `resourceType` enum never included `'detectiveCase'` from that feature's original 2026-09-18 build, even though `detectiveController.js` has been calling `logActivity({ resourceType: 'detectiveCase', ... })` since day one — every one of those calls has been silently failing validation and swallowing the error (by design, `logActivity` never lets a logging failure break the actual action it's describing), so no Detective admin action has ever actually appeared in the Activity log. Caught while adding Adventure's own 5 new resource types to the same enum; fixed both at once, plus the matching `RESOURCE_LABELS` display maps in the frontend's `Dashboard.jsx`/`Activity.jsx`.
+- **`backend/tests/adventureAdmin.test.js`** — 8 tests: a world's full create→list→update→delete lifecycle, a location populates its parent world's name back on fetch, a `quiz`-type challenge requires `refId` and rejects a missing one while a `code-breaker`-type accepts an arbitrary `payload`, a duplicate collectible key returns the friendly `400` not a raw Mongo error, a character can be tied to just a world or a specific location within it, and an `analyst` role can read every list but gets `403` on every write. All passing alongside the existing 59 (67/68 backend tests total, same pre-existing `weeklyLeaderboard.test.js` flake noted above).
+
+Not yet built: Phase 3, the actual player-facing frontend (map, avatar, playing through a challenge) — is next.
+
 ## What's next
 
 - The admin panel frontend and the public-site API wiring are both done — see `FRONTEND.md`.

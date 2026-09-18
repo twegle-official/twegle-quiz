@@ -10,7 +10,28 @@ const activityLogSchema = new mongoose.Schema(
     admin: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true }, // which admin performed the action
     adminName: { type: String, required: true }, // that admin's name at the time, kept even if the account is later deleted
     action: { type: String, enum: ['create', 'update', 'delete'], required: true }, // what was done
-    resourceType: { type: String, enum: ['quiz', 'post', 'friendshipQuiz', 'story', 'puzzle', 'endUser'], required: true }, // what kind of thing was affected
+    resourceType: {
+      type: String,
+      enum: [
+        'quiz',
+        'post',
+        'friendshipQuiz',
+        'story',
+        'puzzle',
+        'endUser',
+        // 'detectiveCase' was missing here from its original 2026-09-18 build —
+        // every Detective admin create/update/delete had been silently
+        // failing to log (logActivity swallows its own errors by design),
+        // caught while adding Adventure's own resource types below.
+        'detectiveCase',
+        'adventureWorld',
+        'adventureLocation',
+        'adventureChallenge',
+        'adventureCollectible',
+        'adventureCharacter',
+      ],
+      required: true,
+    }, // what kind of thing was affected
     resourceId: { type: String, required: true }, // the affected item's own id
     resourceLabel: { type: String, required: true }, // a readable name/title for the affected item, kept even if it's later deleted
   },

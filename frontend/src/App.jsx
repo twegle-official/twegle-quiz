@@ -69,6 +69,17 @@ import FriendshipQuizList from './admin/pages/FriendshipQuizList'
 import FriendshipQuizForm from './admin/pages/FriendshipQuizForm'
 import DetectiveCaseList from './admin/pages/DetectiveCaseList'
 import DetectiveCaseForm from './admin/pages/DetectiveCaseForm'
+import AdventureHub from './admin/pages/AdventureHub'
+import AdventureWorldList from './admin/pages/AdventureWorldList'
+import AdventureWorldForm from './admin/pages/AdventureWorldForm'
+import AdventureLocationList from './admin/pages/AdventureLocationList'
+import AdventureLocationForm from './admin/pages/AdventureLocationForm'
+import AdventureChallengeList from './admin/pages/AdventureChallengeList'
+import AdventureChallengeForm from './admin/pages/AdventureChallengeForm'
+import AdventureCollectibleList from './admin/pages/AdventureCollectibleList'
+import AdventureCollectibleForm from './admin/pages/AdventureCollectibleForm'
+import AdventureCharacterList from './admin/pages/AdventureCharacterList'
+import AdventureCharacterForm from './admin/pages/AdventureCharacterForm'
 import Analytics from './admin/pages/Analytics'
 import Activity from './admin/pages/Activity'
 import Admins from './admin/pages/Admins'
@@ -346,6 +357,22 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="adventure" element={<AdventureHub />} />
+          <Route path="adventure/worlds" element={<AdventureWorldList />} />
+          <Route path="adventure/worlds/new" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureWorldForm /></ProtectedRoute>} />
+          <Route path="adventure/worlds/:id/edit" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureWorldForm /></ProtectedRoute>} />
+          <Route path="adventure/locations" element={<AdventureLocationList />} />
+          <Route path="adventure/locations/new" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureLocationForm /></ProtectedRoute>} />
+          <Route path="adventure/locations/:id/edit" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureLocationForm /></ProtectedRoute>} />
+          <Route path="adventure/challenges" element={<AdventureChallengeList />} />
+          <Route path="adventure/challenges/new" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureChallengeForm /></ProtectedRoute>} />
+          <Route path="adventure/challenges/:id/edit" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureChallengeForm /></ProtectedRoute>} />
+          <Route path="adventure/collectibles" element={<AdventureCollectibleList />} />
+          <Route path="adventure/collectibles/new" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureCollectibleForm /></ProtectedRoute>} />
+          <Route path="adventure/collectibles/:id/edit" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureCollectibleForm /></ProtectedRoute>} />
+          <Route path="adventure/characters" element={<AdventureCharacterList />} />
+          <Route path="adventure/characters/new" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureCharacterForm /></ProtectedRoute>} />
+          <Route path="adventure/characters/:id/edit" element={<ProtectedRoute roles={['superadmin', 'editor']}><AdventureCharacterForm /></ProtectedRoute>} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="activity" element={<Activity />} />
           <Route path="feedback" element={<FeedbackList />} />

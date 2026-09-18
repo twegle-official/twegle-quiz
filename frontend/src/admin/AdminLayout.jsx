@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { to: '/admin/posts', label: 'Posts', emoji: '📝' },
   { to: '/admin/stories', label: 'Stories', emoji: '📖' },
   { to: '/admin/detective', label: 'Detective Cases', emoji: '🕵️' },
+  { to: '/admin/adventure', label: 'Adventure World', emoji: '🗺️' },
   { to: '/admin/analytics', label: 'Analytics', emoji: '📊' },
   { to: '/admin/activity', label: 'Activity', emoji: '📋' },
   { to: '/admin/feedback', label: 'Feedback', emoji: '📨' },
