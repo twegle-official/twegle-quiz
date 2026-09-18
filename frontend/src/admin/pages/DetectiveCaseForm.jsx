@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
 import { getDetectiveCaseAdmin, createDetectiveCase, updateDetectiveCase } from '../adminApi'
 import { toDatetimeLocalValue, fromDatetimeLocalValue } from '../utils/datetimeLocal'
+import ImageUploadField from '../components/ImageUploadField'
 
 const emptyCase = {
   title: '',
@@ -288,10 +289,8 @@ export default function DetectiveCaseForm() {
                 <button type="button" onClick={() => removeClue(i)} className="text-red-500 text-sm px-2 shrink-0">Remove</button>
               </div>
               <textarea placeholder="Description" rows={2} value={c.description} onChange={(e) => updateClue(i, 'description', e.target.value)} className={inputClass} />
-              <div className="flex flex-wrap gap-2">
-                <input placeholder="Image URL (optional)" value={c.image} onChange={(e) => updateClue(i, 'image', e.target.value)} className={`${inputClass} flex-1 min-w-[10rem]`} />
-                <input placeholder="Unlocks after (comma-separated clue keys)" value={c.unlocksAfterText} onChange={(e) => updateClue(i, 'unlocksAfterText', e.target.value)} className={`${inputClass} flex-1 min-w-[10rem]`} />
-              </div>
+              <ImageUploadField value={c.image} onChange={(url) => updateClue(i, 'image', url)} label="Clue photo (optional)" />
+              <input placeholder="Unlocks after (comma-separated clue keys)" value={c.unlocksAfterText} onChange={(e) => updateClue(i, 'unlocksAfterText', e.target.value)} className={`${inputClass} w-full`} />
             </div>
           ))}
         </div>

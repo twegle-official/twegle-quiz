@@ -128,6 +128,24 @@ export const updateDetectiveCase = (token, id, payload) =>
 export const deleteDetectiveCase = (token, id) =>
   request(`/admin/detective/${id}`, { token, method: 'DELETE' })
 
+// Uploads a real image file to Cloudinary and returns its URL. Doesn't go
+// through request() above — that helper always sends JSON, but a file
+// upload needs `multipart/form-data`, which the browser sets correctly on
+// its own as long as Content-Type is left unset (setting it manually loses
+// the boundary the server needs to parse the multipart body).
+export async function uploadImage(token, file) {
+  const formData = new FormData()
+  formData.append('image', file)
+  const res = await fetch(`${API_URL}/admin/upload/image`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  })
+  const data = await res.json().catch(() => null)
+  if (!res.ok) throw new Error(data?.error || 'Upload failed')
+  return data.url
+}
+
 // Activity: the log of recent admin actions shown on the Activity page
 export const fetchActivityLog = (token, params) =>
   request(`/admin/activity${toQueryString(params)}`, { token })

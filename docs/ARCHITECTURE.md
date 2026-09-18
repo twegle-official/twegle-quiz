@@ -334,6 +334,7 @@ email/phone field exists anywhere on this model, by design)
 | `CORS_ORIGIN` | backend | Locks down which origin may call the API; defaults to `*` for local dev. |
 | `FRONTEND_URL` | backend | Used to build absolute links (sitemap URLs, share-preview pages). Defaults to `http://localhost:5173`. |
 | `SEED_ADMIN_*` | backend | Bootstraps the first admin account on boot if none exists. |
+| `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` | backend | Real image uploads (`routes/uploadRoutes.js`). Set locally and in `credentials.txt`; not yet added to Render's production environment — see `BACKEND.md`'s "What's next." |
 | `VITE_API_URL` | frontend | Base URL the frontend's `fetch()` calls target, e.g. `https://api.twegle.in/api` in production. Defaults to `http://localhost:4000/api` for local dev. |
 
 Backend tests (§8) deliberately never read any of these from a real

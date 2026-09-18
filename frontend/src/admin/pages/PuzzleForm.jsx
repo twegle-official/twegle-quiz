@@ -4,6 +4,7 @@ import { useAuth } from '../AuthContext'
 import { getPuzzleAdmin, createPuzzle, updatePuzzle } from '../adminApi'
 import { GRADIENT_OPTIONS } from '../../gradients'
 import { toDatetimeLocalValue, fromDatetimeLocalValue } from '../utils/datetimeLocal'
+import ImageUploadField from '../components/ImageUploadField'
 
 const DIFFICULTIES = [
   { value: 'easy', label: 'Warm-Up' },
@@ -111,18 +112,11 @@ export default function PuzzleForm() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Image URL <span className="text-gray-400 dark:text-gray-500 font-normal">(optional — makes this a picture puzzle, e.g. a rebus or zoomed-in photo)</span>
-          </label>
-          <input
+          <ImageUploadField
             value={puzzle.imageUrl}
-            onChange={(e) => setPuzzle({ ...puzzle, imageUrl: e.target.value })}
-            placeholder="https://..."
-            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
+            onChange={(url) => setPuzzle({ ...puzzle, imageUrl: url })}
+            label="Image (optional — makes this a picture puzzle, e.g. a rebus or zoomed-in photo)"
           />
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-            Paste a link to an already-hosted image (no upload yet).
-          </p>
         </div>
 
         <div className="flex flex-wrap gap-4">

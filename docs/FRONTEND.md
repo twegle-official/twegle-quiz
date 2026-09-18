@@ -1526,7 +1526,13 @@ A new content type + game genre for the site's 8-14 audience — see `docs/PENDI
 
 Verified end-to-end in the browser, not just via tests: played "The Vanishing Cupcakes" all the way through the real UI — discovered all 7 clues in their actual dependency order (confirmed locked clues correctly stayed locked until their prerequisites were found), cycled a Detective Notes marker, picked the correct suspect, answered all 3 deduction questions correctly, confirmed the score (1000) and the "🎉 CASE SOLVED!" reveal with the right explanation and proving-clues list, confirmed both "First Case" and "Perfect Investigation" badges unlocked with a real toast and the Achievements page's points total matched by hand, confirmed the Detective Hub shows the solved checkmark + best score on that tile afterward, confirmed the admin edit form round-trips a real case's every field correctly (including the solution's pre-selected suspect and pre-checked proving clues), and checked dark mode plus a 375px mobile viewport on the case-file intro screen with no overflow. `npm run build` clean throughout.
 
-## What's next
+## Real image uploads via Cloudinary (2026-09-18)
+
+New **`admin/components/ImageUploadField.jsx`** — a shared component for every image field that used to only accept a pasted URL. Renders the existing URL text input unchanged (still fully functional — pasting a link works exactly as before, existing content with a pasted URL keeps rendering) plus a "📤 Upload" button next to it that opens a native file picker, uploads the chosen file to the new backend endpoint (`uploadImage()` in `adminApi.js`, a plain `fetch` with `FormData` — deliberately not going through `adminApi.js`'s shared `request()` helper, since that always sends JSON and a file upload needs `multipart/form-data` with a boundary the browser sets automatically only when `Content-Type` is left unset), and fills the same field with the real returned URL either way. A live thumbnail preview renders underneath whenever the field has a value, regardless of whether it got there by paste or upload.
+
+Dropped into the two places that had a paste-a-URL placeholder waiting for it: `PuzzleForm.jsx`'s image field, and `DetectiveCaseForm.jsx`'s per-clue image field (see `docs/BACKEND.md`'s matching entry for the upload endpoint itself, and the unrelated `Engagement` schema bug this caught while testing).
+
+## Twegle Detective / Daily Mystery (2026-09-18)
 
 Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md` section 12) is now done. Launch is still intentionally on hold (owner's call) until there's an appetite to go live. Ongoing, not "done" in the same sense as the engineering items:
 - More quiz/post/friendship-quiz content variety — always a valid next step, never really finished.
