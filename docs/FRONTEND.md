@@ -1545,8 +1545,16 @@ Every item from the original "strengthen before launch" list (`ORIGINAL_PLAN.md`
 - **Site search** — `SearchResults.jsx` gained a `detectiveCases` filter and a results section using the existing `DetectiveCard` (no new card UI needed), matching every other content type's section.
 - **Twegle Wrapped** — `weeklyRecap.js`'s `KINDS` gained `'detective'`; `badges.js`'s `recordDetectiveCaseSolved()` now calls `recordDailyActivity('detective')` before its own `update()` (same ordering every other action recorder uses, so the action lands in the *current* stats push rather than being lost if the visitor doesn't trigger another one before leaving); `Badges.jsx`'s recap card and its shareable image both gained a "🕵️ mysteries solved" line alongside games/quizzes/puzzles.
 
-**Per-case leaderboards remain the one still-deliberate cut** — would need a hardcoded config entry per admin-created case (mirroring how `GAME_LEADERBOARDS` works for the fixed games registry), which breaks the "no developer involvement needed to add a case" property the rest of the feature is built around. Not attempted.
+Per-case leaderboards were the one remaining cut — see the next dated entry below.
 
 Ongoing, not "done" in the same sense as the engineering items:
 - More case content variety in both languages — always a valid next step, never really finished.
 - A third language, whenever that's requested — the `language` field pattern already supports it, it's a content task, not an engineering one.
+
+## Twegle Detective — per-case leaderboards (2026-09-18)
+
+Closes the last disclosed scope cut. Scoped first via a direct question before building: a per-case leaderboard the way `GameScore.js`'s `GAME_LEADERBOARDS` works (a hardcoded config entry per game) would reintroduce the exact problem the original cut was avoiding, so this reuses that decision's reasoning rather than reversing it — see `docs/BACKEND.md`'s matching entry for the `DetectiveSolve` model that makes a leaderboard automatic for any case.
+
+- **`api.js`** — `solveDetectiveCase` gained an optional `token` param (mirrors `submitGameScore`'s exact pattern: present when the solver is logged in, omitted for a guest, who still solves normally either way); new `fetchDetectiveLeaderboard(slug)`.
+- **`DetectiveCaseView.jsx`** — reads `session` from `UserAuthContext` (new import) and passes `session?.token` into `solveDetectiveCase`. Right after a successful solve, fetches the leaderboard and shows it on the reveal screen as "🏆 This case's top detectives" (rank/avatar/name/score rows, same list styling `GameLeaderboard.jsx` already uses for its own top-10) — for a guest, a "Log in to put your score on the leaderboard" nudge appears below it, the same pattern `BookmarkButton.jsx` already uses for other account-gated actions rather than hiding the feature outright. `investigateAgain()` resets the leaderboard state along with everything else a replay resets.
+- Verified end-to-end on production with a real, since-deleted throwaway test account: a logged-in solve appears on the board with the right score, a guest solve on the same case right after does not, and deleting the test account afterward correctly dropped it off every leaderboard it had appeared on.

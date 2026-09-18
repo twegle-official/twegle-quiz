@@ -886,12 +886,21 @@ A new content type + game genre — see `docs/PENDING_TASKS.md`'s dated entry fo
 
 ## Twegle Detective — Hindi content and site-wide integrations (2026-09-18)
 
-Closed 3 of the 4 disclosed scope cuts from the original build (per-case leaderboards remain the one still-deliberate cut — see `docs/PENDING_TASKS.md`'s dated entry for the reasoning).
+Closed 3 of the 4 disclosed scope cuts from the original build (per-case leaderboards were the last one — see the next dated entry below).
 
 - **`scripts/seedDetectiveCasesHindi.js`** — same shape and same one-off-seed pattern as `seedDetectiveCases.js`, exporting `casesHi` instead of `cases`: native Hindi versions (not machine-translated) of all 6 cases, same game logic (keys/`unlocksAfter`/`correctIndex`/`correctSuspectKey`) as their English counterparts, only the human-readable text translated. Slugs use the same `-hi` suffix every other bilingual content type's Hindi documents already use (e.g. Quiz's `skincare-type-hi`) — each language is a fully independent document, not a paired translation of one record, matching how `Quiz`/`Post`/etc. already do bilingual content.
 - **`dashboardController.js`** — `contentCounts` gained a `detectiveCases` field (`DetectiveCase.countDocuments({ status: 'published' })`, same pattern as every other type).
 - **`sitemapController.js`** — published cases now included, `/detective/:slug`, priority `0.7` (between Friendship Quiz's `0.7` and Quiz's `0.8` — a headline feature, same tier as Friendship Quiz).
 - **`searchController.js`** — cases now searched alongside every other content type (`title`/`description` regex match, same `publishedFilter`/`withTextMatch` helpers), returned as `type: 'detective'` in the flat results array.
+
+## Twegle Detective — per-case leaderboards (2026-09-18)
+
+Closes the last disclosed scope cut, without reintroducing the problem it was cut to avoid in the first place: `GameScore.js`'s leaderboards need a hardcoded `GAME_LEADERBOARDS` config entry per game, which doesn't work for a content type where admins add new cases with zero developer involvement.
+
+- **`models/DetectiveSolve.js`** (new) — one row per `(detectiveCase, endUser)` pair, holding that account's *best* score for that case, not a log of every attempt (`{detectiveCase: 1, endUser: 1}` unique index enforces this). Deliberately keyed by the case's own `ObjectId` rather than a slug config — a leaderboard for any case, including one created five minutes ago, is just `DetectiveSolve.find({ detectiveCase })`. A `{detectiveCase: 1, score: -1}` index speeds up that query. Guest solves are never recorded here at all — Detective's solve endpoint has no nickname field the way `GameScore` does, and the weekly game leaderboard already established the "accounts-only ranking" precedent for exactly this reason.
+- **`detectiveController.js`** — `solveDetectiveCase` now checks `req.user` (set by `optionalUserAuth`, never required — a guest still solves normally) and, only when present, reads the existing `DetectiveSolve` row for that `(case, user)` pair and upserts a new one *only if the new score is higher* — a straight `$max` upsert was avoided since it would let the other fields (`cluesFound`, `correctSuspect`, etc.) drift out of sync with whichever score ends up stored. New `getDetectiveCaseLeaderboard` — top 10 by score for one case, `.populate('endUser', 'displayName avatar')`, filtering out a deleted/since-cleaned-up account the same way `gameScoreController.js`'s `getWeeklyLeaderboard` already does.
+- **Routes** — `GET /:slug/leaderboard` (public) and `POST /:slug/solve` now runs `optionalUserAuth` first.
+- **`backend/tests/detective.test.js`** — 3 new tests: a logged-in solve appears on the leaderboard and a guest one doesn't, only the best score survives being solved again (a worse third attempt never overwrites a better second one), and a leaderboard request for a nonexistent case 404s. All passing alongside the existing 41 (44/45 backend tests total, same pre-existing `weeklyLeaderboard.test.js` flake noted below).
 
 ## Real image uploads via Cloudinary (2026-09-18)
 
