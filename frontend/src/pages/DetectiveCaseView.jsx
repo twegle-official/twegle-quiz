@@ -9,11 +9,16 @@ import ShareButtons from '../components/ShareButtons'
 import PreviewBanner from '../components/PreviewBanner'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
-const TABS = [
-  { key: 'suspects', label: '👤 Suspects' },
-  { key: 'evidence', label: '🔎 Evidence' },
-  { key: 'notes', label: '📝 Detective Notes' },
-]
+// A function, not a plain array, since the labels depend on the case's own
+// language (see isHindi below) — this file's other section headings
+// already translate the same way, this tab switcher just hadn't caught up.
+function getTabs(isHindi) {
+  return [
+    { key: 'suspects', label: isHindi ? '👤 संदिग्ध' : '👤 Suspects' },
+    { key: 'evidence', label: isHindi ? '🔎 सबूत' : '🔎 Evidence' },
+    { key: 'notes', label: isHindi ? '📝 जासूसी नोट्स' : '📝 Detective Notes' },
+  ]
+}
 
 const MARKER_CYCLE = [null, '🟢', '🟡', '🔴']
 
@@ -209,7 +214,7 @@ export default function DetectiveCaseView() {
       {phase === 'investigate' && (
         <div>
           <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
-            {TABS.map((tab) => (
+            {getTabs(isHindi).map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
