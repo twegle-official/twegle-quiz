@@ -124,7 +124,7 @@ export const cases = [
       "CRASH! The window of Classroom 4B, facing the playground, just shattered into pieces. Nobody saw it happen — but three things turned up nearby: a scuffed cricket ball, a gardening trowel, and a dog leash.\n\nThree students were outside around that time. One of them broke the window. Can you figure out who — and why nobody suspected them at first?",
     difficulty: 'rookie',
     estimatedMinutes: 6,
-    emoji: '🪟',
+    emoji: '💥',
     status: 'published',
     suspects: [
       { key: 'sam', name: 'Sam', avatar: '🏏', role: 'Cricket Player', description: 'Plays cricket most afternoons with the school team.', statement: "Practice doesn't start till later, I wasn't even out there yet." },
