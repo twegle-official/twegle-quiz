@@ -6,6 +6,7 @@ import FriendshipQuizCard from '../components/FriendshipQuizCard'
 import PostCard from '../components/PostCard'
 import StoryCard from '../components/StoryCard'
 import PuzzleCard from '../components/PuzzleCard'
+import DetectiveCard from '../components/DetectiveCard'
 import AdSlot from '../components/AdSlot'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
@@ -41,6 +42,7 @@ export default function SearchResults() {
   const stories = results?.filter((r) => r.type === 'story') || []
   const posts = results?.filter((r) => r.type === 'post') || []
   const puzzles = results?.filter((r) => r.type === 'puzzle') || []
+  const detectiveCases = results?.filter((r) => r.type === 'detective') || []
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
@@ -124,6 +126,17 @@ export default function SearchResults() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {puzzles.map((puzzle, i) => (
               <PuzzleCard key={puzzle._id} puzzle={puzzle} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {detectiveCases.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">🕵️ Detective</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {detectiveCases.map((c, i) => (
+              <DetectiveCard key={c.slug} detectiveCase={c} index={i} />
             ))}
           </div>
         </div>

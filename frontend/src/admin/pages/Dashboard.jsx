@@ -10,6 +10,7 @@ const CONTENT_TILES = [
   { key: 'stories', label: 'Stories', emoji: '📖', to: '/admin/stories' },
   { key: 'puzzles', label: 'Puzzles', emoji: '🧩', to: '/admin/puzzles' },
   { key: 'friendshipQuizzes', label: 'Friendship Quizzes', emoji: '🤝', to: '/admin/friendship-quizzes' },
+  { key: 'detectiveCases', label: 'Detective Cases', emoji: '🕵️', to: '/admin/detective' },
 ]
 
 const RANGES = [

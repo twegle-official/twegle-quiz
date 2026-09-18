@@ -3,6 +3,7 @@ import Post from '../models/Post.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
 import FriendshipQuiz from '../models/FriendshipQuiz.js'
+import DetectiveCase from '../models/DetectiveCase.js'
 import PlaySession from '../models/PlaySession.js'
 import GameSession from '../models/GameSession.js'
 import FriendshipAttempt from '../models/FriendshipAttempt.js'
@@ -51,6 +52,7 @@ export async function getDashboard(req, res) {
     storyCount,
     puzzleCount,
     friendshipQuizCount,
+    detectiveCaseCount,
     unreadFeedbackCount,
     topQuizzes,
     topFriendshipQuizzes,
@@ -64,6 +66,7 @@ export async function getDashboard(req, res) {
     Story.countDocuments({ status: 'published' }), // how many stories are live right now
     Puzzle.countDocuments({ status: 'published' }), // how many puzzles are live right now
     FriendshipQuiz.countDocuments({ status: 'published' }), // how many friendship quizzes are live right now
+    DetectiveCase.countDocuments({ status: 'published' }), // how many detective cases are live right now
     Feedback.countDocuments({ read: false }), // how many feedback entries haven't been looked at yet
     // Finds the most-played quizzes in this time range
     PlaySession.aggregate([
@@ -122,6 +125,7 @@ export async function getDashboard(req, res) {
       stories: storyCount,
       puzzles: puzzleCount,
       friendshipQuizzes: friendshipQuizCount,
+      detectiveCases: detectiveCaseCount,
     },
     unreadFeedbackCount,
     topContent: {

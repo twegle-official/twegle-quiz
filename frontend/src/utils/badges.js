@@ -195,6 +195,10 @@ export function hasRevealedPuzzle(puzzleId) {
 // *how* it was solved (a Master-difficulty correct solve, or a flawless
 // run) rather than just whether it was solved at all.
 export function recordDetectiveCaseSolved({ slug, difficulty, score, cluesFound, totalClues, correctSuspect, deductionsCorrectCount, totalDeductions }) {
+  // See recordGamePlayed's comment — recorded before update() so this
+  // action's daily tally is included in the immediate push, not just the
+  // next one.
+  recordDailyActivity('detective')
   update((s) => {
     if (!s.detectiveCasesSolved.includes(slug)) s.detectiveCasesSolved.push(slug)
     s.detectiveScores[slug] = Math.max(s.detectiveScores[slug] || 0, score)

@@ -3,6 +3,7 @@ import Post from '../models/Post.js'
 import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
+import DetectiveCase from '../models/DetectiveCase.js'
 
 // Generates sitemap.xml straight from the database so it never goes stale as
 // content is added/published — a static file would need manual updates every
@@ -49,12 +50,13 @@ export async function getSitemap(req, res) {
   ]
 
   // Fetches every published item of each content type, all at the same time
-  const [quizzes, posts, friendshipQuizzes, stories, puzzles] = await Promise.all([
+  const [quizzes, posts, friendshipQuizzes, stories, puzzles, detectiveCases] = await Promise.all([
     Quiz.find({ status: 'published' }).select('slug updatedAt'),
     Post.find({ status: 'published' }).select('_id updatedAt'),
     FriendshipQuiz.find({ status: 'published' }).select('slug updatedAt'),
     Story.find({ status: 'published' }).select('slug updatedAt'),
     Puzzle.find({ status: 'published' }).select('_id updatedAt'),
+    DetectiveCase.find({ status: 'published' }).select('slug updatedAt'),
   ])
 
   quizzes.forEach((q) => {
@@ -95,6 +97,14 @@ export async function getSitemap(req, res) {
       lastmod: p.updatedAt.toISOString(),
       changefreq: 'monthly',
       priority: '0.5',
+    })
+  })
+  detectiveCases.forEach((d) => {
+    urls.push({
+      loc: `${base}/detective/${d.slug}`,
+      lastmod: d.updatedAt.toISOString(),
+      changefreq: 'monthly',
+      priority: '0.7',
     })
   })
 

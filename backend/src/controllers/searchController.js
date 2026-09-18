@@ -3,6 +3,7 @@ import Post from '../models/Post.js'
 import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
+import DetectiveCase from '../models/DetectiveCase.js'
 
 const RESULTS_PER_TYPE = 8 // max number of matches to return per content type
 const MIN_QUERY_LENGTH = 2 // don't search until someone's typed at least this many characters
@@ -34,7 +35,7 @@ export async function search(req, res) {
   const language = req.query.language
 
   // Searches all content types in parallel and waits for every result to come back
-  const [quizzes, posts, friendshipQuizzes, stories, puzzles] = await Promise.all([
+  const [quizzes, posts, friendshipQuizzes, stories, puzzles, detectiveCases] = await Promise.all([
     Quiz.find(withTextMatch(publishedFilter(language), [{ title: regex }, { description: regex }]))
       .select('title slug description emoji gradient category sponsor')
       .limit(RESULTS_PER_TYPE),
@@ -49,6 +50,9 @@ export async function search(req, res) {
       .limit(RESULTS_PER_TYPE),
     Puzzle.find(withTextMatch(publishedFilter(language), [{ question: regex }]))
       .select('question imageUrl difficulty emoji gradient')
+      .limit(RESULTS_PER_TYPE),
+    DetectiveCase.find(withTextMatch(publishedFilter(language), [{ title: regex }, { description: regex }]))
+      .select('title slug description emoji difficulty estimatedMinutes')
       .limit(RESULTS_PER_TYPE),
   ])
 
@@ -98,6 +102,15 @@ export async function search(req, res) {
         emoji: p.emoji,
         gradient: p.gradient,
         difficulty: p.difficulty,
+      })),
+      ...detectiveCases.map((d) => ({
+        type: 'detective',
+        slug: d.slug,
+        title: d.title,
+        description: d.description,
+        emoji: d.emoji,
+        difficulty: d.difficulty,
+        estimatedMinutes: d.estimatedMinutes,
       })),
     ],
   })
