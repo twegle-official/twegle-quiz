@@ -60,6 +60,13 @@ export default function WordOfTheDay() {
   const answer = useRef(getTodayWord()).current
   const dayNumber = getDayNumber()
   const [state, setState] = useState(() => loadTodayState())
+  // Captured once, at mount, before any play happens this session — true
+  // only when today's game was already finished on a *previous* visit
+  // (reopening the page later the same day), not when it's finished just
+  // now by actually playing. Lets the finished screen tell those two
+  // cases apart instead of showing identical "you solved it!" copy
+  // either way, which read as confusing/ambiguous about what just happened.
+  const wasAlreadyDoneOnLoad = useRef(loadTodayState().status !== 'playing').current
   const [currentGuess, setCurrentGuess] = useState('')
   const [shake, setShake] = useState(false) // brief invalid-guess feedback
   const [message, setMessage] = useState('')
@@ -223,10 +230,19 @@ export default function WordOfTheDay() {
 
       {finished ? (
         <div className="mb-6">
+          {wasAlreadyDoneOnLoad && (
+            <p className="inline-block mb-3 px-3 py-1 rounded-full bg-violet-50 dark:bg-violet-950/40 text-violet-600 dark:text-violet-300 text-xs font-semibold">
+              📅 You already played today's word — here's how it went
+            </p>
+          )}
           <p className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
             {state.status === 'won' ? `🎉 Solved in ${state.guesses.length}/${MAX_GUESSES}!` : `😔 Out of tries — it was ${answer}`}
           </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Come back tomorrow for a new word.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            {wasAlreadyDoneOnLoad
+              ? "You get one word a day — this one's done. A new word (and a new grid) unlocks after midnight."
+              : 'Come back tomorrow for a new word.'}
+          </p>
           <button
             onClick={handleCopyResult}
             className="px-5 py-2.5 rounded-full bg-gradient-to-br from-violet-500 to-pink-500 text-white text-sm font-semibold hover:opacity-90"
@@ -235,16 +251,22 @@ export default function WordOfTheDay() {
           </button>
         </div>
       ) : (
-        /* The on-screen keyboard — also usable via a real keyboard, see the keydown listener above */
-        <div className="flex flex-col gap-1.5 mb-6">
+        /* The on-screen keyboard — also usable via a real keyboard, see the
+           keydown listener above. Sized up (taller keys, larger text) from
+           an earlier, cramped-feeling pass — widths stay as they were on
+           the smallest letter keys so a 10-key row still fits a 375px
+           screen with no horizontal overflow; extra room goes into height
+           and font size instead, which is what actually helps thumb
+           accuracy on a tightly-packed row like this. */
+        <div className="flex flex-col gap-2 mb-6">
           {KEY_ROWS.map((row, i) => (
             <div key={i} className="flex justify-center gap-1">
               {row.map((key) => (
                 <button
                   key={key}
                   onClick={() => pressKey(key)}
-                  className={`h-11 rounded font-semibold text-xs sm:text-sm transition-colors ${
-                    key === 'ENTER' || key === '⌫' ? 'px-2.5' : 'w-7 sm:w-9'
+                  className={`h-14 rounded font-semibold text-sm sm:text-base transition-colors ${
+                    key === 'ENTER' || key === '⌫' ? 'px-3 sm:px-4' : 'w-7 sm:w-9'
                   } ${keyStatus[key] ? KEY_COLOR[keyStatus[key]] : 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'}`}
                 >
                   {key}
