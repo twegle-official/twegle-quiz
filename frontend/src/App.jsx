@@ -32,6 +32,10 @@ import SnakeLadderMultiplayer from './pages/SnakeLadderMultiplayer'
 import ChessMultiplayer from './pages/ChessMultiplayer'
 import LudoMultiplayer from './pages/LudoMultiplayer'
 import SkydriftIsles from './pages/SkydriftIsles'
+import AdventureMap from './pages/AdventureMap'
+import AdventureWorldView from './pages/AdventureWorldView'
+import AdventureLocationView from './pages/AdventureLocationView'
+import AdventureProgressPage from './pages/AdventureProgressPage'
 import WordOfTheDay from './pages/WordOfTheDay'
 import Feedback from './pages/Feedback'
 import Badges from './pages/Badges'
@@ -186,6 +190,15 @@ function PublicSite() {
           <Route path="/games/skydrift-isles" element={<SkydriftIsles />} />
           {/* Also its own dedicated page — see WordOfTheDay.jsx's own comment for why */}
           <Route path="/games/word-of-the-day" element={<WordOfTheDay />} />
+          {/* Twegle Adventure World — account-gated like Skydrift Isles
+              above, same reasoning (see AdventureProgress.js's own
+              comment). The progress route is listed before the
+              worldSlug/locationSlug ones below so "/adventure/progress"
+              doesn't get swallowed by "/adventure/:worldSlug". */}
+          <Route path="/adventure" element={<AdventureMap />} />
+          <Route path="/adventure/progress" element={<AdventureProgressPage />} />
+          <Route path="/adventure/:worldSlug" element={<AdventureWorldView />} />
+          <Route path="/adventure/:worldSlug/:locationSlug" element={<AdventureLocationView />} />
           <Route path="/post/:id" element={<PostView />} />
           <Route path="/story/:slug" element={<StoryView />} />
           <Route path="/puzzle/:id" element={<PuzzleView />} />

@@ -63,13 +63,19 @@ export async function listLocations(req, res) {
 }
 
 // Lists one location's currently-active published challenges, tagged with
-// whether this visitor has already completed each one.
+// whether this visitor has already completed each one. `payload` is
+// deliberately excluded here — for a guess/code-breaker/quick-brain
+// challenge it holds the actual answer, and this is the list a visitor
+// browses before attempting anything. Same "answer excluded from the list,
+// only the single-item fetch includes it" split Puzzle.js's own
+// listPublishedPuzzles/getPuzzleById already established; see getChallenge
+// below for the single-item fetch a player's own "Start" tap uses.
 export async function listChallenges(req, res) {
   const location = await AdventureLocation.findOne({ slug: req.params.locationSlug, ...publishedFilter() }).select('_id')
   if (!location) return res.status(404).json({ error: 'Location not found' })
 
   const challenges = await AdventureChallenge.find({ location: location._id, ...activeChallengeFilter() })
-    .select('title instructions type refId payload difficulty rewardCollectibleKey rewardCollectibleCount order')
+    .select('title instructions type refId difficulty rewardCollectibleKey rewardCollectibleCount order')
     .sort({ order: 1 })
 
   const completedIds = req.user
@@ -79,6 +85,25 @@ export async function listChallenges(req, res) {
   res.json({
     challenges: challenges.map((c) => ({ ...c.toObject(), completed: completedIds.has(c._id.toString()) })),
   })
+}
+
+// Fetches one challenge including its full `payload` — same "not a
+// security boundary, just keeps the answer out of casual browsing" trust
+// level Puzzle's own reveal-on-demand already accepts (a technically
+// determined visitor can always inspect a network request). Only called
+// when a player actually taps into a specific mini-challenge to play it.
+export async function getChallenge(req, res) {
+  const challenge = await AdventureChallenge.findOne({ _id: req.params.id, ...activeChallengeFilter() })
+  if (!challenge) return res.status(404).json({ error: 'Challenge not found' })
+
+  const location = await AdventureLocation.findOne({ _id: challenge.location, ...publishedFilter() }).select('slug')
+  if (!location) return res.status(404).json({ error: 'Challenge not found' })
+
+  const completed = req.user
+    ? ((await AdventureProgress.findOne({ endUser: req.user.id }).select('completedChallenges'))?.completedChallenges || []).some((c) => c.challenge.toString() === challenge._id.toString())
+    : false
+
+  res.json({ challenge: { ...challenge.toObject(), completed } })
 }
 
 // Lists every published collectible *definition* (what a Star/Gem/Key looks

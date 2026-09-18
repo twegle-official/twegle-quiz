@@ -3,6 +3,7 @@ import {
   listWorlds,
   listLocations,
   listChallenges,
+  getChallenge,
   listCollectibles,
   listCharacters,
   getMyProgress,
@@ -23,6 +24,7 @@ const router = Router()
 router.get('/worlds', optionalUserAuth, listWorlds)
 router.get('/worlds/:worldSlug/locations', optionalUserAuth, listLocations)
 router.get('/locations/:locationSlug/challenges', optionalUserAuth, listChallenges)
+router.get('/challenges/:id', optionalUserAuth, getChallenge)
 router.get('/collectibles', listCollectibles)
 router.get('/characters', listCharacters)
 router.get('/daily-treasure', optionalUserAuth, getDailyTreasure)

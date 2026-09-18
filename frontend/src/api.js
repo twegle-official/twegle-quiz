@@ -195,6 +195,100 @@ export async function fetchDetectiveLeaderboard(slug) {
   return data.entries
 }
 
+// --- Twegle Adventure World (Phase 3) ---
+// Public browsing endpoints take an optional `token` — when present, the
+// backend includes this account's own unlock/completed state alongside the
+// content, same "content is public, progress is personal" split the rest
+// of the site follows; a guest just sees the content with nothing tagged.
+
+export async function fetchAdventureWorlds(token) {
+  const res = await fetch(`${API_URL}/adventure/worlds`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.worlds
+}
+
+export async function fetchAdventureLocations(worldSlug, token) {
+  const res = await fetch(`${API_URL}/adventure/worlds/${worldSlug}/locations`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.locations
+}
+
+export async function fetchAdventureChallenges(locationSlug, token) {
+  const res = await fetch(`${API_URL}/adventure/locations/${locationSlug}/challenges`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.challenges
+}
+
+// Includes the challenge's full `payload` (e.g. a code-breaker's real
+// answer) — only call this once a player actually opens a specific
+// challenge to play it, never for browsing a list. See
+// adventureController.js's own comment for why the list endpoint above
+// deliberately excludes it.
+export async function fetchAdventureChallenge(id, token) {
+  const res = await fetch(`${API_URL}/adventure/challenges/${id}`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.challenge
+}
+
+export async function fetchAdventureCollectibles() {
+  const res = await fetch(`${API_URL}/adventure/collectibles`)
+  if (!res.ok) return null
+  const data = await res.json()
+  return data.collectibles
+}
+
+export async function fetchAdventureDailyTreasure(token) {
+  const res = await fetch(`${API_URL}/adventure/daily-treasure`, token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+  if (!res.ok) return null
+  return res.json()
+}
+
+// Everything below requires a logged-in account — Adventure's progress is
+// real, persistent, cross-session state (see AdventureProgress.js), the
+// same call Skydrift Isles already made for the same reason.
+
+export async function fetchMyAdventureProgress(token) {
+  const res = await fetch(`${API_URL}/adventure/me/progress`, { headers: { Authorization: `Bearer ${token}` } })
+  if (!res.ok) throw new Error('Failed to load your Adventure progress')
+  const data = await res.json()
+  return data.progress
+}
+
+export async function enterAdventureLocation(token, worldSlug, locationSlug) {
+  const res = await fetch(`${API_URL}/adventure/me/enter`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ worldSlug, locationSlug }),
+  })
+  if (!res.ok) throw new Error('Failed to enter that location')
+  const data = await res.json()
+  return data.progress
+}
+
+export async function completeAdventureChallenge(token, id, score) {
+  const res = await fetch(`${API_URL}/adventure/challenges/${id}/complete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ score }),
+  })
+  if (!res.ok) throw new Error('Failed to record your progress')
+  return res.json()
+}
+
+export async function claimAdventureDailyTreasure(token, locationSlug) {
+  const res = await fetch(`${API_URL}/adventure/daily-treasure/claim`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    body: JSON.stringify({ locationSlug }),
+  })
+  if (!res.ok) throw new Error('Failed to claim the daily treasure')
+  return res.json()
+}
+
 export async function fetchPostById(id, previewToken) {
   const qs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
   const res = await fetch(`${API_URL}/posts/${id}${qs}`)

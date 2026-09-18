@@ -157,6 +157,7 @@ export default function Footer() {
             <li>
               <SurpriseMeButton className="flex hover:text-gray-900 dark:hover:text-gray-100" />
             </li>
+            <li><Link to="/adventure" className="hover:text-gray-900 dark:hover:text-gray-100">🗺️ Adventure World</Link></li>
             <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Achievements</Link></li>
             <li><Link to="/leaderboard" className="hover:text-gray-900 dark:hover:text-gray-100">🏅 Leaderboard</Link></li>
             <li><Link to="/" className="hover:text-gray-900 dark:hover:text-gray-100">Quizzes</Link></li>

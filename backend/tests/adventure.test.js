@@ -63,6 +63,26 @@ describe('adventure world', () => {
     expect(res.body.progress.unlockedLocations).toEqual(['town-square'])
   })
 
+  it("excludes a challenge's payload from the list, but includes it in the single-item fetch", async () => {
+    await seedWorldChain()
+    const square = await AdventureLocation.findOne({ slug: 'town-square' })
+    const codeBreaker = await AdventureChallenge.create({
+      location: square._id,
+      title: 'Decode It',
+      type: 'code-breaker',
+      payload: { cipher: 'ABC', answer: 'abc' },
+      status: 'published',
+    })
+
+    const list = await request(app).get('/api/adventure/locations/town-square/challenges')
+    const listed = list.body.challenges.find((c) => c._id === codeBreaker._id.toString())
+    expect(listed.payload).toBeUndefined()
+
+    const single = await request(app).get(`/api/adventure/challenges/${codeBreaker._id}`)
+    expect(single.status).toBe(200)
+    expect(single.body.challenge.payload.answer).toBe('abc')
+  })
+
   it('rejects fetching progress without a token', async () => {
     const res = await request(app).get('/api/adventure/me/progress')
     expect(res.status).toBe(401)
