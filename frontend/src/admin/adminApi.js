@@ -161,6 +161,8 @@ export const createAdventureCharacter = (token, payload) => request('/admin/adve
 export const updateAdventureCharacter = (token, id, payload) => request(`/admin/adventure/characters/${id}`, { token, method: 'PUT', body: payload })
 export const deleteAdventureCharacter = (token, id) => request(`/admin/adventure/characters/${id}`, { token, method: 'DELETE' })
 
+export const fetchAdventureAnalytics = (token) => request('/admin/adventure/analytics', { token })
+
 // Uploads a real image file to Cloudinary and returns its URL. Doesn't go
 // through request() above — that helper always sends JSON, but a file
 // upload needs `multipart/form-data`, which the browser sets correctly on

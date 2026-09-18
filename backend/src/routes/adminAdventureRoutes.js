@@ -5,6 +5,7 @@ import {
   listChallengesAdmin, getChallengeAdmin, createChallengeAdmin, updateChallengeAdmin, deleteChallengeAdmin,
   listCollectiblesAdmin, getCollectibleAdmin, createCollectibleAdmin, updateCollectibleAdmin, deleteCollectibleAdmin,
   listCharactersAdmin, getCharacterAdmin, createCharacterAdmin, updateCharacterAdmin, deleteCharacterAdmin,
+  getAdventureAnalytics,
 } from '../controllers/adminAdventureController.js'
 import { requireAuth, requireRole } from '../middleware/auth.js'
 
@@ -44,5 +45,7 @@ router.get('/characters/:id', readRoles, getCharacterAdmin)
 router.post('/characters', writeRoles, createCharacterAdmin)
 router.put('/characters/:id', writeRoles, updateCharacterAdmin)
 router.delete('/characters/:id', writeRoles, deleteCharacterAdmin)
+
+router.get('/analytics', readRoles, getAdventureAnalytics) // world unlock / challenge completion stats — see engagementRoutes.js for the separate "opens"/"most-visited" tracking
 
 export default router

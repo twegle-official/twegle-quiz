@@ -5,11 +5,15 @@ import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
 import DetectiveCase from '../models/DetectiveCase.js'
+import AdventureLocation from '../models/AdventureLocation.js'
 import { GAME_SLUGS } from './gameController.js'
 import { ZODIAC_KEYS } from '../data/zodiacSigns.js'
 
-const CONTENT_TYPES = ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope', 'puzzle', 'detectiveCase'] // the kinds of content people can view or share
-const MODEL_BY_TYPE = { quiz: Quiz, friendshipQuiz: FriendshipQuiz, story: Story, puzzle: Puzzle, detectiveCase: DetectiveCase } // which database table to check for each content type
+const CONTENT_TYPES = ['quiz', 'friendshipQuiz', 'game', 'story', 'horoscope', 'puzzle', 'detectiveCase', 'adventureLocation'] // the kinds of content people can view or share
+const MODEL_BY_TYPE = { quiz: Quiz, friendshipQuiz: FriendshipQuiz, story: Story, puzzle: Puzzle, detectiveCase: DetectiveCase, adventureLocation: AdventureLocation } // which database table to check for each content type
+// Puzzle has no `title` field (its display text is `question`), and
+// AdventureLocation's is `name` — every other model here uses `title`.
+const TITLE_FIELD_BY_TYPE = { puzzle: 'question', adventureLocation: 'name' }
 
 // Confirms the referenced content is real (and published, where that
 // applies) before recording an engagement against it — same reasoning as
@@ -81,9 +85,8 @@ export async function getEngagementSummary(req, res) {
   } else if (contentType === 'horoscope') {
     items = ids.map((key) => ({ id: key, title: key.charAt(0).toUpperCase() + key.slice(1) }))
   } else {
-    // Puzzle has no `title` field — its display text is `question` instead.
     const model = MODEL_BY_TYPE[contentType]
-    const titleField = contentType === 'puzzle' ? 'question' : 'title'
+    const titleField = TITLE_FIELD_BY_TYPE[contentType] || 'title'
     const docs = await model.find({ _id: { $in: ids } }).select(titleField)
     items = docs.map((d) => ({ id: d._id.toString(), title: d[titleField] }))
   }

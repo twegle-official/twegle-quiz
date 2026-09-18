@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
 import {
@@ -9,6 +9,7 @@ import {
   fetchMyAdventureProgress,
   enterAdventureLocation,
   completeAdventureChallenge,
+  recordEngagement,
 } from '../api'
 import BackButton from '../components/BackButton'
 import AdventureAnswerChallenge from '../components/AdventureAnswerChallenge'
@@ -42,8 +43,15 @@ export default function AdventureLocationView() {
   const [openChallenge, setOpenChallenge] = useState(null) // full challenge (with payload), once a mini-challenge is opened
   const [celebration, setCelebration] = useState(null) // { collectible } shown briefly after a completion
   const [error, setError] = useState('')
+  const viewedRef = useRef(false) // guards against re-recording a view on every re-render — same pattern DetectiveCaseView.jsx uses
 
   useDocumentMeta(location && `${location.emoji} ${location.name} — Twegle Adventure World`, location?.description)
+
+  useEffect(() => {
+    if (!location || viewedRef.current) return
+    viewedRef.current = true
+    recordEngagement('adventureLocation', location._id, 'view')
+  }, [location])
 
   useEffect(() => {
     if (!session) navigate('/login')

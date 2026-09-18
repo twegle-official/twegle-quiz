@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import request from 'supertest'
 import bcrypt from 'bcryptjs'
+import mongoose from 'mongoose'
 import { createApp } from '../src/app.js'
 import Admin from '../src/models/Admin.js'
+import AdventureProgress from '../src/models/AdventureProgress.js'
 
 // Covers Twegle Adventure World's Phase 5 admin CRUD: create/update/delete
 // for all 5 content types, and that the write routes actually enforce the
@@ -131,5 +133,39 @@ describe('adventure admin', () => {
 
     const write = await request(app).post('/api/admin/adventure/worlds').set('Authorization', `Bearer ${analystToken}`).send({ name: 'Nope', mapPosition: { x: 0, y: 0 } })
     expect(write.status).toBe(403)
+  })
+
+  it('computes world unlock rates and challenge completion rates out of all Adventure players', async () => {
+    const token = await loginAdmin()
+    const world = await request(app).post('/api/admin/adventure/worlds').set('Authorization', `Bearer ${token}`).send({ name: 'Analytics World', mapPosition: { x: 0, y: 0 } })
+    const location = await request(app).post('/api/admin/adventure/locations').set('Authorization', `Bearer ${token}`).send({ name: 'Analytics Square', world: world.body.world._id, mapPosition: { x: 0, y: 0 } })
+    const challenge = await request(app).post('/api/admin/adventure/challenges').set('Authorization', `Bearer ${token}`).send({ title: 'Analytics Challenge', location: location.body.location._id, type: 'guess' })
+    const worldSlug = world.body.world.slug
+    const challengeId = challenge.body.challenge._id
+
+    // 4 players total; 3 unlocked the world, 2 of those completed the challenge.
+    await AdventureProgress.create({ endUser: new mongoose.Types.ObjectId(), unlockedWorlds: [worldSlug], completedChallenges: [{ challenge: challengeId }] })
+    await AdventureProgress.create({ endUser: new mongoose.Types.ObjectId(), unlockedWorlds: [worldSlug], completedChallenges: [{ challenge: challengeId }] })
+    await AdventureProgress.create({ endUser: new mongoose.Types.ObjectId(), unlockedWorlds: [worldSlug] })
+    await AdventureProgress.create({ endUser: new mongoose.Types.ObjectId() }) // never unlocked anything
+
+    const res = await request(app).get('/api/admin/adventure/analytics').set('Authorization', `Bearer ${token}`)
+    expect(res.status).toBe(200)
+    expect(res.body.totalPlayers).toBe(4)
+
+    const worldRow = res.body.worldStats.find((w) => w.title === 'Analytics World')
+    expect(worldRow.playersUnlocked).toBe(3)
+    expect(worldRow.unlockRate).toBeCloseTo(0.75)
+
+    const challengeRow = res.body.challengeStats.find((c) => c.title === 'Analytics Challenge')
+    expect(challengeRow.locationName).toBe('Analytics Square')
+    expect(challengeRow.completions).toBe(2)
+    expect(challengeRow.completionRate).toBeCloseTo(0.5)
+  })
+
+  it('an analyst can read adventure analytics too', async () => {
+    const analystToken = await loginAdmin('analyst')
+    const res = await request(app).get('/api/admin/adventure/analytics').set('Authorization', `Bearer ${analystToken}`)
+    expect(res.status).toBe(200)
   })
 })

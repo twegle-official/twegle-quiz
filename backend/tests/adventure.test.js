@@ -1,9 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import request from 'supertest'
+import bcrypt from 'bcryptjs'
 import { createApp } from '../src/app.js'
 import AdventureWorld from '../src/models/AdventureWorld.js'
 import AdventureLocation from '../src/models/AdventureLocation.js'
 import AdventureChallenge from '../src/models/AdventureChallenge.js'
+import Admin from '../src/models/Admin.js'
 
 // Covers Twegle Adventure World's Phase 2 REST surface: public browsing,
 // account-gated progress (auto-created on first visit), server-verified
@@ -192,5 +194,28 @@ describe('adventure world', () => {
     // (library belongs to a not-yet-unlocked world, but is still a
     // published location and therefore still an eligible treasure spot).
     expect(['town-square', 'library']).toContain(today.body.location.slug)
+  })
+
+  it('records an "opens" view for a location and surfaces it in the admin engagement summary (Phase 6)', async () => {
+    const { square } = await seedWorldChain()
+
+    const record = await request(app).post('/api/engagement').send({
+      contentType: 'adventureLocation',
+      contentId: square._id.toString(),
+      action: 'view',
+      anonymousId: 'test-visitor-1',
+    })
+    expect(record.status).toBe(201)
+
+    const passwordHash = await bcrypt.hash('correct-horse', 10)
+    await Admin.create({ name: 'Test superadmin', email: 'superadmin-eng@test.com', passwordHash, role: 'superadmin' })
+    const login = await request(app).post('/api/auth/login').send({ email: 'superadmin-eng@test.com', password: 'correct-horse' })
+    const adminToken = login.body.token
+
+    const summary = await request(app).get('/api/admin/engagement/adventureLocation').set('Authorization', `Bearer ${adminToken}`)
+    expect(summary.status).toBe(200)
+    const row = summary.body.summary.find((s) => s.id === square._id.toString())
+    expect(row.title).toBe('Town Square')
+    expect(row.views).toBe(1)
   })
 })

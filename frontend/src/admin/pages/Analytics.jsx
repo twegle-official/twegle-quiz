@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../AuthContext'
-import { fetchAnalytics, fetchPostAnalytics, fetchEngagementSummary, fetchWeeklyDigest, fetchCohortRetention } from '../adminApi'
+import { fetchAnalytics, fetchPostAnalytics, fetchEngagementSummary, fetchWeeklyDigest, fetchCohortRetention, fetchAdventureAnalytics } from '../adminApi'
 import { exportToCSV } from '../csvExport'
 
 // A small button that downloads the table above it as a CSV file (opens in Excel/Sheets).
@@ -29,6 +29,7 @@ const ENGAGEMENT_SECTIONS = [
   { contentType: 'story', title: 'Story Engagement', columnLabel: 'Story' },
   { contentType: 'puzzle', title: 'Puzzle Engagement', columnLabel: 'Puzzle' },
   { contentType: 'horoscope', title: 'Horoscope Engagement', columnLabel: 'Sign' },
+  { contentType: 'adventureLocation', title: 'Adventure World — Location Opens', columnLabel: 'Location' },
 ]
 
 // Same shape as the existing Post Engagement table below — reused for every
@@ -93,6 +94,7 @@ export default function Analytics() {
   const [engagementSummaries, setEngagementSummaries] = useState({})
   const [digest, setDigest] = useState(null)
   const [cohortData, setCohortData] = useState(null)
+  const [adventureStats, setAdventureStats] = useState(null)
   const [error, setError] = useState('')
 
   // Loads all the numbers shown on this page — the weekly summary, quiz
@@ -109,6 +111,9 @@ export default function Analytics() {
       .catch((err) => setError(err.message))
     fetchCohortRetention(session.token)
       .then(setCohortData)
+      .catch((err) => setError(err.message))
+    fetchAdventureAnalytics(session.token)
+      .then(setAdventureStats)
       .catch((err) => setError(err.message))
     ENGAGEMENT_SECTIONS.forEach(({ contentType }) => {
       fetchEngagementSummary(session.token, contentType)
@@ -301,6 +306,101 @@ export default function Analytics() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* World unlock / challenge completion rates — see the separate
+          "Adventure World — Location Opens" table below (in the
+          ENGAGEMENT_SECTIONS loop) for "opens"/"most-visited," tracked the
+          same anonymous-view way every other content type already is.
+          These two numbers together are what "opens/completion-rate/most-
+          visited" from the feature's original spec asked for. */}
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">Adventure World — Completion Stats</h2>
+      {!adventureStats && !error && <p className="text-gray-400 dark:text-gray-500 mb-8">Loading...</p>}
+      {adventureStats && (
+        <>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+            Rates are out of all {adventureStats.totalPlayers} account{adventureStats.totalPlayers === 1 ? '' : 's'} that have ever played Adventure World — not just the ones who reached that specific world/challenge, since reaching one isn't tracked as its own event.
+          </p>
+
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Worlds Unlocked</h3>
+            <ExportButton
+              filename="adventure-world-unlocks.csv"
+              rows={adventureStats.worldStats.map((r) => ({ ...r, unlockRate: `${Math.round(r.unlockRate * 100)}%` }))}
+              columns={[
+                { key: 'title', label: 'World' },
+                { key: 'playersUnlocked', label: 'Players Unlocked' },
+                { key: 'unlockRate', label: 'Unlock Rate' },
+              ]}
+            />
+          </div>
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-8 overflow-x-auto">
+            <table className="w-full min-w-[420px] text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-left">
+                <tr>
+                  <th className="px-4 py-3 font-medium">World</th>
+                  <th className="px-4 py-3 font-medium">Players Unlocked</th>
+                  <th className="px-4 py-3 font-medium">Unlock Rate</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {adventureStats.worldStats.length === 0 && (
+                  <tr>
+                    <td colSpan={3} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">No worlds published yet.</td>
+                  </tr>
+                )}
+                {adventureStats.worldStats.map((row) => (
+                  <tr key={row.id}>
+                    <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium">{row.title}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.playersUnlocked}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{Math.round(row.unlockRate * 100)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Challenge Completions</h3>
+            <ExportButton
+              filename="adventure-challenge-completions.csv"
+              rows={adventureStats.challengeStats.map((r) => ({ ...r, completionRate: `${Math.round(r.completionRate * 100)}%` }))}
+              columns={[
+                { key: 'title', label: 'Challenge' },
+                { key: 'locationName', label: 'Location' },
+                { key: 'completions', label: 'Completions' },
+                { key: 'completionRate', label: 'Completion Rate' },
+              ]}
+            />
+          </div>
+          <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm mb-10 overflow-x-auto">
+            <table className="w-full min-w-[520px] text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-left">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Challenge</th>
+                  <th className="px-4 py-3 font-medium">Location</th>
+                  <th className="px-4 py-3 font-medium">Completions</th>
+                  <th className="px-4 py-3 font-medium">Completion Rate</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                {adventureStats.challengeStats.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-6 text-center text-gray-400 dark:text-gray-500">No challenges published yet.</td>
+                  </tr>
+                )}
+                {adventureStats.challengeStats.map((row) => (
+                  <tr key={row.id}>
+                    <td className="px-4 py-3 text-gray-900 dark:text-gray-100 font-medium max-w-xs truncate">{row.title}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.locationName}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{row.completions}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{Math.round(row.completionRate * 100)}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {ENGAGEMENT_SECTIONS.map(({ contentType, title, columnLabel }) => (

@@ -3,6 +3,7 @@ import AdventureLocation from '../models/AdventureLocation.js'
 import AdventureChallenge, { ADVENTURE_CHALLENGE_TYPES } from '../models/AdventureChallenge.js'
 import AdventureCollectible, { ADVENTURE_COLLECTIBLE_TYPES, ADVENTURE_COLLECTIBLE_RARITIES } from '../models/AdventureCollectible.js'
 import AdventureCharacter from '../models/AdventureCharacter.js'
+import AdventureProgress from '../models/AdventureProgress.js'
 import { parsePagination, paginationMeta } from '../utils/pagination.js'
 import { logActivity } from '../utils/activityLog.js'
 
@@ -290,4 +291,52 @@ export async function deleteCharacterAdmin(req, res) {
   const character = await AdventureCharacter.findByIdAndDelete(req.params.id)
   if (character) await logActivity({ admin: req.admin, action: 'delete', resourceType: 'adventureCharacter', resourceId: character._id, resourceLabel: character.name })
   res.status(204).send()
+}
+
+// ---------- Analytics ----------
+
+// How many accounts have ever unlocked each world, and completed each
+// challenge, out of every account that's ever played Adventure at all (has
+// an AdventureProgress document). Deliberately the simplest honest
+// denominator available — "of all Adventure players," not "of players who
+// actually reached this specific world/challenge" — since reaching a world/
+// location isn't tracked as its own historical event (only "opens," via the
+// separate Engagement-based view tracking on AdventureLocation, are). Same
+// "MVP simplification, worth revisiting later" spirit as the daily
+// treasure's own fixed reward — see adventureController.js.
+export async function getAdventureAnalytics(req, res) {
+  const totalPlayers = await AdventureProgress.countDocuments()
+
+  const worlds = await AdventureWorld.find().select('name slug').sort({ order: 1 })
+  const worldUnlockCounts = await AdventureProgress.aggregate([
+    { $unwind: '$unlockedWorlds' },
+    { $group: { _id: '$unlockedWorlds', count: { $sum: 1 } } },
+  ])
+  const worldCountBySlug = Object.fromEntries(worldUnlockCounts.map((w) => [w._id, w.count]))
+  const worldStats = worlds
+    .map((w) => ({
+      id: w._id.toString(),
+      title: w.name,
+      playersUnlocked: worldCountBySlug[w.slug] || 0,
+      unlockRate: totalPlayers > 0 ? (worldCountBySlug[w.slug] || 0) / totalPlayers : 0,
+    }))
+    .sort((a, b) => b.playersUnlocked - a.playersUnlocked)
+
+  const challenges = await AdventureChallenge.find().select('title location').populate('location', 'name')
+  const challengeCompletionCounts = await AdventureProgress.aggregate([
+    { $unwind: '$completedChallenges' },
+    { $group: { _id: '$completedChallenges.challenge', count: { $sum: 1 } } },
+  ])
+  const completionCountById = Object.fromEntries(challengeCompletionCounts.map((c) => [c._id.toString(), c.count]))
+  const challengeStats = challenges
+    .map((c) => ({
+      id: c._id.toString(),
+      title: c.title,
+      locationName: c.location?.name || '(deleted location)',
+      completions: completionCountById[c._id.toString()] || 0,
+      completionRate: totalPlayers > 0 ? (completionCountById[c._id.toString()] || 0) / totalPlayers : 0,
+    }))
+    .sort((a, b) => b.completions - a.completions)
+
+  res.json({ totalPlayers, worldStats, challengeStats })
 }
