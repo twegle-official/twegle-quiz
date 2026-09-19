@@ -15,6 +15,7 @@ import PuzzleOfTheDayBanner from '../components/PuzzleOfTheDayBanner'
 import WordOfTheDayBanner from '../components/WordOfTheDayBanner'
 import FestiveBanner from '../components/FestiveBanner'
 import TodaysMysteryBanner from '../components/TodaysMysteryBanner'
+import DailyStreakRail from '../components/DailyStreakRail'
 import RecentlyViewedRow from '../components/RecentlyViewedRow'
 import AdSlot from '../components/AdSlot'
 
@@ -622,27 +623,38 @@ export default function Home() {
           more personally relevant than a promo for a specific feature). */}
       <RecentlyViewedRow />
 
-      {/* A bigger, standalone banner (not part of the small Quiz/Puzzle/
-          Word grid below) — see TodaysMysteryBanner.jsx for why. */}
-      <TodaysMysteryBanner language={language} />
+      {/* Today's Mystery + the 3 daily streaks: inline on mobile/tablet
+          (below `xl`, no room or hover for a fixed side rail), moved to a
+          floating hover-reveal rail on the right edge at `xl`+ instead —
+          see DailyStreakRail.jsx. Splitting the layout this way (rather
+          than just hiding the rail's counterpart) keeps the streaks
+          reachable at every width while giving the main content the extra
+          headroom on desktop that prompted this in the first place. */}
+      <div className="xl:hidden">
+        {/* A bigger, standalone banner (not part of the small Quiz/Puzzle/
+            Word grid below) — see TodaysMysteryBanner.jsx for why. */}
+        <TodaysMysteryBanner language={language} />
 
-      {/* Quiz/Puzzle stay side by side at every width, including mobile —
-          each banner is a single compact row now (see DailyQuizBanner /
-          PuzzleOfTheDayBanner), so a 2-column grid halves the vertical space
-          the pair takes versus stacking two full-width banners. Word of the
-          Day (added later) joins as a 3rd column from `sm` up, where
-          there's room for 3 across in one row — on mobile it deliberately
-          spans the full row below the other two instead of squeezing into
-          a 3-way split, since these banners' title text (a quiz's real
-          title, a puzzle's real question) needs more room than a third of
-          a phone screen reliably gives it. */}
-      <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 lg:pt-2 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-2">
-        <DailyQuizBanner quizzes={allQuizzes} />
-        <PuzzleOfTheDayBanner puzzles={allPuzzles} />
-        <div className="col-span-2 sm:col-span-1">
-          <WordOfTheDayBanner />
+        {/* Quiz/Puzzle stay side by side at every width, including mobile —
+            each banner is a single compact row now (see DailyQuizBanner /
+            PuzzleOfTheDayBanner), so a 2-column grid halves the vertical space
+            the pair takes versus stacking two full-width banners. Word of the
+            Day (added later) joins as a 3rd column from `sm` up, where
+            there's room for 3 across in one row — on mobile it deliberately
+            spans the full row below the other two instead of squeezing into
+            a 3-way split, since these banners' title text (a quiz's real
+            title, a puzzle's real question) needs more room than a third of
+            a phone screen reliably gives it. */}
+        <div className="max-w-6xl mx-auto px-4 pt-1 sm:pt-4 lg:pt-2 grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-2">
+          <DailyQuizBanner quizzes={allQuizzes} />
+          <PuzzleOfTheDayBanner puzzles={allPuzzles} />
+          <div className="col-span-2 sm:col-span-1">
+            <WordOfTheDayBanner />
+          </div>
         </div>
       </div>
+
+      <DailyStreakRail language={language} quizzes={allQuizzes} puzzles={allPuzzles} />
 
       <div className="max-w-6xl mx-auto px-4 pt-2 sm:pt-6 lg:pt-3 pb-6 lg:grid lg:grid-cols-[220px_1fr] lg:gap-8 lg:items-start">
       {/* The sidebar: language toggle, sort toggle, tab list, and the active tab's category chips */}

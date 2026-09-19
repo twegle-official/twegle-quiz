@@ -11,7 +11,11 @@ import { difficultyLabel, DETECTIVE_DIFFICULTY_META } from '../utils/detectiveDi
 // Renders nothing until at least one case is published, and nothing while
 // still loading — same "quietly absent, never an empty placeholder" rule
 // FestiveBanner already follows.
-export default function TodaysMysteryBanner({ language }) {
+//
+// `variant`: 'compact' (default, full-width row, mobile/tablet) vs 'rail'
+// (collapsed icon pill that expands on hover, desktop `xl`+ rail) — see
+// DailyQuizBanner.jsx for the fuller explanation, same pattern here.
+export default function TodaysMysteryBanner({ language, variant = 'compact' }) {
   const [cases, setCases] = useState(null)
 
   useEffect(() => {
@@ -23,6 +27,24 @@ export default function TodaysMysteryBanner({ language }) {
 
   const diff = DETECTIVE_DIFFICULTY_META[todaysCase.difficulty] || DETECTIVE_DIFFICULTY_META.rookie
   const isHindi = language === 'hi'
+
+  if (variant === 'rail') {
+    return (
+      <Link
+        to={`/detective/${todaysCase.slug}`}
+        aria-label={`Today's Mystery — ${todaysCase.title}`}
+        className="flex flex-row-reverse items-center h-14 w-14 hover:w-64 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 text-white border border-amber-500/20 transition-[width] duration-300 ease-out"
+      >
+        <span className="text-2xl shrink-0 w-14 h-14 flex items-center justify-center">{todaysCase.emoji || '🕵️'}</span>
+        <div className="min-w-0 flex-1 pr-3">
+          <p className="text-[9px] font-bold uppercase tracking-wide text-amber-300 truncate">
+            🕵️ {isHindi ? 'आज का रहस्य' : "Today's Mystery"}
+          </p>
+          <p className="text-sm font-bold truncate">{todaysCase.title}</p>
+        </div>
+      </Link>
+    )
+  }
 
   return (
     <div className="max-w-6xl mx-auto px-4 mt-3 mb-3 sm:mt-4 sm:mb-4">
