@@ -37,8 +37,8 @@ export default function PuzzleOfTheDayBanner({ puzzles, variant = 'compact', exp
         to={`/puzzle/${puzzle._id}`}
         aria-label={`Puzzle Streak — ${puzzle.question}`}
         onClick={controlled ? handleClick : undefined}
-        className={`flex flex-row-reverse items-center h-14 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-violet-500 to-indigo-500 text-white transition-[width] duration-300 ease-out ${
-          controlled ? (expanded ? 'w-64' : 'w-14') : 'w-14 hover:w-64'
+        className={`flex flex-row-reverse items-center h-12 rounded-l-xl shadow-lg overflow-hidden bg-gradient-to-r from-violet-500 to-indigo-500 text-white transition-[width] duration-300 ease-out ${
+          controlled ? (expanded ? 'w-56' : 'w-12') : 'w-12 hover:w-56'
         }`}
       >
         {/* Fixed "Puzzle" icon (🧩, same as Home.jsx's Puzzles tab), not the
@@ -46,11 +46,11 @@ export default function PuzzleOfTheDayBanner({ puzzles, variant = 'compact', exp
             glanced at, and an emoji that changes daily doesn't reliably
             read as "this is the Puzzle streak" the way one consistent icon
             does. */}
-        <span className="text-2xl shrink-0 w-14 h-14 flex items-center justify-center">🧩</span>
+        <span className="text-lg shrink-0 w-12 h-12 flex items-center justify-center">🧩</span>
         {streakBadge && <span className="shrink-0 mr-2">{streakBadge}</span>}
-        <div className="min-w-0 flex-1 pl-3 pr-3">
-          <p className="text-[9px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Puzzle Streak</p>
-          <p className="text-sm font-bold truncate">{puzzle.question}</p>
+        <div className="min-w-0 flex-1 pl-2 pr-3">
+          <p className="text-[8px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Puzzle Streak</p>
+          <p className="text-xs font-bold truncate">{puzzle.question}</p>
         </div>
       </Link>
     )

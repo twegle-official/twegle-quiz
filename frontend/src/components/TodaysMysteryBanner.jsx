@@ -42,8 +42,8 @@ export default function TodaysMysteryBanner({ language, variant = 'compact', exp
         to={`/detective/${todaysCase.slug}`}
         aria-label={`Today's Mystery — ${todaysCase.title}`}
         onClick={controlled ? handleClick : undefined}
-        className={`flex flex-row-reverse items-center h-14 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 text-white border border-amber-500/20 transition-[width] duration-300 ease-out ${
-          controlled ? (expanded ? 'w-64' : 'w-14') : 'w-14 hover:w-64'
+        className={`flex flex-row-reverse items-center h-12 rounded-l-xl shadow-lg overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 text-white border border-amber-500/20 transition-[width] duration-300 ease-out ${
+          controlled ? (expanded ? 'w-56' : 'w-12') : 'w-12 hover:w-56'
         }`}
       >
         {/* Fixed "Detective" icon, not the day's actual case emoji — a rail
@@ -52,12 +52,12 @@ export default function TodaysMysteryBanner({ language, variant = 'compact', exp
             as "this is the Mystery streak" the way one consistent icon
             does. Matches the 🕵️ used for this same category everywhere else
             on the site (Home.jsx's TABS, the eyebrow label right below). */}
-        <span className="text-2xl shrink-0 w-14 h-14 flex items-center justify-center">🕵️</span>
-        <div className="min-w-0 flex-1 pl-3 pr-3">
-          <p className="text-[9px] font-bold uppercase tracking-wide text-amber-300 truncate">
+        <span className="text-lg shrink-0 w-12 h-12 flex items-center justify-center">🕵️</span>
+        <div className="min-w-0 flex-1 pl-2 pr-3">
+          <p className="text-[8px] font-bold uppercase tracking-wide text-amber-300 truncate">
             🕵️ {isHindi ? 'आज का रहस्य' : "Today's Mystery"}
           </p>
-          <p className="text-sm font-bold truncate">{todaysCase.title}</p>
+          <p className="text-xs font-bold truncate">{todaysCase.title}</p>
         </div>
       </Link>
     )

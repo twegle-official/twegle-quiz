@@ -24,7 +24,7 @@ import TodaysMysteryBanner from './TodaysMysteryBanner'
 // reaching the card underneath, not just the paint order.
 export default function DailyStreakRail({ language, quizzes, puzzles }) {
   return (
-    <div className="hidden xl:flex flex-col items-end gap-3 fixed right-0 top-1/2 -translate-y-1/2 z-30">
+    <div className="hidden xl:flex flex-col items-end gap-2 fixed right-0 top-1/2 -translate-y-1/2 z-30">
       <TodaysMysteryBanner language={language} variant="rail" />
       <DailyQuizBanner quizzes={quizzes} variant="rail" />
       <PuzzleOfTheDayBanner puzzles={puzzles} variant="rail" />
