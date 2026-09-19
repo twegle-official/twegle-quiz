@@ -30,9 +30,14 @@ export default function PuzzleOfTheDayBanner({ puzzles, variant = 'compact' }) {
         aria-label={`Puzzle Streak — ${puzzle.question}`}
         className="flex flex-row-reverse items-center h-14 w-14 hover:w-64 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-violet-500 to-indigo-500 text-white transition-[width] duration-300 ease-out"
       >
-        <span className="text-2xl shrink-0 w-14 h-14 flex items-center justify-center">{puzzle.emoji || '🧩'}</span>
+        {/* Fixed "Puzzle" icon (🧩, same as Home.jsx's Puzzles tab), not the
+            day's actual puzzle emoji — collapsed, a rail item is only ever
+            glanced at, and an emoji that changes daily doesn't reliably
+            read as "this is the Puzzle streak" the way one consistent icon
+            does. */}
+        <span className="text-2xl shrink-0 w-14 h-14 flex items-center justify-center">🧩</span>
         {streakBadge && <span className="shrink-0 mr-2">{streakBadge}</span>}
-        <div className="min-w-0 flex-1 pr-3">
+        <div className="min-w-0 flex-1 pl-3 pr-3">
           <p className="text-[9px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Puzzle Streak</p>
           <p className="text-sm font-bold truncate">{puzzle.question}</p>
         </div>

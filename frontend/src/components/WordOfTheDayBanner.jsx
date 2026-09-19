@@ -27,9 +27,15 @@ export default function WordOfTheDayBanner({ variant = 'compact' }) {
         aria-label={`Word Streak — Twegle Word #${getDayNumber()}`}
         className="flex flex-row-reverse items-center h-14 w-14 hover:w-64 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 text-white transition-[width] duration-300 ease-out"
       >
-        <span className="text-2xl shrink-0 w-14 h-14 flex items-center justify-center">🟩</span>
+        {/* 🔤 here specifically (not the 🟩 Wordle-tile color used
+            everywhere else this game is listed) — that green square only
+            means "word game" to someone who already knows Wordle's own
+            color convention; collapsed to a bare icon with no other context,
+            it read as an unrelated colored box. 🔤 is the same icon
+            WordOfTheDay.jsx's own header already uses. */}
+        <span className="text-2xl shrink-0 w-14 h-14 flex items-center justify-center">🔤</span>
         {streakBadge && <span className="shrink-0 mr-2">{streakBadge}</span>}
-        <div className="min-w-0 flex-1 pr-3">
+        <div className="min-w-0 flex-1 pl-3 pr-3">
           <p className="text-[9px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Word Streak</p>
           <p className="text-sm font-bold truncate">Twegle Word #{getDayNumber()}</p>
         </div>
