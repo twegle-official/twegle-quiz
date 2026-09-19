@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const CHOICES = [
-  { key: 'rock', emoji: '🪨', label: 'Rock' },
+  { key: 'rock', emoji: '✊', label: 'Rock' }, // not 🪨 — that's a Unicode 13.0 (2020) glyph that renders as a blank box on older/less-complete font sets; ✊ is the actual real-world RPS hand gesture and has been supported since the original 2010 emoji set
   { key: 'paper', emoji: '📄', label: 'Paper' },
   { key: 'scissors', emoji: '✂️', label: 'Scissors' },
 ]
