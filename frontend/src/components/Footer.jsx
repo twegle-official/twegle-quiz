@@ -56,7 +56,17 @@ export default function Footer() {
 
   return (
     <footer className="border-t border-gray-200 dark:border-gray-800 mt-16 bg-violet-50 dark:bg-violet-950/20">
-      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm">
+      {/* `lg:grid-cols-[2fr_1fr_1fr_1fr]` (not equal columns) — at an equal
+          4-way split the logo/blurb column was exactly as wide as the 3
+          short link columns, so its longer text filled its column right up
+          to the gap while Explore/Company's short one-word links left most
+          of theirs empty — same 32px gap everywhere, but it read as
+          "cramped" next to the full column and "too spread out" next to
+          the mostly-empty ones. Giving the logo column double share lets
+          its own text wrap less and leaves real breathing room before
+          Quick Actions starts, matching what the link columns actually
+          need instead of an even split neither content size asked for. */}
+      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-[2fr_1fr_1fr_1fr] gap-8 text-sm">
         <div className="col-span-2 sm:col-span-4 lg:col-span-1">
           <LogoWithWordmark size={28} />
           <p className="text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
@@ -143,8 +153,17 @@ export default function Footer() {
 
         {/* Site features/actions ("things to do") — kept as their own
             cluster, separate from the plain content-category links in
-            Explore below, since they aren't content to browse. */}
-        <div>
+            Explore below, since they aren't content to browse.
+            `col-start-1 row-start-2` (reset back to auto at `sm`+, where
+            this becomes its own full column instead) — row 1 is the logo
+            block (full-width, auto-placed). On the mobile 2-col grid below
+            it, an unplaced Company would share Quick Actions/Explore's row
+            and wait for Explore's much longer list to finish before
+            starting its own row, leaving a tall dead gap under Quick
+            Actions' short 4-item list. Placing Quick Actions and Company in
+            the same column (Explore given `row-span-2` alongside) lets
+            Company start right under Quick Actions instead. */}
+        <div className="col-start-1 row-start-2 sm:col-start-auto sm:row-start-auto">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Quick Actions</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
             {/* The "🎲 Random content" backlog item — reuses SurpriseMeButton
@@ -161,8 +180,10 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Links to the main content sections of the site */}
-        <div>
+        {/* Links to the main content sections of the site. `row-span-2` on
+            mobile so it lines up beside both Quick Actions and Company in
+            the adjacent column — see the comment on that div above. */}
+        <div className="col-start-2 row-start-2 row-span-2 sm:col-start-auto sm:row-start-auto sm:row-span-1">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Explore</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
             <li><Link to="/" className="hover:text-gray-900 dark:hover:text-gray-100">Quizzes</Link></li>
@@ -180,7 +201,7 @@ export default function Footer() {
         </div>
 
         {/* Links to About, FAQ, Feedback, and legal pages */}
-        <div>
+        <div className="col-start-1 row-start-3 sm:col-start-auto sm:row-start-auto">
           <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Company</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
             <li><Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-100">About &amp; Contact</Link></li>
