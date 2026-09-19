@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
-import { fetchAdventureWorlds, fetchMyAdventureProgress, fetchAdventureCollectibles } from '../api'
+import { fetchAdventureWorlds, fetchMyAdventureProgress, fetchAdventureCollectibles, SessionExpiredError } from '../api'
 import BackButton from '../components/BackButton'
 import ShareButtons from '../components/ShareButtons'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -12,7 +12,7 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 // awards those the normal way via badges.js, wired in Phase 4) — this page
 // is Adventure's own supplementary view, not a second progression system.
 export default function AdventureProgressPage() {
-  const { session } = useUserAuth()
+  const { session, logout } = useUserAuth()
   const navigate = useNavigate()
 
   const [worlds, setWorlds] = useState(null)
@@ -38,9 +38,14 @@ export default function AdventureProgressPage() {
       setProgress(progressData)
       setCollectibleDefs(defs)
     } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        logout()
+        navigate('/login')
+        return
+      }
       setError(err.message)
     }
-  }, [session])
+  }, [session, logout, navigate])
 
   useEffect(() => {
     load()

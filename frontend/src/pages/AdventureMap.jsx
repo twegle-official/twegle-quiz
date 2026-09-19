@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
-import { fetchAdventureWorlds, fetchMyAdventureProgress, fetchAdventureDailyTreasure, claimAdventureDailyTreasure } from '../api'
+import { fetchAdventureWorlds, fetchMyAdventureProgress, fetchAdventureDailyTreasure, claimAdventureDailyTreasure, SessionExpiredError } from '../api'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
@@ -10,7 +10,7 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 // (see SkydriftIsles.jsx's own comment): Adventure's progress is real,
 // persistent, cross-session state, not a disposable guest session.
 export default function AdventureMap() {
-  const { session } = useUserAuth()
+  const { session, logout } = useUserAuth()
   const navigate = useNavigate()
 
   const [worlds, setWorlds] = useState(null)
@@ -40,9 +40,14 @@ export default function AdventureMap() {
       setProgress(progressData)
       setTreasure(treasureData)
     } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        logout()
+        navigate('/login')
+        return
+      }
       setError(err.message)
     }
-  }, [session])
+  }, [session, logout, navigate])
 
   useEffect(() => {
     load()
@@ -55,6 +60,11 @@ export default function AdventureMap() {
       await claimAdventureDailyTreasure(session.token, treasure.location.slug)
       await load()
     } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        logout()
+        navigate('/login')
+        return
+      }
       setError(err.message)
     } finally {
       setClaiming(false)

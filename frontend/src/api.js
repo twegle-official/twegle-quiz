@@ -5,6 +5,15 @@
 // for what it actually does server-side.
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api'
 
+// Thrown instead of a plain Error by an account-gated call when the
+// server rejects the token itself (401 missing/invalid/expired, or 403
+// disabled account) — as opposed to some other failure (network error,
+// 404, 500). Callers that can act on this (log the visitor out and send
+// them back to login, rather than leaving them stuck on a dead-end error
+// message) check for it with `instanceof SessionExpiredError`; anything
+// that doesn't care just sees it as a normal Error, same message either way.
+export class SessionExpiredError extends Error {}
+
 // Loads the published quizzes, optionally filtered by language/category.
 export async function fetchQuizzes(language, category) {
   const params = new URLSearchParams()
@@ -251,9 +260,22 @@ export async function fetchAdventureDailyTreasure(token) {
 // real, persistent, cross-session state (see AdventureProgress.js), the
 // same call Skydrift Isles already made for the same reason.
 
+// Both possible token-rejection statuses (401 missing/invalid/expired, 403
+// disabled account — see backend/src/middleware/userAuth.js's
+// requireUserAuth) mean the same thing to the visitor: this session no
+// longer works, log back in. Thrown as SessionExpiredError so callers can
+// tell it apart from an ordinary failure.
+async function throwAdventureError(res, fallbackMessage) {
+  if (res.status === 401 || res.status === 403) {
+    const body = await res.json().catch(() => ({}))
+    throw new SessionExpiredError(body.error || fallbackMessage)
+  }
+  throw new Error(fallbackMessage)
+}
+
 export async function fetchMyAdventureProgress(token) {
   const res = await fetch(`${API_URL}/adventure/me/progress`, { headers: { Authorization: `Bearer ${token}` } })
-  if (!res.ok) throw new Error('Failed to load your Adventure progress')
+  if (!res.ok) await throwAdventureError(res, 'Failed to load your Adventure progress')
   const data = await res.json()
   return data.progress
 }
@@ -264,7 +286,7 @@ export async function enterAdventureLocation(token, worldSlug, locationSlug) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ worldSlug, locationSlug }),
   })
-  if (!res.ok) throw new Error('Failed to enter that location')
+  if (!res.ok) await throwAdventureError(res, 'Failed to enter that location')
   const data = await res.json()
   return data.progress
 }
@@ -275,7 +297,7 @@ export async function completeAdventureChallenge(token, id, score) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ score }),
   })
-  if (!res.ok) throw new Error('Failed to record your progress')
+  if (!res.ok) await throwAdventureError(res, 'Failed to record your progress')
   return res.json()
 }
 
@@ -285,7 +307,7 @@ export async function claimAdventureDailyTreasure(token, locationSlug) {
     headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
     body: JSON.stringify({ locationSlug }),
   })
-  if (!res.ok) throw new Error('Failed to claim the daily treasure')
+  if (!res.ok) await throwAdventureError(res, 'Failed to claim the daily treasure')
   return res.json()
 }
 

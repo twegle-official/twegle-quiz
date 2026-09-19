@@ -10,6 +10,7 @@ import {
   enterAdventureLocation,
   completeAdventureChallenge,
   recordEngagement,
+  SessionExpiredError,
 } from '../api'
 import BackButton from '../components/BackButton'
 import AdventureAnswerChallenge from '../components/AdventureAnswerChallenge'
@@ -44,7 +45,7 @@ const INLINE_COMPONENT_FOR_TYPE = {
 }
 
 export default function AdventureLocationView() {
-  const { session } = useUserAuth()
+  const { session, logout } = useUserAuth()
   const { worldSlug, locationSlug } = useParams()
   const navigate = useNavigate()
 
@@ -90,9 +91,14 @@ export default function AdventureLocationView() {
       setProgress(progressData)
       await enterAdventureLocation(session.token, worldSlug, locationSlug)
     } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        logout()
+        navigate('/login')
+        return
+      }
       setError(err.message)
     }
-  }, [session, worldSlug, locationSlug, navigate])
+  }, [session, worldSlug, locationSlug, navigate, logout])
 
   useEffect(() => {
     load()
@@ -100,7 +106,18 @@ export default function AdventureLocationView() {
   }, [worldSlug, locationSlug, session])
 
   async function markComplete(challengeId, score) {
-    const data = await completeAdventureChallenge(session.token, challengeId, score)
+    let data
+    try {
+      data = await completeAdventureChallenge(session.token, challengeId, score)
+    } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        logout()
+        navigate('/login')
+        return
+      }
+      setError(err.message)
+      return
+    }
     if (!data.alreadyCompleted) recordAdventureChallengeCompleted(challengeId, data.rewardPoints || 0)
     if (!data.alreadyCompleted) {
       setCelebration({ rewardPoints: data.rewardPoints, collectibleAwarded: data.collectibleAwarded, newlyUnlockedWorlds: data.newlyUnlockedWorlds, newlyUnlockedLocations: data.newlyUnlockedLocations })

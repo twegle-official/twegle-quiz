@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useUserAuth } from '../UserAuthContext'
-import { fetchAdventureWorlds, fetchAdventureLocations, fetchMyAdventureProgress, enterAdventureLocation } from '../api'
+import { fetchAdventureWorlds, fetchAdventureLocations, fetchMyAdventureProgress, enterAdventureLocation, SessionExpiredError } from '../api'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 
@@ -9,7 +9,7 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 // Science Lab) — same locked/unlocked/current card pattern as
 // AdventureMap.jsx, one level down.
 export default function AdventureWorldView() {
-  const { session } = useUserAuth()
+  const { session, logout } = useUserAuth()
   const { worldSlug } = useParams()
   const navigate = useNavigate()
 
@@ -45,9 +45,14 @@ export default function AdventureWorldView() {
       // can stand" reasoning enterLocation's own backend comment explains.
       await enterAdventureLocation(session.token, worldSlug, null)
     } catch (err) {
+      if (err instanceof SessionExpiredError) {
+        logout()
+        navigate('/login')
+        return
+      }
       setError(err.message)
     }
-  }, [session, worldSlug, navigate])
+  }, [session, worldSlug, navigate, logout])
 
   useEffect(() => {
     load()
