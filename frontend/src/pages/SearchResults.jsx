@@ -8,6 +8,7 @@ import StoryCard from '../components/StoryCard'
 import PuzzleCard from '../components/PuzzleCard'
 import DetectiveCard from '../components/DetectiveCard'
 import GameCard from '../components/GameCard'
+import ZodiacCard from '../components/ZodiacCard'
 import AdSlot from '../components/AdSlot'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { GAMES } from '../games/registry'
@@ -45,6 +46,7 @@ export default function SearchResults() {
   const posts = results?.filter((r) => r.type === 'post') || []
   const puzzles = results?.filter((r) => r.type === 'puzzle') || []
   const detectiveCases = results?.filter((r) => r.type === 'detective') || []
+  const zodiacSigns = results?.filter((r) => r.type === 'horoscope') || []
 
   // Games aren't admin-authored content — there's no database row for the
   // search endpoint to query (see registry.js's own comment) — so they're
@@ -162,6 +164,17 @@ export default function SearchResults() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {games.map((game) => (
               <GameCard key={game.slug} game={game} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {zodiacSigns.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">🔮 Horoscope</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {zodiacSigns.map((sign) => (
+              <ZodiacCard key={sign.key} sign={sign} />
             ))}
           </div>
         </div>

@@ -4,6 +4,7 @@ import FriendshipQuiz from '../models/FriendshipQuiz.js'
 import Story from '../models/Story.js'
 import Puzzle from '../models/Puzzle.js'
 import DetectiveCase from '../models/DetectiveCase.js'
+import { ZODIAC_SIGNS } from '../data/zodiacSigns.js'
 
 const RESULTS_PER_TYPE = 8 // max number of matches to return per content type
 const MIN_QUERY_LENGTH = 2 // don't search until someone's typed at least this many characters
@@ -33,6 +34,18 @@ export async function search(req, res) {
   const pattern = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const regex = { $regex: pattern, $options: 'i' } // case-insensitive "contains this text" match
   const language = req.query.language
+  // Only 'en'/'hi' resolve to something real (see listZodiacSigns' own
+  // default) — any other/missing value falls back to English, same as the
+  // list endpoint the Horoscope tab itself calls.
+  const zodiacLang = language === 'hi' ? 'hi' : 'en'
+
+  // The 12 zodiac signs are static reference data (see zodiacSigns.js's own
+  // comment), same as games — no database row to query, so previously
+  // invisible to search no matter what was typed. Matched here rather than
+  // client-side (unlike games, which are frontend-only) since this data
+  // already has a real backend home (`horoscopeController.js`'s own
+  // `listZodiacSigns`) that every other search match already lives next to.
+  const matchingSigns = ZODIAC_SIGNS.filter((s) => s.name[zodiacLang].toLowerCase().includes(q.toLowerCase()))
 
   // Searches all content types in parallel and waits for every result to come back
   const [quizzes, posts, friendshipQuizzes, stories, puzzles, detectiveCases] = await Promise.all([
@@ -111,6 +124,14 @@ export async function search(req, res) {
         emoji: d.emoji,
         difficulty: d.difficulty,
         estimatedMinutes: d.estimatedMinutes,
+      })),
+      ...matchingSigns.map((s) => ({
+        type: 'horoscope',
+        key: s.key,
+        name: s.name[zodiacLang],
+        emoji: s.emoji,
+        dateRange: s.dateRange[zodiacLang],
+        gradient: s.gradient,
       })),
     ],
   })
