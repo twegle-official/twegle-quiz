@@ -10,9 +10,10 @@ import { getWordStreak } from '../utils/dailyQuiz'
 // gives the banner something concrete and dated to say.
 //
 // `variant`: 'compact' (default, full-width row, mobile/tablet) vs 'rail'
-// (collapsed icon pill that expands on hover, desktop `xl`+ rail) — see
-// DailyQuizBanner.jsx for the fuller explanation, same pattern here.
-export default function WordOfTheDayBanner({ variant = 'compact' }) {
+// (collapsed icon pill that expands on hover/tap) — see DailyQuizBanner.jsx
+// for the fuller explanation, same pattern here, including `expanded`/
+// `onToggle` for MobileStreakRail.jsx's tap-driven version.
+export default function WordOfTheDayBanner({ variant = 'compact', expanded, onToggle }) {
   const streak = getWordStreak()
   const streakBadge = streak.count > 0 && (
     <span className="shrink-0 text-[10px] sm:text-xs font-bold bg-white/25 rounded-full px-1.5 py-0.5 sm:px-2 sm:py-1 whitespace-nowrap">
@@ -21,11 +22,21 @@ export default function WordOfTheDayBanner({ variant = 'compact' }) {
   )
 
   if (variant === 'rail') {
+    const controlled = typeof onToggle === 'function'
+    function handleClick(e) {
+      if (controlled && !expanded) {
+        e.preventDefault()
+        onToggle()
+      }
+    }
     return (
       <Link
         to="/games/word-of-the-day"
         aria-label={`Word Streak — Twegle Word #${getDayNumber()}`}
-        className="flex flex-row-reverse items-center h-14 w-14 hover:w-64 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 text-white transition-[width] duration-300 ease-out"
+        onClick={controlled ? handleClick : undefined}
+        className={`flex flex-row-reverse items-center h-14 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 text-white transition-[width] duration-300 ease-out ${
+          controlled ? (expanded ? 'w-64' : 'w-14') : 'w-14 hover:w-64'
+        }`}
       >
         {/* 🔤 here specifically (not the 🟩 Wordle-tile color used
             everywhere else this game is listed) — that green square only

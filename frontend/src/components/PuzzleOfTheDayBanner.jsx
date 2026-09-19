@@ -10,9 +10,10 @@ import { pickPuzzleOfTheDay, getPuzzleStreak } from '../utils/dailyQuiz'
 // duplicated between them.
 //
 // `variant`: 'compact' (default, full-width row, mobile/tablet) vs 'rail'
-// (collapsed icon pill that expands on hover, desktop `xl`+ rail) — see
-// DailyQuizBanner.jsx for the fuller explanation, same pattern here.
-export default function PuzzleOfTheDayBanner({ puzzles, variant = 'compact' }) {
+// (collapsed icon pill that expands on hover/tap) — see DailyQuizBanner.jsx
+// for the fuller explanation, same pattern here, including `expanded`/
+// `onToggle` for MobileStreakRail.jsx's tap-driven version.
+export default function PuzzleOfTheDayBanner({ puzzles, variant = 'compact', expanded, onToggle }) {
   const puzzle = pickPuzzleOfTheDay(puzzles)
   if (!puzzle) return null
 
@@ -24,11 +25,21 @@ export default function PuzzleOfTheDayBanner({ puzzles, variant = 'compact' }) {
   )
 
   if (variant === 'rail') {
+    const controlled = typeof onToggle === 'function'
+    function handleClick(e) {
+      if (controlled && !expanded) {
+        e.preventDefault()
+        onToggle()
+      }
+    }
     return (
       <Link
         to={`/puzzle/${puzzle._id}`}
         aria-label={`Puzzle Streak — ${puzzle.question}`}
-        className="flex flex-row-reverse items-center h-14 w-14 hover:w-64 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-violet-500 to-indigo-500 text-white transition-[width] duration-300 ease-out"
+        onClick={controlled ? handleClick : undefined}
+        className={`flex flex-row-reverse items-center h-14 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-violet-500 to-indigo-500 text-white transition-[width] duration-300 ease-out ${
+          controlled ? (expanded ? 'w-64' : 'w-14') : 'w-14 hover:w-64'
+        }`}
       >
         {/* Fixed "Puzzle" icon (🧩, same as Home.jsx's Puzzles tab), not the
             day's actual puzzle emoji — collapsed, a rail item is only ever

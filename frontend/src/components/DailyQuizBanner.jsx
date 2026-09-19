@@ -6,10 +6,12 @@ import { pickQuizOfTheDay, getQuizStreak } from '../utils/dailyQuiz'
 // - 'compact' (default): the original full-width row, used inline on mobile/
 //   tablet (below `xl`) — see Home.jsx.
 // - 'rail': a collapsed icon pill that expands into this same strip on
-//   hover, used inside the fixed right-edge rail at `xl`+ — see
-//   DailyStreakRail.jsx for why streaks moved off the mobile-style inline
-//   position on desktop.
-export default function DailyQuizBanner({ quizzes, variant = 'compact' }) {
+//   hover (desktop, `xl`+) or tap (mobile/tablet) — see DailyStreakRail.jsx/
+//   MobileStreakRail.jsx for why streaks moved off the inline position at
+//   those widths. `expanded`/`onToggle` are only passed by
+//   MobileStreakRail.jsx, for the tap-driven version — omitted, this falls
+//   back to the plain CSS `hover:w-64` desktop uses.
+export default function DailyQuizBanner({ quizzes, variant = 'compact', expanded, onToggle }) {
   const quiz = pickQuizOfTheDay(quizzes) // today's featured quiz
   if (!quiz) return null
 
@@ -33,11 +35,25 @@ export default function DailyQuizBanner({ quizzes, variant = 'compact' }) {
   )
 
   if (variant === 'rail') {
+    // Tap-driven mode (mobile) when `onToggle` is passed: the first tap
+    // expands without navigating, a second tap (now `expanded`) navigates
+    // normally. Without `onToggle` (desktop), plain `hover:w-64` handles it
+    // and this click handler is never invoked with `expanded` false.
+    const controlled = typeof onToggle === 'function'
+    function handleClick(e) {
+      if (controlled && !expanded) {
+        e.preventDefault()
+        onToggle()
+      }
+    }
     return (
       <Link
         to={`/quiz/${quiz.slug}`}
         aria-label={`Quiz Streak — ${quiz.title}`}
-        className="flex flex-row-reverse items-center h-14 w-14 hover:w-64 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-amber-400 to-orange-500 text-white transition-[width] duration-300 ease-out"
+        onClick={controlled ? handleClick : undefined}
+        className={`flex flex-row-reverse items-center h-14 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-amber-400 to-orange-500 text-white transition-[width] duration-300 ease-out ${
+          controlled ? (expanded ? 'w-64' : 'w-14') : 'w-14 hover:w-64'
+        }`}
       >
         {/* Fixed "Quiz" icon (🎯, same as Home.jsx's Quizzes tab), not the
             day's actual quiz emoji — collapsed, a rail item is only ever

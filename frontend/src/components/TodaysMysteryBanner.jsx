@@ -13,9 +13,10 @@ import { difficultyLabel, DETECTIVE_DIFFICULTY_META } from '../utils/detectiveDi
 // FestiveBanner already follows.
 //
 // `variant`: 'compact' (default, full-width row, mobile/tablet) vs 'rail'
-// (collapsed icon pill that expands on hover, desktop `xl`+ rail) — see
-// DailyQuizBanner.jsx for the fuller explanation, same pattern here.
-export default function TodaysMysteryBanner({ language, variant = 'compact' }) {
+// (collapsed icon pill that expands on hover/tap) — see DailyQuizBanner.jsx
+// for the fuller explanation, same pattern here, including `expanded`/
+// `onToggle` for MobileStreakRail.jsx's tap-driven version.
+export default function TodaysMysteryBanner({ language, variant = 'compact', expanded, onToggle }) {
   const [cases, setCases] = useState(null)
 
   useEffect(() => {
@@ -29,11 +30,21 @@ export default function TodaysMysteryBanner({ language, variant = 'compact' }) {
   const isHindi = language === 'hi'
 
   if (variant === 'rail') {
+    const controlled = typeof onToggle === 'function'
+    function handleClick(e) {
+      if (controlled && !expanded) {
+        e.preventDefault()
+        onToggle()
+      }
+    }
     return (
       <Link
         to={`/detective/${todaysCase.slug}`}
         aria-label={`Today's Mystery — ${todaysCase.title}`}
-        className="flex flex-row-reverse items-center h-14 w-14 hover:w-64 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 text-white border border-amber-500/20 transition-[width] duration-300 ease-out"
+        onClick={controlled ? handleClick : undefined}
+        className={`flex flex-row-reverse items-center h-14 rounded-l-2xl shadow-lg overflow-hidden bg-gradient-to-r from-slate-900 via-slate-800 to-amber-900 text-white border border-amber-500/20 transition-[width] duration-300 ease-out ${
+          controlled ? (expanded ? 'w-64' : 'w-14') : 'w-14 hover:w-64'
+        }`}
       >
         {/* Fixed "Detective" icon, not the day's actual case emoji — a rail
             item is only ever glanced at collapsed, and a case emoji that
