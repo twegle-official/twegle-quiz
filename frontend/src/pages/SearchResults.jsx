@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { searchContent } from '../api'
 import QuizCard from '../components/QuizCard'
@@ -7,8 +7,10 @@ import PostCard from '../components/PostCard'
 import StoryCard from '../components/StoryCard'
 import PuzzleCard from '../components/PuzzleCard'
 import DetectiveCard from '../components/DetectiveCard'
+import GameCard from '../components/GameCard'
 import AdSlot from '../components/AdSlot'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
+import { GAMES } from '../games/registry'
 
 // The search results page — shows everything on the site that matches the
 // text typed into the search box, grouped by content type.
@@ -44,6 +46,18 @@ export default function SearchResults() {
   const puzzles = results?.filter((r) => r.type === 'puzzle') || []
   const detectiveCases = results?.filter((r) => r.type === 'detective') || []
 
+  // Games aren't admin-authored content — there's no database row for the
+  // search endpoint to query (see registry.js's own comment) — so they're
+  // matched client-side against this same static list every game card
+  // already renders from, rather than needing a backend change. Found
+  // directly: searching "Rock" returned nothing, since Rock Paper Scissors
+  // (like every game) was invisible to the server-side search entirely.
+  const games = useMemo(() => {
+    const needle = q.trim().toLowerCase()
+    if (needle.length < 2) return []
+    return GAMES.filter((g) => g.title.toLowerCase().includes(needle) || g.description.toLowerCase().includes(needle))
+  }, [q])
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-8">
@@ -69,7 +83,7 @@ export default function SearchResults() {
         </div>
       )}
 
-      {results && results.length === 0 && (
+      {results && results.length === 0 && games.length === 0 && (
         <p className="text-center text-gray-400 dark:text-gray-500">
           {q.trim() ? `Nothing matched "${q}" — try a different word.` : 'Type something to search for.'}
         </p>
@@ -142,7 +156,18 @@ export default function SearchResults() {
         </div>
       )}
 
-      {results && results.length > 0 && (
+      {games.length > 0 && (
+        <div className="mb-10">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">🎮 Games</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {games.map((game) => (
+              <GameCard key={game.slug} game={game} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {((results && results.length > 0) || games.length > 0) && (
         <div className="mt-4">
           <AdSlot />
         </div>
