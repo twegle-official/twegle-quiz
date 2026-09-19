@@ -34,8 +34,8 @@ export default function WordOfTheDayBanner({ variant = 'compact', expanded, onTo
         to="/games/word-of-the-day"
         aria-label={`Word Streak — Twegle Word #${getDayNumber()}`}
         onClick={controlled ? handleClick : undefined}
-        className={`flex flex-row-reverse items-center h-12 rounded-l-xl shadow-lg overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 text-white transition-[width] duration-300 ease-out ${
-          controlled ? (expanded ? 'w-56' : 'w-12') : 'w-12 hover:w-56'
+        className={`flex flex-row-reverse items-center rounded-l-xl shadow-lg overflow-hidden bg-gradient-to-r from-green-500 to-emerald-600 text-white transition-[width] duration-300 ease-out ${
+          controlled ? `h-12 ${expanded ? 'w-56' : 'w-12'}` : 'h-14 w-14 hover:w-64'
         }`}
       >
         {/* 🔤 here specifically (not the 🟩 Wordle-tile color used
@@ -43,12 +43,15 @@ export default function WordOfTheDayBanner({ variant = 'compact', expanded, onTo
             means "word game" to someone who already knows Wordle's own
             color convention; collapsed to a bare icon with no other context,
             it read as an unrelated colored box. 🔤 is the same icon
-            WordOfTheDay.jsx's own header already uses. */}
-        <span className="text-lg shrink-0 w-12 h-12 flex items-center justify-center">🔤</span>
+            WordOfTheDay.jsx's own header already uses. Mobile (`controlled`)
+            is sized smaller than desktop's hover rail — feedback was
+            specifically about the mobile version feeling oversized,
+            desktop's own size was fine as-is. */}
+        <span className={`shrink-0 flex items-center justify-center ${controlled ? 'text-lg w-12 h-12' : 'text-2xl w-14 h-14'}`}>🔤</span>
         {streakBadge && <span className="shrink-0 mr-2">{streakBadge}</span>}
-        <div className="min-w-0 flex-1 pl-2 pr-3">
-          <p className="text-[8px] font-bold uppercase tracking-wide text-white/80 truncate">🔥 Word Streak</p>
-          <p className="text-xs font-bold truncate">Twegle Word #{getDayNumber()}</p>
+        <div className={`min-w-0 flex-1 pr-3 ${controlled ? 'pl-2' : 'pl-3'}`}>
+          <p className={`font-bold uppercase tracking-wide text-white/80 truncate ${controlled ? 'text-[8px]' : 'text-[9px]'}`}>🔥 Word Streak</p>
+          <p className={`font-bold truncate ${controlled ? 'text-xs' : 'text-sm'}`}>Twegle Word #{getDayNumber()}</p>
         </div>
       </Link>
     )
