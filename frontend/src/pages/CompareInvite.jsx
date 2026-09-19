@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { fetchQuizCompare } from '../api'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -9,6 +9,7 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 export default function CompareInvite() {
   const { quizId: slug, code } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [compare, setCompare] = useState(null) // details about the compare invite (who sent it, which quiz)
   const [notFound, setNotFound] = useState(false) // true if this compare link doesn't exist
   const [name, setName] = useState('') // the invited friend's name, typed into the form
@@ -20,12 +21,17 @@ export default function CompareInvite() {
       .catch(() => setNotFound(true))
   }, [slug, code])
 
-  // If this friend has already joined the comparison, skip straight to the result page.
+  // If this friend has already joined the comparison, skip straight to the
+  // result page. `replace` only when there's a real "before this invite"
+  // page to fall back to — an invite link is almost always opened fresh (a
+  // shared link, its own new tab), so an unconditional replace would leave
+  // Back on the result page landing on a dead blank tab instead of
+  // anywhere real. See Quiz.jsx's matching comment for the full story.
   useEffect(() => {
     if (compare?.joined) {
-      navigate(`/quiz/${slug}/vs/${code}/result`, { replace: true })
+      navigate(`/quiz/${slug}/vs/${code}/result`, { replace: location.key !== 'default' })
     }
-  }, [compare, slug, code, navigate])
+  }, [compare, slug, code, navigate, location.key])
 
   useDocumentMeta(
     compare && `${compare.personAName} wants to compare "${compare.quizTitle}" results with you!`,

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom'
 import { fetchCompatibilitySession, joinCompatibilitySession } from '../api'
 import BackButton from '../components/BackButton'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -11,6 +11,7 @@ import { useDocumentMeta } from '../utils/useDocumentMeta'
 export default function CompatibilityPlay() {
   const { code } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [session, setSession] = useState(null) // the session details and questions to answer
   const [notFound, setNotFound] = useState(false) // true if this compatibility link doesn't exist
   const [name, setName] = useState('') // person B's own name, typed into the form
@@ -31,11 +32,14 @@ export default function CompatibilityPlay() {
 
   // If someone (person B, or a third person opening an already-used link)
   // has already joined, skip straight to the result instead of re-asking.
+  // `replace` only when there's a real "before this invite" page behind
+  // it — see CompareInvite.jsx's matching comment for why an unconditional
+  // replace breaks Back on a freshly-opened shared link.
   useEffect(() => {
     if (session?.joined) {
-      navigate(`/friendship/compat/${code}/result`, { replace: true })
+      navigate(`/friendship/compat/${code}/result`, { replace: location.key !== 'default' })
     }
-  }, [session, code, navigate])
+  }, [session, code, navigate, location.key])
 
   useDocumentMeta(
     session && `How compatible are you with ${session.personAName}?`,

@@ -126,7 +126,18 @@ export default function Quiz() {
           // the previous history entry. Replacing it means Back from the
           // result page goes straight to wherever the player was before
           // starting the quiz, instead of back into the finished quiz.
-          navigate(`/quiz/${slug}/vs/${compareCode}/result`, { replace: true })
+          //
+          // Only safe when there genuinely *is` a "before the quiz" page to
+          // skip back to (`location.key !== 'default'` — this quiz page
+          // wasn't the very first thing loaded in this tab). When the quiz
+          // was opened as a fresh tab (a shared link, or Adventure World's
+          // "Play →", which opens in a new tab), replacing it leaves only
+          // the tab's own pre-navigation blank state behind it — Back would
+          // land on a dead blank page instead of anywhere real. Found via a
+          // real bug report: exactly this happened opening a quiz from
+          // Adventure World. A plain push in that case at least lands Back
+          // on the quiz's own start, never a dead end.
+          navigate(`/quiz/${slug}/vs/${compareCode}/result`, { replace: location.key !== 'default' })
           return
         } catch {
           // Link expired/invalid — fall through to the normal result page
@@ -144,8 +155,9 @@ export default function Quiz() {
         ? { score: nextScores.correct || 0, total: quiz.questions.length, finished: true }
         : { finished: true }
       const previewQs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
-      // `replace: true` — see comment above; same reasoning applies here.
-      navigate(`/result/${slug}/${winningResult}${previewQs}`, { state, replace: true })
+      // `replace` only when safe — see the comment on the compare-mode
+      // navigate() above for why.
+      navigate(`/result/${slug}/${winningResult}${previewQs}`, { state, replace: location.key !== 'default' })
       return
     }
 
