@@ -1,18 +1,20 @@
 import { useState } from 'react'
 
-// Plays one of Adventure World's 3 built text/choice mini-challenge types
-// in place, inline on the location screen — no separate page, since each
-// is meant to take well under a minute. Payload shapes, chosen to keep
+// Plays 4 of Adventure World's built text/choice mini-challenge types in
+// place, inline on the location screen — no separate page, since each is
+// meant to take well under a minute. The other 3 (find-it/memory/reaction)
+// are genuinely game-shaped rather than answer-shaped — see
+// AdventureMiniGameChallenge.jsx for those. Payload shapes, chosen to keep
 // admin-authored JSON as small as possible (see AdventureChallengeForm.jsx):
 //   guess:        { question, options: [string, ...], correctIndex }
 //   quick-brain:  { question, answer }   — free-text riddle
 //   code-breaker: { cipher, answer }     — free-text, cipher shown as the puzzle text
-// The other 4 spec'd mini-challenge types (find-it, memory, reaction,
-// observation) don't have a player component yet — AdventureLocationView
-// shows a "coming soon" card for those instead of rendering this component
-// with a shape it doesn't understand.
+//   observation:  { scene, question, options: [string, ...], correctIndex }
+//                 — same multiple-choice shape as 'guess', but with a short
+//                 scene description shown first; the question tests a
+//                 detail from that scene rather than being self-contained.
 export default function AdventureAnswerChallenge({ challenge, onComplete }) {
-  const [choice, setChoice] = useState(null) // for 'guess': the selected option index
+  const [choice, setChoice] = useState(null) // for 'guess'/'observation': the selected option index
   const [textAnswer, setTextAnswer] = useState('') // for 'quick-brain'/'code-breaker'
   const [result, setResult] = useState(null) // null | 'correct' | 'wrong'
   const [submitting, setSubmitting] = useState(false)
@@ -42,9 +44,12 @@ export default function AdventureAnswerChallenge({ challenge, onComplete }) {
     }
   }
 
-  if (challenge.type === 'guess') {
+  if (challenge.type === 'guess' || challenge.type === 'observation') {
     return (
       <div>
+        {challenge.type === 'observation' && payload.scene && (
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 leading-relaxed">{payload.scene}</p>
+        )}
         <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">{payload.question}</p>
         <div className="space-y-2">
           {(payload.options || []).map((opt, i) => {

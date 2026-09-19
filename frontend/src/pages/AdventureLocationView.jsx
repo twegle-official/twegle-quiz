@@ -13,23 +13,35 @@ import {
 } from '../api'
 import BackButton from '../components/BackButton'
 import AdventureAnswerChallenge from '../components/AdventureAnswerChallenge'
+import AdventureMiniGameChallenge from '../components/AdventureMiniGameChallenge'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { recordAdventureChallengeCompleted } from '../utils/badges'
 
 // Reused content types (quiz/puzzle/game) open the real existing page in a
 // new tab — Adventure never re-implements an existing game — and the
 // player self-reports finishing it with the button below, the same trust
-// level Puzzle's own "reveal answer" already accepts. The 3 built
-// mini-challenge types play out inline via AdventureAnswerChallenge and
-// report completion automatically on a correct answer; the 4 not-yet-built
-// ones show a disclosed "coming soon" placeholder rather than a broken
-// interaction.
+// level Puzzle's own "reveal answer" already accepts. Every built
+// mini-challenge type plays out inline via one of the two components below
+// and reports completion automatically on success.
 const REAL_URL_FOR_TYPE = {
   quiz: (refId) => `/quiz/${refId}`,
   puzzle: (refId) => `/puzzle/${refId}`,
   game: (refId) => `/games/${refId}`,
 }
-const ANSWER_TYPES = ['guess', 'quick-brain', 'code-breaker']
+// Which inline component plays each mini-challenge type — the text/choice-
+// answer family (AdventureAnswerChallenge) vs. the genuinely game-shaped
+// family (AdventureMiniGameChallenge). Every ADVENTURE_CHALLENGE_TYPES entry
+// besides the 3 reused ones above is listed here now — no "coming soon"
+// placeholder left.
+const INLINE_COMPONENT_FOR_TYPE = {
+  guess: AdventureAnswerChallenge,
+  'quick-brain': AdventureAnswerChallenge,
+  'code-breaker': AdventureAnswerChallenge,
+  observation: AdventureAnswerChallenge,
+  'find-it': AdventureMiniGameChallenge,
+  memory: AdventureMiniGameChallenge,
+  reaction: AdventureMiniGameChallenge,
+}
 
 export default function AdventureLocationView() {
   const { session } = useUserAuth()
@@ -133,8 +145,8 @@ export default function AdventureLocationView() {
       <div className="space-y-3">
         {challenges.map((challenge) => {
           const isReused = REAL_URL_FOR_TYPE[challenge.type]
-          const isAnswerType = ANSWER_TYPES.includes(challenge.type)
-          const isBuilt = isReused || isAnswerType
+          const InlineComponent = INLINE_COMPONENT_FOR_TYPE[challenge.type]
+          const isBuilt = isReused || InlineComponent
 
           return (
             <div key={challenge._id} className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm p-4">
@@ -159,14 +171,14 @@ export default function AdventureLocationView() {
                 </div>
               )}
 
-              {isAnswerType && !challenge.completed && openChallenge?._id !== challenge._id && (
+              {InlineComponent && !challenge.completed && openChallenge?._id !== challenge._id && (
                 <button onClick={() => openMiniChallenge(challenge._id)} className="px-4 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700">
                   Start
                 </button>
               )}
 
-              {isAnswerType && openChallenge?._id === challenge._id && (
-                <AdventureAnswerChallenge challenge={openChallenge} onComplete={() => markComplete(challenge._id)} />
+              {InlineComponent && openChallenge?._id === challenge._id && (
+                <InlineComponent challenge={openChallenge} onComplete={() => markComplete(challenge._id)} />
               )}
             </div>
           )
