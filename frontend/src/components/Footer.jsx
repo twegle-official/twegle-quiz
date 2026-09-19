@@ -55,9 +55,9 @@ export default function Footer() {
   const { session } = useUserAuth()
 
   return (
-    <footer className="border-t border-gray-200 dark:border-gray-800 mt-16 bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 sm:grid-cols-3 gap-8 text-sm">
-        <div className="col-span-2 sm:col-span-1">
+    <footer className="border-t border-gray-200 dark:border-gray-800 mt-16 bg-violet-50 dark:bg-violet-950/20">
+      <div className="max-w-6xl mx-auto px-4 py-10 grid grid-cols-2 sm:grid-cols-4 gap-8 text-sm">
+        <div className="col-span-2 sm:col-span-4 lg:col-span-1">
           <LogoWithWordmark size={28} />
           <p className="text-gray-500 dark:text-gray-400 mt-3 leading-relaxed">
             Quizzes, puzzles, jokes, quotes, games, stories, horoscope &amp; chaos — no sign up, just
@@ -141,14 +141,12 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Links to the main content sections of the site */}
+        {/* Site features/actions ("things to do") — kept as their own
+            cluster, separate from the plain content-category links in
+            Explore below, since they aren't content to browse. */}
         <div>
-          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Explore</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Quick Actions</h3>
           <ul className="space-y-2 text-gray-500 dark:text-gray-400">
-            {/* Grouped together at the top, ahead of the plain content-category
-                links below — these 3 are site features/actions ("things to
-                do"), not content to browse, so they read better as their own
-                cluster than scattered across (and after) the list. */}
             {/* The "🎲 Random content" backlog item — reuses SurpriseMeButton
                 (also shown desktop-only in Header.jsx) rather than a second
                 random-picking implementation. Footer is every-width, so this
@@ -160,6 +158,13 @@ export default function Footer() {
             <li><Link to="/adventure" className="hover:text-gray-900 dark:hover:text-gray-100">🗺️ Adventure World</Link></li>
             <li><Link to="/badges" className="hover:text-gray-900 dark:hover:text-gray-100">🏆 My Achievements</Link></li>
             <li><Link to="/leaderboard" className="hover:text-gray-900 dark:hover:text-gray-100">🏅 Leaderboard</Link></li>
+          </ul>
+        </div>
+
+        {/* Links to the main content sections of the site */}
+        <div>
+          <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Explore</h3>
+          <ul className="space-y-2 text-gray-500 dark:text-gray-400">
             <li><Link to="/" className="hover:text-gray-900 dark:hover:text-gray-100">Quizzes</Link></li>
             <li><Link to="/?tab=puzzles" className="hover:text-gray-900 dark:hover:text-gray-100">Puzzles</Link></li>
             <li><Link to="/?tab=friendship" className="hover:text-gray-900 dark:hover:text-gray-100">Friendship Quiz</Link></li>
