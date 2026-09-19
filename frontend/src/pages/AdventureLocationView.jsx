@@ -24,10 +24,18 @@ import { recordAdventureChallengeCompleted } from '../utils/badges'
 // level Puzzle's own "reveal answer" already accepts. Every built
 // mini-challenge type plays out inline via one of the two components below
 // and reports completion automatically on success.
+//
+// `aw`/`al` (Adventure World/Location slugs) are tagged onto the URL so the
+// real page, once its own "you're done" state shows (a quiz result, a
+// revealed puzzle answer, a finished game), can offer a direct way back
+// into Adventure — see AdventureReturnBanner.jsx. Found directly (reported
+// 3 times, different angles, same root cause): without this there was no
+// way back short of remembering this tab is still open in the background
+// and switching to it by hand.
 const REAL_URL_FOR_TYPE = {
-  quiz: (refId) => `/quiz/${refId}`,
-  puzzle: (refId) => `/puzzle/${refId}`,
-  game: (refId) => `/games/${refId}`,
+  quiz: (refId, worldSlug, locationSlug) => `/quiz/${refId}?aw=${worldSlug}&al=${locationSlug}`,
+  puzzle: (refId, worldSlug, locationSlug) => `/puzzle/${refId}?aw=${worldSlug}&al=${locationSlug}`,
+  game: (refId, worldSlug, locationSlug) => `/games/${refId}?aw=${worldSlug}&al=${locationSlug}`,
 }
 // Which inline component plays each mini-challenge type — the text/choice-
 // answer family (AdventureAnswerChallenge) vs. the genuinely game-shaped
@@ -179,7 +187,7 @@ export default function AdventureLocationView() {
 
               {isReused && !challenge.completed && (
                 <div className="flex items-center gap-3">
-                  <a href={REAL_URL_FOR_TYPE[challenge.type](challenge.refId)} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700">
+                  <a href={REAL_URL_FOR_TYPE[challenge.type](challenge.refId, worldSlug, locationSlug)} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg bg-violet-600 text-white text-sm font-semibold hover:bg-violet-700">
                     Play →
                   </a>
                   <button onClick={() => markComplete(challenge._id)} className="text-sm font-semibold text-gray-500 dark:text-gray-400 hover:underline">

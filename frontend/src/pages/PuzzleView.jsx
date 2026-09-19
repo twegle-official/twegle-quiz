@@ -8,6 +8,7 @@ import CrossPromo from '../components/CrossPromo'
 import ReportButton from '../components/ReportButton'
 import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
+import AdventureReturnBanner from '../components/AdventureReturnBanner'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
 import { pickPuzzleOfTheDay, recordPuzzleStreakCompletion } from '../utils/dailyQuiz'
@@ -107,6 +108,7 @@ export default function PuzzleView() {
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       {previewToken && <PreviewBanner />}
+      {revealed && <AdventureReturnBanner />}
       <div className="text-left mb-4"><BackButton /></div>
       {/* The puzzle's question on a colored card */}
       <div

@@ -9,6 +9,7 @@ import ReportButton from '../components/ReportButton'
 import ContentReactions from '../components/ContentReactions'
 import BackButton from '../components/BackButton'
 import PreviewBanner from '../components/PreviewBanner'
+import AdventureReturnBanner from '../components/AdventureReturnBanner'
 import { shareOrDownloadImage } from '../utils/shareImage'
 import { shuffleArray } from '../utils/shuffle'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -179,6 +180,7 @@ export default function Result() {
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
       {previewToken && <PreviewBanner />}
+      <AdventureReturnBanner />
       <div className="text-left mb-4"><BackButton /></div>
       <p className="text-sm text-gray-400 dark:text-gray-500 mb-2">{quiz.title}</p>
       <div className="animate-pop-in">

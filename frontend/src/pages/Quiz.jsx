@@ -137,7 +137,7 @@ export default function Quiz() {
           // real bug report: exactly this happened opening a quiz from
           // Adventure World. A plain push in that case at least lands Back
           // on the quiz's own start, never a dead end.
-          navigate(`/quiz/${slug}/vs/${compareCode}/result`, { replace: location.key !== 'default' })
+          navigate(`/quiz/${slug}/vs/${compareCode}/result${location.search}`, { replace: location.key !== 'default' })
           return
         } catch {
           // Link expired/invalid — fall through to the normal result page
@@ -154,10 +154,13 @@ export default function Quiz() {
       const state = isTrivia
         ? { score: nextScores.correct || 0, total: quiz.questions.length, finished: true }
         : { finished: true }
-      const previewQs = previewToken ? `?preview=${encodeURIComponent(previewToken)}` : ''
-      // `replace` only when safe — see the comment on the compare-mode
-      // navigate() above for why.
-      navigate(`/result/${slug}/${winningResult}${previewQs}`, { state, replace: location.key !== 'default' })
+      // Forwards this page's own query string as-is (`?preview=...`,
+      // and/or `?aw=...&al=...` if this quiz was opened from Adventure World
+      // — see AdventureReturnBanner.jsx) straight onto the result URL,
+      // rather than rebuilding just the one param this file used to care
+      // about. `replace` only when safe — see the comment on the
+      // compare-mode navigate() above for why.
+      navigate(`/result/${slug}/${winningResult}${location.search}`, { state, replace: location.key !== 'default' })
       return
     }
 

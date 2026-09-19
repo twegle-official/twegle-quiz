@@ -17,6 +17,7 @@ import { recordGamePlay, createTicTacToeGame, createConnectFourGame, createSnake
 import ShareButtons from '../components/ShareButtons'
 import AdSlot from '../components/AdSlot'
 import BackButton from '../components/BackButton'
+import AdventureReturnBanner from '../components/AdventureReturnBanner'
 import GameLeaderboard from '../components/GameLeaderboard'
 import ContentReactions from '../components/ContentReactions'
 import { useDocumentMeta } from '../utils/useDocumentMeta'
@@ -226,6 +227,7 @@ export default function Game() {
 
   return (
     <div className="max-w-xl mx-auto px-4 py-10 text-center">
+      {outcome && <AdventureReturnBanner />}
       {/* Back button + sound on/off toggle */}
       <div className="flex items-center justify-between mb-4">
         <BackButton />
